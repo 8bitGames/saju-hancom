@@ -37,4 +37,8 @@ export {
   ChatCircle,
   ChatsCircle,
   Upload,
+  ChatCircleDots,
+  PaperPlaneTilt,
+  Minus,
+  MagnifyingGlass,
 } from "@phosphor-icons/react";

@@ -155,7 +155,7 @@ export default function FaceReadingResultPage() {
               관상 분석 결과
             </h1>
             <p className="text-lg text-[var(--text-secondary)]">
-              AI가 당신의 관상을 분석했습니다
+              당신의 관상을 전문적으로 분석했습니다
             </p>
           </div>
         </div>
@@ -351,7 +351,7 @@ export default function FaceReadingResultPage() {
 
         {/* Disclaimer */}
         <div className="text-center text-sm text-[var(--text-tertiary)] space-y-1 pt-4 pb-8">
-          <p>본 관상 분석은 AI가 생성한 재미용 콘텐츠입니다</p>
+          <p>본 관상 분석은 전통 관상학을 기반으로 한 재미용 콘텐츠입니다</p>
           <p>실제 운세 예측이 아니며 참고용으로만 사용하세요</p>
         </div>
       </div>

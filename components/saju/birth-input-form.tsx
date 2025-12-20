@@ -50,11 +50,11 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
   const currentYear = new Date().getFullYear();
 
   const [formData, setFormData] = useState<BirthData>({
-    year: 1990,
-    month: 1,
-    day: 1,
-    hour: 12,
-    minute: 0,
+    year: 1982,
+    month: 6,
+    day: 3,
+    hour: 23,
+    minute: 30,
     gender: "male",
     isLunar: false,
     city: "서울",
@@ -286,7 +286,7 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
         containerClassName="w-full rounded-xl"
         className="w-full h-16 flex items-center justify-center gap-3 bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] text-white font-bold text-lg rounded-xl"
         as="button"
-        onClick={handleSubmit}
+        type="submit"
       >
         <Sparkle className="w-6 h-6" weight="fill" />
         사주 분석하기
