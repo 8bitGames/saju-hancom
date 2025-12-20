@@ -1,26 +1,494 @@
 @import "tailwindcss";
 
+/* ============================================
+   AI 운세 마스터 - Global Styles
+   ============================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Background & Foreground */
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --background-secondary: #1e293b;
+  --background-card: #334155;
+
+  /* 오행 (Five Elements) Colors */
+  --element-wood: #22c55e;
+  --element-fire: #ef4444;
+  --element-earth: #eab308;
+  --element-metal: #f8fafc;
+  --element-water: #3b82f6;
+
+  /* 음양 (Yin-Yang) Colors */
+  --yin: #6366f1;
+  --yang: #f97316;
+
+  /* Text Colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-muted: #475569;
+
+  /* Elevated Background */
+  --background-elevated: #475569;
+
+  /* Border & Accent */
+  --border: #475569;
+  --accent: #8b5cf6;
+  --accent-foreground: #ffffff;
+
+  /* Status Colors */
+  --success: #22c55e;
+  --warning: #eab308;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* Spacing */
+  --header-height: 56px;
+  --nav-height: 64px;
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-card: var(--background-card);
+
+  /* 오행 Colors */
+  --color-element-wood: var(--element-wood);
+  --color-element-fire: var(--element-fire);
+  --color-element-earth: var(--element-earth);
+  --color-element-metal: var(--element-metal);
+  --color-element-water: var(--element-water);
+
+  /* Yin-Yang */
+  --color-yin: var(--yin);
+  --color-yang: var(--yang);
+
+  /* Text */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  /* Accent */
+  --color-accent: var(--accent);
+
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base Styles - Optimized for 40-60대 (Senior-friendly) */
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  /* Larger base font size for better readability */
+  font-size: 18px;
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(to bottom, var(--background), var(--background-secondary));
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  /* Improved line height for readability */
+  line-height: 1.7;
+  /* Better letter spacing for Korean text */
+  letter-spacing: -0.01em;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Selection */
+::selection {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* Focus Styles - Enhanced for visibility */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Touch Optimization - Larger touch targets for 40-60대 */
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+/* Ensure all interactive elements have sufficient touch target size */
+button,
+[role="button"],
+a {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+/* Prevent zoom on input focus (iOS) - Larger font for seniors */
+@media screen and (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 18px !important;
+    min-height: 52px;
+  }
+}
+
+/* Senior-friendly text sizing */
+h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+p, span, label {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* Small text should still be readable */
+.text-xs {
+  font-size: 0.875rem !important;
+}
+
+.text-sm {
+  font-size: 0.95rem !important;
+}
+
+/* Animation Utilities */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes meteor-effect {
+  0% {
+    transform: rotate(215deg) translateX(0);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(215deg) translateX(-500px);
+    opacity: 0;
+  }
+}
+
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-72%, -62%) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -40%) scale(1);
+  }
+}
+
+.animate-meteor-effect {
+  animation: meteor-effect 5s linear infinite;
+}
+
+.animate-spotlight {
+  animation: spotlight 2s ease 0.75s 1 forwards;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--accent);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--accent);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--background-card) 25%,
+    var(--border) 50%,
+    var(--background-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* 오행 Element Utility Classes */
+.bg-element-wood {
+  background-color: var(--element-wood);
+}
+
+.bg-element-fire {
+  background-color: var(--element-fire);
+}
+
+.bg-element-earth {
+  background-color: var(--element-earth);
+}
+
+.bg-element-metal {
+  background-color: var(--element-metal);
+  color: #0f172a;
+}
+
+.bg-element-water {
+  background-color: var(--element-water);
+}
+
+.text-element-wood {
+  color: var(--element-wood);
+}
+
+.text-element-fire {
+  color: var(--element-fire);
+}
+
+.text-element-earth {
+  color: var(--element-earth);
+}
+
+.text-element-metal {
+  color: var(--element-metal);
+}
+
+.text-element-water {
+  color: var(--element-water);
+}
+
+/* Card Glass Effect */
+.glass-card {
+  background: rgba(51, 65, 85, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(71, 85, 105, 0.5);
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent), var(--element-fire));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Safe Area Padding for Mobile */
+.safe-area-bottom {
+  padding-bottom: calc(var(--nav-height) + var(--safe-area-bottom));
+}
+
+.safe-area-top {
+  padding-top: var(--header-height);
+}
+
+/* Element Badge Styles */
+.element-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.element-badge-wood {
+  background-color: var(--element-wood);
+  color: white;
+}
+
+.element-badge-fire {
+  background-color: var(--element-fire);
+  color: white;
+}
+
+.element-badge-earth {
+  background-color: var(--element-earth);
+  color: #0f172a;
+}
+
+.element-badge-metal {
+  background-color: var(--element-metal);
+  color: #0f172a;
+}
+
+.element-badge-water {
+  background-color: var(--element-water);
+  color: white;
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ============================================
+   40-60대 (Senior-friendly) Accessibility
+   ============================================ */
+
+/* Larger, more visible buttons */
+.btn-senior {
+  min-height: 56px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.875rem;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --text-primary: #ffffff;
+    --text-secondary: #e2e8f0;
+    --text-tertiary: #cbd5e1;
+    --border: #94a3b8;
+    --accent: #a78bfa;
+  }
+
+  .glass-card {
+    background: rgba(51, 65, 85, 0.8);
+    border: 2px solid rgba(148, 163, 184, 0.8);
+  }
+}
+
+/* Reduced motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animate-fade-in,
+  .animate-pulse-glow,
+  .animate-shimmer,
+  .animate-float {
+    animation: none !important;
+  }
+}
+
+/* Larger touch targets for form elements */
+.senior-form-control {
+  min-height: 56px;
+  font-size: 1.1rem;
+  padding: 0.75rem 1rem;
+}
+
+/* Better visible active states */
+button:active,
+[role="button"]:active,
+a:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+/* Improved scrollbar for better visibility */
+@media (pointer: coarse) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 5px;
+  }
+}
+
+/* Skip to content for keyboard navigation */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem 2rem;
+  background: var(--accent);
+  color: white;
+  border-radius: 0.5rem;
+  z-index: 9999;
+  font-weight: 600;
+}
+
+.skip-to-content:focus {
+  top: 1rem;
+}
+
+/* Senior-friendly spacing */
+.section-gap {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Better contrast for placeholders */
+::placeholder {
+  color: var(--text-tertiary);
+  opacity: 1;
 }
