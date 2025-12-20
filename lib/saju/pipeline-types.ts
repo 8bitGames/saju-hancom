@@ -389,6 +389,7 @@ export interface SajuAnalysisInput {
   gender: "male" | "female";
   isLunar?: boolean;      // 음력 여부
   name?: string;          // 선택적 이름
+  locale?: "ko" | "en";   // 언어 설정 (기본값: ko)
 }
 
 export interface StreamingEvent {

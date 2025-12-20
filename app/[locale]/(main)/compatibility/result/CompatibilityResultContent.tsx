@@ -72,11 +72,11 @@ function getRelationTypeKorean(type?: string): string {
 function ScoreBar({ score, label }: { score: number; label: string }) {
   return (
     <div className="space-y-1">
-      <div className="flex justify-between text-sm">
+      <div className="flex justify-between text-xs sm:text-sm">
         <span className="text-[var(--text-secondary)]">{label}</span>
         <span className={`font-medium ${getScoreColor(score)}`}>{score}점</span>
       </div>
-      <div className="h-2 bg-[var(--background-elevated)] rounded-full overflow-hidden">
+      <div className="h-1.5 sm:h-2 bg-[var(--background-elevated)] rounded-full overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] rounded-full transition-all duration-500"
           style={{ width: `${score}%` }}
@@ -96,23 +96,23 @@ function PersonPillarsDisplay({
   label: string;
 }) {
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <User className="w-4 h-4 text-[var(--accent)]" weight="fill" />
-        <span className="text-sm font-medium text-[var(--text-primary)]">{label}: {name}</span>
+    <div className="space-y-2 sm:space-y-3">
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--accent)]" weight="fill" />
+        <span className="text-xs sm:text-sm font-medium text-[var(--text-primary)]">{label}: {name}</span>
       </div>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
         {(["year", "month", "day", "time"] as const).map((pillar) => {
           const p = pillars[pillar];
           return (
             <div
               key={pillar}
-              className="text-center p-2 rounded-xl bg-[var(--background-elevated)]"
+              className="text-center p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-[var(--background-elevated)]"
             >
-              <p className="text-xs text-[var(--text-tertiary)] mb-1">
+              <p className="text-[10px] sm:text-xs text-[var(--text-tertiary)] mb-0.5 sm:mb-1">
                 {pillar === "year" ? "년" : pillar === "month" ? "월" : pillar === "day" ? "일" : "시"}
               </p>
-              <p className="text-base font-bold text-[var(--text-primary)]">
+              <p className="text-sm sm:text-base font-bold text-[var(--text-primary)]">
                 {p.gan}{p.zhi}
               </p>
             </div>
@@ -178,16 +178,16 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
   }).toString();
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen pb-4 sm:pb-6">
       {/* Spotlight Effect */}
       <Spotlight
         className="-top-40 -right-10 md:right-40 md:-top-20"
         fill="var(--element-water)"
       />
 
-      <div className="space-y-6 animate-fade-in relative z-10">
+      <div className="space-y-4 sm:space-y-6 animate-fade-in relative z-10">
         {/* Header with Premium Effects */}
-        <div className="relative text-center space-y-4 py-6">
+        <div className="relative text-center space-y-3 sm:space-y-4 py-4 sm:py-6">
           {/* Sparkles Background */}
           <div className="absolute inset-0 w-full h-full">
             <SparklesCore
@@ -203,32 +203,32 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
 
           <div className="relative z-10">
             <BackgroundGradient
-              className="rounded-2xl p-5"
+              className="rounded-xl sm:rounded-2xl p-4 sm:p-5"
               containerClassName="mx-auto w-fit"
             >
-              <div className="w-16 h-16 flex items-center justify-center">
-                <span className="text-4xl font-bold text-white">{result.score}</span>
+              <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                <span className="text-3xl sm:text-4xl font-bold text-white">{result.score}</span>
               </div>
             </BackgroundGradient>
           </div>
 
-          <div className="relative z-10">
-            <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <div className="relative z-10 px-4">
+            <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
               {result.gradeText}
             </h1>
             <TextGenerateEffect
               words={`${person1.name}님과 ${person2.name}님의 ${getRelationTypeKorean(relationType)} 궁합`}
-              className="text-base text-[var(--text-secondary)]"
+              className="text-sm sm:text-base text-[var(--text-secondary)]"
               duration={0.2}
             />
           </div>
         </div>
 
         {/* Two Person Pillars */}
-        <section className="glass-card rounded-2xl p-5 space-y-5 backdrop-blur-xl border border-[var(--border)]/50">
-          <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-[var(--accent)]" weight="fill" />
-            <h2 className="font-semibold text-[var(--text-primary)]">두 사람의 사주</h2>
+        <section className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-4 sm:space-y-5 backdrop-blur-xl border border-[var(--border)]/50">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <Users className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--accent)]" weight="fill" />
+            <h2 className="text-sm sm:text-base font-semibold text-[var(--text-primary)]">두 사람의 사주</h2>
           </div>
 
           <PersonPillarsDisplay
@@ -237,7 +237,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
             label="첫 번째"
           />
 
-          <div className="border-t border-[var(--border)]/30 my-4" />
+          <div className="border-t border-[var(--border)]/30 my-3 sm:my-4" />
 
           <PersonPillarsDisplay
             name={person2.name}
@@ -247,53 +247,53 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
         </section>
 
         {/* Analysis Cards */}
-        <section className="glass-card rounded-2xl p-5 space-y-5 backdrop-blur-xl border border-[var(--border)]/50">
-          <div className="flex items-center gap-2">
-            <ChartBar className="w-5 h-5 text-[var(--accent)]" weight="fill" />
-            <h2 className="font-semibold text-[var(--text-primary)]">관계 분석</h2>
+        <section className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-4 sm:space-y-5 backdrop-blur-xl border border-[var(--border)]/50">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <ChartBar className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--accent)]" weight="fill" />
+            <h2 className="text-sm sm:text-base font-semibold text-[var(--text-primary)]">관계 분석</h2>
           </div>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <ChatCircle className="w-4 h-4 text-[var(--element-wood)]" weight="fill" />
-                <span className="text-sm font-medium text-[var(--text-primary)]">소통</span>
+          <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-1.5 sm:space-y-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <ChatCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--element-wood)]" weight="fill" />
+                <span className="text-xs sm:text-sm font-medium text-[var(--text-primary)]">소통</span>
               </div>
               <ScoreBar score={result.analysis.communication.score} label="" />
-              <p className="text-xs text-[var(--text-secondary)]">
+              <p className="text-[10px] sm:text-xs text-[var(--text-secondary)]">
                 {result.analysis.communication.description}
               </p>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Handshake className="w-4 h-4 text-[var(--element-fire)]" weight="fill" />
-                <span className="text-sm font-medium text-[var(--text-primary)]">협업</span>
+            <div className="space-y-1.5 sm:space-y-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Handshake className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--element-fire)]" weight="fill" />
+                <span className="text-xs sm:text-sm font-medium text-[var(--text-primary)]">협업</span>
               </div>
               <ScoreBar score={result.analysis.collaboration.score} label="" />
-              <p className="text-xs text-[var(--text-secondary)]">
+              <p className="text-[10px] sm:text-xs text-[var(--text-secondary)]">
                 {result.analysis.collaboration.description}
               </p>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Heart className="w-4 h-4 text-[var(--element-earth)]" weight="fill" />
-                <span className="text-sm font-medium text-[var(--text-primary)]">신뢰</span>
+            <div className="space-y-1.5 sm:space-y-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--element-earth)]" weight="fill" />
+                <span className="text-xs sm:text-sm font-medium text-[var(--text-primary)]">신뢰</span>
               </div>
               <ScoreBar score={result.analysis.trust.score} label="" />
-              <p className="text-xs text-[var(--text-secondary)]">
+              <p className="text-[10px] sm:text-xs text-[var(--text-secondary)]">
                 {result.analysis.trust.description}
               </p>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <ChartBar className="w-4 h-4 text-[var(--element-metal)]" weight="fill" />
-                <span className="text-sm font-medium text-[var(--text-primary)]">성장</span>
+            <div className="space-y-1.5 sm:space-y-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <ChartBar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--element-metal)]" weight="fill" />
+                <span className="text-xs sm:text-sm font-medium text-[var(--text-primary)]">성장</span>
               </div>
               <ScoreBar score={result.analysis.growth.score} label="" />
-              <p className="text-xs text-[var(--text-secondary)]">
+              <p className="text-[10px] sm:text-xs text-[var(--text-secondary)]">
                 {result.analysis.growth.description}
               </p>
             </div>
@@ -301,24 +301,24 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
         </section>
 
         {/* Element Balance */}
-        <section className="glass-card rounded-2xl p-5 space-y-4 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="font-semibold text-[var(--text-primary)]">오행 균형</h2>
-          <div className="grid grid-cols-5 gap-2">
+        <section className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 sm:space-y-4 backdrop-blur-xl border border-[var(--border)]/50">
+          <h2 className="text-sm sm:text-base font-semibold text-[var(--text-primary)]">오행 균형</h2>
+          <div className="grid grid-cols-5 gap-1 sm:gap-2">
             {(["wood", "fire", "earth", "metal", "water"] as const).map((element) => {
               const person1Score = result.elementBalance.person1[element];
               const person2Score = result.elementBalance.person2[element];
               return (
                 <div
                   key={element}
-                  className={`text-center p-2 rounded-xl bg-[var(--element-${element})]/10 border border-[var(--element-${element})]/20`}
+                  className={`text-center p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-[var(--element-${element})]/10 border border-[var(--element-${element})]/20`}
                 >
-                  <p className="text-xs font-medium text-[var(--text-primary)]">
+                  <p className="text-[10px] sm:text-xs font-medium text-[var(--text-primary)]">
                     {ELEMENT_KOREAN[element]}
                   </p>
-                  <p className="text-sm font-bold" style={{ color: `var(--element-${element})` }}>
+                  <p className="text-xs sm:text-sm font-bold" style={{ color: `var(--element-${element})` }}>
                     {person1Score}
                   </p>
-                  <p className="text-xs text-[var(--text-tertiary)]">
+                  <p className="text-[10px] sm:text-xs text-[var(--text-tertiary)]">
                     vs {person2Score}
                   </p>
                 </div>
@@ -329,11 +329,11 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
 
         {/* Relationship Advice */}
         {result.relationshipAdvice.length > 0 && (
-          <section className="glass-card rounded-2xl p-5 space-y-3 backdrop-blur-xl border border-[var(--border)]/50">
-            <h2 className="font-semibold text-[var(--element-wood)]">관계 조언</h2>
-            <ul className="space-y-2">
+          <section className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-2 sm:space-y-3 backdrop-blur-xl border border-[var(--border)]/50">
+            <h2 className="text-sm sm:text-base font-semibold text-[var(--element-wood)]">관계 조언</h2>
+            <ul className="space-y-1.5 sm:space-y-2">
               {result.relationshipAdvice.map((advice, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-[var(--text-secondary)]">
+                <li key={i} className="flex items-start gap-1.5 sm:gap-2 text-xs sm:text-sm text-[var(--text-secondary)]">
                   <span className="text-[var(--element-wood)]">&#10004;</span>
                   {advice}
                 </li>
@@ -344,11 +344,11 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
 
         {/* Cautions */}
         {result.cautions.length > 0 && (
-          <section className="glass-card rounded-2xl p-5 space-y-3 backdrop-blur-xl border border-[var(--border)]/50">
-            <h2 className="font-semibold text-[var(--element-fire)]">주의 사항</h2>
-            <ul className="space-y-2">
+          <section className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-2 sm:space-y-3 backdrop-blur-xl border border-[var(--border)]/50">
+            <h2 className="text-sm sm:text-base font-semibold text-[var(--element-fire)]">주의 사항</h2>
+            <ul className="space-y-1.5 sm:space-y-2">
               {result.cautions.map((caution, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-[var(--text-secondary)]">
+                <li key={i} className="flex items-start gap-1.5 sm:gap-2 text-xs sm:text-sm text-[var(--text-secondary)]">
                   <span className="text-[var(--element-fire)]">&#9888;</span>
                   {caution}
                 </li>
@@ -358,35 +358,35 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
         )}
 
         {/* Actions */}
-        <div className="space-y-3 pt-4">
+        <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4">
           <Link href={`/compatibility/ai-result?${queryString}`} className="block">
             <HoverBorderGradient
-              containerClassName="w-full rounded-xl"
-              className="w-full h-14 flex items-center justify-center gap-2 bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] text-white font-bold rounded-xl"
+              containerClassName="w-full rounded-lg sm:rounded-xl"
+              className="w-full h-12 sm:h-14 flex items-center justify-center gap-1.5 sm:gap-2 bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] text-white text-sm sm:text-base font-bold rounded-lg sm:rounded-xl"
               as="div"
             >
-              <Sparkle className="w-5 h-5" weight="fill" />
+              <Sparkle className="w-4 h-4 sm:w-5 sm:h-5" weight="fill" />
               상세 분석 보기
             </HoverBorderGradient>
           </Link>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3">
             <Link href="/compatibility" className="flex-1">
-              <div className="h-14 rounded-xl glass-card border border-[var(--border)]/50 flex items-center justify-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-                <ArrowCounterClockwise className="w-5 h-5" />
-                <span className="font-medium">다시 분석</span>
+              <div className="h-12 sm:h-14 rounded-lg sm:rounded-xl glass-card border border-[var(--border)]/50 flex items-center justify-center gap-1.5 sm:gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+                <ArrowCounterClockwise className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-sm sm:text-base font-medium">다시 분석</span>
               </div>
             </Link>
             <Link href="/saju" className="flex-1">
-              <div className="h-14 rounded-xl glass-card border border-[var(--border)]/50 flex items-center justify-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-                <Sparkle className="w-5 h-5" weight="fill" />
-                <span className="font-medium">사주 분석</span>
+              <div className="h-12 sm:h-14 rounded-lg sm:rounded-xl glass-card border border-[var(--border)]/50 flex items-center justify-center gap-1.5 sm:gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+                <Sparkle className="w-4 h-4 sm:w-5 sm:h-5" weight="fill" />
+                <span className="text-sm sm:text-base font-medium">사주 분석</span>
               </div>
             </Link>
           </div>
         </div>
 
         {/* Disclaimer */}
-        <p className="text-center text-sm text-[var(--text-tertiary)] pt-2 pb-8">
+        <p className="text-center text-xs sm:text-sm text-[var(--text-tertiary)] pt-2 pb-6 sm:pb-8">
           이 분석은 전통 명리학을 기반으로 한 참고용 정보입니다.
         </p>
       </div>

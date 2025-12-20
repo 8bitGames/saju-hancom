@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { clearDetailAnalysisStorage } from "@/components/saju/DetailAnalysisModal";
 import type {
   SajuPipelineResult,
@@ -56,7 +56,12 @@ export interface UseSajuPipelineStreamReturn {
   }) => Promise<void>;
   reset: () => void;
   clearSavedData: () => void;
-  loadSavedData: () => boolean;
+  loadSavedData: (currentInput?: {
+    birthDate: string;
+    birthTime: string;
+    gender: "male" | "female";
+    isLunar?: boolean;
+  }) => boolean;
   hasSavedData: () => boolean;
   isLoading: boolean;
   progress: number; // 0-100
@@ -69,7 +74,19 @@ export interface UseSajuPipelineStreamReturn {
 const STORAGE_KEY = "saju_analysis_result";
 const STORAGE_INPUT_KEY = "saju_analysis_input";
 
-interface SavedAnalysisData {
+// 저장된 분석 데이터 가져오기 (외부에서 사용 가능)
+export function getSavedAnalysisData(): SavedAnalysisData | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return null;
+    return JSON.parse(saved) as SavedAnalysisData;
+  } catch {
+    return null;
+  }
+}
+
+export interface SavedAnalysisData {
   result: SajuPipelineResult;
   input: {
     birthDate: string;
@@ -117,14 +134,34 @@ export function useSajuPipelineStream(): UseSajuPipelineStreamReturn {
     }
   }, []);
 
-  // localStorage에서 저장된 데이터 로드
-  const loadSavedData = useCallback((): boolean => {
+  // localStorage에서 저장된 데이터 로드 (입력 정보가 일치할 때만)
+  const loadSavedData = useCallback((currentInput?: {
+    birthDate: string;
+    birthTime: string;
+    gender: "male" | "female";
+    isLunar?: boolean;
+  }): boolean => {
     if (typeof window === "undefined") return false;
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) return false;
 
       const data: SavedAnalysisData = JSON.parse(saved);
+
+      // 입력 정보가 제공된 경우, 저장된 데이터와 비교
+      if (currentInput && data.input) {
+        const isSameInput =
+          data.input.birthDate === currentInput.birthDate &&
+          data.input.birthTime === currentInput.birthTime &&
+          data.input.gender === currentInput.gender &&
+          data.input.isLunar === currentInput.isLunar;
+
+        // 입력 정보가 다르면 캐시 사용하지 않음
+        if (!isSameInput) {
+          return false;
+        }
+      }
+
       if (data.result) {
         setState({
           ...initialState,
@@ -168,6 +205,15 @@ export function useSajuPipelineStream(): UseSajuPipelineStreamReturn {
     isLunar?: boolean;
     name?: string;
   }) => {
+    // 입력 정보를 localStorage에 먼저 저장 (분석 완료 시 사용)
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(STORAGE_INPUT_KEY, JSON.stringify(input));
+      } catch {
+        // 저장 실패 무시
+      }
+    }
+
     // 상태 초기화 및 시작
     setState({
       ...initialState,
@@ -306,12 +352,21 @@ export function useSajuPipelineStream(): UseSajuPipelineStreamReturn {
         // localStorage에 저장
         if (typeof window !== "undefined") {
           try {
+            // 저장된 입력 정보 가져오기
+            const savedInput = localStorage.getItem(STORAGE_INPUT_KEY);
+            const inputData = savedInput ? JSON.parse(savedInput) : {
+              birthDate: "",
+              birthTime: "",
+              gender: "male" as const,
+            };
+
             const saveData: SavedAnalysisData = {
               result,
               input: {
-                birthDate: result.step1?.pillars?.year?.stem || "",
-                birthTime: "",
-                gender: "male",
+                birthDate: inputData.birthDate || "",
+                birthTime: inputData.birthTime || "",
+                gender: inputData.gender || "male",
+                isLunar: inputData.isLunar,
               },
               savedAt: new Date().toISOString(),
             };

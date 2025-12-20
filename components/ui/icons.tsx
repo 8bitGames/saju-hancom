@@ -41,4 +41,5 @@ export {
   PaperPlaneTilt,
   Minus,
   MagnifyingGlass,
+  Globe,
 } from "@phosphor-icons/react";

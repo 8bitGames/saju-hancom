@@ -16,9 +16,9 @@ export default function SajuPage() {
         fill="var(--element-fire)"
       />
 
-      <div className="space-y-8 animate-fade-in relative z-10">
+      <div className="space-y-6 sm:space-y-8 animate-fade-in relative z-10">
         {/* Header with Premium Effects */}
-        <div className="relative text-center space-y-4 py-8">
+        <div className="relative text-center space-y-3 sm:space-y-4 py-6 sm:py-8">
           {/* Sparkles Background */}
           <div className="absolute inset-0 w-full h-full">
             <SparklesCore
@@ -34,34 +34,34 @@ export default function SajuPage() {
 
           <div className="relative z-10">
             <BackgroundGradient
-              className="rounded-2xl p-5"
+              className="rounded-xl sm:rounded-2xl p-4 sm:p-5"
               containerClassName="mx-auto w-fit"
             >
-              <div className="w-20 h-20 flex items-center justify-center">
-                <Sparkle className="w-10 h-10 text-white" weight="fill" />
+              <div className="w-14 h-14 sm:w-20 sm:h-20 flex items-center justify-center">
+                <Sparkle className="w-8 h-8 sm:w-10 sm:h-10 text-white" weight="fill" />
               </div>
             </BackgroundGradient>
           </div>
 
-          <div className="relative z-10 space-y-2">
-            <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+          <div className="relative z-10 space-y-1.5 sm:space-y-2 px-4">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
               사주 분석
             </h1>
             <TextGenerateEffect
               words="생년월일시를 입력해주세요"
-              className="text-lg text-[var(--text-secondary)]"
+              className="text-base sm:text-lg text-[var(--text-secondary)]"
               duration={0.3}
             />
           </div>
         </div>
 
         {/* Form Card with Glass Effect */}
-        <div className="glass-card rounded-2xl p-6 backdrop-blur-xl border border-[var(--border)]/50">
+        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
           <BirthInputForm />
         </div>
 
         {/* Info with subtle animation */}
-        <div className="text-center text-sm text-[var(--text-tertiary)] space-y-2 pb-8">
+        <div className="text-center text-xs sm:text-sm text-[var(--text-tertiary)] space-y-1 sm:space-y-2 pb-6 sm:pb-8 px-4">
           <p>입력하신 정보는 사주 분석에만 사용되며</p>
           <p>별도로 저장되지 않습니다.</p>
         </div>

@@ -1,0 +1,184 @@
+{
+  "common": {
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다",
+    "submit": "제출",
+    "cancel": "취소",
+    "back": "뒤로",
+    "next": "다음",
+    "close": "닫기",
+    "save": "저장",
+    "delete": "삭제",
+    "confirm": "확인",
+    "retry": "다시 시도"
+  },
+  "nav": {
+    "home": "홈",
+    "saju": "사주 분석",
+    "compatibility": "회사 궁합",
+    "faceReading": "관상 분석",
+    "history": "기록",
+    "menuOpen": "메뉴 열기",
+    "menuClose": "메뉴 닫기"
+  },
+  "header": {
+    "title": "AI 운세"
+  },
+  "home": {
+    "title": "AI 운세 마스터",
+    "subtitle": "나의",
+    "subtitleSuffix": "을 알아보세요",
+    "description": "사주팔자와 관상으로 알아보는 나만의 AI 운세 분석",
+    "flipWords": ["운명", "사주", "관상", "궁합"],
+    "startAnalysis": "사주 분석 시작하기",
+    "footer1": "AI 운세 마스터는 전통 명리학과 AI 기술을 결합하여",
+    "footer2": "재미있는 운세 정보를 제공합니다.",
+    "cards": {
+      "saju": {
+        "title": "사주 분석",
+        "description": "생년월일시를 입력하면 AI가 사주팔자를 분석하고 운세를 알려드립니다."
+      },
+      "compatibility": {
+        "title": "직장 동료 궁합",
+        "description": "직장 동료, 상사, 부하직원과의 궁합을 분석하여 관계운을 확인하세요.",
+        "colleague": "동료",
+        "boss": "상사",
+        "partner": "파트너"
+      },
+      "faceReading": {
+        "title": "관상 분석",
+        "description": "얼굴 사진을 업로드하면 AI가 관상을 분석하고 특징을 알려드립니다.",
+        "forehead": "이마",
+        "eyes": "눈",
+        "nose": "코",
+        "mouth": "입"
+      }
+    },
+    "elements": {
+      "wood": "목",
+      "fire": "화",
+      "earth": "토",
+      "metal": "금",
+      "water": "수"
+    }
+  },
+  "saju": {
+    "title": "사주 분석",
+    "subtitle": "생년월일시를 입력해주세요",
+    "privacyNotice": "입력하신 정보는 분석 목적으로만 사용되며 저장되지 않습니다.",
+    "form": {
+      "gender": {
+        "label": "성별",
+        "male": "남성",
+        "female": "여성"
+      },
+      "calendar": {
+        "label": "달력 종류",
+        "solar": "양력",
+        "lunar": "음력"
+      },
+      "birthDate": {
+        "label": "생년월일",
+        "year": "년",
+        "month": "월",
+        "day": "일"
+      },
+      "birthTime": {
+        "label": "태어난 시간",
+        "hour": "시",
+        "minute": "분",
+        "hint": "정확한 시간을 모르면 대략적인 시간을 선택해주세요"
+      },
+      "birthPlace": {
+        "label": "태어난 지역",
+        "hint": "진태양시 보정을 위해 태어난 지역을 선택해주세요"
+      },
+      "submit": "사주 분석하기",
+      "errors": {
+        "invalidYear": "올바른 연도를 선택해주세요",
+        "invalidDay": "{month}월은 {maxDay}일까지만 있습니다"
+      }
+    },
+    "cities": {
+      "seoul": "서울",
+      "busan": "부산",
+      "daegu": "대구",
+      "incheon": "인천",
+      "gwangju": "광주",
+      "daejeon": "대전",
+      "ulsan": "울산",
+      "jeju": "제주"
+    },
+    "result": {
+      "title": "사주 분석 결과",
+      "tabs": {
+        "overview": "종합",
+        "dayMaster": "일간",
+        "tenGods": "십성",
+        "spirits": "신살",
+        "fortune": "운세",
+        "advice": "조언"
+      },
+      "viewDetail": "상세보기",
+      "chatWithAI": "AI 상담사와 대화하기",
+      "saveResult": "결과 저장",
+      "shareResult": "결과 공유"
+    }
+  },
+  "compatibility": {
+    "title": "직장 궁합 분석",
+    "subtitle": "두 사람의 정보를 입력해주세요",
+    "person1": "첫 번째 사람",
+    "person2": "두 번째 사람",
+    "relationTypes": {
+      "colleague": "동료",
+      "boss": "상사",
+      "subordinate": "부하",
+      "partner": "파트너",
+      "client": "고객",
+      "mentor": "멘토",
+      "mentee": "멘티"
+    },
+    "result": {
+      "title": "궁합 분석 결과",
+      "overallScore": "종합 점수",
+      "compatibility": "궁합도",
+      "advice": "조언"
+    }
+  },
+  "faceReading": {
+    "title": "관상 분석",
+    "subtitle": "얼굴 사진을 업로드해주세요",
+    "uploadPhoto": "사진 업로드",
+    "takePhoto": "사진 촬영",
+    "cameraError": "카메라에 접근할 수 없습니다. 권한을 확인해주세요.",
+    "result": {
+      "title": "관상 분석 결과"
+    }
+  },
+  "history": {
+    "title": "분석 기록",
+    "empty": "아직 분석 기록이 없습니다",
+    "deleteConfirm": "이 기록을 삭제하시겠습니까?"
+  },
+  "chat": {
+    "placeholder": "무엇이 궁금하신가요?",
+    "send": "전송",
+    "thinking": "생각 중...",
+    "topics": {
+      "romance": "연애운",
+      "career": "직장운",
+      "wealth": "재물운",
+      "health": "건강운",
+      "education": "학업운",
+      "relationships": "대인관계",
+      "travel": "여행운",
+      "fortune": "총운",
+      "advice": "조언"
+    }
+  },
+  "metadata": {
+    "title": "AI 운세 마스터",
+    "description": "사주팔자와 관상으로 알아보는 나만의 AI 운세 분석"
+  }
+}

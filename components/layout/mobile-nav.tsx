@@ -1,35 +1,36 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/lib/i18n/navigation";
 import { Sparkle, Camera, ClockCounterClockwise, Buildings } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
-const navItems = [
-  {
-    href: "/saju",
-    label: "사주",
-    icon: Sparkle,
-  },
-  {
-    href: "/compatibility",
-    label: "궁합",
-    icon: Buildings,
-  },
-  {
-    href: "/face-reading",
-    label: "관상",
-    icon: Camera,
-  },
-  {
-    href: "/history",
-    label: "기록",
-    icon: ClockCounterClockwise,
-  },
-];
-
 export function MobileNav() {
+  const t = useTranslations("nav");
   const pathname = usePathname();
+
+  const navItems = [
+    {
+      href: "/saju" as const,
+      labelKey: "saju",
+      icon: Sparkle,
+    },
+    {
+      href: "/compatibility" as const,
+      labelKey: "compatibility",
+      icon: Buildings,
+    },
+    {
+      href: "/face-reading" as const,
+      labelKey: "faceReading",
+      icon: Camera,
+    },
+    {
+      href: "/history" as const,
+      labelKey: "history",
+      icon: ClockCounterClockwise,
+    },
+  ];
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 h-[var(--nav-height)] bg-[var(--background)]/90 backdrop-blur-md border-t border-[var(--border)]">
@@ -55,7 +56,7 @@ export function MobileNav() {
                   isActive && "scale-110"
                 )}
               />
-              <span className="text-xs font-medium">{item.label}</span>
+              <span className="text-xs font-medium">{t(item.labelKey)}</span>
               {isActive && (
                 <div className="absolute bottom-1 w-1 h-1 rounded-full bg-[var(--accent)]" />
               )}

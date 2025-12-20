@@ -1,0 +1,184 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "save": "Save",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "retry": "Retry"
+  },
+  "nav": {
+    "home": "Home",
+    "saju": "Birth Chart",
+    "compatibility": "Compatibility",
+    "faceReading": "Face Reading",
+    "history": "History",
+    "menuOpen": "Open menu",
+    "menuClose": "Close menu"
+  },
+  "header": {
+    "title": "AI Fortune"
+  },
+  "home": {
+    "title": "AI Fortune Master",
+    "subtitle": "Discover your",
+    "subtitleSuffix": "",
+    "description": "AI-powered fortune analysis based on your birth chart and face reading",
+    "flipWords": ["destiny", "fortune", "future", "compatibility"],
+    "startAnalysis": "Start Birth Chart Analysis",
+    "footer1": "AI Fortune Master combines traditional Eastern astrology",
+    "footer2": "with AI technology to provide entertaining fortune insights.",
+    "cards": {
+      "saju": {
+        "title": "Birth Chart Analysis",
+        "description": "Enter your birth date and time for AI-powered Four Pillars of Destiny analysis."
+      },
+      "compatibility": {
+        "title": "Workplace Compatibility",
+        "description": "Analyze compatibility with your colleagues, bosses, and team members.",
+        "colleague": "Colleague",
+        "boss": "Boss",
+        "partner": "Partner"
+      },
+      "faceReading": {
+        "title": "Face Reading",
+        "description": "Upload your photo for AI-powered face reading and personality analysis.",
+        "forehead": "Forehead",
+        "eyes": "Eyes",
+        "nose": "Nose",
+        "mouth": "Mouth"
+      }
+    },
+    "elements": {
+      "wood": "Wood",
+      "fire": "Fire",
+      "earth": "Earth",
+      "metal": "Metal",
+      "water": "Water"
+    }
+  },
+  "saju": {
+    "title": "Birth Chart Analysis",
+    "subtitle": "Enter your birth information",
+    "privacyNotice": "Your information is used only for analysis and is not stored.",
+    "form": {
+      "gender": {
+        "label": "Gender",
+        "male": "Male",
+        "female": "Female"
+      },
+      "calendar": {
+        "label": "Calendar Type",
+        "solar": "Solar",
+        "lunar": "Lunar"
+      },
+      "birthDate": {
+        "label": "Birth Date",
+        "year": "",
+        "month": "",
+        "day": ""
+      },
+      "birthTime": {
+        "label": "Birth Time",
+        "hour": "",
+        "minute": "",
+        "hint": "Select approximate time if you don't know the exact time"
+      },
+      "birthPlace": {
+        "label": "Birth Place",
+        "hint": "Select your birth city for accurate solar time calculation"
+      },
+      "submit": "Analyze Birth Chart",
+      "errors": {
+        "invalidYear": "Please select a valid year",
+        "invalidDay": "{month} has only {maxDay} days"
+      }
+    },
+    "cities": {
+      "seoul": "Seoul",
+      "busan": "Busan",
+      "daegu": "Daegu",
+      "incheon": "Incheon",
+      "gwangju": "Gwangju",
+      "daejeon": "Daejeon",
+      "ulsan": "Ulsan",
+      "jeju": "Jeju"
+    },
+    "result": {
+      "title": "Birth Chart Analysis Result",
+      "tabs": {
+        "overview": "Overview",
+        "dayMaster": "Day Master",
+        "tenGods": "Ten Gods",
+        "spirits": "Spirits",
+        "fortune": "Fortune",
+        "advice": "Advice"
+      },
+      "viewDetail": "View Details",
+      "chatWithAI": "Chat with AI Counselor",
+      "saveResult": "Save Result",
+      "shareResult": "Share Result"
+    }
+  },
+  "compatibility": {
+    "title": "Workplace Compatibility Analysis",
+    "subtitle": "Enter information for both people",
+    "person1": "First Person",
+    "person2": "Second Person",
+    "relationTypes": {
+      "colleague": "Colleague",
+      "boss": "Boss",
+      "subordinate": "Subordinate",
+      "partner": "Partner",
+      "client": "Client",
+      "mentor": "Mentor",
+      "mentee": "Mentee"
+    },
+    "result": {
+      "title": "Compatibility Analysis Result",
+      "overallScore": "Overall Score",
+      "compatibility": "Compatibility",
+      "advice": "Advice"
+    }
+  },
+  "faceReading": {
+    "title": "Face Reading Analysis",
+    "subtitle": "Upload your face photo",
+    "uploadPhoto": "Upload Photo",
+    "takePhoto": "Take Photo",
+    "cameraError": "Cannot access camera. Please check permissions.",
+    "result": {
+      "title": "Face Reading Result"
+    }
+  },
+  "history": {
+    "title": "Analysis History",
+    "empty": "No analysis history yet",
+    "deleteConfirm": "Are you sure you want to delete this record?"
+  },
+  "chat": {
+    "placeholder": "What would you like to know?",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "topics": {
+      "romance": "Romance",
+      "career": "Career",
+      "wealth": "Wealth",
+      "health": "Health",
+      "education": "Education",
+      "relationships": "Relationships",
+      "travel": "Travel",
+      "fortune": "Overall Fortune",
+      "advice": "Advice"
+    }
+  },
+  "metadata": {
+    "title": "AI Fortune Master",
+    "description": "AI-powered fortune analysis based on your birth chart and face reading"
+  }
+}

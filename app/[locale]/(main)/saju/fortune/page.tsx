@@ -37,39 +37,42 @@ function SajuFortuneContent() {
       return;
     }
 
-    // 저장된 데이터가 있으면 먼저 로드 시도
-    if (hasSavedData()) {
-      const loaded = loadSavedData();
-      if (loaded) {
-        return; // 저장된 데이터 로드 성공
-      }
-    }
-
     // 생년월일 문자열 생성 (YYYY-MM-DD 형식)
     const birthDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     const birthTime = `${hour.padStart(2, "0")}:${minute.padStart(2, "0")}`;
 
-    // 6단계 파이프라인 분석 시작
-    startAnalysis({
+    // 현재 입력 정보
+    const currentInput = {
       birthDate,
       birthTime,
       gender,
       isLunar,
-    });
+    };
+
+    // 저장된 데이터가 있고, 입력 정보가 일치하면 로드
+    if (hasSavedData()) {
+      const loaded = loadSavedData(currentInput);
+      if (loaded) {
+        return; // 동일한 사주 데이터 로드 성공
+      }
+    }
+
+    // 새로운 사주이거나 캐시가 없으면 분석 시작
+    startAnalysis(currentInput);
   }, [searchParams, router, state.status, startAnalysis, hasSavedData, loadSavedData]);
 
   // 로딩/분석 중 상태
   if (state.status === "idle" || state.status === "running") {
     return (
-      <div className="relative min-h-screen pb-8">
+      <div className="relative min-h-screen pb-6 sm:pb-8">
         <Spotlight
           className="-top-40 left-0 md:left-60 md:-top-20"
           fill="var(--accent)"
         />
 
-        <div className="space-y-8 animate-fade-in relative z-10">
+        <div className="space-y-5 sm:space-y-8 animate-fade-in relative z-10">
           {/* Header */}
-          <div className="relative text-center space-y-4 py-8">
+          <div className="relative text-center space-y-3 sm:space-y-4 py-5 sm:py-8">
             <div className="absolute inset-0 w-full h-full">
               <SparklesCore
                 id="fortune-sparkles"
@@ -82,14 +85,14 @@ function SajuFortuneContent() {
               />
             </div>
 
-            <div className="relative z-10 space-y-2">
-              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--element-fire)] flex items-center justify-center animate-pulse">
-                <Sparkle className="w-10 h-10 text-white" weight="fill" />
+            <div className="relative z-10 space-y-1.5 sm:space-y-2">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--element-fire)] flex items-center justify-center animate-pulse">
+                <Sparkle className="w-8 h-8 sm:w-10 sm:h-10 text-white" weight="fill" />
               </div>
-              <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+              <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
                 전문 사주 분석
               </h1>
-              <p className="text-[var(--text-secondary)]">
+              <p className="text-sm sm:text-base text-[var(--text-secondary)]">
                 6단계 심층 분석을 진행하고 있습니다
               </p>
             </div>
@@ -99,10 +102,10 @@ function SajuFortuneContent() {
           <PipelineProgress state={state} />
 
           {/* Cancel Button */}
-          <div className="text-center pt-4">
+          <div className="text-center pt-3 sm:pt-4">
             <Link href="/saju">
-              <button className="px-6 py-3 rounded-xl bg-[var(--background-elevated)] text-[var(--text-secondary)] font-medium hover:bg-[var(--background-elevated)]/80 transition-colors">
-                <ArrowCounterClockwise className="w-5 h-5 inline-block mr-2" />
+              <button className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-[var(--background-elevated)] text-sm sm:text-base text-[var(--text-secondary)] font-medium hover:bg-[var(--background-elevated)]/80 transition-colors">
+                <ArrowCounterClockwise className="w-4 h-4 sm:w-5 sm:h-5 inline-block mr-1.5 sm:mr-2" />
                 취소
               </button>
             </Link>
@@ -115,24 +118,24 @@ function SajuFortuneContent() {
   // 에러 상태
   if (state.status === "error") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4 p-6">
-          <div className="w-20 h-20 mx-auto rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-            <span className="text-4xl">😔</span>
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="text-center space-y-3 sm:space-y-4 p-4 sm:p-6">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+            <span className="text-3xl sm:text-4xl">😔</span>
           </div>
-          <h2 className="text-xl font-bold text-[var(--text-primary)]">
+          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)]">
             분석 중 오류가 발생했습니다
           </h2>
-          <p className="text-[var(--text-secondary)]">{state.error}</p>
-          <div className="flex gap-3 justify-center pt-4">
+          <p className="text-sm sm:text-base text-[var(--text-secondary)]">{state.error}</p>
+          <div className="flex gap-2 sm:gap-3 justify-center pt-3 sm:pt-4">
             <button
               onClick={reset}
-              className="px-6 py-3 rounded-xl bg-[var(--accent)] text-white font-medium"
+              className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-[var(--accent)] text-white text-sm sm:text-base font-medium"
             >
               다시 시도
             </button>
             <Link href="/saju">
-              <button className="px-6 py-3 rounded-xl bg-[var(--background-elevated)] text-[var(--text-secondary)] font-medium">
+              <button className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-[var(--background-elevated)] text-sm sm:text-base text-[var(--text-secondary)] font-medium">
                 처음으로
               </button>
             </Link>
@@ -145,15 +148,15 @@ function SajuFortuneContent() {
   // 완료 상태 - 결과 표시
   if (state.status === "completed" && state.finalResult) {
     return (
-      <div className="relative min-h-screen pb-8">
+      <div className="relative min-h-screen pb-6 sm:pb-8">
         <Spotlight
           className="-top-40 left-0 md:left-60 md:-top-20"
           fill="var(--accent)"
         />
 
-        <div className="space-y-8 animate-fade-in relative z-10">
+        <div className="space-y-5 sm:space-y-8 animate-fade-in relative z-10">
           {/* Header */}
-          <div className="relative text-center space-y-4 py-6">
+          <div className="relative text-center space-y-3 sm:space-y-4 py-4 sm:py-6">
             <div className="absolute inset-0 w-full h-full">
               <SparklesCore
                 id="result-sparkles"
@@ -166,34 +169,45 @@ function SajuFortuneContent() {
               />
             </div>
 
-            <div className="relative z-10 space-y-2">
-              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--element-fire)] flex items-center justify-center">
-                <span className="text-3xl">🎴</span>
+            <div className="relative z-10 space-y-1.5 sm:space-y-2">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--element-fire)] flex items-center justify-center">
+                <span className="text-2xl sm:text-3xl">🎴</span>
               </div>
-              <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+              <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
                 전문 사주 분석 완료
               </h1>
-              <p className="text-[var(--text-secondary)]">
+              <p className="text-sm sm:text-base text-[var(--text-secondary)]">
                 6단계 심층 분석 결과입니다
               </p>
             </div>
           </div>
 
           {/* Pipeline Result */}
-          <PipelineResult result={state.finalResult} gender={searchParams.get("gender") || "male"} />
+          <PipelineResult
+            result={state.finalResult}
+            gender={searchParams.get("gender") || "male"}
+            birthInfo={{
+              year: searchParams.get("year") || "",
+              month: searchParams.get("month") || "",
+              day: searchParams.get("day") || "",
+              hour: searchParams.get("hour") || undefined,
+              minute: searchParams.get("minute") || undefined,
+              isLunar: searchParams.get("isLunar") === "true",
+            }}
+          />
 
           {/* Action Buttons */}
-          <div className="space-y-4 pt-4 max-w-4xl mx-auto">
+          <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 max-w-4xl mx-auto">
             <Link href={`/saju/result?${searchParams.toString()}`} className="block">
-              <button className="w-full h-14 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] text-white font-bold text-lg flex items-center justify-center gap-3">
-                <Sparkle className="w-5 h-5" weight="fill" />
+              <button className="w-full h-12 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] text-white font-bold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3">
+                <Sparkle className="w-4 h-4 sm:w-5 sm:h-5" weight="fill" />
                 기본 사주 결과 보기
               </button>
             </Link>
 
             <Link href="/saju" className="block">
-              <button className="w-full h-14 rounded-xl bg-[var(--background-elevated)] text-[var(--text-secondary)] font-medium hover:bg-[var(--background-elevated)]/80 transition-colors flex items-center justify-center gap-2">
-                <ArrowCounterClockwise className="w-5 h-5" />
+              <button className="w-full h-12 sm:h-14 rounded-lg sm:rounded-xl bg-[var(--background-elevated)] text-sm sm:text-base text-[var(--text-secondary)] font-medium hover:bg-[var(--background-elevated)]/80 transition-colors flex items-center justify-center gap-1.5 sm:gap-2">
+                <ArrowCounterClockwise className="w-4 h-4 sm:w-5 sm:h-5" />
                 다시 분석하기
               </button>
             </Link>
@@ -201,31 +215,31 @@ function SajuFortuneContent() {
             {/* 저장된 데이터 삭제 버튼 */}
             <button
               onClick={() => setShowClearConfirm(true)}
-              className="w-full h-12 rounded-xl border border-red-300 dark:border-red-700 text-red-500 dark:text-red-400 font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2"
+              className="w-full h-10 sm:h-12 rounded-lg sm:rounded-xl border border-red-300 dark:border-red-700 text-red-500 dark:text-red-400 text-sm sm:text-base font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-1.5 sm:gap-2"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               저장된 분석 결과 삭제
             </button>
           </div>
 
           {/* 삭제 확인 모달 */}
           {showClearConfirm && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
               <div
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                 onClick={() => setShowClearConfirm(false)}
               />
-              <div className="relative bg-[var(--background-card)] rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-scale-in">
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">
+              <div className="relative bg-[var(--background-card)] rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-sm w-full shadow-2xl animate-scale-in">
+                <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] mb-1.5 sm:mb-2">
                   분석 결과 삭제
                 </h3>
-                <p className="text-[var(--text-secondary)] mb-6">
+                <p className="text-sm sm:text-base text-[var(--text-secondary)] mb-4 sm:mb-6">
                   저장된 사주 분석 결과를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
                 </p>
-                <div className="flex gap-3">
+                <div className="flex gap-2 sm:gap-3">
                   <button
                     onClick={() => setShowClearConfirm(false)}
-                    className="flex-1 py-3 rounded-xl bg-[var(--background-elevated)] text-[var(--text-secondary)] font-medium"
+                    className="flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-[var(--background-elevated)] text-sm sm:text-base text-[var(--text-secondary)] font-medium"
                   >
                     취소
                   </button>
@@ -235,7 +249,7 @@ function SajuFortuneContent() {
                       setShowClearConfirm(false);
                       router.push("/saju");
                     }}
-                    className="flex-1 py-3 rounded-xl bg-red-500 text-white font-medium"
+                    className="flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-red-500 text-sm sm:text-base text-white font-medium"
                   >
                     삭제
                   </button>
@@ -245,7 +259,7 @@ function SajuFortuneContent() {
           )}
 
           {/* Disclaimer */}
-          <div className="text-center text-sm text-[var(--text-tertiary)] space-y-1 pt-4 pb-8">
+          <div className="text-center text-xs sm:text-sm text-[var(--text-tertiary)] space-y-0.5 sm:space-y-1 pt-3 sm:pt-4 pb-6 sm:pb-8">
             <p>본 분석은 전통 명리학을 기반으로 한 재미용 콘텐츠입니다</p>
             <p>실제 운세 예측이 아니며 참고용으로만 사용하세요</p>
           </div>
@@ -262,12 +276,12 @@ export default function SajuFortunePage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center space-y-4">
-            <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--element-fire)] flex items-center justify-center animate-pulse">
-              <Sparkle className="w-10 h-10 text-white" weight="fill" />
+          <div className="text-center space-y-3 sm:space-y-4">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--element-fire)] flex items-center justify-center animate-pulse">
+              <Sparkle className="w-8 h-8 sm:w-10 sm:h-10 text-white" weight="fill" />
             </div>
-            <p className="text-lg text-[var(--text-secondary)]">전문 분석 준비 중...</p>
-            <p className="text-sm text-[var(--text-tertiary)]">잠시만 기다려주세요</p>
+            <p className="text-base sm:text-lg text-[var(--text-secondary)]">전문 분석 준비 중...</p>
+            <p className="text-xs sm:text-sm text-[var(--text-tertiary)]">잠시만 기다려주세요</p>
           </div>
         </div>
       }

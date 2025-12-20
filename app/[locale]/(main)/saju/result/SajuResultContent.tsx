@@ -64,16 +64,16 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
   }).toString();
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen pb-4 sm:pb-6">
       {/* Spotlight Effect */}
       <Spotlight
         className="-top-40 left-0 md:left-60 md:-top-20"
         fill="var(--accent)"
       />
 
-      <div className="space-y-6 animate-fade-in relative z-10">
+      <div className="space-y-4 sm:space-y-6 animate-fade-in relative z-10">
         {/* Header with Premium Effects */}
-        <div className="relative text-center space-y-4 py-6">
+        <div className="relative text-center space-y-3 sm:space-y-4 py-4 sm:py-6">
           {/* Sparkles Background */}
           <div className="absolute inset-0 w-full h-full">
             <SparklesCore
@@ -89,33 +89,33 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
 
           <div className="relative z-10">
             <BackgroundGradient
-              className="rounded-xl p-4"
+              className="rounded-lg sm:rounded-xl p-3 sm:p-4"
               containerClassName="mx-auto w-fit"
             >
-              <div className="w-14 h-14 flex items-center justify-center">
-                <Sparkle className="w-7 h-7 text-white" weight="fill" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
+                <Sparkle className="w-6 h-6 sm:w-7 sm:h-7 text-white" weight="fill" />
               </div>
             </BackgroundGradient>
           </div>
 
-          <div className="relative z-10">
-            <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <div className="relative z-10 px-4">
+            <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
               사주 분석 결과
             </h1>
             <TextGenerateEffect
               words={`${result.meta.solarDate} (${gender === "male" ? "남" : "여"})`}
-              className="text-base text-[var(--text-secondary)]"
+              className="text-sm sm:text-base text-[var(--text-secondary)]"
               duration={0.2}
             />
           </div>
         </div>
 
         {/* Four Pillars */}
-        <section className="glass-card rounded-2xl p-5 space-y-4 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="font-semibold text-[var(--text-primary)] text-lg">사주팔자</h2>
+        <section className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 sm:space-y-4 backdrop-blur-xl border border-[var(--border)]/50">
+          <h2 className="font-semibold text-[var(--text-primary)] text-base sm:text-lg">사주팔자</h2>
           <FourPillarsDisplay pillars={result.pillars} />
-          <div className="text-center pt-2">
-            <p className="text-sm text-[var(--text-tertiary)]">
+          <div className="text-center pt-1.5 sm:pt-2">
+            <p className="text-xs sm:text-sm text-[var(--text-tertiary)]">
               진태양시 보정: {result.meta.trueSolarTime} (
               {result.meta.offsetMinutes > 0 ? "+" : ""}
               {result.meta.offsetMinutes}분)
@@ -124,25 +124,25 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         </section>
 
         {/* Day Master Info */}
-        <section className="glass-card rounded-2xl p-5 space-y-3 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="font-semibold text-[var(--text-primary)] text-lg">일간 (일주)</h2>
-          <div className="flex items-center gap-4">
+        <section className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-2.5 sm:space-y-3 backdrop-blur-xl border border-[var(--border)]/50">
+          <h2 className="font-semibold text-[var(--text-primary)] text-base sm:text-lg">일간 (일주)</h2>
+          <div className="flex items-center gap-3 sm:gap-4">
             <BackgroundGradient
-              className="rounded-xl p-3"
+              className="rounded-lg sm:rounded-xl p-2.5 sm:p-3"
               containerClassName="w-fit"
             >
-              <div className="w-12 h-12 flex items-center justify-center text-2xl font-bold text-white">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-xl sm:text-2xl font-bold text-white">
                 {result.dayMaster}
               </div>
             </BackgroundGradient>
             <div className="flex-1">
-              <p className="font-medium text-[var(--text-primary)] text-lg">
+              <p className="font-medium text-[var(--text-primary)] text-base sm:text-lg">
                 {STEM_KOREAN[result.dayMaster]} ({ELEMENT_KOREAN[result.dayMasterElement]})
               </p>
-              <p className="text-base text-[var(--text-secondary)]">
+              <p className="text-sm sm:text-base text-[var(--text-secondary)]">
                 {result.dayMasterYinYang === "yang" ? "양" : "음"}의 기운
               </p>
-              <p className="text-sm text-[var(--text-tertiary)] mt-1">
+              <p className="text-xs sm:text-sm text-[var(--text-tertiary)] mt-0.5 sm:mt-1">
                 {result.dayMasterDescription}
               </p>
             </div>
@@ -150,10 +150,10 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         </section>
 
         {/* Five Elements */}
-        <section className="glass-card rounded-2xl p-5 space-y-4 backdrop-blur-xl border border-[var(--border)]/50">
+        <section className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 sm:space-y-4 backdrop-blur-xl border border-[var(--border)]/50">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-[var(--text-primary)] text-lg">오행 분석</h2>
-            <span className="text-sm px-3 py-1 rounded-full bg-[var(--accent)]/20 text-[var(--accent)]">
+            <h2 className="font-semibold text-[var(--text-primary)] text-base sm:text-lg">오행 분석</h2>
+            <span className="text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[var(--accent)]/20 text-[var(--accent)]">
               {result.elementAnalysis.balance}
             </span>
           </div>
@@ -163,9 +163,9 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
             lacking={result.elementAnalysis.lacking}
           />
           {result.elementAnalysis.yongShin && (
-            <div className="pt-3 border-t border-[var(--border)]/50">
-              <p className="text-sm text-[var(--text-tertiary)]">추천 용신</p>
-              <p className="text-base font-medium text-[var(--accent)]">
+            <div className="pt-2.5 sm:pt-3 border-t border-[var(--border)]/50">
+              <p className="text-xs sm:text-sm text-[var(--text-tertiary)]">추천 용신</p>
+              <p className="text-sm sm:text-base font-medium text-[var(--accent)]">
                 {result.elementAnalysis.yongShin}
               </p>
             </div>
@@ -173,41 +173,41 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         </section>
 
         {/* Ten Gods */}
-        <section className="glass-card rounded-2xl p-5 space-y-4 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="font-semibold text-[var(--text-primary)] text-lg">십성 분석</h2>
+        <section className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 sm:space-y-4 backdrop-blur-xl border border-[var(--border)]/50">
+          <h2 className="font-semibold text-[var(--text-primary)] text-base sm:text-lg">십성 분석</h2>
           <TenGodDisplay summary={result.tenGodSummary} />
         </section>
 
         {/* Stars */}
-        <section className="glass-card rounded-2xl p-5 space-y-4 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="font-semibold text-[var(--text-primary)] text-lg">
+        <section className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 sm:space-y-4 backdrop-blur-xl border border-[var(--border)]/50">
+          <h2 className="font-semibold text-[var(--text-primary)] text-base sm:text-lg">
             신살 ({result.stars.length})
           </h2>
           <StarsDisplay stars={result.stars} />
         </section>
 
         {/* Actions */}
-        <div className="flex gap-3 pt-4">
+        <div className="flex gap-2 sm:gap-3 pt-3 sm:pt-4">
           <Link href="/saju" className="flex-1">
-            <div className="h-14 rounded-xl glass-card border border-[var(--border)]/50 flex items-center justify-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-              <ArrowCounterClockwise className="w-5 h-5" />
-              <span className="font-medium">다시 분석</span>
+            <div className="h-12 sm:h-14 rounded-lg sm:rounded-xl glass-card border border-[var(--border)]/50 flex items-center justify-center gap-1.5 sm:gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+              <ArrowCounterClockwise className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base font-medium">다시 분석</span>
             </div>
           </Link>
           <Link href={`/saju/fortune?${queryString}`} className="flex-1">
             <HoverBorderGradient
-              containerClassName="w-full rounded-xl"
-              className="w-full h-14 flex items-center justify-center gap-2 bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] text-white font-bold rounded-xl"
+              containerClassName="w-full rounded-lg sm:rounded-xl"
+              className="w-full h-12 sm:h-14 flex items-center justify-center gap-1.5 sm:gap-2 bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] text-white text-sm sm:text-base font-bold rounded-lg sm:rounded-xl"
               as="div"
             >
-              <Sparkle className="w-5 h-5" weight="fill" />
+              <Sparkle className="w-4 h-4 sm:w-5 sm:h-5" weight="fill" />
               상세 운세 보기
             </HoverBorderGradient>
           </Link>
         </div>
 
         {/* Disclaimer */}
-        <p className="text-center text-sm text-[var(--text-tertiary)] pt-2 pb-8">
+        <p className="text-center text-xs sm:text-sm text-[var(--text-tertiary)] pt-2 pb-6 sm:pb-8">
           이 분석은 전통 명리학을 기반으로 한 참고용 정보입니다.
         </p>
       </div>
