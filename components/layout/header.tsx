@@ -15,11 +15,11 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 h-[var(--header-height)] bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)]">
       <div className="max-w-4xl mx-auto h-full px-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--accent)] to-[var(--element-fire)] flex items-center justify-center">
+        <Link href="/" className="flex items-center gap-2 group min-w-0">
+          <div className="w-8 h-8 flex-shrink-0 rounded-lg bg-gradient-to-br from-[var(--accent)] to-[var(--element-fire)] flex items-center justify-center">
             <Sparkle className="w-5 h-5 text-white" weight="fill" />
           </div>
-          <span className="font-bold text-lg text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
+          <span className="font-bold text-lg text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors hidden min-[400px]:block truncate max-w-[120px] sm:max-w-none">
             {t("header.title")}
           </span>
         </Link>
@@ -55,7 +55,7 @@ export function Header() {
         </nav>
 
         {/* Mobile Menu Button + Language Switcher */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-1 sm:gap-2 md:hidden flex-shrink-0">
           <LanguageSwitcher />
           <Button
             variant="ghost"

@@ -37,10 +37,10 @@ export function LanguageSwitcher() {
         variant="ghost"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
         aria-label="Switch language"
       >
-        <Globe className="w-4 h-4" />
+        <Globe className="w-4 h-4 flex-shrink-0" />
         <span className="text-xs font-medium">{locale.toUpperCase()}</span>
       </Button>
 
