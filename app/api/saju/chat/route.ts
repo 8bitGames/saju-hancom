@@ -169,8 +169,14 @@ export async function POST(request: NextRequest) {
 ${sajuProfile}
 
 방금 기본 답변을 드렸으니, 이제 최신 정보를 바탕으로 추가 조언을 드려주세요.
-"추가로 말씀드리자면..." 또는 "요즘 상황을 보면..."으로 시작해서
-검색된 최신 트렌드와 사주 분석을 결합한 현실적인 조언을 2-3문장으로 간결하게 해주세요.
+
+"참, 요즘 세상 돌아가는 걸 보면요..." 또는 "근데 말이에요, 요즘은요..."로 자연스럽게 시작해서
+검색된 ${currentYear}년 최신 트렌드와 이 분의 사주 특성을 결합한 구체적이고 현실적인 조언을 해주세요.
+
+- 실제 시장 상황이나 트렌드를 언급하세요
+- 이 분의 사주 특성에 맞춰서 조언하세요
+- 4-6문장 정도로 충분히 설명하세요
+- 역할극 묘사 없이, 대화체로 자연스럽게
 
 검색 주제: ${searchQuery}`
               : `The user asked: "${userMessageText}"
@@ -179,8 +185,14 @@ This person's BaZi profile:
 ${sajuProfile}
 
 I just gave a basic answer. Now please provide additional advice based on current trends.
-Start with "Additionally..." or "Looking at current trends..."
-Provide 2-3 sentences of practical advice combining search results with BaZi analysis.
+
+Start naturally with "By the way, looking at what's happening these days..." or "You know, lately..."
+Combine the ${currentYear} search results with this person's chart characteristics for specific, practical advice.
+
+- Mention actual market conditions or trends
+- Tailor advice to their chart characteristics
+- Use 4-6 sentences to explain fully
+- Natural conversational tone, no roleplay descriptions
 
 Search topic: ${searchQuery}`;
 
