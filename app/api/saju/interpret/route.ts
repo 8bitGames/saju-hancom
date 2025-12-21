@@ -9,30 +9,38 @@ import { GEMINI_MODEL } from "@/lib/constants/ai";
  * 계산된 사주 데이터를 바탕으로 AI가 개인화된 해석을 제공
  */
 
-// 기본 해석 결과 스키마
-const BasicInterpretationSchema = z.object({
-  personalityReading: z.object({
-    summary: z.string().describe("성격 총평 (3-4문장)"),
-    coreTraits: z.array(z.string()).describe("핵심 성격 특성 3-4개"),
-    strengths: z.array(z.string()).describe("타고난 강점 2-3개"),
-    challenges: z.array(z.string()).describe("주의할 점 1-2개"),
-  }),
-  elementInsight: z.object({
-    balance: z.string().describe("오행 균형에 대한 해석 (2-3문장)"),
-    recommendation: z.string().describe("보완이 필요한 부분과 조언 (1-2문장)"),
-  }),
-  tenGodInsight: z.object({
-    dominant: z.string().describe("주요 십성이 의미하는 바 (2-3문장)"),
-    lifePattern: z.string().describe("삶의 패턴과 성향 (1-2문장)"),
-  }),
-  starInsight: z.object({
-    positive: z.string().describe("길신이 주는 축복 (1-2문장)"),
-    caution: z.string().describe("흉신이 주는 주의사항 (1-2문장)"),
-  }),
-  overallMessage: z.string().describe("전체적인 사주풀이 요약 메시지 (3-4문장, 따뜻하고 긍정적인 어조)"),
+// 간소화된 해석 결과 스키마
+const SimplifiedInterpretationSchema = z.object({
+  personality: z.string().describe("성격과 기질 해석 (3-4문장)"),
+  elements: z.string().describe("오행 균형이 삶에 주는 영향 (2-3문장)"),
+  lifePattern: z.string().describe("십성과 신살이 보여주는 삶의 패턴 (2-3문장)"),
+  message: z.string().describe("따뜻한 격려 메시지 (2-3문장)"),
 });
 
-type BasicInterpretation = z.infer<typeof BasicInterpretationSchema>;
+type SimplifiedInterpretation = z.infer<typeof SimplifiedInterpretationSchema>;
+
+// 프론트엔드 호환성을 위한 변환된 응답 타입
+interface BasicInterpretation {
+  personalityReading: {
+    summary: string;
+    coreTraits: string[];
+    strengths: string[];
+    challenges: string[];
+  };
+  elementInsight: {
+    balance: string;
+    recommendation: string;
+  };
+  tenGodInsight: {
+    dominant: string;
+    lifePattern: string;
+  };
+  starInsight: {
+    positive: string;
+    caution: string;
+  };
+  overallMessage: string;
+}
 
 function getSystemPrompt(locale: Locale): string {
   if (locale === "ko") {
@@ -121,14 +129,15 @@ ${starList || '특별한 신살 없음'}
 
 ---
 
-위 사주를 바탕으로:
-1. 이 분의 타고난 성격과 기질을 생생하게 묘사해 주세요
-2. 오행 균형이 삶에 어떤 영향을 주는지 설명해 주세요
-3. 십성 분포가 보여주는 삶의 패턴을 해석해 주세요
-4. 신살이 주는 특별한 기운을 설명해 주세요
-5. 전체적으로 따뜻하고 격려가 되는 메시지로 마무리해 주세요
+위 사주를 바탕으로 해석해 주세요.
 
-반드시 JSON 형식으로 응답하세요.`;
+반드시 아래 JSON 형식으로만 응답하세요:
+{
+  "personality": "성격과 기질 해석 (3-4문장)",
+  "elements": "오행 균형이 삶에 주는 영향 (2-3문장)",
+  "lifePattern": "십성과 신살이 보여주는 삶의 패턴 (2-3문장)",
+  "message": "따뜻한 격려 메시지 (2-3문장)"
+}`;
   }
 
   return `Please analyze the following birth chart and provide personalized interpretation.
@@ -203,6 +212,7 @@ export async function POST(request: NextRequest) {
       model: GEMINI_MODEL,
       config: {
         responseMimeType: "application/json",
+        maxOutputTokens: 8192, // Prevent truncation
       },
       contents: [
         {
@@ -219,12 +229,73 @@ export async function POST(request: NextRequest) {
     // Extract text from response
     const responseText = response.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    // Parse JSON response
+    // Parse JSON response - simplified 4-field schema
     let interpretation: BasicInterpretation;
     try {
-      interpretation = JSON.parse(responseText);
-    } catch {
+      let jsonText = responseText.trim();
+
+      // Fix truncated JSON by adding missing braces
+      const openBraces = (jsonText.match(/\{/g) || []).length;
+      const closeBraces = (jsonText.match(/\}/g) || []).length;
+      for (let i = 0; i < openBraces - closeBraces; i++) {
+        jsonText += '}';
+      }
+
+      let parsed: SimplifiedInterpretation;
+      try {
+        const rawParsed = JSON.parse(jsonText);
+        // Handle array response
+        const obj = Array.isArray(rawParsed) ? rawParsed[0] : rawParsed;
+
+        // Extract fields with fallbacks for various key names
+        parsed = {
+          personality: obj.personality || obj.personality_and_temperament || obj.character || '',
+          elements: obj.elements || obj.elemental_balance || obj.five_elements || '',
+          lifePattern: obj.lifePattern || obj.life_pattern || obj.ten_gods || '',
+          message: obj.message || obj.closing_message || obj.overall_message || '',
+        };
+      } catch {
+        // Regex extraction for broken JSON
+        console.log("JSON parsing failed, using regex extraction");
+        const extract = (text: string, key: string): string => {
+          const regex = new RegExp(`"${key}"\\s*:\\s*"([^"]*(?:\\\\.[^"]*)*)"`, 'i');
+          const match = text.match(regex);
+          return match ? match[1].replace(/\\n/g, '\n').replace(/\\"/g, '"') : '';
+        };
+
+        parsed = {
+          personality: extract(responseText, 'personality') || extract(responseText, 'personality_and_temperament') || '',
+          elements: extract(responseText, 'elements') || extract(responseText, 'elemental_balance') || '',
+          lifePattern: extract(responseText, 'lifePattern') || extract(responseText, 'life_pattern') || '',
+          message: extract(responseText, 'message') || extract(responseText, 'closing_message') || '',
+        };
+      }
+
+      // Convert simplified response to frontend-compatible format
+      interpretation = {
+        personalityReading: {
+          summary: parsed.personality || "타고난 성격과 기질을 분석했습니다.",
+          coreTraits: [],
+          strengths: [],
+          challenges: [],
+        },
+        elementInsight: {
+          balance: parsed.elements || "오행의 균형을 살펴봤습니다.",
+          recommendation: "",
+        },
+        tenGodInsight: {
+          dominant: parsed.lifePattern || "십성의 배치를 분석했습니다.",
+          lifePattern: "",
+        },
+        starInsight: {
+          positive: "",
+          caution: "",
+        },
+        overallMessage: parsed.message || "당신의 사주에서 특별한 가능성을 발견했습니다.",
+      };
+    } catch (parseError) {
       console.error("Failed to parse interpretation JSON:", responseText);
+      console.error("Parse error:", parseError);
       return NextResponse.json(
         { error: locale === 'ko' ? '해석 결과를 파싱할 수 없습니다.' : 'Failed to parse interpretation.' },
         { status: 500 }

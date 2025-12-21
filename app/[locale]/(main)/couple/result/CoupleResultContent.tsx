@@ -3,7 +3,7 @@
 import { Link } from "@/lib/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { motion, useInView } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import {
   UsersThree,
   ArrowCounterClockwise,
@@ -18,6 +18,8 @@ import {
   Star,
   FilePdf,
   ArrowRight,
+  Brain,
+  CircleNotch,
 } from "@phosphor-icons/react";
 import { downloadCoupleCompatibilityPDF } from "@/lib/pdf/generator";
 import { ELEMENT_KOREAN } from "@/lib/saju";
@@ -25,6 +27,37 @@ import { calculateCoupleCompatibility } from "@/lib/couple/calculator";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import type { Gender } from "@/lib/saju/types";
 import type { CoupleCompatibilityGrade, CoupleRelationType } from "@/lib/couple/types";
+
+interface AIInterpretation {
+  summary: string;
+  communication: string;
+  chemistry: string;
+  challenges: string;
+  advice: string;
+}
+
+// AI Loading Animation Component
+function AIAnalyzingAnimation() {
+  return (
+    <div className="flex flex-col items-center justify-center py-8 space-y-4">
+      <motion.div
+        className="relative w-16 h-16"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+      >
+        <CircleNotch className="w-16 h-16 text-pink-400" weight="bold" />
+      </motion.div>
+      <motion.div
+        className="flex items-center gap-2 text-pink-300"
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+      >
+        <Brain className="w-5 h-5" weight="fill" />
+        <span className="text-base font-medium">궁합을 분석하고 있어요...</span>
+      </motion.div>
+    </div>
+  );
+}
 
 interface SearchParams {
   p1Name?: string;
@@ -295,6 +328,81 @@ export function CoupleResultContent({
   const relationType = searchParams.relationType as CoupleRelationType | undefined;
   const result = calculateCoupleCompatibility(person1, person2, relationType);
 
+  const [aiInterpretation, setAiInterpretation] = useState<AIInterpretation | null>(null);
+  const [isAiLoading, setIsAiLoading] = useState(true);
+  const hasFetched = useRef(false);
+
+  // Create cache key from person data
+  const cacheKey = useMemo(() =>
+    `couple_ai_${person1.year}_${person1.month}_${person1.day}_${person1.hour}_${person1.gender}_${person2.year}_${person2.month}_${person2.day}_${person2.hour}_${person2.gender}_${relationType || 'dating'}`,
+    [person1.year, person1.month, person1.day, person1.hour, person1.gender, person2.year, person2.month, person2.day, person2.hour, person2.gender, relationType]
+  );
+
+  // Fetch AI interpretation with caching
+  useEffect(() => {
+    // Prevent double fetch in React Strict Mode
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    // Check cache first
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        setAiInterpretation(parsed);
+        setIsAiLoading(false);
+        return;
+      } catch {
+        localStorage.removeItem(cacheKey);
+      }
+    }
+
+    const fetchAiInterpretation = async () => {
+      try {
+        const pillarsStr = (pillars: { year: { gan: string; zhi: string }; month: { gan: string; zhi: string }; day: { gan: string; zhi: string }; time: { gan: string; zhi: string } }) =>
+          `${pillars.year.gan}${pillars.year.zhi} ${pillars.month.gan}${pillars.month.zhi} ${pillars.day.gan}${pillars.day.zhi} ${pillars.time.gan}${pillars.time.zhi}`;
+
+        const elementsStr = (balance: Record<string, number>) =>
+          Object.entries(balance).map(([k, v]) => `${ELEMENT_KOREAN[k as keyof typeof ELEMENT_KOREAN]}:${v}`).join(', ');
+
+        const response = await fetch('/api/compatibility/interpret', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            person1: {
+              name: person1.name,
+              pillars: pillarsStr(result.person1Pillars),
+              dayMaster: result.person1Pillars.day.gan,
+              elements: elementsStr(result.elementBalance.person1),
+            },
+            person2: {
+              name: person2.name,
+              pillars: pillarsStr(result.person2Pillars),
+              dayMaster: result.person2Pillars.day.gan,
+              elements: elementsStr(result.elementBalance.person2),
+            },
+            score: result.score,
+            type: 'couple',
+            relationType: getRelationTypeKorean(relationType),
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setAiInterpretation(data);
+          // Save to cache
+          localStorage.setItem(cacheKey, JSON.stringify(data));
+        }
+      } catch (error) {
+        console.error('AI interpretation error:', error);
+      } finally {
+        setIsAiLoading(false);
+      }
+    };
+
+    fetchAiInterpretation();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handlePDFDownload = async () => {
     if (isDownloading) return;
     setIsDownloading(true);
@@ -489,6 +597,77 @@ export function CoupleResultContent({
               </motion.div>
             ))}
           </div>
+        </div>
+      </GlowingCard>
+
+      {/* AI Interpretation */}
+      <GlowingCard glowColor="rgba(236, 72, 153, 0.4)" variants={itemVariants}>
+        <div className="p-5 space-y-4">
+          <div className="flex items-center gap-2">
+            <Brain className="w-5 h-5 text-pink-400" weight="fill" />
+            <h2 className="text-lg font-semibold text-white">맞춤 궁합 해석</h2>
+          </div>
+
+          {isAiLoading ? (
+            <AIAnalyzingAnimation />
+          ) : aiInterpretation ? (
+            <motion.div
+              className="space-y-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {/* Summary */}
+              <div className="p-4 rounded-xl bg-pink-500/10 border border-pink-500/20">
+                <p className="text-white/90 text-base leading-relaxed">{aiInterpretation.summary}</p>
+              </div>
+
+              {/* Details */}
+              <div className="space-y-3">
+                {aiInterpretation.communication && (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <ChatCircle className="w-4 h-4 text-blue-400" weight="fill" />
+                      <span className="text-sm font-medium text-blue-400">소통과 감정 교류</span>
+                    </div>
+                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.communication}</p>
+                  </div>
+                )}
+
+                {aiInterpretation.chemistry && (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-pink-400" weight="fill" />
+                      <span className="text-sm font-medium text-pink-400">애정과 케미스트리</span>
+                    </div>
+                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.chemistry}</p>
+                  </div>
+                )}
+
+                {aiInterpretation.challenges && (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Warning className="w-4 h-4 text-orange-400" weight="fill" />
+                      <span className="text-sm font-medium text-orange-400">주의할 점</span>
+                    </div>
+                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.challenges}</p>
+                  </div>
+                )}
+
+                {aiInterpretation.advice && (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Sparkle className="w-4 h-4 text-purple-400" weight="fill" />
+                      <span className="text-sm font-medium text-purple-400">조언</span>
+                    </div>
+                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.advice}</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ) : (
+            <p className="text-white/50 text-sm text-center py-4">해석을 불러올 수 없습니다.</p>
+          )}
         </div>
       </GlowingCard>
 

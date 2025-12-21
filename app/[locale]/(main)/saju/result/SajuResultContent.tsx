@@ -1,9 +1,9 @@
 "use client";
 
 import { Link } from "@/lib/i18n/navigation";
-import { motion, useInView } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
-import { ArrowCounterClockwise, ArrowRight, Sparkle, Star, Atom, YinYang, ChatCircle, Lightning, Heart, Lightbulb, SpinnerGap } from "@phosphor-icons/react";
+import { motion } from "framer-motion";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { ArrowCounterClockwise, ArrowRight, Sparkle, Star, Atom, YinYang, ChatCircle, Lightning, Heart, Lightbulb, Brain } from "@phosphor-icons/react";
 import { calculateSaju, STEM_KOREAN, ELEMENT_KOREAN } from "@/lib/saju";
 import { getLongitudeByCity } from "@/lib/saju/solar-time";
 import { FourPillarsDisplay } from "@/components/saju/pillar-display";
@@ -28,25 +28,25 @@ interface SearchParams {
 }
 
 interface BasicInterpretation {
-  personalityReading: {
-    summary: string;
-    coreTraits: string[];
-    strengths: string[];
-    challenges: string[];
+  personalityReading?: {
+    summary?: string;
+    coreTraits?: string[];
+    strengths?: string[];
+    challenges?: string[];
   };
-  elementInsight: {
-    balance: string;
-    recommendation: string;
+  elementInsight?: {
+    balance?: string;
+    recommendation?: string;
   };
-  tenGodInsight: {
-    dominant: string;
-    lifePattern: string;
+  tenGodInsight?: {
+    dominant?: string;
+    lifePattern?: string;
   };
-  starInsight: {
-    positive: string;
-    caution: string;
+  starInsight?: {
+    positive?: string;
+    caution?: string;
   };
-  overallMessage: string;
+  overallMessage?: string;
 }
 
 // Animation variants
@@ -106,21 +106,106 @@ function GlowingCard({
   );
 }
 
-// Loading skeleton for interpretation
-function InterpretationSkeleton() {
+// Impressive loading animation for AI interpretation
+function AIAnalyzingAnimation() {
+  const messages = [
+    "사주팔자를 분석하고 있습니다...",
+    "오행의 균형을 살펴보고 있습니다...",
+    "십성의 배치를 해석하고 있습니다...",
+    "신살의 영향을 파악하고 있습니다...",
+    "운명의 흐름을 읽고 있습니다...",
+  ];
+  const [messageIndex, setMessageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMessageIndex((prev) => (prev + 1) % messages.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="space-y-4 animate-pulse">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-white/10" />
-        <div className="flex-1 space-y-2">
-          <div className="h-4 bg-white/10 rounded w-3/4" />
-          <div className="h-3 bg-white/10 rounded w-1/2" />
+    <div className="py-12 space-y-8">
+      {/* Animated brain/thinking icon */}
+      <div className="flex justify-center">
+        <div className="relative">
+          {/* Outer pulse ring */}
+          <motion.div
+            className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 to-purple-500"
+            initial={{ scale: 1, opacity: 0.5 }}
+            animate={{ scale: [1, 1.8, 1], opacity: [0.5, 0, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          />
+          {/* Middle pulse ring */}
+          <motion.div
+            className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
+            initial={{ scale: 1, opacity: 0.3 }}
+            animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+          />
+          {/* Center icon container */}
+          <motion.div
+            className="relative w-32 h-32 rounded-full bg-gradient-to-br from-pink-500/30 to-purple-500/30 flex items-center justify-center border-2 border-pink-500/50"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          >
+            <motion.div
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <Brain className="w-16 h-16 text-pink-400" weight="fill" />
+            </motion.div>
+          </motion.div>
         </div>
       </div>
-      <div className="space-y-2">
-        <div className="h-3 bg-white/10 rounded w-full" />
-        <div className="h-3 bg-white/10 rounded w-5/6" />
-        <div className="h-3 bg-white/10 rounded w-4/6" />
+
+      {/* Animated message */}
+      <motion.div
+        key={messageIndex}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        className="text-center"
+      >
+        <p className="text-white/90 text-lg font-medium">{messages[messageIndex]}</p>
+      </motion.div>
+
+      {/* Progress dots */}
+      <div className="flex justify-center gap-3">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <motion.div
+            key={i}
+            className="w-3 h-3 rounded-full bg-pink-400"
+            initial={{ opacity: 0.3 }}
+            animate={{
+              opacity: i === messageIndex ? 1 : 0.3,
+              scale: i === messageIndex ? 1.3 : 1
+            }}
+            transition={{ duration: 0.3 }}
+          />
+        ))}
+      </div>
+
+      {/* Floating elements */}
+      <div className="flex justify-center gap-6 pt-4">
+        {["木", "火", "土", "金", "水"].map((element, idx) => (
+          <motion.span
+            key={element}
+            className="text-2xl opacity-50"
+            animate={{
+              y: [0, -12, 0],
+              opacity: [0.5, 0.9, 0.5]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              delay: idx * 0.2,
+              ease: "easeInOut"
+            }}
+          >
+            {element}
+          </motion.span>
+        ))}
       </div>
     </div>
   );
@@ -138,7 +223,8 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
 
   const longitude = getLongitudeByCity(city);
 
-  const result = calculateSaju({
+  // Memoize to prevent infinite useEffect loop
+  const result = useMemo(() => calculateSaju({
     year,
     month,
     day,
@@ -147,14 +233,39 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
     gender,
     isLunar,
     longitude,
-  });
+  }), [year, month, day, hour, minute, gender, isLunar, longitude]);
 
   const [interpretation, setInterpretation] = useState<BasicInterpretation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
-  // Fetch AI interpretation on mount
+  // Create cache key from saju input
+  const cacheKey = useMemo(() =>
+    `saju_interpretation_${year}_${month}_${day}_${hour}_${minute}_${gender}_${isLunar}_${city}`,
+    [year, month, day, hour, minute, gender, isLunar, city]
+  );
+
+  // Fetch AI interpretation on mount (with caching)
   useEffect(() => {
+    // Prevent double fetch in React Strict Mode
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    // Check cache first
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        setInterpretation(parsed);
+        setIsLoading(false);
+        console.log('Loaded from cache');
+        return;
+      } catch {
+        localStorage.removeItem(cacheKey);
+      }
+    }
+
     const fetchInterpretation = async () => {
       try {
         setIsLoading(true);
@@ -194,6 +305,16 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         }
 
         const data = await response.json();
+
+        // Check if response has error
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        // Save to cache
+        localStorage.setItem(cacheKey, JSON.stringify(data));
+        console.log('Saved to cache');
+
         setInterpretation(data);
       } catch (err) {
         console.error('Interpretation error:', err);
@@ -204,7 +325,8 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
     };
 
     fetchInterpretation();
-  }, [result, gender]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   const queryString = new URLSearchParams({
     year: year.toString(),
@@ -252,127 +374,7 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         />
       </motion.div>
 
-      {/* AI Interpretation - Main Card */}
-      <GlowingCard glowColor="rgba(236, 72, 153, 0.4)" variants={itemVariants}>
-        <div className="p-5 space-y-4">
-          <motion.div
-            className="flex items-center gap-2"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.25 }}
-          >
-            <ChatCircle className="w-5 h-5 text-pink-400" weight="fill" />
-            <h2 className="font-semibold text-white text-lg">사주 풀이</h2>
-            {isLoading && (
-              <SpinnerGap className="w-4 h-4 text-pink-400 animate-spin ml-2" />
-            )}
-          </motion.div>
-
-          {isLoading ? (
-            <InterpretationSkeleton />
-          ) : error ? (
-            <p className="text-white/60 text-sm">{error}</p>
-          ) : interpretation ? (
-            <motion.div
-              className="space-y-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              {/* Overall Message */}
-              <div className="p-4 rounded-xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20">
-                <p className="text-white/90 text-base leading-relaxed">
-                  {interpretation.overallMessage}
-                </p>
-              </div>
-
-              {/* Personality */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Heart className="w-4 h-4 text-pink-400" weight="fill" />
-                  <h3 className="text-sm font-medium text-white/80">성격과 기질</h3>
-                </div>
-                <p className="text-sm text-white/70 leading-relaxed">
-                  {interpretation.personalityReading.summary}
-                </p>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {interpretation.personalityReading.coreTraits.map((trait, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2 py-1 rounded-full bg-pink-500/20 text-pink-300 text-xs"
-                    >
-                      {trait}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Strengths & Challenges */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20">
-                  <p className="text-xs text-green-400 font-medium mb-2">강점</p>
-                  <ul className="space-y-1">
-                    {interpretation.personalityReading.strengths.map((s, idx) => (
-                      <li key={idx} className="text-xs text-white/70">• {s}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="p-3 rounded-xl bg-orange-500/10 border border-orange-500/20">
-                  <p className="text-xs text-orange-400 font-medium mb-2">주의점</p>
-                  <ul className="space-y-1">
-                    {interpretation.personalityReading.challenges.map((c, idx) => (
-                      <li key={idx} className="text-xs text-white/70">• {c}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              {/* Element Insight */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Lightning className="w-4 h-4 text-yellow-400" weight="fill" />
-                  <h3 className="text-sm font-medium text-white/80">오행의 기운</h3>
-                </div>
-                <p className="text-sm text-white/70 leading-relaxed">
-                  {interpretation.elementInsight.balance}
-                </p>
-                <p className="text-xs text-purple-300 italic">
-                  💡 {interpretation.elementInsight.recommendation}
-                </p>
-              </div>
-
-              {/* Ten God & Star Insights */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Lightbulb className="w-4 h-4 text-blue-400" weight="fill" />
-                  <h3 className="text-sm font-medium text-white/80">삶의 패턴</h3>
-                </div>
-                <p className="text-sm text-white/70 leading-relaxed">
-                  {interpretation.tenGodInsight.dominant} {interpretation.tenGodInsight.lifePattern}
-                </p>
-              </div>
-
-              {/* Star Insights */}
-              {(interpretation.starInsight.positive || interpretation.starInsight.caution) && (
-                <div className="p-3 rounded-xl bg-white/5 space-y-2">
-                  {interpretation.starInsight.positive && (
-                    <p className="text-xs text-green-300">
-                      ✨ {interpretation.starInsight.positive}
-                    </p>
-                  )}
-                  {interpretation.starInsight.caution && (
-                    <p className="text-xs text-orange-300">
-                      ⚠️ {interpretation.starInsight.caution}
-                    </p>
-                  )}
-                </div>
-              )}
-            </motion.div>
-          ) : null}
-        </div>
-      </GlowingCard>
-
-      {/* Four Pillars */}
+      {/* Four Pillars - First */}
       <GlowingCard glowColor="rgba(168, 85, 247, 0.4)" variants={itemVariants}>
         <div className="p-5 space-y-4">
           <motion.div
@@ -549,6 +551,160 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
           </motion.div>
         </div>
       </GlowingCard>
+
+      {/* AI Interpretation - At the bottom, after user reads basic info */}
+      <div>
+        <GlowingCard glowColor="rgba(236, 72, 153, 0.4)" variants={itemVariants}>
+          <div className="p-5 space-y-4">
+            <motion.div
+              className="flex items-center gap-2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8 }}
+            >
+              <ChatCircle className="w-5 h-5 text-pink-400" weight="fill" />
+              <h2 className="font-semibold text-white text-lg">사주 풀이</h2>
+            </motion.div>
+
+            {isLoading ? (
+              <AIAnalyzingAnimation />
+            ) : error ? (
+              <div className="py-6 text-center">
+                <p className="text-white/60 text-sm">{error}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="mt-4 px-4 py-2 rounded-lg bg-pink-500/20 text-pink-300 text-sm hover:bg-pink-500/30 transition-colors"
+                >
+                  다시 시도
+                </button>
+              </div>
+            ) : interpretation ? (
+              <motion.div
+                className="space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                {/* Overall Message */}
+                {interpretation.overallMessage && (
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20">
+                    <p className="text-white/90 text-base leading-relaxed">
+                      {typeof interpretation.overallMessage === 'string'
+                        ? interpretation.overallMessage
+                        : '사주 해석이 완료되었습니다.'}
+                    </p>
+                  </div>
+                )}
+
+                {/* Personality */}
+                {interpretation.personalityReading && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-pink-400" weight="fill" />
+                      <h3 className="text-sm font-medium text-white/80">성격과 기질</h3>
+                    </div>
+                    {interpretation.personalityReading.summary && (
+                      <p className="text-sm text-white/70 leading-relaxed">
+                        {typeof interpretation.personalityReading.summary === 'string'
+                          ? interpretation.personalityReading.summary
+                          : ''}
+                      </p>
+                    )}
+                    {interpretation.personalityReading.coreTraits && Array.isArray(interpretation.personalityReading.coreTraits) && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {interpretation.personalityReading.coreTraits.map((trait, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2 py-1 rounded-full bg-pink-500/20 text-pink-300 text-xs"
+                          >
+                            {typeof trait === 'string' ? trait : ''}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Strengths & Challenges */}
+                {interpretation.personalityReading && (interpretation.personalityReading.strengths || interpretation.personalityReading.challenges) && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20">
+                      <p className="text-xs text-green-400 font-medium mb-2">강점</p>
+                      <ul className="space-y-1">
+                        {Array.isArray(interpretation.personalityReading.strengths) && interpretation.personalityReading.strengths.map((s, idx) => (
+                          <li key={idx} className="text-xs text-white/70">• {typeof s === 'string' ? s : ''}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="p-3 rounded-xl bg-orange-500/10 border border-orange-500/20">
+                      <p className="text-xs text-orange-400 font-medium mb-2">주의점</p>
+                      <ul className="space-y-1">
+                        {Array.isArray(interpretation.personalityReading.challenges) && interpretation.personalityReading.challenges.map((c, idx) => (
+                          <li key={idx} className="text-xs text-white/70">• {typeof c === 'string' ? c : ''}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {/* Element Insight */}
+                {interpretation.elementInsight && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Lightning className="w-4 h-4 text-yellow-400" weight="fill" />
+                      <h3 className="text-sm font-medium text-white/80">오행의 기운</h3>
+                    </div>
+                    {interpretation.elementInsight.balance && (
+                      <p className="text-sm text-white/70 leading-relaxed">
+                        {typeof interpretation.elementInsight.balance === 'string'
+                          ? interpretation.elementInsight.balance
+                          : ''}
+                      </p>
+                    )}
+                    {interpretation.elementInsight.recommendation && (
+                      <p className="text-xs text-purple-300 italic">
+                        💡 {typeof interpretation.elementInsight.recommendation === 'string'
+                          ? interpretation.elementInsight.recommendation
+                          : ''}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Ten God & Star Insights */}
+                {interpretation.tenGodInsight && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Lightbulb className="w-4 h-4 text-blue-400" weight="fill" />
+                      <h3 className="text-sm font-medium text-white/80">삶의 패턴</h3>
+                    </div>
+                    <p className="text-sm text-white/70 leading-relaxed">
+                      {typeof interpretation.tenGodInsight.dominant === 'string' ? interpretation.tenGodInsight.dominant : ''}{' '}
+                      {typeof interpretation.tenGodInsight.lifePattern === 'string' ? interpretation.tenGodInsight.lifePattern : ''}
+                    </p>
+                  </div>
+                )}
+
+                {/* Star Insights */}
+                {interpretation.starInsight && (interpretation.starInsight.positive || interpretation.starInsight.caution) && (
+                  <div className="p-3 rounded-xl bg-white/5 space-y-2">
+                    {interpretation.starInsight.positive && typeof interpretation.starInsight.positive === 'string' && (
+                      <p className="text-xs text-green-300">
+                        ✨ {interpretation.starInsight.positive}
+                      </p>
+                    )}
+                    {interpretation.starInsight.caution && typeof interpretation.starInsight.caution === 'string' && (
+                      <p className="text-xs text-orange-300">
+                        ⚠️ {interpretation.starInsight.caution}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            ) : null}
+          </div>
+        </GlowingCard>
+      </div>
 
       {/* Save and Share Actions */}
       <motion.div
