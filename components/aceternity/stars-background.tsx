@@ -61,12 +61,12 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
 
         // Use screen dimensions for full coverage on all devices
         const width = window.innerWidth;
-        // Use the maximum of various height measurements to ensure full coverage
+        // Use the maximum of various height measurements + extra for iOS Safari URL bar
         const height = Math.max(
           window.innerHeight,
           document.documentElement.clientHeight,
           window.screen?.height || 0
-        );
+        ) + 200;
 
         canvas.width = width;
         canvas.height = height;
@@ -121,7 +121,8 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className={cn("block", className)}
+      className={cn("block w-full h-full", className)}
+      style={{ minHeight: '100vh' }}
     />
   );
 };
