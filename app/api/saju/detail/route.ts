@@ -19,6 +19,7 @@ import {
   type GroundingContext,
 } from "@/lib/saju/personalized-keywords";
 import type { SajuResult } from "@/lib/saju/types";
+import { GEMINI_MODEL } from "@/lib/constants/ai";
 
 /**
  * 사주 상세 분석 API
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     // Initialize Google GenAI
     const ai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY || "",
+      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || "",
     });
 
     // Check if this category needs Google Grounding
@@ -165,7 +166,7 @@ ${searchQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}
 
     // Call Gemini API
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: GEMINI_MODEL,
       config,
       contents: [
         {

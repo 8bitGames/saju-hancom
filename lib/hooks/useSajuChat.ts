@@ -200,43 +200,20 @@ export function useSajuChat({
             }
           }
         } else {
-          // Handle standard AI SDK stream format
-          // The response is in the format: 0:"chunk"\n0:"chunk"\n...
+          // Handle plain text stream
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
 
             const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split("\n");
-
-            for (const line of lines) {
-              // AI SDK format: 0:"text content"
-              const match = line.match(/^0:"(.*)"/);
-              if (match) {
-                try {
-                  // Parse the JSON-escaped string
-                  const text = JSON.parse(`"${match[1]}"`);
-                  accumulatedContent += text;
-                  setMessages((prev) =>
-                    prev.map((m) =>
-                      m.id === assistantMessageId
-                        ? { ...m, content: accumulatedContent }
-                        : m
-                    )
-                  );
-                } catch {
-                  // If parsing fails, try using the raw match
-                  accumulatedContent += match[1].replace(/\\n/g, "\n").replace(/\\"/g, '"');
-                  setMessages((prev) =>
-                    prev.map((m) =>
-                      m.id === assistantMessageId
-                        ? { ...m, content: accumulatedContent }
-                        : m
-                    )
-                  );
-                }
-              }
-            }
+            accumulatedContent += chunk;
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantMessageId
+                  ? { ...m, content: accumulatedContent }
+                  : m
+              )
+            );
           }
         }
 

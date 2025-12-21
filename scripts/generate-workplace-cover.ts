@@ -1,9 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 import * as fs from "fs";
 import * as path from "path";
+import { GEMINI_IMAGE_MODEL } from "../lib/constants/ai";
 
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
 async function generateWorkplaceCover(): Promise<void> {
@@ -21,7 +22,7 @@ Elements: Floating holographic Five Elements (五行 - Wood, Fire, Earth, Metal,
 
 Style: Professional, harmonious, wise. Professional portrait photography quality. Dark background (70% of image should be dark/shadow areas for text overlay). Deep blues, indigo, blacks, and subtle gold color palette. VERTICAL 9:16 portrait orientation with subjects upright and centered.`;
 
-  const model = "gemini-3-pro-image-preview";
+  const model = GEMINI_IMAGE_MODEL;
 
   const response = await ai.models.generateContent({
     model,
@@ -65,8 +66,8 @@ Style: Professional, harmonious, wise. Professional portrait photography quality
 async function main() {
   console.log("Starting workplace cover image generation...\n");
 
-  if (!process.env.GEMINI_API_KEY) {
-    console.error("Error: GEMINI_API_KEY environment variable is not set");
+  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    console.error("Error: GOOGLE_GENERATIVE_AI_API_KEY environment variable is not set");
     process.exit(1);
   }
 

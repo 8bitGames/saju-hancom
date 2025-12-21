@@ -20,12 +20,13 @@ import {
   type Step6Result,
 } from "./pipeline-schemas";
 import type { SajuAnalysisInput } from "./pipeline-types";
+import { GEMINI_MODEL } from "@/lib/constants/ai";
 
 // ============================================================================
 // 공통 유틸리티
 // ============================================================================
 
-const getModel = () => google("gemini-2.0-flash");
+const getModel = () => google(GEMINI_MODEL);
 
 const currentYear = new Date().getFullYear();
 

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { google } from "@ai-sdk/google";
-import { streamText, UIMessage, convertToModelMessages } from "ai";
+import { streamText } from "ai";
 import {
   getChatPrompt,
   getGenderLabel,
@@ -18,6 +18,12 @@ import {
   generateSajuProfile,
 } from "@/lib/saju/personalized-keywords";
 import type { SajuResult } from "@/lib/saju/types";
+import { GEMINI_MODEL } from "@/lib/constants/ai";
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
 
 /**
  * 사주 기반 AI 상담 채팅 API
@@ -60,8 +66,10 @@ export async function POST(request: NextRequest) {
     });
 
     // Get the last user message for trigger detection
-    const lastUserMessage = messages.filter((m: UIMessage) => m.role === "user").pop();
-    const userMessageText = lastUserMessage?.content || "";
+    const lastUserMessage = messages.filter((m: ChatMessage) => m.role === "user").pop();
+    const userMessageText = typeof lastUserMessage?.content === 'string'
+      ? lastUserMessage.content
+      : "";
 
     // Check if we should trigger a search
     const triggerCheck = enableGrounding ? shouldTriggerSearch(userMessageText) : { shouldSearch: false, trigger: null, reason: "grounding_disabled" };
@@ -69,33 +77,65 @@ export async function POST(request: NextRequest) {
     // If no trigger or grounding disabled, use simple streaming response
     if (!triggerCheck.shouldSearch || !triggerCheck.trigger) {
       const result = streamText({
-        model: google("gemini-2.0-flash"),
+        model: google(GEMINI_MODEL),
         system: systemPrompt,
-        messages: convertToModelMessages(messages as UIMessage[]),
+        messages: messages as Array<{ role: "user" | "assistant"; content: string }>,
       });
 
-      return result.toUIMessageStreamResponse();
+      return result.toTextStreamResponse();
     }
 
-    // 2-stage response with SSE
+    // 2-stage response with SSE using GoogleGenAI directly for better control
     const encoder = new TextEncoder();
+    const geminiApiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
+    if (!geminiApiKey) {
+      // Fallback to simple response if no API key
+      const result = streamText({
+        model: google(GEMINI_MODEL),
+        system: systemPrompt,
+        messages: messages as Array<{ role: "user" | "assistant"; content: string }>,
+      });
+      return result.toTextStreamResponse();
+    }
+
+    const ai = new GoogleGenAI({ apiKey: geminiApiKey });
+
     const stream = new ReadableStream({
       async start(controller) {
         const trigger = triggerCheck.trigger as TriggerResult;
 
         try {
-          // Stage 1: Immediate response without search
-          const primaryResult = await streamText({
-            model: google("gemini-2.0-flash"),
-            system: systemPrompt,
-            messages: convertToModelMessages(messages as UIMessage[]),
+          // Build conversation contents for Gemini
+          const conversationContents = [
+            {
+              role: "user" as const,
+              parts: [{ text: systemPrompt }],
+            },
+            {
+              role: "model" as const,
+              parts: [{ text: "네, 알겠습니다. 사주 상담을 시작하겠습니다." }],
+            },
+            ...(messages as ChatMessage[]).map((m) => ({
+              role: m.role === "user" ? "user" as const : "model" as const,
+              parts: [{ text: m.content }],
+            })),
+          ];
+
+          // Stage 1: Immediate response without search (streaming)
+          const primaryResponse = await ai.models.generateContentStream({
+            model: GEMINI_MODEL,
+            contents: conversationContents,
           });
 
           // Stream the primary response
           let primaryContent = "";
-          for await (const chunk of primaryResult.textStream) {
-            primaryContent += chunk;
-            controller.enqueue(encoder.encode(createSSEMessage("primary", { content: chunk })));
+          for await (const chunk of primaryResponse) {
+            const text = chunk.text || "";
+            if (text) {
+              primaryContent += text;
+              controller.enqueue(encoder.encode(createSSEMessage("primary", { content: text })));
+            }
           }
 
           // Notify that search is starting (silent - no visible message)
@@ -105,10 +145,7 @@ export async function POST(request: NextRequest) {
 
           // Stage 2: Background search with Google Grounding
           if (sajuResult && enableGrounding) {
-            const ai = new GoogleGenAI({
-              apiKey: process.env.GEMINI_API_KEY || "",
-            });
-
+            try {
             const parsedSajuResult: SajuResult = typeof sajuResult === 'string'
               ? JSON.parse(sajuResult)
               : sajuResult;
@@ -149,7 +186,7 @@ Search topic: ${searchQuery}`;
 
             // Call Gemini with Google Search
             const searchResponse = await ai.models.generateContent({
-              model: "gemini-2.0-flash",
+              model: GEMINI_MODEL,
               config: {
                 tools: [{ googleSearch: {} }],
               },
@@ -177,6 +214,13 @@ Search topic: ${searchQuery}`;
                   url: chunk.web?.uri,
                   title: chunk.web?.title,
                 })) || [],
+              })));
+            }
+            } catch (groundingError) {
+              // Grounding failed - just skip enriched response silently
+              console.error("Grounding search failed:", groundingError);
+              controller.enqueue(encoder.encode(createSSEMessage("search_complete", {
+                success: false,
               })));
             }
           }

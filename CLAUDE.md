@@ -65,29 +65,27 @@ npm install -D @types/node
 
 #### Model Selection
 
-- For image generation: use `gemini-3-pro-image-preview`
-- For text generation: use `gemini-flash-lite-latest`
+- All models use constant from `lib/constants/ai.ts`
+- Default model: `gemini-3-flash-preview`
 
 #### Required Code Pattern
 
 ```typescript
 import { GoogleGenAI } from '@google/genai';
+import { GEMINI_MODEL } from '@/lib/constants/ai';
 
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
 const tools = [{ googleSearch: {} }];
 
 const config = {
-  thinkingConfig: {
-    thinkingLevel: 'HIGH',
-  },
   tools,
 };
 
 const response = await ai.models.generateContentStream({
-  model: 'gemini-flash-lite-latest', // or gemini-3-pro-image-preview for images
+  model: GEMINI_MODEL,
   config,
   contents: [
     {

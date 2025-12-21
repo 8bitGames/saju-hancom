@@ -10,6 +10,7 @@ import {
   getLocaleFromRequest,
 } from "@/lib/i18n/prompts";
 import type { Locale } from "@/lib/i18n/config";
+import { GEMINI_MODEL } from "@/lib/constants/ai";
 
 // 사주 운세 해석 결과 스키마
 const SajuFortuneSchema = z.object({
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
 
     // Gemini를 사용한 사주 운세 해석
     const result = await generateObject({
-      model: google("gemini-2.0-flash"),
+      model: google(GEMINI_MODEL),
       schema: SajuFortuneSchema,
       messages: [
         {

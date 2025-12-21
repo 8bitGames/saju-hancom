@@ -1,9 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 import * as fs from "fs";
 import * as path from "path";
+import { GEMINI_IMAGE_MODEL } from "../lib/constants/ai";
 
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
 interface ImageConfig {
@@ -73,7 +74,7 @@ Style: Wise, nostalgic, scholarly. Professional portrait photography quality. Da
 async function generateImage(config: ImageConfig): Promise<void> {
   console.log(`Generating ${config.filename}...`);
 
-  const model = "gemini-3-pro-image-preview";
+  const model = GEMINI_IMAGE_MODEL;
 
   const response = await ai.models.generateContent({
     model,
@@ -117,8 +118,8 @@ async function generateImage(config: ImageConfig): Promise<void> {
 async function main() {
   console.log("Starting cover image generation...\n");
 
-  if (!process.env.GEMINI_API_KEY) {
-    console.error("Error: GEMINI_API_KEY environment variable is not set");
+  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    console.error("Error: GOOGLE_GENERATIVE_AI_API_KEY environment variable is not set");
     process.exit(1);
   }
 

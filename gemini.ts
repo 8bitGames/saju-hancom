@@ -8,6 +8,7 @@ import {
   // @ts-ignore - mime types not installed
 import mime from 'mime';
   import { writeFile } from 'fs';
+  import { GEMINI_MODEL } from './lib/constants/ai';
   
   function saveBinaryFile(fileName: string, content: Buffer) {
     writeFile(fileName, content, 'utf8', (err) => {
@@ -21,7 +22,7 @@ import mime from 'mime';
   
   async function main() {
     const ai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
+      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     });
     const tools = [
       {
@@ -39,7 +40,7 @@ import mime from 'mime';
       },
       tools,
     };
-    const model = 'gemini-3-pro-image-preview';
+    const model = GEMINI_MODEL;
     const contents = [
       {
         role: 'user',
