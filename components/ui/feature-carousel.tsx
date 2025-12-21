@@ -80,15 +80,14 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
 
   return (
     <>
-      {/* Star Background - rendered outside main container to avoid any clipping */}
+      {/* Star Background - extend bottom significantly for iOS Safari URL bar */}
       <div
-        className="fixed inset-0 z-0 pointer-events-none bg-[#0f0a1a]"
+        className="fixed z-0 pointer-events-none bg-[#0f0a1a]"
         style={{
-          /* Extend beyond viewport in all directions to cover iOS Safari URL bar */
-          margin: '-100px',
-          padding: '100px',
-          width: 'calc(100% + 200px)',
-          height: 'calc(100% + 200px)',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: '-500px',
         }}
       >
         <StarsBackground
