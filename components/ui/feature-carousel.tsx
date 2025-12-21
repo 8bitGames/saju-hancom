@@ -80,13 +80,16 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
 
   return (
     <div
-      className={cn("relative h-screen w-full overflow-hidden transition-colors duration-700", className)}
-      style={{
-        background: `linear-gradient(180deg, ${activeTheme?.primary || "#0f172a"} 0%, ${activeTheme?.secondary || "#1e293b"} 100%)`,
-      }}
+      className={cn("relative h-screen h-dvh w-full overflow-hidden bg-[#0f0a1a]", className)}
     >
-      {/* Star Background - changes color based on active card */}
-      <div className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-700">
+      {/* Star Background - fixed and scaled for mobile coverage */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          transform: 'scale(1.3)',
+          transformOrigin: 'center center',
+        }}
+      >
         <StarsBackground
           starDensity={0.0004}
           allStarsTwinkle
@@ -102,9 +105,9 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
 
       {/* Background Glow Effect */}
       <div
-        className="fixed inset-0 opacity-40 transition-all duration-700 pointer-events-none"
+        className="fixed inset-0 opacity-30 transition-all duration-700 pointer-events-none z-[1]"
         style={{
-          background: `radial-gradient(ellipse at 50% 30%, ${activeTheme?.accent || "#8b5cf6"}30, transparent 60%)`,
+          background: `radial-gradient(ellipse at 50% 50%, ${activeTheme?.accent || "#8b5cf6"}40, transparent 70%)`,
         }}
       />
 
@@ -145,19 +148,20 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
         onClose={() => setIsCompanyModalOpen(false)}
       />
 
-      {/* Horizontal Cards Container */}
+      {/* Horizontal Cards Container - horizontal scroll only */}
       <div
         ref={containerRef}
-        className="relative z-10 h-screen flex snap-x snap-mandatory overflow-x-auto scrollbar-hide"
+        className="relative z-10 h-screen h-dvh flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden scrollbar-hide"
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
+          touchAction: "pan-x",
         }}
       >
         {cards.map((card, index) => (
             <div
               key={card.id}
-              className="w-screen h-screen flex-shrink-0 snap-center flex items-center justify-center px-4 pt-16 pb-12"
+              className="w-screen h-screen h-dvh flex-shrink-0 snap-center flex items-center justify-center px-4 pt-16 pb-12"
             >
               <div
                 onClick={() => handleCardClick(card.href)}
