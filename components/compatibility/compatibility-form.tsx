@@ -47,7 +47,16 @@ const MINUTES = [0, 15, 30, 45].map((m) => ({
   label: `${m.toString().padStart(2, "0")}분`,
 }));
 
-const RELATION_TYPES: { value: RelationType; label: string }[] = [
+// 개인 관계 타입
+const PERSONAL_RELATION_TYPES: { value: RelationType; label: string }[] = [
+  { value: "lover", label: "연인" },
+  { value: "spouse", label: "부부" },
+  { value: "friend", label: "친구" },
+  { value: "family", label: "가족" },
+];
+
+// 직장 관계 타입
+const WORK_RELATION_TYPES: { value: RelationType; label: string }[] = [
   { value: "colleague", label: "동료" },
   { value: "supervisor", label: "상사" },
   { value: "subordinate", label: "부하" },
@@ -56,6 +65,8 @@ const RELATION_TYPES: { value: RelationType; label: string }[] = [
   { value: "mentor", label: "멘토" },
   { value: "mentee", label: "멘티" },
 ];
+
+const RELATION_TYPES = [...PERSONAL_RELATION_TYPES, ...WORK_RELATION_TYPES];
 
 function PersonInputSection({
   title,

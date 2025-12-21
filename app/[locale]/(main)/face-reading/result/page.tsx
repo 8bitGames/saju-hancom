@@ -313,6 +313,12 @@ export default function FaceReadingResultPage() {
 
       {/* Action Buttons */}
       <div className="space-y-3 pt-4">
+        <Link href="/face-reading/detail-result" className="block">
+          <button className="w-full h-14 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/30">
+            <Sparkle className="w-5 h-5" weight="fill" />
+            전통 관상학 상세 분석 보기
+          </button>
+        </Link>
         <Link href="/face-reading" className="block">
           <button className="w-full h-14 rounded-xl bg-[#ef4444] text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-[#dc2626] transition-colors">
             <ArrowCounterClockwise className="w-5 h-5" />

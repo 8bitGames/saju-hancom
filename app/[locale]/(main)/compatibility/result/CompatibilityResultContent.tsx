@@ -595,14 +595,14 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
         className="space-y-3 pt-4"
         variants={itemVariants}
       >
-        <Link href={`/compatibility/ai-result?${queryString}`} className="block">
+        <Link href={`/compatibility/detail-result?${queryString}`} className="block">
           <motion.button
-            className="w-full h-14 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-blue-500/30"
-            whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(59, 130, 246, 0.4)" }}
+            className="w-full h-14 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/30"
+            whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(168, 85, 247, 0.4)" }}
             whileTap={{ scale: 0.98 }}
           >
             <Sparkle className="w-5 h-5" weight="fill" />
-            상세 분석 보기
+            전통 명리학 상세 분석 보기
             <ArrowRight className="w-5 h-5" weight="bold" />
           </motion.button>
         </Link>

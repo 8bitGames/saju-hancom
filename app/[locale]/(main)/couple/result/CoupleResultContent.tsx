@@ -17,6 +17,7 @@ import {
   Warning,
   Star,
   FilePdf,
+  ArrowRight,
 } from "@phosphor-icons/react";
 import { downloadCoupleCompatibilityPDF } from "@/lib/pdf/generator";
 import { ELEMENT_KOREAN } from "@/lib/saju";
@@ -311,6 +312,30 @@ export function CoupleResultContent({
       setIsDownloading(false);
     }
   };
+
+  // 상세 분석 URL 생성
+  const detailParams = new URLSearchParams({
+    p1Name: person1.name,
+    p1Year: person1.year.toString(),
+    p1Month: person1.month.toString(),
+    p1Day: person1.day.toString(),
+    p1Hour: person1.hour.toString(),
+    p1Minute: person1.minute.toString(),
+    p1Gender: person1.gender,
+    p1IsLunar: person1.isLunar.toString(),
+    p1City: person1.city,
+    p2Name: person2.name,
+    p2Year: person2.year.toString(),
+    p2Month: person2.month.toString(),
+    p2Day: person2.day.toString(),
+    p2Hour: person2.hour.toString(),
+    p2Minute: person2.minute.toString(),
+    p2Gender: person2.gender,
+    p2IsLunar: person2.isLunar.toString(),
+    p2City: person2.city,
+    relationType: relationType || "dating",
+  });
+  const detailUrl = `/compatibility/detail-result?${detailParams.toString()}`;
 
   return (
     <motion.div
@@ -632,6 +657,19 @@ export function CoupleResultContent({
         className="space-y-3 pt-4"
         variants={itemVariants}
       >
+        {/* 상세 분석 버튼 */}
+        <Link href={detailUrl} className="block">
+          <motion.button
+            className="w-full h-14 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/30"
+            whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(168, 85, 247, 0.4)" }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Sparkle className="w-5 h-5" weight="fill" />
+            전통 명리학 상세 분석 보기
+            <ArrowRight className="w-5 h-5" weight="bold" />
+          </motion.button>
+        </Link>
+
         {/* PDF Download Button */}
         <motion.button
           onClick={handlePDFDownload}
