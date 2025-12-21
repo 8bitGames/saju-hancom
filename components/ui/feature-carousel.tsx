@@ -79,18 +79,16 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
   const activeTheme = cards[activeIndex]?.theme;
 
   return (
-    <div
-      className={cn("relative h-screen h-dvh w-full bg-[#0f0a1a] overflow-hidden", className)}
-    >
-      {/* Star Background - uses vmax for guaranteed full coverage on iOS Safari */}
+    <>
+      {/* Star Background - rendered outside main container to avoid any clipping */}
       <div
-        className="fixed z-0 pointer-events-none bg-[#0f0a1a]"
+        className="fixed inset-0 z-0 pointer-events-none bg-[#0f0a1a]"
         style={{
-          top: '50%',
-          left: '50%',
-          width: '300vmax',
-          height: '300vmax',
-          transform: 'translate(-50%, -50%)',
+          /* Extend beyond viewport in all directions to cover iOS Safari URL bar */
+          margin: '-100px',
+          padding: '100px',
+          width: 'calc(100% + 200px)',
+          height: 'calc(100% + 200px)',
         }}
       >
         <StarsBackground
@@ -113,6 +111,10 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
           background: `radial-gradient(ellipse at 50% 50%, ${activeTheme?.accent || "#8b5cf6"}40, transparent 70%)`,
         }}
       />
+
+      <div
+        className={cn("relative h-screen h-dvh w-full", className)}
+      >
 
       {/* Branding - Top Left */}
       <div className="fixed top-6 left-6 z-50">
@@ -268,6 +270,7 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
           display: none;
         }
       `}</style>
-    </div>
+      </div>
+    </>
   );
 }
