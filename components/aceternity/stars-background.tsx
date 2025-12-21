@@ -19,6 +19,10 @@ interface StarsBackgroundProps {
   className?: string;
 }
 
+// Fixed large height to cover all possible iOS Safari viewport states
+// iPhone 14 Pro Max is ~932pt, plus URL bar, safe areas, etc.
+const CANVAS_MIN_HEIGHT = 1200;
+
 export const StarsBackground: React.FC<StarsBackgroundProps> = ({
   starDensity = 0.00015,
   allStarsTwinkle = true,
@@ -59,14 +63,14 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        // Use screen dimensions for full coverage on all devices
         const width = window.innerWidth;
-        // Use the maximum of various height measurements + extra for iOS Safari URL bar
+        // Use fixed minimum height to guarantee coverage on iOS Safari
+        // This avoids relying on viewport measurements which are unreliable
         const height = Math.max(
           window.innerHeight,
-          document.documentElement.clientHeight,
-          window.screen?.height || 0
-        ) + 200;
+          window.screen?.height || 0,
+          CANVAS_MIN_HEIGHT
+        );
 
         canvas.width = width;
         canvas.height = height;
@@ -75,12 +79,22 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
     };
 
     updateStars();
+
+    // Standard events
     window.addEventListener("resize", updateStars);
     window.addEventListener("orientationchange", updateStars);
+
+    // iOS Safari visualViewport API for URL bar changes
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", updateStars);
+    }
 
     return () => {
       window.removeEventListener("resize", updateStars);
       window.removeEventListener("orientationchange", updateStars);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", updateStars);
+      }
     };
   }, [generateStars]);
 

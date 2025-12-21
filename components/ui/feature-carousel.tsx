@@ -82,16 +82,14 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
     <>
       {/*
         Stars Background Layer
-        - Uses negative bottom to extend beyond iOS Safari URL bar
-        - Oversized to cover all viewport states
+        - Uses fixed large height (not viewport-based) for iOS Safari
+        - 1200px minimum covers all phone screens including URL bar states
       */}
       <div
-        className="fixed z-0 pointer-events-none"
+        className="fixed top-0 left-0 right-0 z-0 pointer-events-none overflow-hidden"
         style={{
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: '-200px',
+          height: '1200px',
+          minHeight: '100vh',
           background: '#0f0a1a',
         }}
       >

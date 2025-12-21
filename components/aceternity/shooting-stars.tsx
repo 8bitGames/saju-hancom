@@ -24,10 +24,13 @@ interface ShootingStarsProps {
   className?: string;
 }
 
+// Fixed minimum height matching stars-background.tsx
+const MIN_HEIGHT = 1200;
+
 const getRandomStartPoint = () => {
   const side = Math.floor(Math.random() * 4);
   const offset = Math.random() * window.innerWidth;
-  const height = Math.max(window.innerHeight, window.screen?.height || 0) + 200;
+  const height = Math.max(window.innerHeight, window.screen?.height || 0, MIN_HEIGHT);
 
   switch (side) {
     case 0:
@@ -89,7 +92,7 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
   useEffect(() => {
     const moveStar = () => {
       if (star) {
-        const height = Math.max(window.innerHeight, window.screen?.height || 0) + 200;
+        const height = Math.max(window.innerHeight, window.screen?.height || 0, MIN_HEIGHT);
         setStar((prevStar) => {
           if (!prevStar) return null;
           const newX =
