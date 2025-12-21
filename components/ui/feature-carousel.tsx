@@ -80,10 +80,10 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
 
   return (
     <>
-      {/* Star Background - 300vmax canvas centered for iOS Safari coverage */}
+      {/* Star Background - transparent canvas, body provides bg color */}
       <div
-        className="fixed inset-0 z-0 pointer-events-none bg-[#0f0a1a]"
-        style={{ overflow: 'visible', height: '100vh' }}
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{ overflow: 'visible' }}
       >
         <StarsBackground
           starDensity={0.0004}
