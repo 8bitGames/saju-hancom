@@ -121,8 +121,7 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className={cn("block w-full h-full", className)}
-      style={{ minHeight: '100vh' }}
+      className={cn("absolute inset-0 w-full h-full", className)}
     />
   );
 };

@@ -27,7 +27,7 @@ interface ShootingStarsProps {
 const getRandomStartPoint = () => {
   const side = Math.floor(Math.random() * 4);
   const offset = Math.random() * window.innerWidth;
-  const height = Math.max(window.innerHeight, window.screen?.height || 0);
+  const height = Math.max(window.innerHeight, window.screen?.height || 0) + 200;
 
   switch (side) {
     case 0:
@@ -89,7 +89,7 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
   useEffect(() => {
     const moveStar = () => {
       if (star) {
-        const height = Math.max(window.innerHeight, window.screen?.height || 0);
+        const height = Math.max(window.innerHeight, window.screen?.height || 0) + 200;
         setStar((prevStar) => {
           if (!prevStar) return null;
           const newX =
