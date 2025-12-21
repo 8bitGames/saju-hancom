@@ -135,6 +135,21 @@ body {
   letter-spacing: -0.01em;
 }
 
+/* iOS Safari specific - solid background behind URL bar */
+@supports (-webkit-touch-callout: none) {
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -300px;
+    left: 0;
+    right: 0;
+    height: 400px;
+    background: #0f0a1a;
+    z-index: -1;
+    pointer-events: none;
+  }
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 6px;

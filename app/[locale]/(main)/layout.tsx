@@ -21,13 +21,10 @@ export default function MainLayout({
 
   return (
     <div className="min-h-screen min-h-dvh bg-[#0f0a1a] relative overflow-x-hidden">
-      {/* Stars Background - scaled up to cover mobile browser chrome changes */}
+      {/* Stars Background - canvas extends 300px for iOS Safari URL bar */}
       <div
         className="fixed inset-0 z-0 pointer-events-none"
-        style={{
-          transform: 'scale(1.3)',
-          transformOrigin: 'center center',
-        }}
+        style={{ overflow: 'visible' }}
       >
         <StarsBackground
           starDensity={0.0004}

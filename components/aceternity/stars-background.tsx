@@ -60,9 +60,11 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
         if (!ctx) return;
 
         const { width, height } = canvas.getBoundingClientRect();
+        // Add extra height for iOS Safari URL bar area
+        const extraHeight = 300;
         canvas.width = width;
-        canvas.height = height;
-        setStars(generateStars(width, height));
+        canvas.height = height + extraHeight;
+        setStars(generateStars(width, height + extraHeight));
       }
     };
 
@@ -115,7 +117,8 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className={cn("h-full w-full absolute inset-0", className)}
+      className={cn("w-full absolute left-0 top-0", className)}
+      style={{ minHeight: 'calc(100% + 300px)' }}
     />
   );
 };
