@@ -20,9 +20,15 @@ export default function MainLayout({
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen min-h-dvh bg-[#0f0a1a] relative overflow-hidden">
-      {/* Stars Background - extended beyond viewport for mobile browser chrome */}
-      <div className="fixed z-0 pointer-events-none" style={{ top: '-10vh', left: 0, right: 0, bottom: '-10vh' }}>
+    <div className="min-h-screen min-h-dvh bg-[#0f0a1a] relative overflow-x-hidden">
+      {/* Stars Background - scaled up to cover mobile browser chrome changes */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          transform: 'scale(1.3)',
+          transformOrigin: 'center center',
+        }}
+      >
         <StarsBackground
           starDensity={0.0004}
           allStarsTwinkle

@@ -107,8 +107,8 @@ html {
   -webkit-tap-highlight-color: transparent;
   /* Larger base font size for better readability */
   font-size: 18px;
-  /* Fill entire viewport with background color */
-  background-color: var(--background);
+  /* Fill entire viewport with background color - matches stars bg */
+  background-color: #0f0a1a;
   min-height: 100%;
   height: 100%;
 }
@@ -121,7 +121,8 @@ html {
 }
 
 body {
-  background: var(--background);
+  /* Match stars background color exactly */
+  background: #0f0a1a;
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
