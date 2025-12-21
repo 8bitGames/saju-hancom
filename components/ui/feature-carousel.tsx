@@ -34,6 +34,7 @@ interface FeatureCarouselProps {
 
 export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
   const router = useRouter();
@@ -55,6 +56,21 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
     container.addEventListener("scroll", handleScroll, { passive: true });
     return () => container.removeEventListener("scroll", handleScroll);
   }, [cards.length]);
+
+  // Control video playback - only play the active video
+  useEffect(() => {
+    videoRefs.current.forEach((video, index) => {
+      if (!video) return;
+
+      if (index === activeIndex) {
+        video.play().catch(() => {
+          // Autoplay might be blocked, ignore error
+        });
+      } else {
+        video.pause();
+      }
+    });
+  }, [activeIndex]);
 
   const handleCardClick = (href: string) => {
     router.push(href);
@@ -154,11 +170,14 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
                 <div className="absolute inset-0">
                   {card.video ? (
                     <video
+                      ref={(el) => {
+                        videoRefs.current[index] = el;
+                      }}
                       src={card.video}
-                      autoPlay
                       loop
                       muted
                       playsInline
+                      preload={index === 0 ? "auto" : "metadata"}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                   ) : card.image ? (
