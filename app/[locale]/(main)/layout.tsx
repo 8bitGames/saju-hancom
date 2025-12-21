@@ -37,17 +37,17 @@ export default function MainLayout({
       </div>
 
       {/* Branding - Top Left */}
-      <div className="fixed top-6 left-6 z-50 flex items-center gap-3">
+      <div className="fixed top-4 sm:top-6 left-3 sm:left-6 z-50 flex items-center gap-2 sm:gap-3">
         <button
           onClick={() => router.back()}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
+          className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
           aria-label="Go back"
         >
-          <CaretLeft className="w-5 h-5" weight="bold" />
+          <CaretLeft className="w-4 h-4 sm:w-5 sm:h-5" weight="bold" />
         </button>
         <button
           onClick={() => router.push("/")}
-          className="text-white font-bold text-2xl sm:text-3xl hover:text-white/80 transition-colors"
+          className="text-white font-bold text-lg sm:text-2xl md:text-3xl hover:text-white/80 transition-colors truncate max-w-[80px] sm:max-w-none"
           style={{
             fontFamily: locale === "ko" ? "var(--font-noto-sans-kr), sans-serif" : "var(--font-geist-mono), monospace",
           }}
@@ -57,20 +57,20 @@ export default function MainLayout({
       </div>
 
       {/* Top Right Controls */}
-      <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
+      <div className="fixed top-4 sm:top-6 right-3 sm:right-6 z-50 flex items-center gap-1.5 sm:gap-3">
         <button
           onClick={() => setIsCompanyModalOpen(true)}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
+          className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
           aria-label="About"
         >
-          <Buildings className="w-5 h-5" weight="bold" />
+          <Buildings className="w-4 h-4 sm:w-5 sm:h-5" weight="bold" />
         </button>
         <button
           onClick={() => router.push("/history")}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
+          className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
           aria-label="History"
         >
-          <ClockCounterClockwise className="w-5 h-5" weight="bold" />
+          <ClockCounterClockwise className="w-4 h-4 sm:w-5 sm:h-5" weight="bold" />
         </button>
         <LanguageToggle />
       </div>
@@ -82,7 +82,7 @@ export default function MainLayout({
       />
 
       {/* Main Content */}
-      <main className="relative z-10 pt-20 pb-8">
+      <main className="relative z-10 pt-16 sm:pt-20 pb-8">
         <div className="max-w-md mx-auto px-4 py-6">{children}</div>
       </main>
     </div>
