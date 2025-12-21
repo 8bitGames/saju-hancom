@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/lib/i18n/navigation";
 import { Users, ArrowCounterClockwise, ChatCircle, Handshake, Heart, ChartBar, Sparkle, User } from "@/components/ui/icons";
 import { ELEMENT_KOREAN } from "@/lib/saju";
 import { calculatePersonCompatibility } from "@/lib/compatibility/calculator";

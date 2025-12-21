@@ -57,7 +57,7 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
                       {count}
                     </span>
                   </div>
-                  <p className="text-xs text-[var(--text-secondary)] line-clamp-2">
+                  <p className="text-xs text-[var(--text-secondary)]">
                     {info.description}
                   </p>
                 </div>

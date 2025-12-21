@@ -1,11 +1,14 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Link, useRouter } from "@/lib/i18n/navigation";
 import { Sparkle, ArrowCounterClockwise, X } from "@/components/ui/icons";
 import { SparklesCore } from "@/components/aceternity/sparkles";
 import { Spotlight } from "@/components/aceternity/spotlight";
+import { ShootingStars } from "@/components/aceternity/shooting-stars";
+import { StarsBackground } from "@/components/aceternity/stars-background";
+import { MysticalLoader } from "@/components/saju/MysticalLoader";
 import { useSajuPipelineStream } from "@/lib/hooks/useSajuPipelineStream";
 import PipelineProgress from "@/components/saju/PipelineProgress";
 import PipelineResult from "@/components/saju/PipelineResult";
@@ -65,6 +68,17 @@ function SajuFortuneContent() {
   if (state.status === "idle" || state.status === "running") {
     return (
       <div className="relative min-h-screen pb-6 sm:pb-8">
+        {/* Mystical Background Effects */}
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <StarsBackground starDensity={0.0004} />
+          <ShootingStars
+            starColor="var(--accent)"
+            trailColor="var(--element-water)"
+            minDelay={1500}
+            maxDelay={4000}
+          />
+        </div>
+
         <Spotlight
           className="-top-40 left-0 md:left-60 md:-top-20"
           fill="var(--accent)"
@@ -86,9 +100,6 @@ function SajuFortuneContent() {
             </div>
 
             <div className="relative z-10 space-y-1.5 sm:space-y-2">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--element-fire)] flex items-center justify-center animate-pulse">
-                <Sparkle className="w-8 h-8 sm:w-10 sm:h-10 text-white" weight="fill" />
-              </div>
               <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
                 전문 사주 분석
               </h1>
@@ -275,13 +286,27 @@ export default function SajuFortunePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center space-y-3 sm:space-y-4">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--element-fire)] flex items-center justify-center animate-pulse">
-              <Sparkle className="w-8 h-8 sm:w-10 sm:h-10 text-white" weight="fill" />
-            </div>
-            <p className="text-base sm:text-lg text-[var(--text-secondary)]">전문 분석 준비 중...</p>
-            <p className="text-xs sm:text-sm text-[var(--text-tertiary)]">잠시만 기다려주세요</p>
+        <div className="relative min-h-screen flex items-center justify-center">
+          {/* Mystical Background */}
+          <div className="fixed inset-0 z-0 pointer-events-none">
+            <StarsBackground starDensity={0.0003} />
+            <ShootingStars
+              starColor="var(--accent)"
+              trailColor="var(--element-water)"
+              minDelay={2000}
+              maxDelay={5000}
+            />
+          </div>
+
+          <div className="relative z-10">
+            <MysticalLoader
+              currentStep={0}
+              totalSteps={6}
+              stepName="분석 준비 중..."
+            />
+            <p className="text-center text-xs sm:text-sm text-[var(--text-tertiary)] mt-4">
+              잠시만 기다려주세요
+            </p>
           </div>
         </div>
       }

@@ -103,10 +103,17 @@
 
 /* Base Styles - Optimized for 40-60대 (Senior-friendly) */
 html {
-  scroll-behavior: smooth;
+  /* Note: scroll-behavior: smooth 제거 - Next.js 클라이언트 네비게이션과 충돌 발생 */
   -webkit-tap-highlight-color: transparent;
   /* Larger base font size for better readability */
   font-size: 18px;
+}
+
+/* 앵커 링크에만 부드러운 스크롤 적용 (네비게이션에는 영향 없음) */
+@media (prefers-reduced-motion: no-preference) {
+  html:focus-within {
+    scroll-behavior: smooth;
+  }
 }
 
 body {

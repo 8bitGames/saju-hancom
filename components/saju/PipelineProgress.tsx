@@ -1,12 +1,16 @@
 /**
  * 사주 분석 파이프라인 진행 상황 컴포넌트
- * 6단계 분석 과정을 시각적으로 표시
+ * 6단계 분석 과정을 신비로운 스타일로 표시
  */
 
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import type { PipelineState } from "@/lib/hooks/useSajuPipelineStream";
+import { MysticalLoader, MysticalStepCard } from "./MysticalLoader";
+import { ShootingStars } from "@/components/aceternity/shooting-stars";
+import { StarsBackground } from "@/components/aceternity/stars-background";
 
 interface PipelineProgressProps {
   state: PipelineState;
@@ -23,128 +27,121 @@ const STEP_INFO = [
 
 export default function PipelineProgress({ state }: PipelineProgressProps) {
   const { status, currentStep, completedSteps } = state;
-  const progress = (completedSteps.length / 6) * 100;
 
   if (status === "idle") return null;
 
+  const currentStepInfo = STEP_INFO.find((s) => s.step === currentStep);
+
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-lg">
-      {/* 헤더 */}
-      <div className="text-center mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          {status === "running" ? "사주 분석 중..." : status === "completed" ? "분석 완료!" : "오류 발생"}
-        </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          {status === "running" && currentStep > 0
-            ? STEP_INFO[currentStep - 1]?.description
-            : status === "completed"
-            ? "모든 분석이 완료되었습니다"
-            : state.error}
-        </p>
-      </div>
-
-      {/* 전체 진행률 바 */}
-      <div className="relative h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-8">
-        <div
-          className="absolute top-0 left-0 h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500 ease-out"
-          style={{ width: `${progress}%` }}
+    <div className="relative w-full max-w-2xl mx-auto">
+      {/* Mystical background effects */}
+      <div className="absolute inset-0 -z-10 overflow-hidden rounded-2xl">
+        <StarsBackground starDensity={0.0005} className="opacity-50" />
+        <ShootingStars
+          starColor="var(--accent)"
+          trailColor="var(--element-fire)"
+          minDelay={3000}
+          maxDelay={6000}
         />
+      </div>
+
+      {/* Main container with glass effect */}
+      <div className="relative p-4 sm:p-6 rounded-2xl bg-[var(--background-card)]/80 backdrop-blur-xl border border-[var(--border)]/50">
+        {/* Mystical Loader - Only show when running */}
         {status === "running" && (
-          <div
-            className="absolute top-0 h-full w-20 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"
-            style={{ left: `${progress - 10}%` }}
-          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-6 sm:mb-8"
+          >
+            <MysticalLoader
+              currentStep={completedSteps.length}
+              totalSteps={6}
+              stepName={currentStepInfo?.name}
+            />
+          </motion.div>
         )}
-      </div>
 
-      {/* 단계별 표시 */}
-      <div className="space-y-3">
-        {STEP_INFO.map((stepInfo) => {
-          const isCompleted = completedSteps.some((s) => s.step === stepInfo.step);
-          const isCurrent = currentStep === stepInfo.step && status === "running";
-          const isPending = !isCompleted && !isCurrent;
-          const completedData = completedSteps.find((s) => s.step === stepInfo.step);
-
-          return (
-            <div
-              key={stepInfo.step}
-              className={`flex items-center p-3 rounded-xl transition-all duration-300 ${
-                isCompleted
-                  ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
-                  : isCurrent
-                  ? "bg-purple-50 dark:bg-purple-900/20 border border-purple-300 dark:border-purple-700 animate-pulse"
-                  : "bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 opacity-50"
-              }`}
+        {/* Completed state header */}
+        {status === "completed" && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-6"
+          >
+            <motion.div
+              className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-br from-[var(--element-wood)] to-[var(--accent)] flex items-center justify-center text-3xl sm:text-4xl mb-4"
+              animate={{
+                boxShadow: [
+                  "0 0 20px var(--element-wood)",
+                  "0 0 40px var(--element-wood)",
+                  "0 0 20px var(--element-wood)",
+                ],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
             >
-              {/* 아이콘 */}
-              <div
-                className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-xl ${
-                  isCompleted
-                    ? "bg-green-100 dark:bg-green-800"
-                    : isCurrent
-                    ? "bg-purple-100 dark:bg-purple-800"
-                    : "bg-gray-100 dark:bg-gray-700"
-                }`}
-              >
-                {isCompleted ? "✓" : stepInfo.icon}
-              </div>
-
-              {/* 내용 */}
-              <div className="ml-4 flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`font-medium ${
-                      isCompleted
-                        ? "text-green-700 dark:text-green-300"
-                        : isCurrent
-                        ? "text-purple-700 dark:text-purple-300"
-                        : "text-gray-500 dark:text-gray-400"
-                    }`}
-                  >
-                    {stepInfo.name}
-                  </span>
-                  {isCompleted && (
-                    <span className="text-xs text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900 px-2 py-0.5 rounded-full">
-                      완료
-                    </span>
-                  )}
-                  {isCurrent && (
-                    <span className="text-xs text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900 px-2 py-0.5 rounded-full">
-                      분석 중...
-                    </span>
-                  )}
-                </div>
-
-                {/* 완료된 단계의 요약 */}
-                {isCompleted && completedData?.summary && (
-                  <p className="text-sm text-green-600 dark:text-green-400 mt-1 truncate">
-                    {completedData.summary}
-                  </p>
-                )}
-
-                {/* 진행 중인 단계의 설명 */}
-                {isCurrent && (
-                  <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">
-                    {stepInfo.description}
-                  </p>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* 하단 정보 */}
-      <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-        {status === "running" ? (
-          <p>
-            {completedSteps.length} / 6 단계 완료 ({Math.round(progress)}%)
-          </p>
-        ) : status === "completed" ? (
-          <p>🎊 분석이 성공적으로 완료되었습니다!</p>
-        ) : (
-          <p className="text-red-500">분석 중 오류가 발생했습니다. 다시 시도해주세요.</p>
+              ✨
+            </motion.div>
+            <h3 className="text-lg sm:text-xl font-bold text-[var(--text-primary)]">
+              분석이 완료되었습니다!
+            </h3>
+            <p className="text-sm sm:text-base text-[var(--text-secondary)] mt-1">
+              모든 단계가 성공적으로 완료되었습니다
+            </p>
+          </motion.div>
         )}
+
+        {/* Step cards */}
+        <div className="space-y-2 sm:space-y-3">
+          {STEP_INFO.map((stepInfo) => {
+            const isCompleted = completedSteps.some((s) => s.step === stepInfo.step);
+            const isCurrent = currentStep === stepInfo.step && status === "running";
+            const completedData = completedSteps.find((s) => s.step === stepInfo.step);
+
+            return (
+              <MysticalStepCard
+                key={stepInfo.step}
+                step={stepInfo.step}
+                name={stepInfo.name}
+                icon={stepInfo.icon}
+                description={stepInfo.description}
+                isCompleted={isCompleted}
+                isCurrent={isCurrent}
+                summary={completedData?.summary}
+              />
+            );
+          })}
+        </div>
+
+        {/* Footer info */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-4 sm:mt-6 pt-4 border-t border-[var(--border)]/30"
+        >
+          {status === "running" ? (
+            <div className="flex items-center justify-center gap-2 text-sm sm:text-base text-[var(--text-secondary)]">
+              <motion.span
+                animate={{ opacity: [1, 0.5, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                🔮
+              </motion.span>
+              <span>
+                {completedSteps.length} / 6 단계 완료 ({Math.round((completedSteps.length / 6) * 100)}%)
+              </span>
+            </div>
+          ) : status === "completed" ? (
+            <p className="text-center text-sm sm:text-base text-[var(--element-wood)]">
+              🎊 모든 분석이 완료되었습니다!
+            </p>
+          ) : (
+            <p className="text-center text-sm sm:text-base text-[var(--error)]">
+              분석 중 오류가 발생했습니다. 다시 시도해주세요.
+            </p>
+          )}
+        </motion.div>
       </div>
     </div>
   );

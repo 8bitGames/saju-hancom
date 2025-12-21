@@ -47,22 +47,26 @@ export function PillarDisplay({
   return (
     <div className="flex flex-col items-center gap-2">
       {/* Label */}
-      <span className="text-xs text-[var(--text-tertiary)]">{label}</span>
+      <span
+        className={cn(
+          "text-xs",
+          isDayMaster
+            ? "text-[var(--accent)] font-semibold"
+            : "text-[var(--text-tertiary)]"
+        )}
+      >
+        {label}
+      </span>
 
       {/* Pillar Card */}
       <div
         className={cn(
-          "relative flex flex-col items-center gap-1 p-3 rounded-xl transition-all",
+          "flex flex-col items-center gap-1 p-3 rounded-xl transition-all",
           isDayMaster
             ? "glass-card ring-2 ring-[var(--accent)] shadow-lg"
             : "glass-card"
         )}
       >
-        {isDayMaster && (
-          <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[var(--accent)] rounded-full">
-            <span className="text-[10px] text-white font-medium">일주</span>
-          </div>
-        )}
 
         {/* Stem (Heavenly) */}
         <div className="flex flex-col items-center">

@@ -16,6 +16,9 @@ import {
   GlowingStarsDescription,
 } from "@/components/aceternity/glowing-stars";
 import { Meteors } from "@/components/aceternity/meteors";
+import { ShootingStars } from "@/components/aceternity/shooting-stars";
+import { StarsBackground } from "@/components/aceternity/stars-background";
+import { CardSpotlight } from "@/components/aceternity/card-spotlight";
 
 export default function HomePage() {
   const t = useTranslations("home");
@@ -25,6 +28,17 @@ export default function HomePage() {
 
   return (
     <div className="relative min-h-screen">
+      {/* Mystical Background Effects */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <StarsBackground starDensity={0.0003} />
+        <ShootingStars
+          starColor="var(--accent)"
+          trailColor="var(--element-water)"
+          minDelay={2000}
+          maxDelay={5000}
+        />
+      </div>
+
       {/* Spotlight Effect */}
       <Spotlight
         className="-top-40 left-0 md:left-60 md:-top-20"
@@ -88,45 +102,41 @@ export default function HomePage() {
         <section className="space-y-4 sm:space-y-6 px-1">
           {/* Saju Card with Glowing Stars */}
           <Link href="/saju" className="block group">
-            <GlowingStarsBackgroundCard className="relative overflow-hidden">
+            <GlowingStarsBackgroundCard>
               <Meteors number={10} />
-              <div className="relative z-10">
-                <div className="flex items-start gap-3 sm:gap-5 p-1 sm:p-2">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl bg-gradient-to-br from-[var(--element-wood)] to-[var(--element-fire)] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                    <Sparkle className="w-6 h-6 sm:w-8 sm:h-8 text-white" weight="fill" />
+              <div className="flex items-start gap-3 sm:gap-5">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl bg-gradient-to-br from-[var(--element-wood)] to-[var(--element-fire)] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[var(--element-fire)]/20">
+                  <Sparkle className="w-6 h-6 sm:w-8 sm:h-8 text-white" weight="fill" />
+                </div>
+                <div className="flex-1 space-y-1.5 sm:space-y-2 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <GlowingStarsTitle>{t("cards.saju.title")}</GlowingStarsTitle>
+                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--text-tertiary)] group-hover:text-[var(--accent)] group-hover:translate-x-2 transition-all duration-300 flex-shrink-0" />
                   </div>
-                  <div className="flex-1 space-y-1.5 sm:space-y-2 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <GlowingStarsTitle>{t("cards.saju.title")}</GlowingStarsTitle>
-                      <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--text-tertiary)] group-hover:text-[var(--accent)] group-hover:translate-x-2 transition-all duration-300 flex-shrink-0" />
-                    </div>
-                    <GlowingStarsDescription>
-                      {t("cards.saju.description")}
-                    </GlowingStarsDescription>
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-2 sm:pt-3">
-                      <span className="element-badge element-badge-wood">{tElements("wood")}</span>
-                      <span className="element-badge element-badge-fire">{tElements("fire")}</span>
-                      <span className="element-badge element-badge-earth">{tElements("earth")}</span>
-                      <span className="element-badge element-badge-metal">{tElements("metal")}</span>
-                      <span className="element-badge element-badge-water">{tElements("water")}</span>
-                    </div>
+                  <GlowingStarsDescription>
+                    {t("cards.saju.description")}
+                  </GlowingStarsDescription>
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-2 sm:pt-3">
+                    <span className="element-badge element-badge-wood">{tElements("wood")}</span>
+                    <span className="element-badge element-badge-fire">{tElements("fire")}</span>
+                    <span className="element-badge element-badge-earth">{tElements("earth")}</span>
+                    <span className="element-badge element-badge-metal">{tElements("metal")}</span>
+                    <span className="element-badge element-badge-water">{tElements("water")}</span>
                   </div>
                 </div>
               </div>
             </GlowingStarsBackgroundCard>
           </Link>
 
-          {/* Person Compatibility Card with Moving Border */}
+          {/* Person Compatibility Card with Spotlight Effect */}
           <Link href="/compatibility" className="block group">
-            <MovingBorder
-              duration={3000}
-              className="p-4 sm:p-6 rounded-lg sm:rounded-xl"
-              containerClassName="w-full"
-              rx="12px"
-              ry="12px"
+            <CardSpotlight
+              className="p-4 sm:p-6"
+              color="rgba(59, 130, 246, 0.15)"
+              radius={400}
             >
               <div className="flex items-start gap-3 sm:gap-5">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl bg-gradient-to-br from-[var(--element-water)] to-[var(--accent)] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl bg-gradient-to-br from-[var(--element-water)] to-[var(--accent)] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[var(--element-water)]/20">
                   <Handshake className="w-6 h-6 sm:w-8 sm:h-8 text-white" weight="fill" />
                 </div>
                 <div className="flex-1 space-y-1.5 sm:space-y-2 min-w-0">
@@ -153,15 +163,19 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-            </MovingBorder>
+            </CardSpotlight>
           </Link>
 
-          {/* Face Reading Card with Background Gradient */}
+          {/* Face Reading Card with Spotlight Effect */}
           <Link href="/face-reading" className="block group">
-            <BackgroundGradient className="rounded-lg sm:rounded-xl p-4 sm:p-6" containerClassName="w-full">
+            <CardSpotlight
+              className="p-4 sm:p-6"
+              color="rgba(139, 92, 246, 0.15)"
+              radius={400}
+            >
               <div className="flex items-start gap-3 sm:gap-5">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl bg-gradient-to-br from-[var(--element-metal)] to-[var(--element-water)] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                  <Camera className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl bg-gradient-to-br from-[var(--element-metal)] to-[var(--accent)] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[var(--accent)]/20">
+                  <Camera className="w-6 h-6 sm:w-8 sm:h-8 text-[var(--background)]" />
                 </div>
                 <div className="flex-1 space-y-1.5 sm:space-y-2 min-w-0">
                   <div className="flex items-center justify-between">
@@ -174,22 +188,22 @@ export default function HomePage() {
                     {t("cards.faceReading.description")}
                   </p>
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-2 sm:pt-3">
-                    <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--background-elevated)]/50 text-xs sm:text-sm text-[var(--text-secondary)]">
+                    <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--background-elevated)] text-xs sm:text-sm text-[var(--text-secondary)]">
                       {t("cards.faceReading.forehead")}
                     </span>
-                    <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--background-elevated)]/50 text-xs sm:text-sm text-[var(--text-secondary)]">
+                    <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--background-elevated)] text-xs sm:text-sm text-[var(--text-secondary)]">
                       {t("cards.faceReading.eyes")}
                     </span>
-                    <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--background-elevated)]/50 text-xs sm:text-sm text-[var(--text-secondary)]">
+                    <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--background-elevated)] text-xs sm:text-sm text-[var(--text-secondary)]">
                       {t("cards.faceReading.nose")}
                     </span>
-                    <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--background-elevated)]/50 text-xs sm:text-sm text-[var(--text-secondary)]">
+                    <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--background-elevated)] text-xs sm:text-sm text-[var(--text-secondary)]">
                       {t("cards.faceReading.mouth")}
                     </span>
                   </div>
                 </div>
               </div>
-            </BackgroundGradient>
+            </CardSpotlight>
           </Link>
         </section>
 

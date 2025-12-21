@@ -43,7 +43,7 @@ export function StarsDisplay({ stars }: StarsDisplayProps) {
                     {star.name}
                   </span>
                 </div>
-                <p className="text-xs text-[var(--text-secondary)] line-clamp-2">
+                <p className="text-xs text-[var(--text-secondary)]">
                   {star.description}
                 </p>
               </div>
@@ -73,7 +73,7 @@ export function StarsDisplay({ stars }: StarsDisplayProps) {
                     {star.name}
                   </span>
                 </div>
-                <p className="text-xs text-[var(--text-secondary)] line-clamp-2">
+                <p className="text-xs text-[var(--text-secondary)]">
                   {star.description}
                 </p>
               </div>

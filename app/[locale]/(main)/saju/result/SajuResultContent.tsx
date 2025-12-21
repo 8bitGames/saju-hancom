@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/lib/i18n/navigation";
 import { Sparkle, ArrowCounterClockwise } from "@/components/ui/icons";
 import { calculateSaju, STEM_KOREAN, ELEMENT_KOREAN } from "@/lib/saju";
 import { getLongitudeByCity } from "@/lib/saju/solar-time";

@@ -21,14 +21,16 @@ export const GlowingStarsBackgroundCard = ({
         setMouseEnter(false);
       }}
       className={cn(
-        "p-4 max-w-md h-full w-full rounded-xl border border-[var(--border)] bg-[var(--background-card)]",
+        "p-4 sm:p-6 w-full rounded-xl border border-[var(--border)] bg-[var(--background-card)] relative overflow-hidden",
         className
       )}
     >
-      <div className="flex justify-center items-center">
+      {/* Star illustration as absolute overlay */}
+      <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
         <Illustration mouseEnter={mouseEnter} />
       </div>
-      <div className="px-2 pb-4">{children}</div>
+      {/* Content */}
+      <div className="relative z-10">{children}</div>
     </div>
   );
 };
@@ -82,7 +84,7 @@ export const Illustration = ({ mouseEnter }: { mouseEnter: boolean }) => {
 
   return (
     <div
-      className="h-48 p-1 w-full"
+      className="absolute inset-0 p-1 w-full h-full opacity-60"
       style={{
         display: "grid",
         gridTemplateColumns: `repeat(${columns}, 1fr)`,

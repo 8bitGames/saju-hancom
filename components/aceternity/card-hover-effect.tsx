@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Link from "next/link";
+import { Link } from "@/lib/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 export const HoverEffect = ({
