@@ -82,14 +82,15 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
     <div
       className={cn("relative h-screen h-dvh w-full bg-[#0f0a1a] overflow-hidden", className)}
     >
-      {/* Star Background - extends beyond viewport in all directions for iOS Safari URL bar */}
+      {/* Star Background - uses vmax for guaranteed full coverage on iOS Safari */}
       <div
-        className="fixed z-0 pointer-events-none"
+        className="fixed z-0 pointer-events-none bg-[#0f0a1a]"
         style={{
-          top: '-50vh',
-          bottom: '-50vh',
-          left: '-25vw',
-          right: '-25vw',
+          top: '50%',
+          left: '50%',
+          width: '300vmax',
+          height: '300vmax',
+          transform: 'translate(-50%, -50%)',
         }}
       >
         <StarsBackground
