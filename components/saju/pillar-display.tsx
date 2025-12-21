@@ -18,19 +18,19 @@ interface PillarDisplayProps {
 }
 
 const elementColorMap: Record<Element, string> = {
-  wood: "bg-element-wood",
-  fire: "bg-element-fire",
-  earth: "bg-element-earth",
-  metal: "bg-element-metal",
-  water: "bg-element-water",
+  wood: "bg-[#22c55e]",
+  fire: "bg-[#ef4444]",
+  earth: "bg-[#eab308]",
+  metal: "bg-[#94a3b8]",
+  water: "bg-[#3b82f6]",
 };
 
 const elementTextColorMap: Record<Element, string> = {
-  wood: "text-element-wood",
-  fire: "text-element-fire",
-  earth: "text-element-earth",
-  metal: "text-element-metal",
-  water: "text-element-water",
+  wood: "text-[#22c55e]",
+  fire: "text-[#ef4444]",
+  earth: "text-[#eab308]",
+  metal: "text-[#94a3b8]",
+  water: "text-[#3b82f6]",
 };
 
 export function PillarDisplay({
@@ -51,8 +51,8 @@ export function PillarDisplay({
         className={cn(
           "text-xs",
           isDayMaster
-            ? "text-[var(--accent)] font-semibold"
-            : "text-[var(--text-tertiary)]"
+            ? "text-[#a855f7] font-semibold"
+            : "text-white/40"
         )}
       >
         {label}
@@ -61,10 +61,8 @@ export function PillarDisplay({
       {/* Pillar Card */}
       <div
         className={cn(
-          "flex flex-col items-center gap-1 p-3 rounded-xl transition-all",
-          isDayMaster
-            ? "glass-card ring-2 ring-[var(--accent)] shadow-lg"
-            : "glass-card"
+          "flex flex-col items-center gap-1 p-3 rounded-xl transition-all bg-white/5 border border-white/10",
+          isDayMaster && "ring-2 ring-[#a855f7]"
         )}
       >
 
@@ -81,7 +79,7 @@ export function PillarDisplay({
           >
             {pillar.gan}
           </div>
-          <span className="text-xs text-[var(--text-secondary)] mt-1">
+          <span className="text-xs text-white/60 mt-1">
             {stemKorean}
           </span>
           <span
@@ -95,7 +93,7 @@ export function PillarDisplay({
         </div>
 
         {/* Divider */}
-        <div className="w-full h-px bg-[var(--border)] my-1" />
+        <div className="w-full h-px bg-white/10 my-1" />
 
         {/* Branch (Earthly) */}
         <div className="flex flex-col items-center">
@@ -110,7 +108,7 @@ export function PillarDisplay({
           >
             {pillar.zhi}
           </div>
-          <span className="text-xs text-[var(--text-secondary)] mt-1">
+          <span className="text-xs text-white/60 mt-1">
             {branchKorean}
           </span>
           <span

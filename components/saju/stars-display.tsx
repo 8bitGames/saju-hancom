@@ -1,6 +1,7 @@
 "use client";
 
-import { Star, Shield } from "@/components/ui/icons";
+import { Star, Shield, Sparkle } from "@phosphor-icons/react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { Star as StarType } from "@/lib/saju/types";
 
@@ -14,39 +15,57 @@ export function StarsDisplay({ stars }: StarsDisplayProps) {
 
   if (stars.length === 0) {
     return (
-      <div className="text-center py-4 text-[var(--text-tertiary)]">
+      <div className="text-center py-6 text-white/40">
+        <Sparkle className="w-8 h-8 mx-auto mb-2 opacity-50" />
         <p className="text-sm">발견된 신살이 없습니다</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Auspicious Stars */}
       {auspicious.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Star className="w-4 h-4 text-[var(--warning)]" />
-            <h4 className="text-sm font-medium text-[var(--text-primary)]">
-              길신 ({auspicious.length})
+        <div className="space-y-3">
+          <motion.div
+            className="flex items-center gap-2"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#eab308] to-[#ca8a04] flex items-center justify-center">
+              <Star className="w-4 h-4 text-white" weight="fill" />
+            </div>
+            <h4 className="text-sm font-semibold text-white">
+              길신
             </h4>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[#eab308]/20 text-[#eab308]">
+              {auspicious.length}
+            </span>
+          </motion.div>
+
+          <div className="space-y-2">
             {auspicious.map((star, idx) => (
-              <div
+              <motion.div
                 key={`${star.name}-${idx}`}
-                className="p-3 rounded-xl glass-card border border-[var(--warning)]/30"
+                className="w-full p-4 rounded-xl bg-gradient-to-r from-[#eab308]/10 to-transparent border border-[#eab308]/20 hover:border-[#eab308]/40 transition-all"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <Star className="w-3 h-3 text-[var(--warning)]" />
-                  <span className="font-medium text-[var(--text-primary)]">
-                    {star.name}
-                  </span>
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#eab308]/20 flex items-center justify-center flex-shrink-0">
+                    <Star className="w-5 h-5 text-[#eab308]" weight="fill" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h5 className="font-bold text-white text-base mb-1">
+                      {star.name}
+                    </h5>
+                    <p className="text-sm text-white/70 leading-relaxed">
+                      {star.description}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  {star.description}
-                </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -54,29 +73,47 @@ export function StarsDisplay({ stars }: StarsDisplayProps) {
 
       {/* Inauspicious Stars */}
       {inauspicious.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-[var(--text-tertiary)]" />
-            <h4 className="text-sm font-medium text-[var(--text-primary)]">
-              흉신 ({inauspicious.length})
+        <div className="space-y-3">
+          <motion.div
+            className="flex items-center gap-2"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#64748b] to-[#475569] flex items-center justify-center">
+              <Shield className="w-4 h-4 text-white" weight="fill" />
+            </div>
+            <h4 className="text-sm font-semibold text-white">
+              흉신
             </h4>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/60">
+              {inauspicious.length}
+            </span>
+          </motion.div>
+
+          <div className="space-y-2">
             {inauspicious.map((star, idx) => (
-              <div
+              <motion.div
                 key={`${star.name}-${idx}`}
-                className="p-3 rounded-xl glass-card border border-[var(--text-tertiary)]/30"
+                className="w-full p-4 rounded-xl bg-gradient-to-r from-white/5 to-transparent border border-white/10 hover:border-white/20 transition-all"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + idx * 0.1 }}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <Shield className="w-3 h-3 text-[var(--text-tertiary)]" />
-                  <span className="font-medium text-[var(--text-primary)]">
-                    {star.name}
-                  </span>
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <Shield className="w-5 h-5 text-white/50" weight="fill" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h5 className="font-bold text-white text-base mb-1">
+                      {star.name}
+                    </h5>
+                    <p className="text-sm text-white/70 leading-relaxed">
+                      {star.description}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  {star.description}
-                </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

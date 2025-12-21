@@ -3,6 +3,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Sparkle, Check } from "@phosphor-icons/react";
 
 interface MysticalLoaderProps {
   currentStep: number;
@@ -25,11 +26,7 @@ export function MysticalLoader({
       <div className="relative w-40 h-40 sm:w-48 sm:h-48">
         {/* Outer glow rings */}
         <motion.div
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: "radial-gradient(circle, var(--accent) 0%, transparent 70%)",
-            opacity: 0.3,
-          }}
+          className="absolute inset-0 rounded-full bg-[#a855f7]/30"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.5, 0.3],
@@ -43,7 +40,7 @@ export function MysticalLoader({
 
         {/* Rotating mystical ring */}
         <motion.div
-          className="absolute inset-2 rounded-full border-2 border-dashed border-[var(--accent)]/50"
+          className="absolute inset-2 rounded-full border-2 border-dashed border-[#a855f7]/50"
           animate={{ rotate: 360 }}
           transition={{
             duration: 20,
@@ -54,7 +51,7 @@ export function MysticalLoader({
 
         {/* Second rotating ring (opposite direction) */}
         <motion.div
-          className="absolute inset-4 rounded-full border border-[var(--element-fire)]/30"
+          className="absolute inset-4 rounded-full border border-[#ef4444]/30"
           style={{
             borderStyle: "dotted",
           }}
@@ -68,12 +65,12 @@ export function MysticalLoader({
 
         {/* Inner glowing orb */}
         <motion.div
-          className="absolute inset-6 rounded-full bg-gradient-to-br from-[var(--accent)] via-[var(--element-fire)] to-[var(--element-water)]"
+          className="absolute inset-6 rounded-full bg-[#a855f7]"
           animate={{
             boxShadow: [
-              "0 0 30px var(--accent), inset 0 0 30px rgba(255,255,255,0.1)",
-              "0 0 60px var(--accent), inset 0 0 60px rgba(255,255,255,0.2)",
-              "0 0 30px var(--accent), inset 0 0 30px rgba(255,255,255,0.1)",
+              "0 0 30px #a855f7, inset 0 0 30px rgba(255,255,255,0.1)",
+              "0 0 60px #a855f7, inset 0 0 60px rgba(255,255,255,0.2)",
+              "0 0 30px #a855f7, inset 0 0 30px rgba(255,255,255,0.1)",
             ],
           }}
           transition={{
@@ -120,16 +117,15 @@ export function MysticalLoader({
             cy="50%"
             r="47%"
             fill="none"
-            stroke="var(--background-elevated)"
+            stroke="rgba(255,255,255,0.1)"
             strokeWidth="4"
-            opacity="0.3"
           />
           <motion.circle
             cx="50%"
             cy="50%"
             r="47%"
             fill="none"
-            stroke="url(#progressGradient)"
+            stroke="#a855f7"
             strokeWidth="4"
             strokeLinecap="round"
             strokeDasharray={`${2 * Math.PI * 47} ${2 * Math.PI * 47}`}
@@ -138,19 +134,11 @@ export function MysticalLoader({
             }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           />
-          <defs>
-            <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="var(--accent)" />
-              <stop offset="50%" stopColor="var(--element-fire)" />
-              <stop offset="100%" stopColor="var(--element-water)" />
-            </linearGradient>
-          </defs>
         </svg>
 
         {/* Center icon with step number */}
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.div
-            className="text-3xl sm:text-4xl"
             animate={{
               scale: [1, 1.1, 1],
               rotateY: [0, 180, 360],
@@ -161,7 +149,7 @@ export function MysticalLoader({
               ease: "easeInOut",
             }}
           >
-            🔮
+            <Sparkle className="w-10 h-10 text-white" weight="fill" />
           </motion.div>
         </div>
       </div>
@@ -176,7 +164,7 @@ export function MysticalLoader({
         <AnimatePresence mode="wait">
           <motion.p
             key={stepName}
-            className="text-lg sm:text-xl font-medium text-[var(--accent)]"
+            className="text-lg sm:text-xl font-medium text-[#a855f7]"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
@@ -185,7 +173,7 @@ export function MysticalLoader({
             {stepName}
           </motion.p>
         </AnimatePresence>
-        <p className="text-sm sm:text-base text-[var(--text-secondary)] mt-1">
+        <p className="text-sm sm:text-base text-white/60 mt-1">
           {currentStep} / {totalSteps} 단계
         </p>
       </motion.div>
@@ -195,7 +183,7 @@ export function MysticalLoader({
         {[...Array(3)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--accent)]/20"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#a855f7]/20"
             initial={{ width: 0, height: 0, opacity: 0.5 }}
             animate={{
               width: [0, 300, 400],
@@ -215,6 +203,16 @@ export function MysticalLoader({
   );
 }
 
+// Step icons mapping
+const stepIcons: Record<number, React.ReactNode> = {
+  1: <Sparkle className="w-5 h-5" weight="fill" />,
+  2: <Sparkle className="w-5 h-5" weight="fill" />,
+  3: <Sparkle className="w-5 h-5" weight="fill" />,
+  4: <Sparkle className="w-5 h-5" weight="fill" />,
+  5: <Sparkle className="w-5 h-5" weight="fill" />,
+  6: <Sparkle className="w-5 h-5" weight="fill" />,
+};
+
 // Mystical step cards component
 interface MysticalStepCardProps {
   step: number;
@@ -229,7 +227,6 @@ interface MysticalStepCardProps {
 export function MysticalStepCard({
   step,
   name,
-  icon,
   description,
   isCompleted,
   isCurrent,
@@ -243,16 +240,16 @@ export function MysticalStepCard({
       className={cn(
         "relative p-3 sm:p-4 rounded-xl border transition-all duration-500",
         isCompleted
-          ? "bg-[var(--element-wood)]/10 border-[var(--element-wood)]/30"
+          ? "bg-[#22c55e]/10 border-[#22c55e]/30"
           : isCurrent
-          ? "bg-[var(--accent)]/10 border-[var(--accent)]/50"
-          : "bg-[var(--background-card)]/50 border-[var(--border)]/30 opacity-50"
+          ? "bg-[#a855f7]/10 border-[#a855f7]/50"
+          : "bg-white/5 border-white/10 opacity-50"
       )}
     >
       {/* Glow effect for current step */}
       {isCurrent && (
         <motion.div
-          className="absolute inset-0 rounded-xl bg-[var(--accent)]/5"
+          className="absolute inset-0 rounded-xl bg-[#a855f7]/5"
           animate={{
             opacity: [0.3, 0.6, 0.3],
           }}
@@ -268,17 +265,25 @@ export function MysticalStepCard({
         {/* Icon */}
         <motion.div
           className={cn(
-            "flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-xl sm:text-2xl",
+            "flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center",
             isCompleted
-              ? "bg-[var(--element-wood)]/20"
+              ? "bg-[#22c55e]/20"
               : isCurrent
-              ? "bg-[var(--accent)]/20"
-              : "bg-[var(--background-elevated)]"
+              ? "bg-[#a855f7]/20"
+              : "bg-white/10"
           )}
           animate={isCurrent ? { scale: [1, 1.1, 1] } : {}}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
-          {isCompleted ? "✓" : icon}
+          {isCompleted ? (
+            <Check className="w-5 h-5 text-[#22c55e]" weight="bold" />
+          ) : (
+            <span className={cn(
+              isCurrent ? "text-[#a855f7]" : "text-white/40"
+            )}>
+              {stepIcons[step]}
+            </span>
+          )}
         </motion.div>
 
         {/* Content */}
@@ -288,22 +293,22 @@ export function MysticalStepCard({
               className={cn(
                 "font-medium text-sm sm:text-base",
                 isCompleted
-                  ? "text-[var(--element-wood)]"
+                  ? "text-[#22c55e]"
                   : isCurrent
-                  ? "text-[var(--accent)]"
-                  : "text-[var(--text-tertiary)]"
+                  ? "text-[#a855f7]"
+                  : "text-white/40"
               )}
             >
               {name}
             </span>
             {isCompleted && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--element-wood)]/20 text-[var(--element-wood)]">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-[#22c55e]/20 text-[#22c55e]">
                 완료
               </span>
             )}
             {isCurrent && (
               <motion.span
-                className="text-xs px-2 py-0.5 rounded-full bg-[var(--accent)]/20 text-[var(--accent)]"
+                className="text-xs px-2 py-0.5 rounded-full bg-[#a855f7]/20 text-[#a855f7]"
                 animate={{ opacity: [1, 0.5, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
@@ -314,12 +319,12 @@ export function MysticalStepCard({
 
           {/* Summary or description */}
           {isCompleted && summary && (
-            <p className="text-xs sm:text-sm text-[var(--element-wood)]/80 mt-1 truncate">
+            <p className="text-xs sm:text-sm text-[#22c55e]/80 mt-1 truncate">
               {summary}
             </p>
           )}
           {isCurrent && (
-            <p className="text-xs sm:text-sm text-[var(--accent)]/80 mt-1">{description}</p>
+            <p className="text-xs sm:text-sm text-[#a855f7]/80 mt-1">{description}</p>
           )}
         </div>
       </div>

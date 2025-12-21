@@ -27,7 +27,7 @@ export default async function SajuResultPage({ searchParams }: PageProps) {
     <Suspense
       fallback={
         <div className="flex items-center justify-center py-20">
-          <div className="w-10 h-10 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+          <div className="w-10 h-10 border-2 border-[#a855f7] border-t-transparent rounded-full animate-spin" />
         </div>
       }
     >

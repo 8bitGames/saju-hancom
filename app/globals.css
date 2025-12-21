@@ -22,17 +22,17 @@
   --yin: #6366f1;
   --yang: #f97316;
 
-  /* Text Colors */
+  /* Text Colors - High contrast for readability */
   --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-tertiary: #64748b;
-  --text-muted: #475569;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --text-muted: #64748b;
 
   /* Elevated Background */
-  --background-elevated: #475569;
+  --background-elevated: #4b5563;
 
   /* Border & Accent */
-  --border: #475569;
+  --border: #6b7280;
   --accent: #8b5cf6;
   --accent-foreground: #ffffff;
 
@@ -353,9 +353,9 @@ p, span, label {
 
 /* Card Glass Effect */
 .glass-card {
-  background: rgba(51, 65, 85, 0.5);
+  background: rgba(51, 65, 85, 0.6);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(71, 85, 105, 0.5);
+  border: 1px solid rgba(107, 114, 128, 0.6);
 }
 
 /* Gradient Text */
@@ -426,6 +426,51 @@ p, span, label {
   animation: float 3s ease-in-out infinite;
 }
 
+/* Gradient Shift Animation for Glowing Cards */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.4;
+    filter: blur(15px);
+  }
+  50% {
+    opacity: 0.7;
+    filter: blur(20px);
+  }
+}
+
+.animate-gradient-shift {
+  animation: gradientShift 3s ease infinite;
+  background-size: 200% 200%;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+/* Mobile: constant glow without animation */
+.glow-constant {
+  opacity: 0.5;
+  filter: blur(12px);
+}
+
+@media (min-width: 768px) {
+  .glow-constant {
+    animation: glowPulse 3s ease-in-out infinite;
+  }
+}
+
 /* ============================================
    40-60대 (Senior-friendly) Accessibility
    ============================================ */
@@ -443,15 +488,16 @@ p, span, label {
 @media (prefers-contrast: high) {
   :root {
     --text-primary: #ffffff;
-    --text-secondary: #e2e8f0;
-    --text-tertiary: #cbd5e1;
-    --border: #94a3b8;
+    --text-secondary: #f1f5f9;
+    --text-tertiary: #e2e8f0;
+    --text-muted: #cbd5e1;
+    --border: #a1a1aa;
     --accent: #a78bfa;
   }
 
   .glass-card {
-    background: rgba(51, 65, 85, 0.8);
-    border: 2px solid rgba(148, 163, 184, 0.8);
+    background: rgba(51, 65, 85, 0.9);
+    border: 2px solid rgba(161, 161, 170, 0.8);
   }
 }
 
@@ -527,6 +573,6 @@ a:active {
 
 /* Better contrast for placeholders */
 ::placeholder {
-  color: var(--text-tertiary);
+  color: var(--text-muted);
   opacity: 1;
 }

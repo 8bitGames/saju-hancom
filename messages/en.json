@@ -22,7 +22,9 @@
     "menuClose": "Close menu"
   },
   "header": {
-    "title": "AI Fortune"
+    "title": "Hansa AI",
+    "start": "Start",
+    "swipeHint": "Swipe"
   },
   "home": {
     "title": "AI Fortune Master",
@@ -52,6 +54,14 @@
         "eyes": "Eyes",
         "nose": "Nose",
         "mouth": "Mouth"
+      },
+      "history": {
+        "title": "Analysis History",
+        "description": "View all your past birth chart, compatibility, and face reading results."
+      },
+      "couple": {
+        "title": "Couple Compatibility",
+        "description": "Discover your romantic compatibility and relationship destiny with your partner."
       }
     },
     "elements": {
@@ -145,6 +155,36 @@
       "compatibility": "Compatibility",
       "advice": "Advice"
     }
+  },
+  "couple": {
+    "title": "Couple Compatibility",
+    "subtitle": "Enter birth information for both of you",
+    "privacyNotice": "Your information is used only for analysis and is not stored.",
+    "person1": "Me",
+    "person2": "Partner",
+    "relationTypes": {
+      "dating": "Dating",
+      "engaged": "Engaged",
+      "married": "Married",
+      "interested": "Interested"
+    },
+    "result": {
+      "title": "Couple Compatibility Result",
+      "pillars": "Both Birth Charts",
+      "analysis": "Compatibility Analysis",
+      "romance": "Romance",
+      "communication": "Communication",
+      "passion": "Passion",
+      "stability": "Stability",
+      "future": "Future",
+      "elementBalance": "Element Balance",
+      "luckyElements": "Lucky Elements",
+      "advice": "Relationship Advice",
+      "cautions": "Cautions",
+      "reAnalyze": "Re-analyze",
+      "sajuAnalysis": "Birth Chart"
+    },
+    "disclaimer": "This analysis is based on traditional Eastern astrology for entertainment purposes."
   },
   "faceReading": {
     "title": "Face Reading Analysis",

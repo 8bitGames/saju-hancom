@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,9 +12,37 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const notoSansKR = Noto_Sans_KR({
+  variable: "--font-noto-sans-kr",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "AI Fortune Master",
-  description: "AI-powered fortune analysis based on your birth chart",
+  title: "Hansa AI | AI Fortune Analysis",
+  description: "Discover your destiny with AI-powered Saju (Four Pillars), compatibility analysis, and face reading. Your personal fortune guide.",
+  keywords: ["saju", "fortune", "AI", "compatibility", "face reading", "four pillars", "사주", "운세", "궁합", "관상"],
+  authors: [{ name: "Hansa AI" }],
+  openGraph: {
+    title: "Hansa AI | AI Fortune Analysis",
+    description: "Discover your destiny with AI-powered Saju, compatibility analysis, and face reading.",
+    siteName: "Hansa AI",
+    type: "website",
+    images: [
+      {
+        url: "/api/og",
+        width: 1200,
+        height: 630,
+        alt: "Hansa AI - AI Fortune Analysis",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Hansa AI | AI Fortune Analysis",
+    description: "Discover your destiny with AI-powered Saju, compatibility analysis, and face reading.",
+    images: ["/api/og"],
+  },
 };
 
 export default function RootLayout({
@@ -25,7 +53,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSansKR.variable} antialiased`}
       >
         {children}
       </body>

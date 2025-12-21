@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, Clock, MapPin, User, UsersThree, Handshake } from "@/components/ui/icons";
+import { Calendar, Clock, MapPin, User, UsersThree, Handshake, ArrowRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import { HoverBorderGradient } from "@/components/aceternity/hover-border-gradient";
 import type { RelationType } from "@/lib/compatibility/types";
 
 type Gender = "male" | "female";
@@ -78,19 +77,19 @@ function PersonInputSection({
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
-  const accentColor = personKey === "person1" ? "var(--accent)" : "var(--element-water)";
+  const accentColor = personKey === "person1" ? "#3b82f6" : "#60a5fa";
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex items-center gap-2 sm:gap-3 pb-2 sm:pb-3 border-b border-[var(--border)]">
-        <Icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: accentColor }} weight="fill" />
-        <h2 className="text-base sm:text-lg font-bold text-[var(--text-primary)]">{title}</h2>
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 pb-2 border-b border-white/10">
+        <Icon className="w-5 h-5" style={{ color: accentColor }} weight="fill" />
+        <h2 className="text-base font-bold text-white">{title}</h2>
       </div>
 
       {/* Name Input */}
-      <div className="space-y-2 sm:space-y-3">
-        <label className="flex items-center gap-2 text-sm sm:text-base font-semibold text-[var(--text-primary)]">
-          <User className="w-4 h-4 sm:w-5 sm:h-5" />
+      <div className="space-y-2">
+        <label className="flex items-center gap-2 text-sm font-medium text-white">
+          <User className="w-4 h-4 text-white/60" />
           이름 (닉네임)
         </label>
         <input
@@ -98,29 +97,27 @@ function PersonInputSection({
           value={person.name}
           onChange={(e) => onChange("name", e.target.value)}
           placeholder="예: 홍길동"
-          className="w-full h-12 sm:h-14 px-3 sm:px-4 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-lg bg-transparent placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+          className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
         />
         {errors.name && (
-          <p className="text-xs sm:text-sm text-[var(--error)]">{errors.name}</p>
+          <p className="text-xs text-red-400">{errors.name}</p>
         )}
       </div>
 
       {/* Gender Selection */}
-      <div className="space-y-2 sm:space-y-3">
-        <label className="flex items-center gap-2 text-sm sm:text-base font-semibold text-[var(--text-primary)]">
-          성별
-        </label>
-        <div className="grid grid-cols-2 gap-2 sm:gap-3">
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-white">성별</label>
+        <div className="grid grid-cols-2 gap-2">
           {(["male", "female"] as const).map((g) => (
             <button
               key={g}
               type="button"
               onClick={() => onChange("gender", g)}
               className={cn(
-                "h-10 sm:h-12 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base transition-all duration-200",
+                "h-10 rounded-xl font-medium text-sm transition-all duration-200",
                 person.gender === g
                   ? "text-white"
-                  : "glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
               )}
               style={person.gender === g ? { backgroundColor: accentColor } : undefined}
             >
@@ -131,22 +128,22 @@ function PersonInputSection({
       </div>
 
       {/* Calendar Type */}
-      <div className="space-y-2 sm:space-y-3">
-        <label className="flex items-center gap-2 text-sm sm:text-base font-semibold text-[var(--text-primary)]">
-          <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
+      <div className="space-y-2">
+        <label className="flex items-center gap-2 text-sm font-medium text-white">
+          <Calendar className="w-4 h-4 text-white/60" />
           달력 종류
         </label>
-        <div className="grid grid-cols-2 gap-2 sm:gap-3">
+        <div className="grid grid-cols-2 gap-2">
           {(["solar", "lunar"] as const).map((type) => (
             <button
               key={type}
               type="button"
               onClick={() => onChange("isLunar", type === "lunar")}
               className={cn(
-                "h-10 sm:h-12 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base transition-all duration-200",
+                "h-10 rounded-xl font-medium text-sm transition-all duration-200",
                 (type === "lunar") === person.isLunar
                   ? "text-white"
-                  : "glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
               )}
               style={(type === "lunar") === person.isLunar ? { backgroundColor: accentColor } : undefined}
             >
@@ -157,34 +154,32 @@ function PersonInputSection({
       </div>
 
       {/* Birth Date */}
-      <div className="space-y-2 sm:space-y-3">
-        <label className="flex items-center gap-2 text-sm sm:text-base font-semibold text-[var(--text-primary)]">
-          생년월일
-        </label>
-        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-white">생년월일</label>
+        <div className="grid grid-cols-3 gap-2">
           <div className="space-y-1">
             <select
               value={person.year}
               onChange={(e) => onChange("year", parseInt(e.target.value))}
-              className="w-full h-10 sm:h-12 px-2 sm:px-3 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-base bg-transparent appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              className="w-full h-10 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
             >
               {years.map((y) => (
-                <option key={y} value={y} className="bg-[var(--background)]">
+                <option key={y} value={y} className="bg-[#0c1929] text-white">
                   {y}년
                 </option>
               ))}
             </select>
             {errors.year && (
-              <p className="text-xs sm:text-sm text-[var(--error)]">{errors.year}</p>
+              <p className="text-xs text-red-400">{errors.year}</p>
             )}
           </div>
           <select
             value={person.month}
             onChange={(e) => onChange("month", parseInt(e.target.value))}
-            className="h-10 sm:h-12 px-2 sm:px-3 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-base bg-transparent appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            className="h-10 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
           >
             {months.map((m) => (
-              <option key={m} value={m} className="bg-[var(--background)]">
+              <option key={m} value={m} className="bg-[#0c1929] text-white">
                 {m}월
               </option>
             ))}
@@ -193,35 +188,35 @@ function PersonInputSection({
             <select
               value={person.day}
               onChange={(e) => onChange("day", parseInt(e.target.value))}
-              className="w-full h-10 sm:h-12 px-2 sm:px-3 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-base bg-transparent appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              className="w-full h-10 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
             >
               {days.map((d) => (
-                <option key={d} value={d} className="bg-[var(--background)]">
+                <option key={d} value={d} className="bg-[#0c1929] text-white">
                   {d}일
                 </option>
               ))}
             </select>
             {errors.day && (
-              <p className="text-xs sm:text-sm text-[var(--error)]">{errors.day}</p>
+              <p className="text-xs text-red-400">{errors.day}</p>
             )}
           </div>
         </div>
       </div>
 
       {/* Birth Time */}
-      <div className="space-y-2 sm:space-y-3">
-        <label className="flex items-center gap-2 text-sm sm:text-base font-semibold text-[var(--text-primary)]">
-          <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
+      <div className="space-y-2">
+        <label className="flex items-center gap-2 text-sm font-medium text-white">
+          <Clock className="w-4 h-4 text-white/60" />
           태어난 시간
         </label>
-        <div className="grid grid-cols-2 gap-2 sm:gap-3">
+        <div className="grid grid-cols-2 gap-2">
           <select
             value={person.hour}
             onChange={(e) => onChange("hour", parseInt(e.target.value))}
-            className="h-10 sm:h-12 px-2 sm:px-3 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-base bg-transparent appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            className="h-10 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
           >
             {HOURS.map((h) => (
-              <option key={h.value} value={h.value} className="bg-[var(--background)]">
+              <option key={h.value} value={h.value} className="bg-[#0c1929] text-white">
                 {h.label}
               </option>
             ))}
@@ -229,10 +224,10 @@ function PersonInputSection({
           <select
             value={person.minute}
             onChange={(e) => onChange("minute", parseInt(e.target.value))}
-            className="h-10 sm:h-12 px-2 sm:px-3 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-base bg-transparent appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            className="h-10 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
           >
             {MINUTES.map((m) => (
-              <option key={m.value} value={m.value} className="bg-[var(--background)]">
+              <option key={m.value} value={m.value} className="bg-[#0c1929] text-white">
                 {m.label}
               </option>
             ))}
@@ -241,18 +236,18 @@ function PersonInputSection({
       </div>
 
       {/* Birth Location */}
-      <div className="space-y-2 sm:space-y-3">
-        <label className="flex items-center gap-2 text-sm sm:text-base font-semibold text-[var(--text-primary)]">
-          <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+      <div className="space-y-2">
+        <label className="flex items-center gap-2 text-sm font-medium text-white">
+          <MapPin className="w-4 h-4 text-white/60" />
           태어난 지역
         </label>
         <select
           value={person.city}
           onChange={(e) => onChange("city", e.target.value)}
-          className="w-full h-10 sm:h-12 px-2 sm:px-3 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-base bg-transparent appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+          className="w-full h-10 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
         >
           {CITIES.map((city) => (
-            <option key={city.name} value={city.name} className="bg-[var(--background)]">
+            <option key={city.name} value={city.name} className="bg-[#0c1929] text-white">
               {city.name}
             </option>
           ))}
@@ -318,7 +313,6 @@ export function CompatibilityForm() {
   const validateForm = (): boolean => {
     const newErrors: typeof errors = { person1: {}, person2: {} };
 
-    // Validate person1
     if (!formData.person1.name.trim()) {
       newErrors.person1.name = "이름을 입력해주세요";
     }
@@ -330,7 +324,6 @@ export function CompatibilityForm() {
       newErrors.person1.day = `${formData.person1.month}월은 ${days1InMonth}일까지`;
     }
 
-    // Validate person2
     if (!formData.person2.name.trim()) {
       newErrors.person2.name = "이름을 입력해주세요";
     }
@@ -357,7 +350,6 @@ export function CompatibilityForm() {
     }
 
     const params = new URLSearchParams({
-      // Person 1
       p1Name: formData.person1.name,
       p1Year: formData.person1.year.toString(),
       p1Month: formData.person1.month.toString(),
@@ -367,7 +359,6 @@ export function CompatibilityForm() {
       p1Gender: formData.person1.gender,
       p1IsLunar: formData.person1.isLunar.toString(),
       p1City: formData.person1.city,
-      // Person 2
       p2Name: formData.person2.name,
       p2Year: formData.person2.year.toString(),
       p2Month: formData.person2.month.toString(),
@@ -377,16 +368,15 @@ export function CompatibilityForm() {
       p2Gender: formData.person2.gender,
       p2IsLunar: formData.person2.isLunar.toString(),
       p2City: formData.person2.city,
-      // Relation
       relationType: formData.relationType,
     });
     router.push(`/compatibility/result?${params.toString()}`);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-10">
+    <form onSubmit={handleSubmit} className="space-y-8">
       {/* Person 1 Section */}
-      <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 backdrop-blur-xl border border-[var(--border)]/50">
+      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
         <PersonInputSection
           title="첫 번째 사람 (나)"
           icon={User}
@@ -398,22 +388,22 @@ export function CompatibilityForm() {
       </div>
 
       {/* Relation Type */}
-      <div className="space-y-3 sm:space-y-4">
-        <div className="flex items-center gap-2 sm:gap-3 pb-2 sm:pb-3">
-          <Handshake className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--element-earth)]" weight="fill" />
-          <h2 className="text-base sm:text-lg font-bold text-[var(--text-primary)]">상대방과의 관계</h2>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 pb-2">
+          <Handshake className="w-5 h-5 text-[#22c55e]" weight="fill" />
+          <h2 className="text-base font-bold text-white">상대방과의 관계</h2>
         </div>
-        <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+        <div className="grid grid-cols-4 gap-1.5">
           {RELATION_TYPES.map((type) => (
             <button
               key={type.value}
               type="button"
               onClick={() => setFormData((prev) => ({ ...prev, relationType: type.value }))}
               className={cn(
-                "h-9 sm:h-11 rounded-lg sm:rounded-xl font-medium text-xs sm:text-sm transition-all duration-200",
+                "h-9 rounded-xl font-medium text-xs transition-all duration-200",
                 formData.relationType === type.value
-                  ? "bg-[var(--element-earth)] text-white"
-                  : "glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  ? "bg-[#22c55e] text-white"
+                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
               )}
             >
               {type.label}
@@ -423,7 +413,7 @@ export function CompatibilityForm() {
       </div>
 
       {/* Person 2 Section */}
-      <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 backdrop-blur-xl border border-[var(--border)]/50">
+      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
         <PersonInputSection
           title="두 번째 사람 (상대방)"
           icon={UsersThree}
@@ -434,16 +424,14 @@ export function CompatibilityForm() {
         />
       </div>
 
-      {/* Submit Button with Hover Border Gradient */}
-      <HoverBorderGradient
-        containerClassName="w-full rounded-lg sm:rounded-xl"
-        className="w-full h-12 sm:h-16 flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-[var(--accent)] to-[var(--element-water)] text-white font-bold text-base sm:text-lg rounded-lg sm:rounded-xl"
-        as="button"
-        onClick={handleSubmit}
+      {/* Submit Button */}
+      <button
+        type="submit"
+        className="w-full h-14 flex items-center justify-center gap-2 bg-[#3b82f6] text-white font-bold text-lg rounded-xl hover:bg-[#2563eb] transition-colors"
       >
-        <UsersThree className="w-5 h-5 sm:w-6 sm:h-6" weight="fill" />
         궁합 분석하기
-      </HoverBorderGradient>
+        <ArrowRight className="w-5 h-5" weight="bold" />
+      </button>
     </form>
   );
 }

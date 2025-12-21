@@ -12,11 +12,13 @@ import {
   Shield,
   Lightning,
   ChartBar,
-} from "@/components/ui/icons";
-import { BackgroundGradient } from "@/components/aceternity/background-gradient";
-import { SparklesCore } from "@/components/aceternity/sparkles";
-import { HoverBorderGradient } from "@/components/aceternity/hover-border-gradient";
-import { Spotlight } from "@/components/aceternity/spotlight";
+  Sparkle,
+  Check,
+  Lightbulb,
+  Clover,
+  User,
+} from "@phosphor-icons/react";
+import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 
 interface FaceReadingResult {
   overallScore: number;
@@ -47,13 +49,38 @@ interface FaceReadingResult {
   luckyElements: string[];
 }
 
+function getScoreColor(score: number): string {
+  if (score >= 80) return "text-green-400";
+  if (score >= 60) return "text-blue-400";
+  if (score >= 40) return "text-white";
+  return "text-orange-400";
+}
+
+function ScoreBar({ score, label }: { score: number; label: string }) {
+  return (
+    <div className="space-y-2">
+      {label && (
+        <div className="flex justify-between text-base">
+          <span className="text-white/60">{label}</span>
+          <span className={`font-bold ${getScoreColor(score)}`}>{score}점</span>
+        </div>
+      )}
+      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-[#ef4444] rounded-full transition-all duration-500"
+          style={{ width: `${score}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function FaceReadingResultPage() {
   const router = useRouter();
   const [result, setResult] = useState<FaceReadingResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // sessionStorage에서 결과 가져오기
     const storedResult = sessionStorage.getItem("faceReadingResult");
 
     if (storedResult) {
@@ -61,12 +88,10 @@ export default function FaceReadingResultPage() {
         const parsed = JSON.parse(storedResult);
         setResult(parsed);
       } catch {
-        // 파싱 실패시 폼으로 리다이렉트
         router.push("/face-reading");
         return;
       }
     } else {
-      // 결과가 없으면 폼으로 리다이렉트
       router.push("/face-reading");
       return;
     }
@@ -76,12 +101,12 @@ export default function FaceReadingResultPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-3 sm:space-y-4">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-br from-[var(--element-metal)] to-[var(--element-water)] flex items-center justify-center animate-pulse">
-            <Camera className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center space-y-4">
+          <div className="w-20 h-20 mx-auto rounded-2xl bg-[#ef4444] flex items-center justify-center">
+            <Camera className="w-10 h-10 text-white" weight="fill" />
           </div>
-          <p className="text-base sm:text-lg text-[var(--text-secondary)]">결과를 불러오는 중...</p>
+          <p className="text-base text-white/60">결과를 불러오는 중...</p>
         </div>
       </div>
     );
@@ -90,14 +115,6 @@ export default function FaceReadingResultPage() {
   if (!result) {
     return null;
   }
-
-  const gradeColors: Record<string, string> = {
-    excellent: "from-yellow-400 to-orange-500",
-    good: "from-green-400 to-emerald-500",
-    normal: "from-blue-400 to-cyan-500",
-    caution: "from-orange-400 to-red-400",
-    challenging: "from-gray-400 to-gray-500",
-  };
 
   const fortuneIcons = {
     wealth: Lightning,
@@ -115,245 +132,204 @@ export default function FaceReadingResultPage() {
     love: "애정운",
   };
 
+  const fortuneColors = {
+    wealth: "#eab308",
+    career: "#3b82f6",
+    relationship: "#22c55e",
+    health: "#a855f7",
+    love: "#ec4899",
+  };
+
   return (
-    <div className="relative min-h-screen pb-6 sm:pb-8">
-      {/* Spotlight Effect */}
-      <Spotlight
-        className="-top-40 left-0 md:left-60 md:-top-20"
-        fill="var(--element-metal)"
-      />
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="text-center space-y-2 py-4">
+        <p className="text-[#ef4444] text-sm font-medium tracking-wider">
+          觀相分析
+        </p>
+        <h1 className="text-2xl font-bold text-white">
+          관상 분석 결과
+        </h1>
+        <TextGenerateEffect
+          words="당신의 관상을 전문적으로 분석했습니다"
+          className="text-base text-white/60"
+          duration={0.3}
+        />
+      </div>
 
-      <div className="space-y-4 sm:space-y-8 animate-fade-in relative z-10">
-        {/* Header */}
-        <div className="relative text-center space-y-3 sm:space-y-4 py-6 sm:py-8">
-          <div className="absolute inset-0 w-full h-full">
-            <SparklesCore
-              id="result-sparkles"
-              background="transparent"
-              minSize={0.4}
-              maxSize={1}
-              particleDensity={40}
-              particleColor="var(--element-metal)"
-              className="w-full h-full"
-            />
-          </div>
-
-          <div className="relative z-10">
-            <BackgroundGradient
-              className="rounded-xl sm:rounded-2xl p-4 sm:p-5"
-              containerClassName="mx-auto w-fit"
-            >
-              <div className="w-14 h-14 sm:w-20 sm:h-20 flex items-center justify-center">
-                <Camera className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-              </div>
-            </BackgroundGradient>
-          </div>
-
-          <div className="relative z-10 space-y-1.5 sm:space-y-2 px-4">
-            <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
-              관상 분석 결과
-            </h1>
-            <p className="text-base sm:text-lg text-[var(--text-secondary)]">
-              당신의 관상을 전문적으로 분석했습니다
-            </p>
-          </div>
+      {/* Overall Score Card */}
+      <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 text-center">
+        <div className="w-36 h-36 mx-auto rounded-full bg-[#ef4444] flex items-center justify-center mb-4 shadow-lg shadow-[#ef4444]/30">
+          <span className="text-6xl font-bold text-white">{result.overallScore}</span>
         </div>
-
-        {/* Overall Score Card */}
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-          <div className="text-center space-y-3 sm:space-y-4">
-            <div className={`inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r ${gradeColors[result.overallGrade] || gradeColors.normal} text-white font-bold text-base sm:text-lg`}>
-              <Star className="w-5 h-5 sm:w-6 sm:h-6" weight="fill" />
-              {result.gradeText}
-            </div>
-
-            <div className="space-y-1.5 sm:space-y-2">
-              <p className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)]">
-                {result.overallScore}점
-              </p>
-              <p className="text-sm sm:text-base text-[var(--text-secondary)]">종합 관상 점수</p>
-            </div>
-
-            {/* Score Bar */}
-            <div className="max-w-xs mx-auto">
-              <div className="h-2.5 sm:h-3 bg-[var(--background-elevated)] rounded-full overflow-hidden">
-                <div
-                  className={`h-full bg-gradient-to-r ${gradeColors[result.overallGrade] || gradeColors.normal} rounded-full transition-all duration-1000`}
-                  style={{ width: `${result.overallScore}%` }}
-                />
-              </div>
-            </div>
-          </div>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ef4444]/20 text-[#ef4444] font-bold text-lg">
+          <Star className="w-5 h-5" weight="fill" />
+          {result.gradeText}
         </div>
-
-        {/* Face Shape */}
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-3 sm:mb-4 flex items-center gap-2">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[var(--accent)]/20 flex items-center justify-center">
-              <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--accent)]" />
-            </div>
-            얼굴형 분석
-          </h2>
-
-          <div className="space-y-2.5 sm:space-y-3">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-[var(--element-metal)] to-[var(--element-water)] text-white text-sm sm:text-base font-medium">
-                {result.faceShape.koreanName}
-              </span>
-            </div>
-            <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">
-              {result.faceShape.description}
-            </p>
-            <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-1.5 sm:pt-2">
-              {result.faceShape.characteristics.map((char, idx) => (
-                <span
-                  key={idx}
-                  className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--background-elevated)] text-xs sm:text-sm text-[var(--text-secondary)]"
-                >
-                  {char}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Feature Analysis */}
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-3 sm:mb-4 flex items-center gap-2">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[var(--element-fire)]/20 flex items-center justify-center">
-              <ChartBar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--element-fire)]" />
-            </div>
-            부위별 분석
-          </h2>
-
-          <div className="space-y-3 sm:space-y-4">
-            {Object.entries(result.features).map(([key, feature]) => (
-              <div key={key} className="space-y-1.5 sm:space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm sm:text-base font-medium text-[var(--text-primary)]">
-                    {feature.koreanName}
-                  </span>
-                  <span className="text-sm sm:text-base text-[var(--accent)] font-bold">{feature.score}점</span>
-                </div>
-                <div className="h-1.5 sm:h-2 bg-[var(--background-elevated)] rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] rounded-full transition-all duration-700"
-                    style={{ width: `${feature.score}%` }}
-                  />
-                </div>
-                <p className="text-xs sm:text-sm text-[var(--text-tertiary)]">{feature.description}</p>
-                <p className="text-xs sm:text-sm text-[var(--text-secondary)] bg-[var(--background-elevated)] p-2.5 sm:p-3 rounded-lg">
-                  💫 {feature.fortune}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Fortune Areas */}
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-3 sm:mb-4 flex items-center gap-2">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[var(--element-wood)]/20 flex items-center justify-center">
-              <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--element-wood)]" weight="fill" />
-            </div>
-            운세 영역
-          </h2>
-
-          <div className="grid grid-cols-1 gap-3 sm:gap-4">
-            {Object.entries(result.fortuneAreas).map(([key, area]) => {
-              const Icon = fortuneIcons[key as keyof typeof fortuneIcons];
-              const label = fortuneLabels[key as keyof typeof fortuneLabels];
-              return (
-                <div key={key} className="bg-[var(--background-elevated)] rounded-lg sm:rounded-xl p-3 sm:p-4 space-y-2 sm:space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[var(--accent)]/20 flex items-center justify-center">
-                        <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--accent)]" weight="fill" />
-                      </div>
-                      <span className="text-sm sm:text-base font-medium text-[var(--text-primary)]">{label}</span>
-                    </div>
-                    <span className="text-base sm:text-lg font-bold text-[var(--accent)]">{area.score}점</span>
-                  </div>
-                  <div className="h-1.5 sm:h-2 bg-[var(--background)]/50 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-[var(--element-wood)] to-[var(--element-fire)] rounded-full transition-all duration-700"
-                      style={{ width: `${area.score}%` }}
-                    />
-                  </div>
-                  <p className="text-xs sm:text-sm text-[var(--text-secondary)]">{area.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Strengths */}
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-3 sm:mb-4">✨ 당신의 강점</h2>
-          <ul className="space-y-1.5 sm:space-y-2">
-            {result.strengths.map((strength, idx) => (
-              <li key={idx} className="flex items-start gap-1.5 sm:gap-2 text-sm sm:text-base text-[var(--text-secondary)]">
-                <span className="text-[var(--accent)]">•</span>
-                {strength}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Advice */}
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-3 sm:mb-4">💡 조언</h2>
-          <ul className="space-y-1.5 sm:space-y-2">
-            {result.advice.map((item, idx) => (
-              <li key={idx} className="flex items-start gap-1.5 sm:gap-2 text-sm sm:text-base text-[var(--text-secondary)]">
-                <span className="text-[var(--element-fire)]">•</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Lucky Elements */}
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-3 sm:mb-4">🍀 행운의 요소</h2>
-          <div className="flex flex-wrap gap-2 sm:gap-3">
-            {result.luckyElements.map((element, idx) => (
-              <span
-                key={idx}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-[var(--element-wood)] to-[var(--element-water)] text-white text-sm sm:text-base font-medium"
-              >
-                {element}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4">
-          <Link href="/face-reading" className="block">
-            <HoverBorderGradient
-              containerClassName="w-full rounded-lg sm:rounded-xl"
-              className="w-full h-12 sm:h-14 flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-[var(--element-metal)] to-[var(--element-water)] text-white font-bold text-base sm:text-lg rounded-lg sm:rounded-xl"
-              as="div"
-            >
-              <ArrowCounterClockwise className="w-4 h-4 sm:w-5 sm:h-5" />
-              다시 분석하기
-            </HoverBorderGradient>
-          </Link>
-
-          <Link href="/" className="block">
-            <button className="w-full h-12 sm:h-14 rounded-lg sm:rounded-xl bg-[var(--background-elevated)] text-sm sm:text-base text-[var(--text-secondary)] font-medium hover:bg-[var(--background-elevated)]/80 transition-colors">
-              홈으로 돌아가기
-            </button>
-          </Link>
-        </div>
-
-        {/* Disclaimer */}
-        <div className="text-center text-xs sm:text-sm text-[var(--text-tertiary)] space-y-0.5 sm:space-y-1 pt-3 sm:pt-4 pb-6 sm:pb-8">
-          <p>본 관상 분석은 전통 관상학을 기반으로 한 재미용 콘텐츠입니다</p>
-          <p>실제 운세 예측이 아니며 참고용으로만 사용하세요</p>
+        <div className="mt-4 max-w-xs mx-auto">
+          <ScoreBar score={result.overallScore} label="" />
         </div>
       </div>
+
+      {/* Face Shape */}
+      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+        <div className="flex items-center gap-2">
+          <User className="w-5 h-5 text-[#ef4444]" weight="fill" />
+          <h2 className="text-lg font-semibold text-white">얼굴형 분석</h2>
+        </div>
+
+        <div className="space-y-3">
+          <div className="inline-flex px-4 py-2 rounded-full bg-[#ef4444] text-white text-base font-medium">
+            {result.faceShape.koreanName}
+          </div>
+          <p className="text-base text-white/80 leading-relaxed">
+            {result.faceShape.description}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {result.faceShape.characteristics.map((char, idx) => (
+              <span
+                key={idx}
+                className="px-3 py-1.5 rounded-full bg-white/10 text-sm text-white/70"
+              >
+                {char}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Feature Analysis */}
+      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-5 border border-white/10">
+        <div className="flex items-center gap-2">
+          <ChartBar className="w-5 h-5 text-[#ef4444]" weight="fill" />
+          <h2 className="text-lg font-semibold text-white">부위별 분석</h2>
+        </div>
+
+        <div className="space-y-5">
+          {Object.entries(result.features).map(([key, feature]) => (
+            <div key={key} className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-base font-medium text-white">
+                  {feature.koreanName}
+                </span>
+                <span className={`text-base font-bold ${getScoreColor(feature.score)}`}>
+                  {feature.score}점
+                </span>
+              </div>
+              <ScoreBar score={feature.score} label="" />
+              <p className="text-sm text-white/60">{feature.description}</p>
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-white/5">
+                <Sparkle className="w-4 h-4 text-[#ef4444] flex-shrink-0 mt-0.5" weight="fill" />
+                <p className="text-sm text-white/80">{feature.fortune}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Fortune Areas */}
+      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+        <div className="flex items-center gap-2">
+          <Star className="w-5 h-5 text-[#ef4444]" weight="fill" />
+          <h2 className="text-lg font-semibold text-white">운세 영역</h2>
+        </div>
+
+        <div className="space-y-4">
+          {Object.entries(result.fortuneAreas).map(([key, area]) => {
+            const Icon = fortuneIcons[key as keyof typeof fortuneIcons];
+            const label = fortuneLabels[key as keyof typeof fortuneLabels];
+            const color = fortuneColors[key as keyof typeof fortuneColors];
+            return (
+              <div key={key} className="p-4 rounded-xl bg-white/5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Icon className="w-5 h-5" weight="fill" style={{ color }} />
+                    <span className="text-base font-medium text-white">{label}</span>
+                  </div>
+                  <span className="text-lg font-bold" style={{ color }}>{area.score}점</span>
+                </div>
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${area.score}%`, backgroundColor: color }}
+                  />
+                </div>
+                <p className="text-sm text-white/60">{area.description}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Strengths */}
+      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-3 border border-white/10">
+        <div className="flex items-center gap-2">
+          <Sparkle className="w-5 h-5 text-green-400" weight="fill" />
+          <h2 className="text-lg font-semibold text-green-400">당신의 강점</h2>
+        </div>
+        <ul className="space-y-2">
+          {result.strengths.map((strength, idx) => (
+            <li key={idx} className="flex items-start gap-2 text-base text-white/80">
+              <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" weight="bold" />
+              {strength}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Advice */}
+      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-3 border border-white/10">
+        <div className="flex items-center gap-2">
+          <Lightbulb className="w-5 h-5 text-yellow-400" weight="fill" />
+          <h2 className="text-lg font-semibold text-yellow-400">조언</h2>
+        </div>
+        <ul className="space-y-2">
+          {result.advice.map((item, idx) => (
+            <li key={idx} className="flex items-start gap-2 text-base text-white/80">
+              <Check className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" weight="bold" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Lucky Elements */}
+      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-3 border border-white/10">
+        <div className="flex items-center gap-2">
+          <Clover className="w-5 h-5 text-green-400" weight="fill" />
+          <h2 className="text-lg font-semibold text-white">행운의 요소</h2>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {result.luckyElements.map((element, idx) => (
+            <span
+              key={idx}
+              className="px-4 py-2 rounded-full bg-[#ef4444] text-white text-base font-medium"
+            >
+              {element}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* Action Buttons */}
+      <div className="space-y-3 pt-4">
+        <Link href="/face-reading" className="block">
+          <button className="w-full h-14 rounded-xl bg-[#ef4444] text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-[#dc2626] transition-colors">
+            <ArrowCounterClockwise className="w-5 h-5" />
+            다시 분석하기
+          </button>
+        </Link>
+        <Link href="/" className="block">
+          <button className="w-full h-14 rounded-xl bg-white/5 border border-white/10 text-base text-white/60 font-medium hover:bg-white/10 hover:text-white transition-colors">
+            홈으로 돌아가기
+          </button>
+        </Link>
+      </div>
+
+      {/* Disclaimer */}
+      <p className="text-center text-sm text-white/40 pt-2 pb-8">
+        본 관상 분석은 전통 관상학을 기반으로 한 재미용 콘텐츠입니다.
+      </p>
     </div>
   );
 }

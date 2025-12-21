@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/lib/i18n/navigation";
-import { Calendar, Clock, MapPin, User, Sparkle } from "@/components/ui/icons";
+import { Calendar, Clock, MapPin, User, Sparkle, ArrowRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import { HoverBorderGradient } from "@/components/aceternity/hover-border-gradient";
 
 type Gender = "male" | "female";
 
@@ -124,24 +123,24 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {/* Gender Selection */}
-      <div className="space-y-3 sm:space-y-4">
-        <label className="flex items-center gap-2 text-sm sm:text-base font-semibold text-[var(--text-primary)]">
-          <User className="w-4 h-4 sm:w-5 sm:h-5" />
+      <div className="space-y-3">
+        <label className="flex items-center gap-2 text-sm font-medium text-white">
+          <User className="w-4 h-4 text-white/60" />
           {t("gender.label")}
         </label>
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 gap-3">
           {(["male", "female"] as const).map((g) => (
             <button
               key={g}
               type="button"
               onClick={() => handleChange("gender", g)}
               className={cn(
-                "h-12 sm:h-14 rounded-lg sm:rounded-xl font-semibold text-base sm:text-lg transition-all duration-200",
+                "h-12 rounded-xl font-medium text-base transition-all duration-200",
                 formData.gender === g
-                  ? "bg-[var(--accent)] text-white"
-                  : "glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  ? "bg-[#a855f7] text-white"
+                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
               )}
             >
               {t(`gender.${g}`)}
@@ -151,22 +150,22 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
       </div>
 
       {/* Calendar Type */}
-      <div className="space-y-3 sm:space-y-4">
-        <label className="flex items-center gap-2 text-sm sm:text-base font-semibold text-[var(--text-primary)]">
-          <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
+      <div className="space-y-3">
+        <label className="flex items-center gap-2 text-sm font-medium text-white">
+          <Calendar className="w-4 h-4 text-white/60" />
           {t("calendar.label")}
         </label>
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 gap-3">
           {(["solar", "lunar"] as const).map((type) => (
             <button
               key={type}
               type="button"
               onClick={() => handleChange("isLunar", type === "lunar")}
               className={cn(
-                "h-12 sm:h-14 rounded-lg sm:rounded-xl font-semibold text-base sm:text-lg transition-all duration-200",
+                "h-12 rounded-xl font-medium text-base transition-all duration-200",
                 (type === "lunar") === formData.isLunar
-                  ? "bg-[var(--accent)] text-white"
-                  : "glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  ? "bg-[#a855f7] text-white"
+                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
               )}
             >
               {t(`calendar.${type}`)}
@@ -176,35 +175,35 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
       </div>
 
       {/* Birth Date */}
-      <div className="space-y-3 sm:space-y-4">
-        <label className="flex items-center gap-2 text-sm sm:text-base font-semibold text-[var(--text-primary)]">
-          <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
+      <div className="space-y-3">
+        <label className="flex items-center gap-2 text-sm font-medium text-white">
+          <Calendar className="w-4 h-4 text-white/60" />
           {t("birthDate.label")}
         </label>
-        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        <div className="grid grid-cols-3 gap-2">
           <div className="space-y-1">
             <select
               value={formData.year}
               onChange={(e) => handleChange("year", parseInt(e.target.value))}
-              className="w-full h-12 sm:h-14 px-2 sm:px-4 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-lg bg-transparent appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
             >
               {years.map((y) => (
-                <option key={y} value={y} className="bg-[var(--background)]">
+                <option key={y} value={y} className="bg-[#1a1033] text-white">
                   {y}{t("birthDate.year")}
                 </option>
               ))}
             </select>
             {errors.year && (
-              <p className="text-xs sm:text-sm text-[var(--error)]">{errors.year}</p>
+              <p className="text-xs text-red-400">{errors.year}</p>
             )}
           </div>
           <select
             value={formData.month}
             onChange={(e) => handleChange("month", parseInt(e.target.value))}
-            className="h-12 sm:h-14 px-2 sm:px-4 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-lg bg-transparent appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            className="h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
           >
             {months.map((m) => (
-              <option key={m} value={m} className="bg-[var(--background)]">
+              <option key={m} value={m} className="bg-[#1a1033] text-white">
                 {m}{t("birthDate.month")}
               </option>
             ))}
@@ -213,35 +212,35 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
             <select
               value={formData.day}
               onChange={(e) => handleChange("day", parseInt(e.target.value))}
-              className="w-full h-12 sm:h-14 px-2 sm:px-4 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-lg bg-transparent appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
             >
               {days.map((d) => (
-                <option key={d} value={d} className="bg-[var(--background)]">
+                <option key={d} value={d} className="bg-[#1a1033] text-white">
                   {d}{t("birthDate.day")}
                 </option>
               ))}
             </select>
             {errors.day && (
-              <p className="text-xs sm:text-sm text-[var(--error)]">{errors.day}</p>
+              <p className="text-xs text-red-400">{errors.day}</p>
             )}
           </div>
         </div>
       </div>
 
       {/* Birth Time */}
-      <div className="space-y-3 sm:space-y-4">
-        <label className="flex items-center gap-2 text-sm sm:text-base font-semibold text-[var(--text-primary)]">
-          <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
+      <div className="space-y-3">
+        <label className="flex items-center gap-2 text-sm font-medium text-white">
+          <Clock className="w-4 h-4 text-white/60" />
           {t("birthTime.label")}
         </label>
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <select
             value={formData.hour}
             onChange={(e) => handleChange("hour", parseInt(e.target.value))}
-            className="h-12 sm:h-14 px-2 sm:px-4 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-lg bg-transparent appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            className="h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
           >
             {HOURS.map((h) => (
-              <option key={h.value} value={h.value} className="bg-[var(--background)]">
+              <option key={h.value} value={h.value} className="bg-[#1a1033] text-white">
                 {h.label}
               </option>
             ))}
@@ -249,52 +248,50 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
           <select
             value={formData.minute}
             onChange={(e) => handleChange("minute", parseInt(e.target.value))}
-            className="h-12 sm:h-14 px-2 sm:px-4 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-lg bg-transparent appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            className="h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
           >
             {MINUTES.map((m) => (
-              <option key={m.value} value={m.value} className="bg-[var(--background)]">
+              <option key={m.value} value={m.value} className="bg-[#1a1033] text-white">
                 {m.label}
               </option>
             ))}
           </select>
         </div>
-        <p className="text-xs sm:text-sm text-[var(--text-tertiary)]">
+        <p className="text-xs text-white/40">
           {t("birthTime.hint")}
         </p>
       </div>
 
       {/* Birth Location */}
-      <div className="space-y-3 sm:space-y-4">
-        <label className="flex items-center gap-2 text-sm sm:text-base font-semibold text-[var(--text-primary)]">
-          <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+      <div className="space-y-3">
+        <label className="flex items-center gap-2 text-sm font-medium text-white">
+          <MapPin className="w-4 h-4 text-white/60" />
           {t("birthPlace.label")}
         </label>
         <select
           value={formData.city}
           onChange={(e) => handleChange("city", e.target.value)}
-          className="w-full h-12 sm:h-14 px-3 sm:px-4 rounded-lg sm:rounded-xl glass-card text-[var(--text-primary)] text-sm sm:text-lg bg-transparent appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+          className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
         >
           {CITIES.map((city) => (
-            <option key={city.key} value={city.key} className="bg-[var(--background)]">
+            <option key={city.key} value={city.key} className="bg-[#1a1033] text-white">
               {tCities(city.key)}
             </option>
           ))}
         </select>
-        <p className="text-xs sm:text-sm text-[var(--text-tertiary)]">
+        <p className="text-xs text-white/40">
           {t("birthPlace.hint")}
         </p>
       </div>
 
       {/* Submit Button */}
-      <HoverBorderGradient
-        containerClassName="w-full rounded-lg sm:rounded-xl"
-        className="w-full h-12 sm:h-16 flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] text-white font-bold text-base sm:text-lg rounded-lg sm:rounded-xl"
-        as="button"
+      <button
         type="submit"
+        className="w-full h-14 flex items-center justify-center gap-2 bg-[#a855f7] text-white font-bold text-lg rounded-xl hover:bg-[#9333ea] transition-colors"
       >
-        <Sparkle className="w-5 h-5 sm:w-6 sm:h-6" weight="fill" />
         {t("submit")}
-      </HoverBorderGradient>
+        <ArrowRight className="w-5 h-5" weight="bold" />
+      </button>
     </form>
   );
 }

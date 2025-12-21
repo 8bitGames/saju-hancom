@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Sparkle } from "@/components/ui/icons";
+import { X, Sparkle, Warning } from "@phosphor-icons/react";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 
 // localStorage 키
@@ -133,18 +133,18 @@ export function DetailAnalysisModal({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl max-h-[85vh] bg-[var(--background-card)] rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+      <div className="relative w-full max-w-2xl max-h-[85vh] bg-[#1a1033] rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] text-white">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-[#a855f7]">
           <div className="flex items-center gap-3">
-            <Sparkle className="w-6 h-6" weight="fill" />
-            <h2 className="text-xl font-bold">{categoryTitle} 상세 분석</h2>
+            <Sparkle className="w-6 h-6 text-white" weight="fill" />
+            <h2 className="text-xl font-bold text-white">{categoryTitle} 상세 분석</h2>
           </div>
           <button
             onClick={onClose}
             className="p-2 rounded-full hover:bg-white/20 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 text-white" />
           </button>
         </div>
 
@@ -152,13 +152,13 @@ export function DetailAnalysisModal({
         <div className="p-6 overflow-y-auto max-h-[calc(85vh-80px)]">
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--element-fire)] flex items-center justify-center animate-pulse">
+              <div className="w-16 h-16 rounded-full bg-[#a855f7] flex items-center justify-center animate-pulse">
                 <Sparkle className="w-8 h-8 text-white" weight="fill" />
               </div>
-              <p className="text-[var(--text-secondary)]">
+              <p className="text-white/60">
                 상세 분석을 생성하고 있습니다...
               </p>
-              <p className="text-sm text-[var(--text-tertiary)]">
+              <p className="text-sm text-white/40">
                 잠시만 기다려주세요
               </p>
             </div>
@@ -166,16 +166,16 @@ export function DetailAnalysisModal({
 
           {error && (
             <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                <span className="text-3xl">😔</span>
+              <div className="w-16 h-16 rounded-full bg-[#ef4444]/20 flex items-center justify-center">
+                <Warning className="w-8 h-8 text-[#ef4444]" weight="fill" />
               </div>
-              <p className="text-[var(--text-secondary)]">{error}</p>
+              <p className="text-white/60">{error}</p>
               <button
                 onClick={() => {
                   setError(null);
                   fetchDetailAnalysis();
                 }}
-                className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white font-medium"
+                className="px-4 py-2 rounded-lg bg-[#a855f7] text-white font-medium hover:bg-[#9333ea] transition-colors"
               >
                 다시 시도
               </button>

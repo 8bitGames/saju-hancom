@@ -37,7 +37,7 @@ export default async function CompatibilityResultPage({ searchParams }: PageProp
     <Suspense
       fallback={
         <div className="flex items-center justify-center py-20">
-          <div className="w-10 h-10 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+          <div className="w-10 h-10 border-2 border-[#3b82f6] border-t-transparent rounded-full animate-spin" />
         </div>
       }
     >

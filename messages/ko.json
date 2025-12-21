@@ -22,7 +22,9 @@
     "menuClose": "메뉴 닫기"
   },
   "header": {
-    "title": "AI 운세"
+    "title": "한사 AI",
+    "start": "시작하기",
+    "swipeHint": "스와이프"
   },
   "home": {
     "title": "AI 운세 마스터",
@@ -52,6 +54,14 @@
         "eyes": "눈",
         "nose": "코",
         "mouth": "입"
+      },
+      "history": {
+        "title": "분석 기록",
+        "description": "지금까지의 사주, 궁합, 관상 분석 결과를 한눈에 확인하세요."
+      },
+      "couple": {
+        "title": "연인 궁합",
+        "description": "사주로 알아보는 연인과의 궁합과 인연의 깊이를 확인하세요."
       }
     },
     "elements": {
@@ -145,6 +155,36 @@
       "compatibility": "궁합도",
       "advice": "조언"
     }
+  },
+  "couple": {
+    "title": "연인 궁합 분석",
+    "subtitle": "두 사람의 생년월일시를 입력해주세요",
+    "privacyNotice": "입력하신 정보는 궁합 분석에만 사용되며 저장되지 않습니다.",
+    "person1": "나",
+    "person2": "상대방",
+    "relationTypes": {
+      "dating": "연애 중",
+      "engaged": "약혼",
+      "married": "결혼",
+      "interested": "관심 상대"
+    },
+    "result": {
+      "title": "연인 궁합 결과",
+      "pillars": "두 사람의 사주",
+      "analysis": "궁합 분석",
+      "romance": "연애운",
+      "communication": "소통",
+      "passion": "열정",
+      "stability": "안정성",
+      "future": "미래",
+      "elementBalance": "오행 균형",
+      "luckyElements": "행운의 오행",
+      "advice": "연애 조언",
+      "cautions": "주의 사항",
+      "reAnalyze": "다시 분석",
+      "sajuAnalysis": "사주 분석"
+    },
+    "disclaimer": "이 분석은 전통 명리학을 기반으로 한 재미있는 참고 정보입니다."
   },
   "faceReading": {
     "title": "관상 분석",

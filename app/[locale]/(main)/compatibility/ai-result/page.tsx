@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Link, useRouter } from "@/lib/i18n/navigation";
 import {
-  Users,
+  UsersThree,
   ArrowCounterClockwise,
   Star,
   ChatCircle,
@@ -12,11 +12,14 @@ import {
   Heart,
   ChartBar,
   Sparkle,
-} from "@/components/ui/icons";
-import { BackgroundGradient } from "@/components/aceternity/background-gradient";
-import { SparklesCore } from "@/components/aceternity/sparkles";
-import { HoverBorderGradient } from "@/components/aceternity/hover-border-gradient";
-import { Spotlight } from "@/components/aceternity/spotlight";
+  Check,
+  Warning,
+  Lightbulb,
+  CalendarBlank,
+  Clover,
+  ArrowRight,
+} from "@phosphor-icons/react";
+import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import { calculateSaju, toPromptData } from "@/lib/saju";
 import { getLongitudeByCity } from "@/lib/saju/solar-time";
 import type { Gender, SajuPromptData } from "@/lib/saju/types";
@@ -57,13 +60,29 @@ interface CompatibilityResult {
   };
 }
 
-const gradeColors: Record<string, string> = {
-  excellent: "from-yellow-400 to-orange-500",
-  good: "from-green-400 to-emerald-500",
-  normal: "from-blue-400 to-cyan-500",
-  caution: "from-orange-400 to-red-400",
-  challenging: "from-gray-400 to-gray-500",
-};
+function getScoreColor(score: number): string {
+  if (score >= 80) return "text-green-400";
+  if (score >= 60) return "text-blue-400";
+  if (score >= 40) return "text-white";
+  return "text-orange-400";
+}
+
+function ScoreBar({ score, label }: { score: number; label: string }) {
+  return (
+    <div className="space-y-2">
+      <div className="flex justify-between text-base">
+        <span className="text-white/60">{label}</span>
+        <span className={`font-bold ${getScoreColor(score)}`}>{score}점</span>
+      </div>
+      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-[#3b82f6] rounded-full transition-all duration-500"
+          style={{ width: `${score}%` }}
+        />
+      </div>
+    </div>
+  );
+}
 
 function CompatibilityAIResultContent() {
   const router = useRouter();
@@ -76,7 +95,6 @@ function CompatibilityAIResultContent() {
 
   useEffect(() => {
     const fetchCompatibility = async () => {
-      // URL 파라미터에서 두 사람 정보 가져오기
       const p1Name = searchParams.get("p1Name") || "본인";
       const p1Year = parseInt(searchParams.get("p1Year") || "0");
       const p1Month = parseInt(searchParams.get("p1Month") || "0");
@@ -108,7 +126,6 @@ function CompatibilityAIResultContent() {
       }
 
       try {
-        // 두 사람의 사주 계산
         const p1Longitude = getLongitudeByCity(p1City);
         const p1SajuResult = calculateSaju({
           year: p1Year,
@@ -133,7 +150,6 @@ function CompatibilityAIResultContent() {
           longitude: p2Longitude,
         });
 
-        // LLM에 보낼 데이터 준비
         const person1Data: SajuPromptData & { name: string; gender: string } = {
           ...toPromptData(p1SajuResult),
           name: p1Name,
@@ -146,7 +162,6 @@ function CompatibilityAIResultContent() {
           gender: p2Gender,
         };
 
-        // API 호출
         const response = await fetch("/api/compatibility", {
           method: "POST",
           headers: {
@@ -179,13 +194,13 @@ function CompatibilityAIResultContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center space-y-3 sm:space-y-4">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-br from-[var(--element-water)] to-[var(--accent)] flex items-center justify-center animate-pulse">
-            <Users className="w-8 h-8 sm:w-10 sm:h-10 text-white" weight="fill" />
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="text-center space-y-4">
+          <div className="w-20 h-20 mx-auto rounded-2xl bg-[#3b82f6] flex items-center justify-center animate-pulse">
+            <UsersThree className="w-10 h-10 text-white" weight="fill" />
           </div>
-          <p className="text-base sm:text-lg text-[var(--text-secondary)]">궁합을 분석하고 있습니다...</p>
-          <p className="text-xs sm:text-sm text-[var(--text-tertiary)]">잠시만 기다려주세요</p>
+          <p className="text-lg text-white">AI가 궁합을 분석하고 있습니다...</p>
+          <p className="text-base text-white/60">잠시만 기다려주세요</p>
         </div>
       </div>
     );
@@ -193,11 +208,14 @@ function CompatibilityAIResultContent() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center space-y-3 sm:space-y-4">
-          <p className="text-base sm:text-lg text-[var(--element-fire)]">{error}</p>
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="text-center space-y-4">
+          <div className="w-20 h-20 mx-auto rounded-2xl bg-red-500/20 flex items-center justify-center">
+            <Warning className="w-10 h-10 text-red-400" weight="bold" />
+          </div>
+          <p className="text-lg text-red-400">{error}</p>
           <Link href="/compatibility">
-            <button className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-[var(--accent)] text-white text-sm sm:text-base font-medium">
+            <button className="px-6 py-3 rounded-xl bg-[#3b82f6] text-white text-base font-medium hover:bg-[#2563eb] transition-colors">
               다시 시도하기
             </button>
           </Link>
@@ -211,305 +229,284 @@ function CompatibilityAIResultContent() {
   }
 
   return (
-    <div className="relative min-h-screen pb-6 sm:pb-8">
-      <Spotlight
-        className="-top-40 -right-10 md:right-40 md:-top-20"
-        fill="var(--element-water)"
-      />
-
-      <div className="space-y-5 sm:space-y-8 animate-fade-in relative z-10">
-        {/* Header */}
-        <div className="relative text-center space-y-3 sm:space-y-4 py-5 sm:py-8">
-          <div className="absolute inset-0 w-full h-full">
-            <SparklesCore
-              id="compatibility-sparkles"
-              background="transparent"
-              minSize={0.4}
-              maxSize={1}
-              particleDensity={40}
-              particleColor="var(--element-water)"
-              className="w-full h-full"
-            />
-          </div>
-
-          <div className="relative z-10">
-            <BackgroundGradient
-              className="rounded-xl sm:rounded-2xl p-4 sm:p-5"
-              containerClassName="mx-auto w-fit"
-            >
-              <div className="w-14 h-14 sm:w-20 sm:h-20 flex items-center justify-center">
-                <span className="text-3xl sm:text-4xl font-bold text-white">{result.overallScore}</span>
-              </div>
-            </BackgroundGradient>
-          </div>
-
-          <div className="relative z-10 space-y-1.5 sm:space-y-2 px-4">
-            <div className={`inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r ${gradeColors[result.grade] || gradeColors.normal} text-white font-bold text-base sm:text-lg`}>
-              <Star className="w-5 h-5 sm:w-6 sm:h-6" weight="fill" />
-              {result.gradeText}
-            </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
-              {person1Name}님 ❤️ {person2Name}님
-            </h1>
-            <p className="text-sm sm:text-base text-[var(--text-secondary)] max-w-md mx-auto">
-              {result.summary}
-            </p>
-          </div>
-        </div>
-
-        {/* Compatibility Scores */}
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-3 sm:mb-4 flex items-center gap-1.5 sm:gap-2">
-            <ChartBar className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--accent)]" weight="fill" />
-            궁합 상세 분석
-          </h2>
-
-          <div className="space-y-4 sm:space-y-5">
-            {/* Communication */}
-            <div className="space-y-1.5 sm:space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <ChatCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--element-wood)]" weight="fill" />
-                  <span className="text-sm sm:text-base font-medium text-[var(--text-primary)]">소통</span>
-                </div>
-                <span className="text-base sm:text-lg font-bold text-[var(--accent)]">{result.compatibility.communication.score}점</span>
-              </div>
-              <div className="h-1.5 sm:h-2 bg-[var(--background-elevated)] rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[var(--element-wood)] to-[var(--element-fire)] rounded-full" style={{ width: `${result.compatibility.communication.score}%` }} />
-              </div>
-              <p className="text-xs sm:text-sm text-[var(--text-secondary)]">{result.compatibility.communication.description}</p>
-            </div>
-
-            {/* Collaboration */}
-            <div className="space-y-1.5 sm:space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Handshake className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--element-fire)]" weight="fill" />
-                  <span className="text-sm sm:text-base font-medium text-[var(--text-primary)]">협업</span>
-                </div>
-                <span className="text-base sm:text-lg font-bold text-[var(--accent)]">{result.compatibility.collaboration.score}점</span>
-              </div>
-              <div className="h-1.5 sm:h-2 bg-[var(--background-elevated)] rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[var(--element-fire)] to-[var(--accent)] rounded-full" style={{ width: `${result.compatibility.collaboration.score}%` }} />
-              </div>
-              <p className="text-xs sm:text-sm text-[var(--text-secondary)]">{result.compatibility.collaboration.description}</p>
-            </div>
-
-            {/* Trust */}
-            <div className="space-y-1.5 sm:space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--element-earth)]" weight="fill" />
-                  <span className="text-sm sm:text-base font-medium text-[var(--text-primary)]">신뢰</span>
-                </div>
-                <span className="text-base sm:text-lg font-bold text-[var(--accent)]">{result.compatibility.trust.score}점</span>
-              </div>
-              <div className="h-1.5 sm:h-2 bg-[var(--background-elevated)] rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[var(--element-earth)] to-[var(--element-metal)] rounded-full" style={{ width: `${result.compatibility.trust.score}%` }} />
-              </div>
-              <p className="text-xs sm:text-sm text-[var(--text-secondary)]">{result.compatibility.trust.description}</p>
-            </div>
-
-            {/* Growth */}
-            <div className="space-y-1.5 sm:space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Sparkle className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--element-metal)]" weight="fill" />
-                  <span className="text-sm sm:text-base font-medium text-[var(--text-primary)]">성장</span>
-                </div>
-                <span className="text-base sm:text-lg font-bold text-[var(--accent)]">{result.compatibility.growth.score}점</span>
-              </div>
-              <div className="h-1.5 sm:h-2 bg-[var(--background-elevated)] rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[var(--element-metal)] to-[var(--element-water)] rounded-full" style={{ width: `${result.compatibility.growth.score}%` }} />
-              </div>
-              <p className="text-xs sm:text-sm text-[var(--text-secondary)]">{result.compatibility.growth.description}</p>
-            </div>
-
-            {/* Emotional Connection */}
-            <div className="space-y-1.5 sm:space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--element-water)]" weight="fill" />
-                  <span className="text-sm sm:text-base font-medium text-[var(--text-primary)]">정서적 교감</span>
-                </div>
-                <span className="text-base sm:text-lg font-bold text-[var(--accent)]">{result.compatibility.emotionalConnection.score}점</span>
-              </div>
-              <div className="h-1.5 sm:h-2 bg-[var(--background-elevated)] rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[var(--element-water)] to-[var(--accent)] rounded-full" style={{ width: `${result.compatibility.emotionalConnection.score}%` }} />
-              </div>
-              <p className="text-xs sm:text-sm text-[var(--text-secondary)]">{result.compatibility.emotionalConnection.description}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Element Analysis */}
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-3 sm:mb-4">🌿 오행 분석</h2>
-          <div className="space-y-2.5 sm:space-y-3">
-            <div className="grid grid-cols-2 gap-2 sm:gap-4">
-              <div className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-[var(--background-elevated)]">
-                <p className="text-xs sm:text-sm text-[var(--text-tertiary)]">{person1Name}님의 주요 오행</p>
-                <p className="text-base sm:text-lg font-bold text-[var(--accent)]">{result.elementAnalysis.person1Dominant}</p>
-              </div>
-              <div className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-[var(--background-elevated)]">
-                <p className="text-xs sm:text-sm text-[var(--text-tertiary)]">{person2Name}님의 주요 오행</p>
-                <p className="text-base sm:text-lg font-bold text-[var(--accent)]">{result.elementAnalysis.person2Dominant}</p>
-              </div>
-            </div>
-            <p className="text-sm sm:text-base text-[var(--text-secondary)]">{result.elementAnalysis.interaction}</p>
-            <p className="text-xs sm:text-sm text-[var(--text-tertiary)] bg-[var(--accent)]/10 p-2.5 sm:p-3 rounded-lg">
-              💡 {result.elementAnalysis.balanceAdvice}
-            </p>
-          </div>
-        </div>
-
-        {/* Strengths & Challenges */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-          <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-            <h2 className="text-base sm:text-lg font-bold text-[var(--element-wood)] mb-2 sm:mb-3">✨ 관계의 강점</h2>
-            <ul className="space-y-1.5 sm:space-y-2">
-              {result.strengths.map((strength, idx) => (
-                <li key={idx} className="flex items-start gap-1.5 sm:gap-2 text-xs sm:text-sm text-[var(--text-secondary)]">
-                  <span className="text-[var(--element-wood)]">✓</span>
-                  {strength}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-            <h2 className="text-base sm:text-lg font-bold text-[var(--element-fire)] mb-2 sm:mb-3">⚡ 도전 과제</h2>
-            <ul className="space-y-1.5 sm:space-y-2">
-              {result.challenges.map((challenge, idx) => (
-                <li key={idx} className="flex items-start gap-1.5 sm:gap-2 text-xs sm:text-sm text-[var(--text-secondary)]">
-                  <span className="text-[var(--element-fire)]">!</span>
-                  {challenge}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Relationship Advice */}
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-3 sm:mb-4">💡 관계 조언</h2>
-
-          <div className="space-y-3 sm:space-y-4">
-            <div>
-              <p className="text-xs sm:text-sm font-medium text-[var(--element-wood)] mb-1.5 sm:mb-2">✅ 해야 할 것</p>
-              <ul className="space-y-0.5 sm:space-y-1">
-                {result.relationshipAdvice.doList.map((item, idx) => (
-                  <li key={idx} className="text-xs sm:text-sm text-[var(--text-secondary)]">• {item}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <p className="text-xs sm:text-sm font-medium text-[var(--element-fire)] mb-1.5 sm:mb-2">❌ 피해야 할 것</p>
-              <ul className="space-y-0.5 sm:space-y-1">
-                {result.relationshipAdvice.dontList.map((item, idx) => (
-                  <li key={idx} className="text-xs sm:text-sm text-[var(--text-secondary)]">• {item}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <p className="text-xs sm:text-sm font-medium text-[var(--accent)] mb-1.5 sm:mb-2">💬 소통 팁</p>
-              <ul className="space-y-0.5 sm:space-y-1">
-                {result.relationshipAdvice.communicationTips.map((tip, idx) => (
-                  <li key={idx} className="text-xs sm:text-sm text-[var(--text-secondary)]">• {tip}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Timing */}
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-3 sm:mb-4">📅 시기 분석</h2>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            <div>
-              <p className="text-xs sm:text-sm font-medium text-[var(--element-wood)] mb-1.5 sm:mb-2">🌟 좋은 시기</p>
-              {result.timing.goodPeriods.map((period, idx) => (
-                <p key={idx} className="text-xs sm:text-sm text-[var(--text-secondary)]">• {period}</p>
-              ))}
-            </div>
-            <div>
-              <p className="text-xs sm:text-sm font-medium text-[var(--element-fire)] mb-1.5 sm:mb-2">⚠️ 주의 시기</p>
-              {result.timing.cautionPeriods.map((period, idx) => (
-                <p key={idx} className="text-xs sm:text-sm text-[var(--text-secondary)]">• {period}</p>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Lucky Elements */}
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-xl border border-[var(--border)]/50">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-3 sm:mb-4">🍀 함께할 때 행운의 요소</h2>
-
-          <div className="space-y-3 sm:space-y-4">
-            <div>
-              <p className="text-xs sm:text-sm text-[var(--text-tertiary)] mb-1.5 sm:mb-2">색상</p>
-              <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                {result.luckyElements.colors.map((color, idx) => (
-                  <span key={idx} className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--accent)]/20 text-[var(--accent)] text-xs sm:text-sm font-medium">
-                    {color}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs sm:text-sm text-[var(--text-tertiary)] mb-1.5 sm:mb-2">함께하면 좋은 활동</p>
-              <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                {result.luckyElements.activities.map((activity, idx) => (
-                  <span key={idx} className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--element-wood)]/20 text-[var(--element-wood)] text-xs sm:text-sm">
-                    {activity}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs sm:text-sm text-[var(--text-tertiary)] mb-1.5 sm:mb-2">추천 장소</p>
-              <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                {result.luckyElements.places.map((place, idx) => (
-                  <span key={idx} className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--element-water)]/20 text-[var(--element-water)] text-xs sm:text-sm">
-                    {place}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4">
-          <Link href={`/compatibility/result?${searchParams.toString()}`} className="block">
-            <HoverBorderGradient
-              containerClassName="w-full rounded-lg sm:rounded-xl"
-              className="w-full h-12 sm:h-14 flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-[var(--element-water)] to-[var(--accent)] text-white font-bold text-base sm:text-lg rounded-lg sm:rounded-xl"
-              as="div"
-            >
-              <ChartBar className="w-4 h-4 sm:w-5 sm:h-5" weight="fill" />
-              기본 궁합 분석 보기
-            </HoverBorderGradient>
-          </Link>
-
-          <Link href="/compatibility" className="block">
-            <button className="w-full h-12 sm:h-14 rounded-lg sm:rounded-xl bg-[var(--background-elevated)] text-sm sm:text-base text-[var(--text-secondary)] font-medium hover:bg-[var(--background-elevated)]/80 transition-colors flex items-center justify-center gap-1.5 sm:gap-2">
-              <ArrowCounterClockwise className="w-4 h-4 sm:w-5 sm:h-5" />
-              다시 분석하기
-            </button>
-          </Link>
-        </div>
-
-        {/* Disclaimer */}
-        <div className="text-center text-xs sm:text-sm text-[var(--text-tertiary)] space-y-0.5 sm:space-y-1 pt-3 sm:pt-4 pb-6 sm:pb-8">
-          <p>본 궁합 분석은 전통 명리학을 기반으로 한 재미용 콘텐츠입니다</p>
-          <p>실제 관계 예측이 아니며 참고용으로만 사용하세요</p>
-        </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="text-center space-y-2 py-4">
+        <p className="text-[#3b82f6] text-sm font-medium tracking-wider">
+          AI宮合分析
+        </p>
+        <h1 className="text-2xl font-bold text-white">
+          AI 궁합 분석 결과
+        </h1>
+        <TextGenerateEffect
+          words={`${person1Name}님과 ${person2Name}님의 상세 궁합 분석`}
+          className="text-base text-white/60"
+          duration={0.3}
+        />
       </div>
+
+      {/* Score Card */}
+      <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 text-center">
+        <div className="w-24 h-24 mx-auto rounded-2xl bg-[#3b82f6] flex items-center justify-center mb-4">
+          <span className="text-4xl font-bold text-white">{result.overallScore}</span>
+        </div>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#3b82f6]/20 text-[#3b82f6] font-bold text-lg mb-3">
+          <Star className="w-5 h-5" weight="fill" />
+          {result.gradeText}
+        </div>
+        <p className="text-base text-white/80 max-w-md mx-auto">
+          {result.summary}
+        </p>
+      </div>
+
+      {/* Compatibility Scores */}
+      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-5 border border-white/10">
+        <div className="flex items-center gap-2">
+          <ChartBar className="w-5 h-5 text-[#3b82f6]" weight="fill" />
+          <h2 className="text-lg font-semibold text-white">궁합 상세 분석</h2>
+        </div>
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <ChatCircle className="w-5 h-5 text-green-400" weight="fill" />
+              <span className="text-base font-medium text-white">소통</span>
+            </div>
+            <ScoreBar score={result.compatibility.communication.score} label="" />
+            <p className="text-sm text-white/60">
+              {result.compatibility.communication.description}
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Handshake className="w-5 h-5 text-orange-400" weight="fill" />
+              <span className="text-base font-medium text-white">협업</span>
+            </div>
+            <ScoreBar score={result.compatibility.collaboration.score} label="" />
+            <p className="text-sm text-white/60">
+              {result.compatibility.collaboration.description}
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Heart className="w-5 h-5 text-pink-400" weight="fill" />
+              <span className="text-base font-medium text-white">신뢰</span>
+            </div>
+            <ScoreBar score={result.compatibility.trust.score} label="" />
+            <p className="text-sm text-white/60">
+              {result.compatibility.trust.description}
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Sparkle className="w-5 h-5 text-purple-400" weight="fill" />
+              <span className="text-base font-medium text-white">성장</span>
+            </div>
+            <ScoreBar score={result.compatibility.growth.score} label="" />
+            <p className="text-sm text-white/60">
+              {result.compatibility.growth.description}
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <UsersThree className="w-5 h-5 text-blue-400" weight="fill" />
+              <span className="text-base font-medium text-white">정서적 교감</span>
+            </div>
+            <ScoreBar score={result.compatibility.emotionalConnection.score} label="" />
+            <p className="text-sm text-white/60">
+              {result.compatibility.emotionalConnection.description}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Element Analysis */}
+      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+        <h2 className="text-lg font-semibold text-white">오행 분석</h2>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+            <p className="text-sm text-white/40">{person1Name}님의 주요 오행</p>
+            <p className="text-lg font-bold text-[#3b82f6]">{result.elementAnalysis.person1Dominant}</p>
+          </div>
+          <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+            <p className="text-sm text-white/40">{person2Name}님의 주요 오행</p>
+            <p className="text-lg font-bold text-[#3b82f6]">{result.elementAnalysis.person2Dominant}</p>
+          </div>
+        </div>
+        <p className="text-base text-white/80">{result.elementAnalysis.interaction}</p>
+        <div className="flex items-start gap-2 p-3 rounded-xl bg-[#3b82f6]/10">
+          <Lightbulb className="w-5 h-5 text-[#3b82f6] flex-shrink-0 mt-0.5" weight="fill" />
+          <p className="text-sm text-white/80">{result.elementAnalysis.balanceAdvice}</p>
+        </div>
+      </section>
+
+      {/* Strengths & Challenges */}
+      <div className="grid grid-cols-1 gap-4">
+        <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-3 border border-white/10">
+          <h2 className="text-lg font-semibold text-green-400">관계의 강점</h2>
+          <ul className="space-y-2">
+            {result.strengths.map((strength, idx) => (
+              <li key={idx} className="flex items-start gap-2 text-base text-white/80">
+                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" weight="bold" />
+                {strength}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-3 border border-white/10">
+          <h2 className="text-lg font-semibold text-orange-400">도전 과제</h2>
+          <ul className="space-y-2">
+            {result.challenges.map((challenge, idx) => (
+              <li key={idx} className="flex items-start gap-2 text-base text-white/80">
+                <Warning className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" weight="bold" />
+                {challenge}
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
+      {/* Relationship Advice */}
+      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+        <h2 className="text-lg font-semibold text-white">관계 조언</h2>
+
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-medium text-green-400 mb-2 flex items-center gap-2">
+              <Check className="w-4 h-4" weight="bold" />
+              해야 할 것
+            </p>
+            <ul className="space-y-1">
+              {result.relationshipAdvice.doList.map((item, idx) => (
+                <li key={idx} className="text-base text-white/80 pl-6">• {item}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-orange-400 mb-2 flex items-center gap-2">
+              <Warning className="w-4 h-4" weight="bold" />
+              피해야 할 것
+            </p>
+            <ul className="space-y-1">
+              {result.relationshipAdvice.dontList.map((item, idx) => (
+                <li key={idx} className="text-base text-white/80 pl-6">• {item}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-[#3b82f6] mb-2 flex items-center gap-2">
+              <ChatCircle className="w-4 h-4" weight="fill" />
+              소통 팁
+            </p>
+            <ul className="space-y-1">
+              {result.relationshipAdvice.communicationTips.map((tip, idx) => (
+                <li key={idx} className="text-base text-white/80 pl-6">• {tip}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Timing */}
+      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+        <div className="flex items-center gap-2">
+          <CalendarBlank className="w-5 h-5 text-[#3b82f6]" weight="fill" />
+          <h2 className="text-lg font-semibold text-white">시기 분석</h2>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <p className="text-sm font-medium text-green-400 mb-2 flex items-center gap-2">
+              <Star className="w-4 h-4" weight="fill" />
+              좋은 시기
+            </p>
+            {result.timing.goodPeriods.map((period, idx) => (
+              <p key={idx} className="text-base text-white/80">• {period}</p>
+            ))}
+          </div>
+          <div>
+            <p className="text-sm font-medium text-orange-400 mb-2 flex items-center gap-2">
+              <Warning className="w-4 h-4" weight="bold" />
+              주의 시기
+            </p>
+            {result.timing.cautionPeriods.map((period, idx) => (
+              <p key={idx} className="text-base text-white/80">• {period}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Lucky Elements */}
+      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+        <div className="flex items-center gap-2">
+          <Clover className="w-5 h-5 text-green-400" weight="fill" />
+          <h2 className="text-lg font-semibold text-white">함께할 때 행운의 요소</h2>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-white/40 mb-2">색상</p>
+            <div className="flex flex-wrap gap-2">
+              {result.luckyElements.colors.map((color, idx) => (
+                <span key={idx} className="px-3 py-1.5 rounded-full bg-[#3b82f6]/20 text-[#3b82f6] text-sm font-medium">
+                  {color}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-sm text-white/40 mb-2">함께하면 좋은 활동</p>
+            <div className="flex flex-wrap gap-2">
+              {result.luckyElements.activities.map((activity, idx) => (
+                <span key={idx} className="px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-sm">
+                  {activity}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-sm text-white/40 mb-2">추천 장소</p>
+            <div className="flex flex-wrap gap-2">
+              {result.luckyElements.places.map((place, idx) => (
+                <span key={idx} className="px-3 py-1.5 rounded-full bg-purple-500/20 text-purple-400 text-sm">
+                  {place}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Action Buttons */}
+      <div className="space-y-3 pt-4">
+        <Link href={`/compatibility/result?${searchParams.toString()}`} className="block">
+          <button className="w-full h-14 rounded-xl bg-[#3b82f6] text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-[#2563eb] transition-colors">
+            <ChartBar className="w-5 h-5" weight="fill" />
+            기본 궁합 분석 보기
+            <ArrowRight className="w-5 h-5" weight="bold" />
+          </button>
+        </Link>
+
+        <Link href="/compatibility" className="block">
+          <button className="w-full h-14 rounded-xl bg-white/5 border border-white/10 text-base text-white/60 font-medium hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-2">
+            <ArrowCounterClockwise className="w-5 h-5" />
+            다시 분석하기
+          </button>
+        </Link>
+      </div>
+
+      {/* Disclaimer */}
+      <p className="text-center text-sm text-white/40 pt-2 pb-8">
+        이 분석은 전통 명리학과 AI를 기반으로 한 참고용 정보입니다.
+      </p>
     </div>
   );
 }
@@ -518,13 +515,13 @@ export default function CompatibilityAIResultPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center space-y-4">
-            <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-[var(--element-water)] to-[var(--accent)] flex items-center justify-center animate-pulse">
-              <Users className="w-10 h-10 text-white" weight="fill" />
+            <div className="w-20 h-20 mx-auto rounded-2xl bg-[#3b82f6] flex items-center justify-center animate-pulse">
+              <UsersThree className="w-10 h-10 text-white" weight="fill" />
             </div>
-            <p className="text-lg text-[var(--text-secondary)]">궁합을 분석하고 있습니다...</p>
-            <p className="text-sm text-[var(--text-tertiary)]">잠시만 기다려주세요</p>
+            <p className="text-lg text-white">AI가 궁합을 분석하고 있습니다...</p>
+            <p className="text-base text-white/60">잠시만 기다려주세요</p>
           </div>
         </div>
       }
