@@ -80,14 +80,16 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
 
   return (
     <div
-      className={cn("relative h-screen h-dvh w-full overflow-hidden bg-[#0f0a1a]", className)}
+      className={cn("relative h-screen h-dvh w-full bg-[#0f0a1a] overflow-hidden", className)}
     >
-      {/* Star Background - fixed and scaled for mobile coverage */}
+      {/* Star Background - oversized to cover all mobile viewport states including browser chrome changes */}
       <div
-        className="fixed inset-0 z-0 pointer-events-none"
+        className="fixed z-0 pointer-events-none"
         style={{
-          transform: 'scale(1.3)',
-          transformOrigin: 'center center',
+          top: '-50vh',
+          left: '-25vw',
+          width: '150vw',
+          height: '200vh',
         }}
       >
         <StarsBackground
