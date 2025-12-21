@@ -114,7 +114,7 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
         }}
       />
 
-      <div className={cn("relative h-screen h-dvh w-full", className)}>
+      <div className={cn("relative w-full", className)} style={{ minHeight: '100vh', height: '100dvh' }}>
         {/* Branding - Top Left */}
         <div className="fixed top-6 left-6 z-50">
           <span
@@ -155,8 +155,10 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
         {/* Horizontal Cards Container - horizontal scroll only */}
         <div
           ref={containerRef}
-          className="relative z-10 h-screen h-dvh flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden scrollbar-hide"
+          className="relative z-10 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden scrollbar-hide"
           style={{
+            minHeight: '100vh',
+            height: '100dvh',
             scrollbarWidth: "none",
             msOverflowStyle: "none",
             touchAction: "pan-x",
@@ -165,12 +167,15 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
           {cards.map((card, index) => (
             <div
               key={card.id}
-              className="w-screen h-screen h-dvh flex-shrink-0 snap-center flex items-center justify-center px-4 pt-16 pb-12"
+              className="w-screen flex-shrink-0 snap-center flex items-center justify-center px-4 pt-16 pb-12"
+              style={{ minHeight: '100vh', height: '100dvh' }}
             >
               <div
                 onClick={() => handleCardClick(card.href)}
-                className="relative w-full max-w-sm h-[85vh] max-h-[780px] rounded-3xl overflow-hidden cursor-pointer group transition-all duration-500 hover:scale-[1.02]"
+                className="relative w-full max-w-sm rounded-3xl overflow-hidden cursor-pointer group transition-all duration-500 hover:scale-[1.02]"
                 style={{
+                  height: 'min(85dvh, 780px)',
+                  maxHeight: '780px',
                   boxShadow: `0 25px 60px -15px ${activeTheme?.accent}50, 0 10px 30px -10px rgba(0,0,0,0.5)`,
                 }}
               >
