@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
@@ -80,10 +80,18 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
 
   return (
     <>
-      {/* Star Background - transparent canvas, body provides bg color */}
+      {/*
+        Stars Background Layer
+        - Uses 100lvh (large viewport height) for iOS Safari full coverage
+        - position: fixed with explicit top/left/right and height
+      */}
       <div
-        className="fixed inset-0 z-0 pointer-events-none"
-        style={{ overflow: 'visible' }}
+        className="fixed top-0 left-0 right-0 z-0 pointer-events-none"
+        style={{
+          height: '100lvh',
+          minHeight: '100vh',
+          background: '#0f0a1a',
+        }}
       >
         <StarsBackground
           starDensity={0.0004}
@@ -106,58 +114,55 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
         }}
       />
 
-      <div
-        className={cn("relative h-screen h-dvh w-full", className)}
-      >
+      <div className={cn("relative h-screen h-dvh w-full", className)}>
+        {/* Branding - Top Left */}
+        <div className="fixed top-6 left-6 z-50">
+          <span
+            className="text-white font-bold text-4xl sm:text-5xl"
+            style={{
+              fontFamily: locale === "ko" ? "var(--font-noto-sans-kr), sans-serif" : "var(--font-geist-mono), monospace",
+            }}
+          >
+            {t("title")}
+          </span>
+        </div>
 
-      {/* Branding - Top Left */}
-      <div className="fixed top-6 left-6 z-50">
-        <span
-          className="text-white font-bold text-4xl sm:text-5xl"
+        {/* Top Right Controls */}
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
+          <button
+            onClick={() => setIsCompanyModalOpen(true)}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
+            aria-label="About"
+          >
+            <Buildings className="w-5 h-5" weight="bold" />
+          </button>
+          <button
+            onClick={() => router.push("/history")}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
+            aria-label="History"
+          >
+            <ClockCounterClockwise className="w-5 h-5" weight="bold" />
+          </button>
+          <LanguageToggle />
+        </div>
+
+        {/* Company Modal */}
+        <CompanyModal
+          isOpen={isCompanyModalOpen}
+          onClose={() => setIsCompanyModalOpen(false)}
+        />
+
+        {/* Horizontal Cards Container - horizontal scroll only */}
+        <div
+          ref={containerRef}
+          className="relative z-10 h-screen h-dvh flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden scrollbar-hide"
           style={{
-            fontFamily: locale === "ko" ? "var(--font-noto-sans-kr), sans-serif" : "var(--font-geist-mono), monospace",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            touchAction: "pan-x",
           }}
         >
-          {t("title")}
-        </span>
-      </div>
-
-      {/* Top Right Controls */}
-      <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
-        <button
-          onClick={() => setIsCompanyModalOpen(true)}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
-          aria-label="About"
-        >
-          <Buildings className="w-5 h-5" weight="bold" />
-        </button>
-        <button
-          onClick={() => router.push("/history")}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
-          aria-label="History"
-        >
-          <ClockCounterClockwise className="w-5 h-5" weight="bold" />
-        </button>
-        <LanguageToggle />
-      </div>
-
-      {/* Company Modal */}
-      <CompanyModal
-        isOpen={isCompanyModalOpen}
-        onClose={() => setIsCompanyModalOpen(false)}
-      />
-
-      {/* Horizontal Cards Container - horizontal scroll only */}
-      <div
-        ref={containerRef}
-        className="relative z-10 h-screen h-dvh flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden scrollbar-hide"
-        style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          touchAction: "pan-x",
-        }}
-      >
-        {cards.map((card, index) => (
+          {cards.map((card, index) => (
             <div
               key={card.id}
               className="w-screen h-screen h-dvh flex-shrink-0 snap-center flex items-center justify-center px-4 pt-16 pb-12"
@@ -248,22 +253,22 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
                 />
               </div>
             </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* Swipe Hint (bottom) */}
-      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-20">
-        <p className="text-white/40 text-sm animate-pulse">
-          ← {t("swipeHint")} →
-        </p>
-      </div>
+        {/* Swipe Hint (bottom) */}
+        <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-20">
+          <p className="text-white/40 text-sm animate-pulse">
+            ← {t("swipeHint")} →
+          </p>
+        </div>
 
-      {/* Hide scrollbar CSS */}
-      <style jsx global>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
+        {/* Hide scrollbar CSS */}
+        <style jsx global>{`
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
       </div>
     </>
   );

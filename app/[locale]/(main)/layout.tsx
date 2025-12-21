@@ -20,11 +20,20 @@ export default function MainLayout({
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen min-h-dvh bg-[#0f0a1a] relative overflow-x-hidden">
-      {/* Stars Background - transparent canvas, body provides bg color */}
+    <>
+      {/*
+        Stars Background Layer
+        - Uses 100lvh (large viewport height) for iOS Safari full coverage
+        - position: fixed with explicit top/left/right and height
+        - No inset-0 to avoid viewport constraints
+      */}
       <div
-        className="fixed inset-0 z-0 pointer-events-none"
-        style={{ overflow: 'visible' }}
+        className="fixed top-0 left-0 right-0 z-0 pointer-events-none"
+        style={{
+          height: '100lvh',
+          minHeight: '100vh',
+          background: '#0f0a1a',
+        }}
       >
         <StarsBackground
           starDensity={0.0004}
@@ -39,55 +48,58 @@ export default function MainLayout({
         />
       </div>
 
-      {/* Branding - Top Left */}
-      <div className="fixed top-4 sm:top-6 left-3 sm:left-6 z-50 flex items-center gap-2 sm:gap-3">
-        <button
-          onClick={() => router.back()}
-          className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
-          aria-label="Go back"
-        >
-          <CaretLeft className="w-4 h-4 sm:w-5 sm:h-5" weight="bold" />
-        </button>
-        <button
-          onClick={() => router.push("/")}
-          className="text-white font-bold text-lg sm:text-2xl md:text-3xl hover:text-white/80 transition-colors truncate max-w-[80px] sm:max-w-none"
-          style={{
-            fontFamily: locale === "ko" ? "var(--font-noto-sans-kr), sans-serif" : "var(--font-geist-mono), monospace",
-          }}
-        >
-          {t("title")}
-        </button>
+      {/* Main Page Container */}
+      <div className="relative z-10 min-h-screen min-h-dvh">
+        {/* Branding - Top Left */}
+        <div className="fixed top-4 sm:top-6 left-3 sm:left-6 z-50 flex items-center gap-2 sm:gap-3">
+          <button
+            onClick={() => router.back()}
+            className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
+            aria-label="Go back"
+          >
+            <CaretLeft className="w-4 h-4 sm:w-5 sm:h-5" weight="bold" />
+          </button>
+          <button
+            onClick={() => router.push("/")}
+            className="text-white font-bold text-lg sm:text-2xl md:text-3xl hover:text-white/80 transition-colors truncate max-w-[80px] sm:max-w-none"
+            style={{
+              fontFamily: locale === "ko" ? "var(--font-noto-sans-kr), sans-serif" : "var(--font-geist-mono), monospace",
+            }}
+          >
+            {t("title")}
+          </button>
+        </div>
+
+        {/* Top Right Controls */}
+        <div className="fixed top-4 sm:top-6 right-3 sm:right-6 z-50 flex items-center gap-1.5 sm:gap-3">
+          <button
+            onClick={() => setIsCompanyModalOpen(true)}
+            className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
+            aria-label="About"
+          >
+            <Buildings className="w-4 h-4 sm:w-5 sm:h-5" weight="bold" />
+          </button>
+          <button
+            onClick={() => router.push("/history")}
+            className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
+            aria-label="History"
+          >
+            <ClockCounterClockwise className="w-4 h-4 sm:w-5 sm:h-5" weight="bold" />
+          </button>
+          <LanguageToggle />
+        </div>
+
+        {/* Company Modal */}
+        <CompanyModal
+          isOpen={isCompanyModalOpen}
+          onClose={() => setIsCompanyModalOpen(false)}
+        />
+
+        {/* Main Content */}
+        <main className="pt-16 sm:pt-20 pb-8">
+          <div className="max-w-md mx-auto px-4 py-6">{children}</div>
+        </main>
       </div>
-
-      {/* Top Right Controls */}
-      <div className="fixed top-4 sm:top-6 right-3 sm:right-6 z-50 flex items-center gap-1.5 sm:gap-3">
-        <button
-          onClick={() => setIsCompanyModalOpen(true)}
-          className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
-          aria-label="About"
-        >
-          <Buildings className="w-4 h-4 sm:w-5 sm:h-5" weight="bold" />
-        </button>
-        <button
-          onClick={() => router.push("/history")}
-          className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
-          aria-label="History"
-        >
-          <ClockCounterClockwise className="w-4 h-4 sm:w-5 sm:h-5" weight="bold" />
-        </button>
-        <LanguageToggle />
-      </div>
-
-      {/* Company Modal */}
-      <CompanyModal
-        isOpen={isCompanyModalOpen}
-        onClose={() => setIsCompanyModalOpen(false)}
-      />
-
-      {/* Main Content */}
-      <main className="relative z-10 pt-16 sm:pt-20 pb-8">
-        <div className="max-w-md mx-auto px-4 py-6">{children}</div>
-      </main>
-    </div>
+    </>
   );
 }

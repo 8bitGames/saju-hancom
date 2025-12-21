@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 interface ShootingStar {
@@ -27,6 +27,7 @@ interface ShootingStarsProps {
 const getRandomStartPoint = () => {
   const side = Math.floor(Math.random() * 4);
   const offset = Math.random() * window.innerWidth;
+  const height = Math.max(window.innerHeight, window.screen?.height || 0);
 
   switch (side) {
     case 0:
@@ -34,7 +35,7 @@ const getRandomStartPoint = () => {
     case 1:
       return { x: window.innerWidth, y: offset, angle: 135 };
     case 2:
-      return { x: offset, y: window.innerHeight, angle: -45 };
+      return { x: offset, y: height, angle: -45 };
     case 3:
       return { x: 0, y: offset, angle: -135 };
     default:
@@ -88,6 +89,7 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
   useEffect(() => {
     const moveStar = () => {
       if (star) {
+        const height = Math.max(window.innerHeight, window.screen?.height || 0);
         setStar((prevStar) => {
           if (!prevStar) return null;
           const newX =
@@ -102,7 +104,7 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
             newX < -20 ||
             newX > window.innerWidth + 20 ||
             newY < -20 ||
-            newY > window.innerHeight + 20
+            newY > height + 20
           ) {
             return null;
           }

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
 
 interface Star {
@@ -59,33 +59,30 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
+        // Use screen dimensions for full coverage on all devices
         const width = window.innerWidth;
-        // Add extra height for iOS Safari URL bar area
-        const height = window.innerHeight + 500;
+        // Use the maximum of various height measurements to ensure full coverage
+        const height = Math.max(
+          window.innerHeight,
+          document.documentElement.clientHeight,
+          window.screen?.height || 0
+        );
 
         canvas.width = width;
         canvas.height = height;
-        canvas.style.width = `${width}px`;
-        canvas.style.height = `${height}px`;
         setStars(generateStars(width, height));
       }
     };
 
     updateStars();
-
-    // Listen for resize and visual viewport changes (iOS Safari URL bar)
-    window.addEventListener('resize', updateStars);
-    if (typeof window !== 'undefined' && window.visualViewport) {
-      window.visualViewport.addEventListener('resize', updateStars);
-    }
+    window.addEventListener("resize", updateStars);
+    window.addEventListener("orientationchange", updateStars);
 
     return () => {
-      window.removeEventListener('resize', updateStars);
-      if (typeof window !== 'undefined' && window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', updateStars);
-      }
+      window.removeEventListener("resize", updateStars);
+      window.removeEventListener("orientationchange", updateStars);
     };
-  }, [starDensity, allStarsTwinkle, twinkleProbability, minTwinkleSpeed, maxTwinkleSpeed, generateStars]);
+  }, [generateStars]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -124,7 +121,7 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className={cn("w-full absolute left-0 top-0", className)}
+      className={cn("block", className)}
     />
   );
 };
