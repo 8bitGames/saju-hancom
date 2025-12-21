@@ -3,8 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { checkUsageLimit } from '@/lib/supabase/usage';
 import type { UsageActionType } from '@/lib/supabase/types';
 
-// TEMPORARY: Disable usage limits for testing
-const DISABLE_USAGE_LIMITS = true;
+// Usage limits enabled - free tier users get 1 download
+const DISABLE_USAGE_LIMITS = false;
 
 export async function POST(request: NextRequest) {
   try {

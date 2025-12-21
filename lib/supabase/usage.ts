@@ -1,8 +1,8 @@
 import { createClient } from './server';
 import type { UsageActionType } from './types';
 
-// TEMPORARY: Disable usage limits for testing
-const DISABLE_USAGE_LIMITS = true;
+// Usage limits enabled - free tier users get 1 download
+const DISABLE_USAGE_LIMITS = false;
 
 /**
  * Check if user has remaining free tier usage for a specific action
