@@ -59,24 +59,32 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        const { width, height } = canvas.getBoundingClientRect();
-        // Add extra height for iOS Safari URL bar area
-        const extraHeight = 300;
+        const width = window.innerWidth;
+        // Use 300vmax equivalent for guaranteed full coverage on iOS Safari
+        const vmax = Math.max(window.innerWidth, window.innerHeight);
+        const height = vmax * 3; // 300vmax covers all viewport states
+
         canvas.width = width;
-        canvas.height = height + extraHeight;
-        setStars(generateStars(width, height + extraHeight));
+        canvas.height = height;
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        setStars(generateStars(width, height));
       }
     };
 
     updateStars();
 
-    const resizeObserver = new ResizeObserver(updateStars);
-    if (canvasRef.current) {
-      resizeObserver.observe(canvasRef.current);
+    // Listen for resize and visual viewport changes (iOS Safari URL bar)
+    window.addEventListener('resize', updateStars);
+    if (typeof window !== 'undefined' && window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateStars);
     }
 
     return () => {
-      resizeObserver.disconnect();
+      window.removeEventListener('resize', updateStars);
+      if (typeof window !== 'undefined' && window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', updateStars);
+      }
     };
   }, [starDensity, allStarsTwinkle, twinkleProbability, minTwinkleSpeed, maxTwinkleSpeed, generateStars]);
 
@@ -117,8 +125,11 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className={cn("w-full absolute left-0 top-0", className)}
-      style={{ minHeight: 'calc(100% + 300px)' }}
+      className={cn("w-full absolute left-0", className)}
+      style={{
+        top: '50%',
+        transform: 'translateY(-50%)',
+      }}
     />
   );
 };

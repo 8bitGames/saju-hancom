@@ -21,10 +21,10 @@ export default function MainLayout({
 
   return (
     <div className="min-h-screen min-h-dvh bg-[#0f0a1a] relative overflow-x-hidden">
-      {/* Stars Background - canvas extends 300px for iOS Safari URL bar */}
+      {/* Stars Background - 300vmax canvas centered for iOS Safari coverage */}
       <div
         className="fixed inset-0 z-0 pointer-events-none"
-        style={{ overflow: 'visible' }}
+        style={{ overflow: 'visible', height: '100vh' }}
       >
         <StarsBackground
           starDensity={0.0004}
