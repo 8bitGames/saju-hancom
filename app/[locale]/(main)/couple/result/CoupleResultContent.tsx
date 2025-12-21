@@ -16,7 +16,9 @@ import {
   Check,
   Warning,
   Star,
+  FilePdf,
 } from "@phosphor-icons/react";
+import { downloadCoupleCompatibilityPDF } from "@/lib/pdf/generator";
 import { ELEMENT_KOREAN } from "@/lib/saju";
 import { calculateCoupleCompatibility } from "@/lib/couple/calculator";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
@@ -263,6 +265,7 @@ export function CoupleResultContent({
   searchParams: SearchParams;
 }) {
   const t = useTranslations("couple");
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const person1 = {
     name: searchParams.p1Name || "본인",
@@ -290,6 +293,24 @@ export function CoupleResultContent({
 
   const relationType = searchParams.relationType as CoupleRelationType | undefined;
   const result = calculateCoupleCompatibility(person1, person2, relationType);
+
+  const handlePDFDownload = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    try {
+      await downloadCoupleCompatibilityPDF({
+        person1,
+        person2,
+        result,
+        relationType,
+      });
+    } catch (error) {
+      console.error('PDF download error:', error);
+      alert('PDF 생성 중 오류가 발생했습니다. 팝업 차단을 해제해주세요.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <motion.div
@@ -611,6 +632,18 @@ export function CoupleResultContent({
         className="space-y-3 pt-4"
         variants={itemVariants}
       >
+        {/* PDF Download Button */}
+        <motion.button
+          onClick={handlePDFDownload}
+          disabled={isDownloading}
+          className="w-full h-14 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-pink-500/30 disabled:opacity-50"
+          whileHover={{ scale: isDownloading ? 1 : 1.02 }}
+          whileTap={{ scale: isDownloading ? 1 : 0.98 }}
+        >
+          <FilePdf className="w-5 h-5" weight="fill" />
+          <span>{isDownloading ? 'PDF 생성 중...' : 'PDF로 저장하기'}</span>
+        </motion.button>
+
         <div className="flex gap-3">
           <Link href="/couple" className="flex-1">
             <motion.button

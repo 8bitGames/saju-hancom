@@ -11,6 +11,9 @@ import { ElementChart } from "@/components/saju/element-chart";
 import { TenGodDisplay } from "@/components/saju/ten-god-display";
 import { StarsDisplay } from "@/components/saju/stars-display";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
+import { SaveResultButton } from "@/components/auth/SaveResultButton";
+import { DownloadPDFButton } from "@/components/auth/DownloadPDFButton";
+import { ShareKakaoButton } from "@/components/auth/ShareKakaoButton";
 import type { Gender } from "@/lib/saju/types";
 
 interface SearchParams {
@@ -336,9 +339,58 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         </div>
       </GlowingCard>
 
+      {/* Save and Share Actions */}
+      <motion.div
+        className="grid grid-cols-3 gap-2 pt-4"
+        variants={itemVariants}
+      >
+        <SaveResultButton
+          birthData={{
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            gender,
+            isLunar,
+            city,
+          }}
+          resultData={result}
+          className="w-full h-12 bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs sm:text-sm whitespace-nowrap px-2"
+        />
+        <DownloadPDFButton
+          birthData={{
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            gender,
+            isLunar,
+            city,
+          }}
+          result={result}
+          className="w-full h-12 bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs sm:text-sm whitespace-nowrap px-2"
+        />
+        <ShareKakaoButton
+          birthData={{
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            gender,
+            isLunar,
+            city,
+          }}
+          result={result}
+          className="w-full h-12 text-xs sm:text-sm whitespace-nowrap px-2"
+        />
+      </motion.div>
+
       {/* Actions */}
       <motion.div
-        className="flex gap-3 pt-4"
+        className="flex gap-3 pt-2"
         variants={itemVariants}
       >
         <Link href="/saju" className="flex-1">

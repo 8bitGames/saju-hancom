@@ -106,3 +106,4 @@ for await (const chunk of response) {
 - Library docs → Check Context7 MCP
 - `npm run dev/build` → Do not run without permission
 - AI model changes → Do not change without permission
+- this is the supabase you need to use ypwvlmhdqavbqltsetmk

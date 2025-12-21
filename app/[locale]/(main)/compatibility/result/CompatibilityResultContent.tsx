@@ -3,7 +3,8 @@
 import { Link } from "@/lib/i18n/navigation";
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
-import { UsersThree, ArrowCounterClockwise, ChatCircle, Handshake, Heart, ChartBar, Sparkle, User, ArrowRight, Check, Warning } from "@phosphor-icons/react";
+import { UsersThree, ArrowCounterClockwise, ChatCircle, Handshake, Heart, ChartBar, Sparkle, User, ArrowRight, Check, Warning, FilePdf } from "@phosphor-icons/react";
+import { downloadCompatibilityPDF } from "@/lib/pdf/generator";
 import { ELEMENT_KOREAN } from "@/lib/saju";
 import { calculatePersonCompatibility } from "@/lib/compatibility/calculator";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
@@ -276,6 +277,26 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
 
   const relationType = searchParams.relationType as RelationType | undefined;
   const result = calculatePersonCompatibility(person1, person2, relationType);
+
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handlePDFDownload = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    try {
+      await downloadCompatibilityPDF({
+        person1,
+        person2,
+        result,
+        relationType,
+      });
+    } catch (error) {
+      console.error('PDF download error:', error);
+      alert('PDF 생성 중 오류가 발생했습니다. 팝업 차단을 해제해주세요.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   const queryString = new URLSearchParams({
     p1Name: person1.name,
@@ -585,6 +606,16 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
             <ArrowRight className="w-5 h-5" weight="bold" />
           </motion.button>
         </Link>
+        <motion.button
+          onClick={handlePDFDownload}
+          disabled={isDownloading}
+          className="w-full h-14 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-indigo-500/30 disabled:opacity-50"
+          whileHover={{ scale: isDownloading ? 1 : 1.02 }}
+          whileTap={{ scale: isDownloading ? 1 : 0.98 }}
+        >
+          <FilePdf className="w-5 h-5" weight="fill" />
+          <span>{isDownloading ? 'PDF 생성 중...' : 'PDF로 저장하기'}</span>
+        </motion.button>
         <div className="flex gap-3">
           <Link href="/compatibility" className="flex-1">
             <motion.button
