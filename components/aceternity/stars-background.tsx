@@ -60,9 +60,8 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
         if (!ctx) return;
 
         const width = window.innerWidth;
-        // Use 300vmax equivalent for guaranteed full coverage on iOS Safari
-        const vmax = Math.max(window.innerWidth, window.innerHeight);
-        const height = vmax * 3; // 300vmax covers all viewport states
+        // Add extra height for iOS Safari URL bar area
+        const height = window.innerHeight + 500;
 
         canvas.width = width;
         canvas.height = height;
@@ -125,11 +124,7 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className={cn("w-full absolute left-0", className)}
-      style={{
-        top: '50%',
-        transform: 'translateY(-50%)',
-      }}
+      className={cn("w-full absolute left-0 top-0", className)}
     />
   );
 };
