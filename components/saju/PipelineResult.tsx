@@ -6,11 +6,105 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { MagnifyingGlass, User, Star, Sparkle, Calendar, Lightbulb, ChartBar, Heart, Briefcase, Coins, FirstAid, Check, Warning, ArrowRight, Palette, Hash, Compass, Sun, Lightning } from "@phosphor-icons/react";
 import type { SajuPipelineResult } from "@/lib/saju/pipeline-types";
+import type { SajuResult, Element, TenGod, TenGodSummary, ElementAnalysis } from "@/lib/saju/types";
 import { DetailAnalysisModal, getDetailAnalysisFromStorage } from "./DetailAnalysisModal";
 import { SajuChatPanel } from "./SajuChatPanel";
+
+/**
+ * 파이프라인 결과를 SajuResult 형식으로 변환 (채팅용)
+ */
+function convertPipelineToSajuResult(result: SajuPipelineResult): SajuResult {
+  const { step1, step2, step3 } = result;
+
+  // 오행 문자열을 Element 타입으로 변환
+  const elementMap: Record<string, Element> = {
+    '목': 'wood', '木': 'wood', 'wood': 'wood',
+    '화': 'fire', '火': 'fire', 'fire': 'fire',
+    '토': 'earth', '土': 'earth', 'earth': 'earth',
+    '금': 'metal', '金': 'metal', 'metal': 'metal',
+    '수': 'water', '水': 'water', 'water': 'water',
+  };
+
+  // 십성 코드를 TenGod 타입으로 변환
+  const tenGodMap: Record<string, TenGod> = {
+    '비견': 'bijian', '겁재': 'gebjae',
+    '식신': 'siksin', '상관': 'sanggwan',
+    '편재': 'pyeonjae', '정재': 'jeongjae',
+    '편관': 'pyeongwan', '정관': 'jeonggwan',
+    '편인': 'pyeonin', '정인': 'jeongin',
+  };
+
+  // 십성 요약 생성
+  const tenGodCounts = Object.entries(step3.tenGodsCounts || {}).reduce((acc, [key, value]) => {
+    const tenGod = tenGodMap[key];
+    if (tenGod) acc[tenGod] = value;
+    return acc;
+  }, {} as Record<TenGod, number>);
+
+  // 부족한 십성 찾기 (count가 0인 것들)
+  const allTenGods: TenGod[] = ['bijian', 'gebjae', 'siksin', 'sanggwan', 'pyeonjae', 'jeongjae', 'pyeongwan', 'jeonggwan', 'pyeonin', 'jeongin'];
+  const lackingTenGods = allTenGods.filter(tg => !tenGodCounts[tg] || tenGodCounts[tg] === 0);
+
+  const tenGodSummary: TenGodSummary = {
+    dominant: (step3.dominantGods || []).map(g => tenGodMap[g] || 'bijian'),
+    lacking: lackingTenGods,
+    counts: tenGodCounts,
+  };
+
+  // 오행 분석 생성
+  const dominant = (step1.dominantElements || []).map(e => elementMap[e] || elementMap[e.toLowerCase()]).filter(Boolean) as Element[];
+  const lacking = (step1.lackingElements || []).map(e => elementMap[e] || elementMap[e.toLowerCase()]).filter(Boolean) as Element[];
+
+  const elementAnalysis: ElementAnalysis = {
+    dominant,
+    lacking,
+    scores: step1.elementScores,
+    balance: dominant.length > 0 && lacking.length > 0 ? 'unbalanced' : 'balanced',
+    yongShin: elementMap[step2.usefulGod?.primaryElement?.toLowerCase()] || 'wood',
+  };
+
+  // Pillar 객체 생성 헬퍼
+  const createPillar = (pillarData: typeof step1.pillars.year) => ({
+    gan: pillarData.stem as any,
+    zhi: pillarData.branch as any,
+    ganZhi: `${pillarData.stem}${pillarData.branch}`,
+    ganElement: elementMap[pillarData.stemElement] || 'wood' as Element,
+    ganYinYang: 'yang' as const,
+    zhiElement: elementMap[pillarData.branchElement] || 'wood' as Element,
+    zhiYinYang: 'yang' as const,
+    zhiHiddenGan: [],
+    koreanReading: `${pillarData.stemKorean}${pillarData.branchKorean}`,
+  });
+
+  return {
+    pillars: {
+      year: createPillar(step1.pillars.year),
+      month: createPillar(step1.pillars.month),
+      day: createPillar(step1.pillars.day),
+      time: createPillar(step1.pillars.time),
+    },
+    dayMaster: step2.dayMaster as any,
+    dayMasterElement: elementMap[step2.dayMasterElement?.toLowerCase()] || 'wood' as Element,
+    dayMasterYinYang: 'yang',
+    dayMasterDescription: `${step2.dayMasterKorean} - ${step2.personalityDescription || ''}`,
+    elementAnalysis,
+    tenGods: {} as any, // 채팅에서는 상세 정보가 필요 없음
+    tenGodSummary,
+    stars: [], // 채팅에서는 사용하지 않음
+    meta: {
+      solarDate: '',
+      lunarDate: '',
+      inputTime: '',
+      trueSolarTime: '',
+      jieQi: '',
+      longitude: 127.5,
+      offsetMinutes: 0,
+    },
+  };
+}
 
 interface PipelineResultProps {
   result: SajuPipelineResult;
@@ -75,6 +169,9 @@ export default function PipelineResult({ result, gender = "male", birthInfo }: P
   }, [modalState.isOpen]);
 
   const { step1, step2, step3, step4, step5, step6 } = result;
+
+  // 채팅에서 사용할 SajuResult 형식으로 변환
+  const sajuResultForChat = useMemo(() => convertPipelineToSajuResult(result), [result]);
 
   // 사주 컨텍스트 생성 (AI에게 전달할 요약 정보)
   const sajuContext = `
@@ -738,8 +835,12 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
         gender={gender}
       />
 
-      {/* AI 채팅 패널 */}
-      <SajuChatPanel sajuContext={sajuContext} gender={gender} />
+      {/* AI 채팅 패널 - Google Grounding 활성화 */}
+      <SajuChatPanel
+        sajuContext={sajuContext}
+        sajuResult={sajuResultForChat}
+        gender={gender}
+      />
     </>
   );
 }

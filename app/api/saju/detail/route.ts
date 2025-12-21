@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { google } from "@ai-sdk/google";
-import { generateText } from "ai";
+import { GoogleGenAI } from "@google/genai";
 import {
   getDetailSystemPrompt,
   getDetailPrompt,
@@ -9,32 +8,47 @@ import {
   getLocaleFromRequest,
 } from "@/lib/i18n/prompts";
 import type { Locale } from "@/lib/i18n/config";
+import {
+  generateCareerQueries,
+  generateWealthQueries,
+  generateRelationshipQueries,
+  generateHealthQueries,
+  generateFortuneQueries,
+  generateSajuProfile,
+  getAgeGroup,
+  type GroundingContext,
+} from "@/lib/saju/personalized-keywords";
+import type { SajuResult } from "@/lib/saju/types";
 
 /**
  * 사주 상세 분석 API
- * 특정 영역에 대해 더 깊은 분석을 제공
- * Supports localized responses based on locale parameter
+ * Google Grounding을 활용하여 현재 시대 트렌드를 반영한 상세 분석 제공
  */
 
 type DetailCategory =
-  | "dayMaster"      // 일간 상세
-  | "tenGods"        // 십성 상세
-  | "stars"          // 신살 상세
-  | "fortune"        // 운세 상세
-  | "career"         // 직업운 상세
-  | "relationship"   // 대인관계 상세
-  | "health"         // 건강운 상세
-  | "wealth";        // 재물운 상세
+  | "dayMaster"
+  | "tenGods"
+  | "stars"
+  | "fortune"
+  | "career"
+  | "relationship"
+  | "health"
+  | "wealth";
 
 const validCategories: DetailCategory[] = [
   "dayMaster", "tenGods", "stars", "fortune",
   "career", "relationship", "health", "wealth"
 ];
 
+// Google Grounding이 필요한 카테고리
+const groundingCategories: DetailCategory[] = [
+  "career", "wealth", "relationship", "health", "fortune"
+];
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { category, sajuContext, gender, locale: requestLocale } = body;
+    const { category, sajuContext, sajuResult, gender, birthYear, locale: requestLocale } = body;
 
     // Determine locale from request body or headers
     const locale: Locale = requestLocale === 'en' ? 'en' :
@@ -57,26 +71,137 @@ export async function POST(request: NextRequest) {
 
     const genderText = getGenderLabel(locale, gender === "female" ? "female" : "male");
     const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
 
-    const result = await generateText({
-      model: google("gemini-2.0-flash"),
-      messages: [
-        {
-          role: "system",
-          content: getDetailSystemPrompt(locale, currentYear),
-        },
+    // Initialize Google GenAI
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY || "",
+    });
+
+    // Check if this category needs Google Grounding
+    const needsGrounding = groundingCategories.includes(category as DetailCategory);
+
+    // Build the prompt
+    let prompt = locale === 'ko'
+      ? `다음은 ${genderText}의 사주 정보입니다:\n\n${sajuContext}\n\n${getDetailPrompt(locale, category as DetailCategory)}`
+      : `The following is the birth chart information for a ${genderText}:\n\n${sajuContext}\n\n${getDetailPrompt(locale, category as DetailCategory)}`;
+
+    // Add grounding context if needed and sajuResult is available
+    if (needsGrounding && sajuResult) {
+      const parsedSajuResult: SajuResult = typeof sajuResult === 'string'
+        ? JSON.parse(sajuResult)
+        : sajuResult;
+
+      const groundingContext: GroundingContext = {
+        currentYear,
+        currentMonth,
+        ageGroup: birthYear ? getAgeGroup(birthYear, currentYear) : "30대",
+        sajuResult: parsedSajuResult,
+      };
+
+      // Generate personalized search queries based on category
+      let searchQueries: string[] = [];
+      switch (category) {
+        case "career":
+          searchQueries = generateCareerQueries(groundingContext);
+          break;
+        case "wealth":
+          searchQueries = generateWealthQueries(groundingContext);
+          break;
+        case "relationship":
+          searchQueries = generateRelationshipQueries(groundingContext);
+          break;
+        case "health":
+          searchQueries = generateHealthQueries(groundingContext);
+          break;
+        case "fortune":
+          searchQueries = generateFortuneQueries(groundingContext);
+          break;
+      }
+
+      // Generate saju profile summary
+      const sajuProfile = generateSajuProfile(parsedSajuResult);
+
+      // Enhance prompt with grounding instructions
+      if (locale === 'ko') {
+        prompt += `\n\n## 중요: 현재 시대 상황 반영
+
+이 분석은 Google 검색을 통해 ${currentYear}년 현재 트렌드와 시장 상황을 반영해야 합니다.
+
+### 이 분의 사주 프로필
+${sajuProfile}
+
+### 검색할 주제
+${searchQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}
+
+### 분석 가이드라인
+- "요즘 시대에는...", "현재 ${currentYear}년 트렌드를 보면..." 같은 표현으로 시대상 반영
+- 추상적인 사주 해석보다 현실에 적용 가능한 구체적 조언 제공
+- 검색된 최신 정보와 사주 분석을 자연스럽게 결합
+- 마치 세상 돌아가는 걸 다 아는 역술가처럼 현실적인 조언`;
+      } else {
+        prompt += `\n\n## IMPORTANT: Reflect Current Trends
+
+This analysis should incorporate ${currentYear} current trends and market conditions through Google Search.
+
+### This Person's BaZi Profile
+${sajuProfile}
+
+### Topics to Search
+${searchQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}
+
+### Analysis Guidelines
+- Use expressions like "In today's world...", "Looking at ${currentYear} trends..."
+- Provide concrete, applicable advice rather than abstract interpretations
+- Naturally combine search results with BaZi analysis
+- Give realistic advice like a fortune teller who knows current world affairs`;
+      }
+    }
+
+    // Build config with or without Google Search tool
+    const config = needsGrounding ? {
+      tools: [{ googleSearch: {} }],
+    } : {};
+
+    // Call Gemini API
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      config,
+      contents: [
         {
           role: "user",
-          content: locale === 'ko'
-            ? `다음은 ${genderText}의 사주 정보입니다:\n\n${sajuContext}\n\n${getDetailPrompt(locale, category as DetailCategory)}`
-            : `The following is the birth chart information for a ${genderText}:\n\n${sajuContext}\n\n${getDetailPrompt(locale, category as DetailCategory)}`,
+          parts: [
+            {
+              text: `${getDetailSystemPrompt(locale, currentYear)}\n\n${prompt}`,
+            },
+          ],
         },
       ],
     });
 
+    // Extract text from response
+    const responseText = response.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    // Extract grounding metadata if available
+    const groundingMetadata = response.candidates?.[0]?.groundingMetadata;
+    const webSearchQueries = groundingMetadata?.webSearchQueries || [];
+    const groundingChunks = groundingMetadata?.groundingChunks || [];
+
+    // Extract source URLs from grounding chunks
+    const sources = groundingChunks
+      .filter((chunk: { web?: { uri?: string; title?: string } }) => chunk.web?.uri)
+      .map((chunk: { web?: { uri?: string; title?: string } }) => ({
+        url: chunk.web?.uri,
+        title: chunk.web?.title || "",
+      }))
+      .slice(0, 5); // Limit to 5 sources
+
     return NextResponse.json({
-      content: result.text,
-      category
+      content: responseText,
+      category,
+      grounded: needsGrounding,
+      groundingSources: sources,
+      searchQueries: webSearchQueries,
     });
   } catch (error) {
     console.error("Saju detail analysis error:", error);

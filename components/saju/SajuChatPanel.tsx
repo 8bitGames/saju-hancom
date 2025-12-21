@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
-import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { useState, useRef, useEffect } from "react";
+import { useSajuChat, type ChatMessage } from "@/lib/hooks/useSajuChat";
 import {
   ChatCircleDots,
   PaperPlaneTilt,
@@ -14,10 +13,13 @@ import {
 } from "@/components/ui/icons";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { getDetailAnalysisFromStorage } from "./DetailAnalysisModal";
+import type { SajuResult } from "@/lib/saju/types";
 
 interface SajuChatPanelProps {
   sajuContext: string;
+  sajuResult?: SajuResult;
   gender: string;
+  locale?: string;
 }
 
 // 상세 분석 카테고리 목록
@@ -41,7 +43,7 @@ const SUGGESTED_QUESTIONS = [
   "나에게 맞는 직업은 뭔가요?",
 ];
 
-export function SajuChatPanel({ sajuContext, gender }: SajuChatPanelProps) {
+export function SajuChatPanel({ sajuContext, sajuResult, gender, locale = "ko" }: SajuChatPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [input, setInput] = useState("");
@@ -71,23 +73,14 @@ export function SajuChatPanel({ sajuContext, gender }: SajuChatPanelProps) {
   const allCompleted = completedCount === totalCount;
   const hasAnyMissing = completedCount < totalCount;
 
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: "/api/saju/chat",
-        body: {
-          sajuContext,
-          gender,
-        },
-      }),
-    [sajuContext, gender]
-  );
-
-  const { messages, sendMessage, status } = useChat({
-    transport,
+  // 새로운 useSajuChat 훅 사용 (2단계 응답 시스템)
+  const { messages, sendMessage, isLoading, isSearching, error } = useSajuChat({
+    sajuContext,
+    sajuResult,
+    gender,
+    locale,
+    enableGrounding: true,
   });
-
-  const isLoading = status === "submitted" || status === "streaming";
 
   // 메시지 추가시 스크롤
   useEffect(() => {
@@ -100,25 +93,14 @@ export function SajuChatPanel({ sajuContext, gender }: SajuChatPanelProps) {
 
     const messageText = input.trim();
     setInput("");
-    await sendMessage({ text: messageText });
+    await sendMessage(messageText);
   };
 
   const handleSuggestedQuestion = async (question: string) => {
     if (isLoading) return;
-    await sendMessage({ text: question });
+    await sendMessage(question);
   };
 
-  // 메시지 콘텐츠 추출 헬퍼 (AI SDK v5: parts 배열에서 텍스트 추출)
-  const getMessageContent = (message: (typeof messages)[0]): string => {
-    if (!message.parts || message.parts.length === 0) {
-      return "";
-    }
-    // parts 배열에서 text 타입만 필터링하여 텍스트를 합침
-    return message.parts
-      .filter((part): part is { type: "text"; text: string } => part.type === "text")
-      .map((part) => part.text)
-      .join("");
-  };
 
   if (!isOpen) {
     return (
@@ -293,15 +275,28 @@ export function SajuChatPanel({ sajuContext, gender }: SajuChatPanelProps) {
                   }`}
                 >
                   {message.role === "assistant" ? (
-                    <MarkdownRenderer content={getMessageContent(message)} variant="chat" />
+                    <>
+                      <MarkdownRenderer content={message.content} variant="chat" />
+                      {/* 추가 분석 진행 중일 때 자연스러운 로딩 표시 */}
+                      {message.isSearching && (
+                        <div className="mt-3 flex items-center gap-2 text-xs text-[var(--text-tertiary)]">
+                          <div className="flex gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-bounce" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-bounce" style={{ animationDelay: "0.15s" }} />
+                            <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-bounce" style={{ animationDelay: "0.3s" }} />
+                          </div>
+                        </div>
+                      )}
+                    </>
                   ) : (
-                    <p className="text-sm">{getMessageContent(message)}</p>
+                    <p className="text-sm">{message.content}</p>
                   )}
                 </div>
               </div>
             ))}
 
-            {isLoading && (
+            {/* 로딩 인디케이터 */}
+            {isLoading && messages[messages.length - 1]?.content === "" && (
               <div className="flex justify-start">
                 <div className="bg-[var(--background-elevated)] rounded-2xl px-4 py-3">
                   <div className="flex items-center gap-2">
@@ -315,6 +310,15 @@ export function SajuChatPanel({ sajuContext, gender }: SajuChatPanelProps) {
                       style={{ animationDelay: "0.4s" }}
                     />
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* 에러 표시 */}
+            {error && (
+              <div className="flex justify-center">
+                <div className="bg-red-50 dark:bg-red-900/20 rounded-xl px-4 py-2 text-sm text-red-600 dark:text-red-400">
+                  {error}
                 </div>
               </div>
             )}
