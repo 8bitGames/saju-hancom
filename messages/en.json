@@ -199,7 +199,27 @@
   "history": {
     "title": "Analysis History",
     "empty": "No analysis history yet",
-    "deleteConfirm": "Are you sure you want to delete this record?"
+    "deleteConfirm": "Are you sure you want to delete this record?",
+    "startAnalysis": "Start an analysis",
+    "savedToAccount": "Analysis records are saved to your account",
+    "resultCount": "{count} analysis results",
+    "sajuAnalysis": "Birth Chart Analysis",
+    "lunar": "Lunar",
+    "male": "Male",
+    "female": "Female",
+    "backToHistory": "Back to History",
+    "savedOn": "Saved on",
+    "fourPillars": "Four Pillars",
+    "dayMaster": "Day Master",
+    "fiveElements": "Five Elements Analysis",
+    "tenGods": "Ten Gods Analysis",
+    "stars": "Stars",
+    "trueSolarTime": "True Solar Time",
+    "minutes": " min",
+    "yang": "Yang",
+    "yin": "Yin",
+    "energy": " energy",
+    "recommendedYongShin": "Recommended Yong Shin"
   },
   "chat": {
     "placeholder": "What would you like to know?",

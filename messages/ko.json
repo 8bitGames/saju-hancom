@@ -199,7 +199,27 @@
   "history": {
     "title": "분석 기록",
     "empty": "아직 분석 기록이 없습니다",
-    "deleteConfirm": "이 기록을 삭제하시겠습니까?"
+    "deleteConfirm": "이 기록을 삭제하시겠습니까?",
+    "startAnalysis": "분석을 시작해보세요",
+    "savedToAccount": "분석 기록은 계정에 저장됩니다",
+    "resultCount": "{count}개의 분석 결과",
+    "sajuAnalysis": "사주 분석",
+    "lunar": "음력",
+    "male": "남성",
+    "female": "여성",
+    "backToHistory": "기록으로 돌아가기",
+    "savedOn": "저장일",
+    "fourPillars": "사주팔자",
+    "dayMaster": "일간 (일주)",
+    "fiveElements": "오행 분석",
+    "tenGods": "십성 분석",
+    "stars": "신살",
+    "trueSolarTime": "진태양시 보정",
+    "minutes": "분",
+    "yang": "양",
+    "yin": "음",
+    "energy": "의 기운",
+    "recommendedYongShin": "추천 용신"
   },
   "chat": {
     "placeholder": "무엇이 궁금하신가요?",
