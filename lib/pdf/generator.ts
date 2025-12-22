@@ -1758,3 +1758,826 @@ export async function downloadCompatibilityPDF(
     throw error;
   }
 }
+
+// ============================================================================
+// Professional Saju Pipeline PDF Generator (6-Step Analysis)
+// ============================================================================
+
+import type { SajuPipelineResult } from "@/lib/saju/pipeline-types";
+
+export interface PipelinePDFData {
+  birthData: {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  };
+  result: SajuPipelineResult;
+  detailAnalyses?: Record<string, string>;
+}
+
+// Simple Markdown to HTML converter for detail analyses
+const markdownToHTML = (markdown: string): string => {
+  if (!markdown) return '';
+
+  return markdown
+    // Headers
+    .replace(/^### (.+)$/gm, '<h4 style="font-size: 12px; font-weight: bold; color: #a855f7; margin: 12px 0 8px 0; padding-bottom: 4px; border-bottom: 1px solid #e5e7eb;">$1</h4>')
+    .replace(/^## (.+)$/gm, '<h3 style="font-size: 14px; font-weight: bold; color: #1a1a1a; margin: 15px 0 10px 0; padding-bottom: 5px; border-bottom: 2px solid #a855f7;">$1</h3>')
+    .replace(/^# (.+)$/gm, '<h2 style="font-size: 16px; font-weight: bold; color: #1a1a1a; margin: 18px 0 12px 0;">$1</h2>')
+    // Bold and italic
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // Lists
+    .replace(/^- (.+)$/gm, '<li style="margin: 4px 0; padding-left: 8px;">$1</li>')
+    .replace(/^(\d+)\. (.+)$/gm, '<li style="margin: 4px 0; padding-left: 8px;">$2</li>')
+    // Paragraphs (double newlines)
+    .replace(/\n\n/g, '</p><p style="margin: 8px 0; line-height: 1.6;">')
+    // Single newlines to <br>
+    .replace(/\n/g, '<br>')
+    // Wrap consecutive <li> in <ul>
+    .replace(/(<li[^>]*>.*?<\/li>)(\s*<li)/g, '$1$2')
+    // Wrap in paragraph
+    .split('</p><p')
+    .join('</p><p')
+    .replace(/^(?!<)/, '<p style="margin: 8px 0; line-height: 1.6;">')
+    .replace(/(?<![>])$/, '</p>');
+};
+
+// Category labels for detail analyses
+const detailCategoryLabels: Record<string, { title: string; icon: string; color: string }> = {
+  dayMaster: { title: '일간 상세 분석', icon: '👤', color: '#a855f7' },
+  tenGods: { title: '십성 상세 분석', icon: '⭐', color: '#f97316' },
+  stars: { title: '신살 상세 분석', icon: '✨', color: '#22c55e' },
+  fortune: { title: '운세 상세 분석', icon: '🔮', color: '#3b82f6' },
+  career: { title: '직업운 상세 분석', icon: '💼', color: '#06b6d4' },
+  relationship: { title: '대인관계 상세 분석', icon: '💕', color: '#ec4899' },
+  health: { title: '건강운 상세 분석', icon: '❤️', color: '#ef4444' },
+  wealth: { title: '재물운 상세 분석', icon: '💰', color: '#eab308' },
+};
+
+const getGradeText = (grade: string): string => {
+  const gradeMap: Record<string, string> = {
+    'excellent': '매우 좋음',
+    'good': '좋음',
+    'normal': '보통',
+    'caution': '주의',
+    'challenging': '도전',
+  };
+  return gradeMap[grade] || grade;
+};
+
+const getGradeColor = (grade: string): string => {
+  const colorMap: Record<string, string> = {
+    'excellent': '#a855f7',
+    'good': '#22c55e',
+    'normal': '#3b82f6',
+    'caution': '#f97316',
+    'challenging': '#ef4444',
+  };
+  return colorMap[grade] || '#666';
+};
+
+/**
+ * Generate HTML for Professional Saju Pipeline PDF (6-Step Analysis)
+ */
+export function generatePipelinePDFHTML(data: PipelinePDFData): string {
+  const { birthData, result } = data;
+  const { step1, step2, step3, step4, step5, step6 } = result;
+
+  return `
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hansa AI - 전문 사주 분석 결과</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", "Noto Sans KR", -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 15mm;
+      background: white;
+      color: #1a1a1a;
+      width: 210mm;
+      min-height: 297mm;
+      font-size: 9pt;
+      line-height: 1.4;
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .logo h1 {
+      font-size: 24px;
+      font-weight: bold;
+      color: #a855f7;
+      margin-bottom: 3px;
+    }
+    .logo p {
+      font-size: 10px;
+      color: #999;
+      letter-spacing: 1px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 15px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #a855f7;
+    }
+    .header h2 {
+      font-size: 18px;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+    .header p {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.4;
+    }
+    .score-box {
+      text-align: center;
+      padding: 15px;
+      background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+      border-radius: 12px;
+      margin-bottom: 15px;
+      color: white;
+    }
+    .score-box .score {
+      font-size: 42px;
+      font-weight: bold;
+    }
+    .score-box .grade {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+    .score-box .summary {
+      font-size: 11px;
+      opacity: 0.85;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    .section {
+      margin-bottom: 15px;
+      page-break-inside: avoid;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: #a855f7;
+      margin-bottom: 8px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 10px 0;
+    }
+    .pillar {
+      text-align: center;
+      padding: 10px 6px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+    }
+    .pillar-label {
+      font-size: 9px;
+      color: #666;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+    .pillar-chars {
+      font-size: 20px;
+      font-weight: bold;
+      color: #1a1a1a;
+      margin-bottom: 2px;
+    }
+    .pillar-detail {
+      font-size: 8px;
+      color: #666;
+      line-height: 1.3;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .info-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .info-item {
+      padding: 8px;
+      background: #f9fafb;
+      border-radius: 6px;
+      border: 1px solid #f0f0f0;
+    }
+    .info-label {
+      font-size: 9px;
+      color: #666;
+      margin-bottom: 2px;
+    }
+    .info-value {
+      font-size: 11px;
+      font-weight: 600;
+      color: #1a1a1a;
+      word-break: keep-all;
+    }
+    .area-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .area-item {
+      text-align: center;
+      padding: 8px 4px;
+      background: #f9fafb;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+    }
+    .area-score {
+      font-size: 18px;
+      font-weight: bold;
+      color: #a855f7;
+    }
+    .area-label {
+      font-size: 9px;
+      color: #666;
+      margin-top: 2px;
+    }
+    .area-grade {
+      font-size: 8px;
+      padding: 1px 6px;
+      border-radius: 8px;
+      display: inline-block;
+      margin-top: 3px;
+    }
+    .insight-list {
+      list-style: none;
+      padding: 0;
+    }
+    .insight-list li {
+      padding: 5px 0 5px 20px;
+      position: relative;
+      font-size: 10px;
+      color: #333;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .insight-list li:last-child {
+      border-bottom: none;
+    }
+    .insight-list li::before {
+      content: "💡";
+      position: absolute;
+      left: 0;
+      font-size: 10px;
+    }
+    .strength-weakness {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .strength-box {
+      padding: 10px;
+      background: #f0fdf4;
+      border-radius: 8px;
+      border: 1px solid #bbf7d0;
+    }
+    .weakness-box {
+      padding: 10px;
+      background: #fef2f2;
+      border-radius: 8px;
+      border: 1px solid #fecaca;
+    }
+    .box-title {
+      font-size: 10px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .box-list {
+      font-size: 9px;
+      line-height: 1.5;
+      color: #666;
+    }
+    .stars-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+    .star-item {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+    }
+    .star-name {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    .star-desc {
+      font-size: 9px;
+      color: #666;
+      line-height: 1.4;
+    }
+    .advice-section {
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .advice-title {
+      font-size: 10px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .advice-list {
+      font-size: 9px;
+      line-height: 1.5;
+      color: #333;
+    }
+    .advice-list li {
+      margin-bottom: 3px;
+      padding-left: 12px;
+      position: relative;
+    }
+    .advice-list li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: #a855f7;
+    }
+    .lucky-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .lucky-item {
+      text-align: center;
+      padding: 8px;
+      background: #fef3c7;
+      border-radius: 6px;
+      border: 1px solid #fde68a;
+    }
+    .lucky-label {
+      font-size: 8px;
+      color: #92400e;
+      margin-bottom: 2px;
+    }
+    .lucky-value {
+      font-size: 10px;
+      font-weight: 600;
+      color: #78350f;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+    .footer {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      font-size: 9px;
+      color: #999;
+    }
+    .footer p {
+      margin: 2px 0;
+    }
+    .footer .brand {
+      margin-top: 6px;
+      color: #a855f7;
+      font-weight: 600;
+      font-size: 10px;
+    }
+    @media print {
+      body { padding: 12mm; }
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <h1>Hansa AI</h1>
+    <p>AI 기반 전문 사주 분석</p>
+  </div>
+
+  <div class="header">
+    <h2>전문 사주 분석 결과 (6단계 심층 분석)</h2>
+    <p>${birthData.year}년 ${birthData.month}월 ${birthData.day}일 ${birthData.hour}시 ${birthData.minute}분 (${birthData.gender === 'male' ? '남성' : '여성'}, ${birthData.isLunar ? '음력' : '양력'})</p>
+  </div>
+
+  <!-- 종합 점수 -->
+  <div class="score-box">
+    <div class="score">${step6.overallScore}점</div>
+    <div class="grade">${step6.gradeText}</div>
+    <div class="summary">${step6.summary}</div>
+  </div>
+
+  <!-- 사주 원국 -->
+  <div class="section">
+    <div class="section-title">📜 사주팔자 (四柱八字)</div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-label">시주 (時柱)</div>
+        <div class="pillar-chars">${step1.pillars.time.stem}${step1.pillars.time.branch}</div>
+        <div class="pillar-detail">${step1.pillars.time.stemKorean} ${step1.pillars.time.branchKorean}</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-label">일주 (日柱)</div>
+        <div class="pillar-chars">${step1.pillars.day.stem}${step1.pillars.day.branch}</div>
+        <div class="pillar-detail">${step1.pillars.day.stemKorean} ${step1.pillars.day.branchKorean}</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-label">월주 (月柱)</div>
+        <div class="pillar-chars">${step1.pillars.month.stem}${step1.pillars.month.branch}</div>
+        <div class="pillar-detail">${step1.pillars.month.stemKorean} ${step1.pillars.month.branchKorean}</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-label">년주 (年柱)</div>
+        <div class="pillar-chars">${step1.pillars.year.stem}${step1.pillars.year.branch}</div>
+        <div class="pillar-detail">${step1.pillars.year.stemKorean} ${step1.pillars.year.branchKorean}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 영역별 점수 -->
+  <div class="section">
+    <div class="section-title">📊 영역별 분석</div>
+    <div class="area-grid">
+      ${Object.entries(step6.areas).map(([key, area]) => {
+        const areaNames: Record<string, string> = {
+          personality: '성격',
+          career: '직업',
+          wealth: '재물',
+          relationship: '관계',
+          health: '건강',
+        };
+        return `
+          <div class="area-item">
+            <div class="area-score">${area.score}</div>
+            <div class="area-label">${areaNames[key]}</div>
+            <div class="area-grade" style="background: ${getGradeColor(area.grade)}20; color: ${getGradeColor(area.grade)};">
+              ${getGradeText(area.grade)}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  </div>
+
+  <!-- 핵심 인사이트 -->
+  <div class="section">
+    <div class="section-title">💡 핵심 인사이트</div>
+    <ul class="insight-list">
+      ${step6.keyInsights.map(insight => `<li>${insight}</li>`).join('')}
+    </ul>
+  </div>
+
+  <!-- 강점 & 주의점 -->
+  <div class="section">
+    <div class="strength-weakness">
+      <div class="strength-box">
+        <div class="box-title" style="color: #16a34a;">✓ 강점</div>
+        <div class="box-list">
+          ${step6.topStrengths.map(s => `• ${s}`).join('<br>')}
+        </div>
+      </div>
+      <div class="weakness-box">
+        <div class="box-title" style="color: #dc2626;">⚠ 주의점</div>
+        <div class="box-list">
+          ${step6.areasToWatch.map(s => `• ${s}`).join('<br>')}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 일간 분석 -->
+  <div class="section">
+    <div class="section-title">👤 일간 분석</div>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">일간</div>
+        <div class="info-value" style="font-size: 16px; color: #a855f7;">${step2.dayMaster} (${step2.dayMasterKorean})</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">오행</div>
+        <div class="info-value">${step2.dayMasterElement}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">신강/신약</div>
+        <div class="info-value" style="color: #a855f7;">${step2.bodyStrength}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">월령</div>
+        <div class="info-value">${step2.monthlyInfluence}</div>
+      </div>
+    </div>
+    <div style="margin-top: 8px;">
+      <div class="info-item">
+        <div class="info-label">일간 특성</div>
+        <div class="info-value" style="font-weight: normal; font-size: 10px;">${step2.characteristics.join(', ')}</div>
+      </div>
+    </div>
+    <div class="info-grid-3" style="margin-top: 8px;">
+      <div class="info-item" style="background: #eff6ff; border-color: #bfdbfe;">
+        <div class="info-label" style="color: #3b82f6;">용신</div>
+        <div class="info-value" style="color: #3b82f6;">${step2.usefulGod.primary} (${step2.usefulGod.primaryElement})</div>
+      </div>
+      <div class="info-item" style="background: #f0fdf4; border-color: #bbf7d0;">
+        <div class="info-label" style="color: #22c55e;">희신</div>
+        <div class="info-value" style="color: #22c55e;">${step2.usefulGod.supporting} (${step2.usefulGod.supportingElement})</div>
+      </div>
+      <div class="info-item" style="background: #fef2f2; border-color: #fecaca;">
+        <div class="info-label" style="color: #ef4444;">기신</div>
+        <div class="info-value" style="color: #ef4444;">${step2.usefulGod.avoiding} (${step2.usefulGod.avoidingElement})</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 오행 분석 -->
+  <div class="section">
+    <div class="section-title">🔥 오행 분석</div>
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 8px;">
+      ${['wood', 'fire', 'earth', 'metal', 'water'].map(el => {
+        const score = step1.elementScores[el as keyof typeof step1.elementScores];
+        const names: Record<string, string> = { wood: '목(木)', fire: '화(火)', earth: '토(土)', metal: '금(金)', water: '수(水)' };
+        const colors: Record<string, string> = { wood: '#22c55e', fire: '#ef4444', earth: '#eab308', metal: '#94a3b8', water: '#3b82f6' };
+        const isDominant = step1.dominantElements.some(e => e.toLowerCase().includes(el) || e.includes(names[el].charAt(0)));
+        return `
+          <div style="text-align: center; padding: 8px; background: ${colors[el]}10; border-radius: 6px; border: 1px solid ${colors[el]}30;">
+            <div style="font-size: 10px; color: ${colors[el]}; font-weight: 600;">${names[el]}</div>
+            <div style="font-size: 16px; font-weight: bold; color: ${colors[el]};">${score}%</div>
+            ${isDominant ? '<div style="font-size: 8px; color: #a855f7;">강</div>' : ''}
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">강한 오행</div>
+        <div class="info-value" style="color: #22c55e;">${step1.dominantElements.join(', ') || '없음'}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">부족한 오행</div>
+        <div class="info-value" style="color: #f97316;">${step1.lackingElements.join(', ') || '없음'}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 십성 분석 -->
+  <div class="section">
+    <div class="section-title">⭐ 십성 분석</div>
+    <div class="info-grid">
+      <div class="info-item" style="background: #faf5ff; border-color: #e9d5ff;">
+        <div class="info-label">격국</div>
+        <div class="info-value" style="font-size: 14px; color: #a855f7;">${step3.structure}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">주요 십성</div>
+        <div class="info-value">${step3.dominantGods.join(', ')}</div>
+      </div>
+    </div>
+    <div style="margin-top: 8px;">
+      <div class="info-item">
+        <div class="info-label">격국 설명</div>
+        <div class="info-value" style="font-weight: normal; font-size: 10px;">${step3.structureDescription}</div>
+      </div>
+    </div>
+    <div class="info-grid" style="margin-top: 8px;">
+      <div class="info-item">
+        <div class="info-label">성격 특성</div>
+        <div class="info-value" style="font-weight: normal; font-size: 10px;">${step3.personality.traits.join(', ')}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">적합 직업군</div>
+        <div class="info-value" style="font-weight: normal; font-size: 10px;">${step3.careerAptitude.suitableFields.join(', ')}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 페이지 나누기 -->
+  <div class="page-break"></div>
+
+  <!-- 신살 분석 -->
+  <div class="section">
+    <div class="section-title">✨ 신살 분석</div>
+    <p style="font-size: 10px; color: #666; margin-bottom: 8px;">${step4.overallStarInfluence}</p>
+
+    ${step4.auspiciousStars.length > 0 ? `
+    <div style="margin-bottom: 10px;">
+      <div style="font-size: 10px; font-weight: 600; color: #22c55e; margin-bottom: 6px;">길신 (행운의 별)</div>
+      <div class="stars-grid">
+        ${step4.auspiciousStars.map(star => `
+          <div class="star-item" style="background: #f0fdf4; border-color: #bbf7d0;">
+            <div class="star-name" style="color: #16a34a;">${star.koreanName}</div>
+            <div class="star-desc">${star.meaning}</div>
+            <div class="star-desc" style="color: #22c55e; margin-top: 3px;">활용: ${star.howToUse}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : ''}
+
+    ${step4.inauspiciousStars.length > 0 ? `
+    <div>
+      <div style="font-size: 10px; font-weight: 600; color: #f97316; margin-bottom: 6px;">흉신 (주의할 별)</div>
+      <div class="stars-grid">
+        ${step4.inauspiciousStars.map(star => `
+          <div class="star-item" style="background: #fef2f2; border-color: #fecaca;">
+            <div class="star-name" style="color: #dc2626;">${star.koreanName}</div>
+            <div class="star-desc">${star.meaning}</div>
+            <div class="star-desc" style="color: #22c55e; margin-top: 3px;">긍정 활용: ${star.positiveUse}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : ''}
+  </div>
+
+  <!-- 운세 분석 -->
+  <div class="section">
+    <div class="section-title">📅 대운/세운 분석</div>
+    <div class="info-grid">
+      <div class="info-item" style="background: #eff6ff; border-color: #bfdbfe;">
+        <div class="info-label" style="color: #3b82f6;">현재 대운 (${step5.currentMajorFortune.period})</div>
+        <div class="info-value" style="font-size: 14px; color: #3b82f6;">${step5.currentMajorFortune.theme}</div>
+        <div style="font-size: 9px; color: #666; margin-top: 4px;">${step5.currentMajorFortune.influence}</div>
+      </div>
+      <div class="info-item" style="background: #faf5ff; border-color: #e9d5ff;">
+        <div class="info-label" style="color: #a855f7;">${step5.yearlyFortune.year}년 세운</div>
+        <div class="info-value" style="font-size: 14px; color: #a855f7;">${step5.yearlyFortune.score}점 - ${step5.yearlyFortune.theme}</div>
+        <div style="font-size: 9px; color: #666; margin-top: 4px;">${step5.yearlyFortune.advice}</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 10px;">
+      <div style="font-size: 10px; font-weight: 600; color: #666; margin-bottom: 6px;">월별 운세 포인트</div>
+      <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px;">
+        ${step5.monthlyHighlights.map(m => {
+          const ratingColors: Record<string, string> = {
+            'excellent': '#a855f7',
+            'good': '#22c55e',
+            'normal': '#3b82f6',
+            'caution': '#f97316',
+          };
+          return `
+            <div style="text-align: center; padding: 6px 4px; background: ${ratingColors[m.rating]}10; border-radius: 4px; border: 1px solid ${ratingColors[m.rating]}30;">
+              <div style="font-size: 12px; font-weight: bold; color: ${ratingColors[m.rating]};">${m.month}월</div>
+              <div style="font-size: 8px; color: #666; margin-top: 2px; line-height: 1.2;">${m.focus}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- 실용적 조언 -->
+  <div class="section">
+    <div class="section-title">📝 실용적 조언</div>
+    <div class="advice-section" style="background: #faf5ff; border: 1px solid #e9d5ff;">
+      <div class="advice-title" style="color: #a855f7;">즉시 실천</div>
+      <ul class="advice-list">
+        ${step6.advice.immediate.map(a => `<li>${a}</li>`).join('')}
+      </ul>
+    </div>
+    <div class="advice-section" style="background: #eff6ff; border: 1px solid #bfdbfe;">
+      <div class="advice-title" style="color: #3b82f6;">1-3개월 내</div>
+      <ul class="advice-list">
+        ${step6.advice.shortTerm.map(a => `<li>${a}</li>`).join('')}
+      </ul>
+    </div>
+    <div class="advice-section" style="background: #f0fdf4; border: 1px solid #bbf7d0;">
+      <div class="advice-title" style="color: #22c55e;">장기 발전</div>
+      <ul class="advice-list">
+        ${step6.advice.longTerm.map(a => `<li>${a}</li>`).join('')}
+      </ul>
+    </div>
+  </div>
+
+  <!-- 행운 요소 -->
+  <div class="section">
+    <div class="section-title">🌟 행운의 요소</div>
+    <div class="lucky-grid">
+      <div class="lucky-item">
+        <div class="lucky-label">🎨 행운 색상</div>
+        <div class="lucky-value">${step6.luckyElements.colors.join(', ')}</div>
+      </div>
+      <div class="lucky-item">
+        <div class="lucky-label"># 행운 숫자</div>
+        <div class="lucky-value">${step6.luckyElements.numbers.join(', ')}</div>
+      </div>
+      <div class="lucky-item">
+        <div class="lucky-label">🧭 행운 방향</div>
+        <div class="lucky-value">${step6.luckyElements.directions.join(', ')}</div>
+      </div>
+      <div class="lucky-item">
+        <div class="lucky-label">🌸 행운 계절</div>
+        <div class="lucky-value">${step6.luckyElements.seasons.join(', ')}</div>
+      </div>
+    </div>
+    <div style="margin-top: 8px;">
+      <div class="info-item" style="background: #fef3c7; border-color: #fde68a;">
+        <div class="info-label" style="color: #92400e;">⚡ 추천 활동</div>
+        <div class="info-value" style="font-weight: normal; font-size: 10px; color: #78350f;">${step6.luckyElements.activities.join(', ')}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 오늘의 한마디 -->
+  <div class="section">
+    <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); border-radius: 12px; color: white;">
+      <div style="font-size: 10px; opacity: 0.8; margin-bottom: 6px;">✨ 오늘의 한마디</div>
+      <div style="font-size: 13px; font-style: italic; line-height: 1.5;">"${step6.oneLineMessage}"</div>
+    </div>
+  </div>
+
+  ${data.detailAnalyses && Object.keys(data.detailAnalyses).length > 0 ? `
+  <!-- 상세 분석 섹션 시작 -->
+  <div class="page-break"></div>
+
+  <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #1a1033 0%, #2d1f47 100%); border-radius: 12px;">
+    <h2 style="font-size: 20px; color: #a855f7; margin-bottom: 8px;">📖 상세 분석 리포트</h2>
+    <p style="font-size: 11px; color: #999;">8개 영역의 심층 분석 결과입니다</p>
+  </div>
+
+  ${Object.entries(data.detailAnalyses).map(([category, content]) => {
+    const categoryInfo = detailCategoryLabels[category] || { title: category, icon: '📋', color: '#666' };
+    return `
+    <div class="section detail-section" style="margin-bottom: 20px; page-break-inside: avoid;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid ${categoryInfo.color};">
+        <span style="font-size: 20px;">${categoryInfo.icon}</span>
+        <h3 style="font-size: 16px; font-weight: bold; color: ${categoryInfo.color}; margin: 0;">${categoryInfo.title}</h3>
+      </div>
+      <div class="detail-content" style="font-size: 10px; color: #333; line-height: 1.7; padding: 12px; background: #fafafa; border-radius: 8px; border: 1px solid #e5e7eb;">
+        ${markdownToHTML(content)}
+      </div>
+    </div>
+    `;
+  }).join('')}
+  <!-- 상세 분석 섹션 끝 -->
+  ` : ''}
+
+  <div class="footer">
+    <p>이 분석은 전통 명리학을 기반으로 한 참고용 정보입니다.</p>
+    <p>개인의 운명은 노력과 선택에 의해 얼마든지 바뀔 수 있습니다.</p>
+    <p style="margin-top: 6px;">생성일: ${new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+    <p class="brand">Powered by Hansa AI - 6단계 전문 사주 분석</p>
+  </div>
+</body>
+</html>
+  `.trim();
+}
+
+/**
+ * Download Professional Saju Pipeline PDF using browser print dialog
+ */
+export async function downloadPipelinePDF(
+  data: PipelinePDFData,
+  filename: string = 'hansa-ai-professional-saju.pdf'
+) {
+  console.log('[PDF] Starting Pipeline PDF generation...', { filename });
+
+  try {
+    const htmlContent = generatePipelinePDFHTML(data);
+    console.log('[PDF] HTML generated, length:', htmlContent.length);
+
+    const printWindow = window.open('', '_blank');
+
+    if (!printWindow) {
+      throw new Error('팝업이 차단되었습니다. 팝업 차단을 해제해주세요.');
+    }
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+
+    printWindow.onload = () => {
+      console.log('[PDF] Content loaded, triggering print dialog');
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+        console.log('[PDF] ✅ Print dialog opened');
+      }, 250);
+    };
+
+    setTimeout(() => {
+      if (printWindow.document.readyState === 'complete') {
+        printWindow.focus();
+        printWindow.print();
+        console.log('[PDF] ✅ Print dialog opened (fallback)');
+      }
+    }, 500);
+
+  } catch (error) {
+    console.error('[PDF] ❌ Pipeline PDF generation error:', error);
+    throw error;
+  }
+}

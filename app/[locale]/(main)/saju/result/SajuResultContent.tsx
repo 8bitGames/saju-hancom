@@ -11,7 +11,7 @@ import { ElementChart } from "@/components/saju/element-chart";
 import { TenGodDisplay } from "@/components/saju/ten-god-display";
 import { StarsDisplay } from "@/components/saju/stars-display";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
-import { SaveResultButton } from "@/components/auth/SaveResultButton";
+// import { SaveResultButton } from "@/components/auth/SaveResultButton"; // temporarily hidden
 import { DownloadPDFButton } from "@/components/auth/DownloadPDFButton";
 import { ShareKakaoButton } from "@/components/auth/ShareKakaoButton";
 import type { Gender } from "@/lib/saju/types";
@@ -708,9 +708,10 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
 
       {/* Save and Share Actions */}
       <motion.div
-        className="grid grid-cols-3 gap-2 pt-4"
+        className="grid grid-cols-2 gap-2 pt-4"
         variants={itemVariants}
       >
+        {/* SaveResultButton temporarily hidden
         <SaveResultButton
           birthData={{
             year,
@@ -725,6 +726,7 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
           resultData={result}
           className="w-full h-12 bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs sm:text-sm whitespace-nowrap px-2"
         />
+        */}
         <DownloadPDFButton
           birthData={{
             year,

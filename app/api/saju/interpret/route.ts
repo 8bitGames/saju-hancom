@@ -12,6 +12,8 @@ import { GEMINI_MODEL } from "@/lib/constants/ai";
 // 간소화된 해석 결과 스키마
 const SimplifiedInterpretationSchema = z.object({
   personality: z.string().describe("성격과 기질 해석 (3-4문장)"),
+  strengths: z.array(z.string()).describe("강점 2-3개 (각 1문장)"),
+  challenges: z.array(z.string()).describe("주의점 2-3개 (각 1문장)"),
   elements: z.string().describe("오행 균형이 삶에 주는 영향 (2-3문장)"),
   lifePattern: z.string().describe("십성과 신살이 보여주는 삶의 패턴 (2-3문장)"),
   message: z.string().describe("따뜻한 격려 메시지 (2-3문장)"),
@@ -134,6 +136,8 @@ ${starList || '특별한 신살 없음'}
 반드시 아래 JSON 형식으로만 응답하세요:
 {
   "personality": "성격과 기질 해석 (3-4문장)",
+  "strengths": ["강점1", "강점2", "강점3"],
+  "challenges": ["주의점1", "주의점2"],
   "elements": "오행 균형이 삶에 주는 영향 (2-3문장)",
   "lifePattern": "십성과 신살이 보여주는 삶의 패턴 (2-3문장)",
   "message": "따뜻한 격려 메시지 (2-3문장)"
@@ -250,6 +254,8 @@ export async function POST(request: NextRequest) {
         // Extract fields with fallbacks for various key names
         parsed = {
           personality: obj.personality || obj.personality_and_temperament || obj.character || '',
+          strengths: Array.isArray(obj.strengths) ? obj.strengths : [],
+          challenges: Array.isArray(obj.challenges) ? obj.challenges : [],
           elements: obj.elements || obj.elemental_balance || obj.five_elements || '',
           lifePattern: obj.lifePattern || obj.life_pattern || obj.ten_gods || '',
           message: obj.message || obj.closing_message || obj.overall_message || '',
@@ -263,8 +269,23 @@ export async function POST(request: NextRequest) {
           return match ? match[1].replace(/\\n/g, '\n').replace(/\\"/g, '"') : '';
         };
 
+        const extractArray = (text: string, key: string): string[] => {
+          const regex = new RegExp(`"${key}"\\s*:\\s*\\[([^\\]]*)]`, 'i');
+          const match = text.match(regex);
+          if (!match) return [];
+          try {
+            return JSON.parse(`[${match[1]}]`);
+          } catch {
+            // Try to extract individual strings
+            const items = match[1].match(/"([^"]+)"/g);
+            return items ? items.map(s => s.replace(/"/g, '')) : [];
+          }
+        };
+
         parsed = {
           personality: extract(responseText, 'personality') || extract(responseText, 'personality_and_temperament') || '',
+          strengths: extractArray(responseText, 'strengths'),
+          challenges: extractArray(responseText, 'challenges'),
           elements: extract(responseText, 'elements') || extract(responseText, 'elemental_balance') || '',
           lifePattern: extract(responseText, 'lifePattern') || extract(responseText, 'life_pattern') || '',
           message: extract(responseText, 'message') || extract(responseText, 'closing_message') || '',
@@ -276,8 +297,8 @@ export async function POST(request: NextRequest) {
         personalityReading: {
           summary: parsed.personality || "타고난 성격과 기질을 분석했습니다.",
           coreTraits: [],
-          strengths: [],
-          challenges: [],
+          strengths: parsed.strengths || [],
+          challenges: parsed.challenges || [],
         },
         elementInsight: {
           balance: parsed.elements || "오행의 균형을 살펴봤습니다.",

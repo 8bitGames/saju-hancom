@@ -3,12 +3,14 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Link, useRouter } from "@/lib/i18n/navigation";
-import { Sparkle, ArrowCounterClockwise, X, ArrowRight } from "@phosphor-icons/react";
+import { Sparkle, ArrowCounterClockwise, X, ArrowRight, FilePdf } from "@phosphor-icons/react";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import { MysticalLoader } from "@/components/saju/MysticalLoader";
 import { useSajuPipelineStream } from "@/lib/hooks/useSajuPipelineStream";
 import PipelineProgress from "@/components/saju/PipelineProgress";
 import PipelineResult from "@/components/saju/PipelineResult";
+import { downloadPipelinePDF } from "@/lib/pdf/generator";
+import { getDetailAnalysisFromStorage } from "@/components/saju/DetailAnalysisModal";
 import type { Gender } from "@/lib/saju/types";
 
 function SajuFortuneContent() {
@@ -16,6 +18,44 @@ function SajuFortuneContent() {
   const searchParams = useSearchParams();
   const { state, startAnalysis, reset, clearSavedData, loadSavedData, hasSavedData } = useSajuPipelineStream();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadPDF = async () => {
+    if (!state.finalResult || isDownloading) return;
+
+    setIsDownloading(true);
+    try {
+      const year = parseInt(searchParams.get("year") || "1990");
+      const month = parseInt(searchParams.get("month") || "1");
+      const day = parseInt(searchParams.get("day") || "1");
+      const hour = parseInt(searchParams.get("hour") || "12");
+      const minute = parseInt(searchParams.get("minute") || "0");
+      const gender = searchParams.get("gender") || "male";
+      const isLunar = searchParams.get("isLunar") === "true";
+
+      // Get all saved detail analyses from localStorage
+      const detailAnalyses = getDetailAnalysisFromStorage();
+
+      await downloadPipelinePDF({
+        birthData: {
+          year,
+          month,
+          day,
+          hour,
+          minute,
+          gender,
+          isLunar,
+        },
+        result: state.finalResult,
+        detailAnalyses,
+      });
+    } catch (error) {
+      console.error("PDF download error:", error);
+      alert("PDF 다운로드 중 오류가 발생했습니다. 팝업 차단을 해제해주세요.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   useEffect(() => {
     const year = searchParams.get("year");
@@ -153,6 +193,28 @@ function SajuFortuneContent() {
 
         {/* Action Buttons */}
         <div className="space-y-4 pt-4">
+          {/* PDF Download Button */}
+          {(() => {
+            const detailCount = Object.keys(getDetailAnalysisFromStorage()).length;
+            return (
+              <div className="space-y-2">
+                <button
+                  onClick={handleDownloadPDF}
+                  disabled={isDownloading}
+                  className="w-full h-14 rounded-xl bg-[#22c55e] text-white font-bold text-lg flex items-center justify-center gap-3 hover:bg-[#16a34a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <FilePdf className="w-5 h-5" weight="fill" />
+                  {isDownloading ? "PDF 생성 중..." : "전체 분석 결과 PDF 다운로드"}
+                </button>
+                <p className="text-center text-sm text-white/50">
+                  {detailCount > 0
+                    ? `기본 분석 + 상세 분석 ${detailCount}개 영역 포함`
+                    : "상세보기를 클릭하면 PDF에 포함됩니다"}
+                </p>
+              </div>
+            );
+          })()}
+
           <Link href={`/saju/result?${searchParams.toString()}`} className="block">
             <button className="w-full h-14 rounded-xl bg-[#a855f7] text-white font-bold text-lg flex items-center justify-center gap-3 hover:bg-[#9333ea] transition-colors">
               <Sparkle className="w-5 h-5" weight="fill" />
