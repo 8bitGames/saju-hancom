@@ -342,8 +342,33 @@ export const SIXTY_JIAZI: string[] = [
 /** 한국 표준시 기준 경도 */
 export const KOREA_STANDARD_MERIDIAN = 135;
 
-/** 주요 도시 경도 */
+/** 주요 도시/지역 경도 (영문 키) */
 export const CITY_LONGITUDES: Record<string, number> = {
+  // 특별시/광역시
+  seoul: 126.98,
+  busan: 129.04,
+  daegu: 128.60,
+  incheon: 126.71,
+  gwangju: 126.85,
+  daejeon: 127.38,
+  ulsan: 129.31,
+  sejong: 127.29,
+  // 도 (대표 도시 기준)
+  gyeonggi: 127.02,    // 수원 기준
+  gangwon: 127.73,     // 춘천 기준
+  chungbuk: 127.49,    // 청주 기준
+  chungnam: 126.80,    // 천안 기준
+  jeonbuk: 127.11,     // 전주 기준
+  jeonnam: 126.39,     // 목포 기준
+  gyeongbuk: 129.36,   // 포항 기준
+  gyeongnam: 128.68,   // 창원 기준
+  jeju: 126.53,
+  // 해외
+  pyongyang: 125.75,
+  tokyo: 139.69,
+  beijing: 116.41,
+  shanghai: 121.47,
+  // 한글 키도 지원 (레거시 호환성)
   서울: 126.98,
   부산: 129.04,
   대구: 128.60,
@@ -351,11 +376,16 @@ export const CITY_LONGITUDES: Record<string, number> = {
   광주: 126.85,
   대전: 127.38,
   울산: 129.31,
+  세종: 127.29,
+  경기: 127.02,
+  강원: 127.73,
+  충북: 127.49,
+  충남: 126.80,
+  전북: 127.11,
+  전남: 126.39,
+  경북: 129.36,
+  경남: 128.68,
   제주: 126.53,
-  평양: 125.75,
-  도쿄: 139.69,
-  베이징: 116.41,
-  상하이: 121.47,
 };
 
 /** 기본 경도 (서울 기준) */

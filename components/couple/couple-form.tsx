@@ -28,6 +28,7 @@ export interface CoupleFormData {
 }
 
 const CITIES = [
+  // 특별시/광역시
   { name: "서울", longitude: 127.0 },
   { name: "부산", longitude: 129.0 },
   { name: "대구", longitude: 128.6 },
@@ -35,6 +36,16 @@ const CITIES = [
   { name: "광주", longitude: 126.9 },
   { name: "대전", longitude: 127.4 },
   { name: "울산", longitude: 129.3 },
+  { name: "세종", longitude: 127.3 },
+  // 도
+  { name: "경기", longitude: 127.0 },
+  { name: "강원", longitude: 127.7 },
+  { name: "충북", longitude: 127.5 },
+  { name: "충남", longitude: 126.8 },
+  { name: "전북", longitude: 127.1 },
+  { name: "전남", longitude: 126.4 },
+  { name: "경북", longitude: 128.7 },
+  { name: "경남", longitude: 128.7 },
   { name: "제주", longitude: 126.5 },
 ];
 

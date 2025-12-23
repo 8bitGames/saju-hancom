@@ -557,18 +557,33 @@ export async function getUserFaceReadingResults(userId: string) {
 
 /**
  * Get a saju result by ID for public sharing
+ * Uses admin client to bypass RLS since this is for public viewing
  * Returns only the essential data needed for display (no user info)
  */
 export async function getSajuResultById(resultId: string) {
-  const supabase = await createClient();
+  // Use dynamic import to avoid issues with server/client bundling
+  const { createClient: createAdminClient } = await import('@supabase/supabase-js');
 
-  const { data, error } = await supabase
+  // Create admin client that bypasses RLS for public shared results
+  const supabaseAdmin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  );
+
+  const { data, error } = await supabaseAdmin
     .from('saju_results')
     .select('id, birth_year, birth_month, birth_day, birth_hour, birth_minute, gender, is_lunar, city, result_data, created_at')
     .eq('id', resultId)
     .single();
 
   if (error) {
+    console.error('[getSajuResultById] Error:', error.message);
     return { success: false, error: error.message, result: null };
   }
 

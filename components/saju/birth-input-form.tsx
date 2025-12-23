@@ -24,6 +24,7 @@ export interface BirthData {
 }
 
 const CITIES = [
+  // 특별시/광역시
   { key: "seoul", longitude: 127.0 },
   { key: "busan", longitude: 129.0 },
   { key: "daegu", longitude: 128.6 },
@@ -31,6 +32,16 @@ const CITIES = [
   { key: "gwangju", longitude: 126.9 },
   { key: "daejeon", longitude: 127.4 },
   { key: "ulsan", longitude: 129.3 },
+  { key: "sejong", longitude: 127.3 },
+  // 도
+  { key: "gyeonggi", longitude: 127.0 },
+  { key: "gangwon", longitude: 127.7 },
+  { key: "chungbuk", longitude: 127.5 },
+  { key: "chungnam", longitude: 126.8 },
+  { key: "jeonbuk", longitude: 127.1 },
+  { key: "jeonnam", longitude: 126.4 },
+  { key: "gyeongbuk", longitude: 128.7 },
+  { key: "gyeongnam", longitude: 128.7 },
   { key: "jeju", longitude: 126.5 },
 ];
 

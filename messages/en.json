@@ -118,6 +118,15 @@
       "gwangju": "Gwangju",
       "daejeon": "Daejeon",
       "ulsan": "Ulsan",
+      "sejong": "Sejong",
+      "gyeonggi": "Gyeonggi",
+      "gangwon": "Gangwon",
+      "chungbuk": "Chungcheongbuk",
+      "chungnam": "Chungcheongnam",
+      "jeonbuk": "Jeollabuk",
+      "jeonnam": "Jeollanam",
+      "gyeongbuk": "Gyeongsangbuk",
+      "gyeongnam": "Gyeongsangnam",
       "jeju": "Jeju"
     },
     "result": {
