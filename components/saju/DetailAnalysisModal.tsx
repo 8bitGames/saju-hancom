@@ -1,8 +1,97 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { X, Sparkle, Warning } from "@phosphor-icons/react";
+import { useState, useEffect, useRef } from "react";
+import { X, Sparkle, Warning, User, Briefcase, Coins, Heart, FirstAid, Star, Calendar } from "@phosphor-icons/react";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
+
+// 카테고리별 로딩 설정
+const CATEGORY_LOADING_CONFIG: Record<string, {
+  icon: React.ReactNode;
+  color: string;
+  bgColor: string;
+  messages: string[];
+}> = {
+  dayMaster: {
+    icon: <User className="w-8 h-8 text-white" weight="fill" />,
+    color: "#a855f7",
+    bgColor: "bg-[#a855f7]",
+    messages: [
+      "당신의 타고난 기질을 분석하고 있습니다...",
+      "일간의 특성을 살펴보는 중...",
+      "성격의 깊은 면을 탐색하고 있습니다..."
+    ]
+  },
+  career: {
+    icon: <Briefcase className="w-8 h-8 text-white" weight="fill" />,
+    color: "#3b82f6",
+    bgColor: "bg-[#3b82f6]",
+    messages: [
+      "적성과 재능을 분석하고 있습니다...",
+      "직업 운세를 살펴보는 중...",
+      "커리어 방향을 탐색하고 있습니다..."
+    ]
+  },
+  wealth: {
+    icon: <Coins className="w-8 h-8 text-white" weight="fill" />,
+    color: "#eab308",
+    bgColor: "bg-[#eab308]",
+    messages: [
+      "재물운의 흐름을 분석하고 있습니다...",
+      "금전 운세를 살펴보는 중...",
+      "부를 쌓는 방법을 탐색하고 있습니다..."
+    ]
+  },
+  relationship: {
+    icon: <Heart className="w-8 h-8 text-white" weight="fill" />,
+    color: "#ec4899",
+    bgColor: "bg-[#ec4899]",
+    messages: [
+      "인연의 흐름을 분석하고 있습니다...",
+      "대인관계 운세를 살펴보는 중...",
+      "소중한 관계를 탐색하고 있습니다..."
+    ]
+  },
+  health: {
+    icon: <FirstAid className="w-8 h-8 text-white" weight="fill" />,
+    color: "#22c55e",
+    bgColor: "bg-[#22c55e]",
+    messages: [
+      "건강 운세를 분석하고 있습니다...",
+      "체질과 기운을 살펴보는 중...",
+      "건강 관리법을 탐색하고 있습니다..."
+    ]
+  },
+  tenGods: {
+    icon: <Star className="w-8 h-8 text-white" weight="fill" />,
+    color: "#f97316",
+    bgColor: "bg-[#f97316]",
+    messages: [
+      "십성의 배치를 분석하고 있습니다...",
+      "운명의 별들을 살펴보는 중...",
+      "십성이 주는 의미를 탐색하고 있습니다..."
+    ]
+  },
+  stars: {
+    icon: <Sparkle className="w-8 h-8 text-white" weight="fill" />,
+    color: "#8b5cf6",
+    bgColor: "bg-[#8b5cf6]",
+    messages: [
+      "신살의 기운을 분석하고 있습니다...",
+      "길신과 흉신을 살펴보는 중...",
+      "특별한 별의 영향을 탐색하고 있습니다..."
+    ]
+  },
+  fortune: {
+    icon: <Calendar className="w-8 h-8 text-white" weight="fill" />,
+    color: "#06b6d4",
+    bgColor: "bg-[#06b6d4]",
+    messages: [
+      "운세의 흐름을 분석하고 있습니다...",
+      "대운과 세운을 살펴보는 중...",
+      "시간의 기운을 탐색하고 있습니다..."
+    ]
+  }
+};
 
 // localStorage 키
 const DETAIL_STORAGE_KEY = "saju_detail_analysis";
@@ -43,6 +132,73 @@ function saveDetailToStorage(category: string, content: string): void {
   }
 }
 
+// 카테고리별 로딩 애니메이션 컴포넌트
+function CategoryLoadingAnimation({ category, messageIndex }: { category: string; messageIndex: number }) {
+  const config = CATEGORY_LOADING_CONFIG[category] || CATEGORY_LOADING_CONFIG.dayMaster;
+
+  return (
+    <div className="flex flex-col items-center justify-center py-16 space-y-6">
+      {/* 애니메이션 아이콘 */}
+      <div className="relative">
+        {/* 회전하는 외부 링 */}
+        <div
+          className="absolute inset-0 w-24 h-24 rounded-full border-4 border-transparent animate-spin"
+          style={{
+            borderTopColor: config.color,
+            borderRightColor: `${config.color}40`,
+            animationDuration: '1.5s'
+          }}
+        />
+        {/* 역방향 회전 링 */}
+        <div
+          className="absolute inset-2 w-20 h-20 rounded-full border-4 border-transparent animate-spin"
+          style={{
+            borderBottomColor: config.color,
+            borderLeftColor: `${config.color}40`,
+            animationDuration: '2s',
+            animationDirection: 'reverse'
+          }}
+        />
+        {/* 중앙 아이콘 */}
+        <div
+          className={`w-24 h-24 rounded-full ${config.bgColor} flex items-center justify-center animate-pulse`}
+          style={{ animationDuration: '1.5s' }}
+        >
+          {config.icon}
+        </div>
+      </div>
+
+      {/* 메시지 */}
+      <div className="text-center space-y-2">
+        <p
+          className="text-base font-medium transition-all duration-500"
+          style={{ color: config.color }}
+        >
+          {config.messages[messageIndex]}
+        </p>
+        <p className="text-sm text-white/40">
+          잠시만 기다려주세요
+        </p>
+      </div>
+
+      {/* 프로그레스 도트 */}
+      <div className="flex gap-2">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="w-2 h-2 rounded-full animate-bounce"
+            style={{
+              backgroundColor: config.color,
+              animationDelay: `${i * 0.2}s`,
+              animationDuration: '1s'
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // 상세 분석 데이터 전체 삭제 (외부에서 호출 가능)
 export function clearDetailAnalysisStorage(): void {
   if (typeof window === "undefined") return;
@@ -74,6 +230,22 @@ export function DetailAnalysisModal({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
+  const [messageIndex, setMessageIndex] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // 로딩 중 메시지 순환
+  useEffect(() => {
+    if (!isLoading) return;
+
+    const config = CATEGORY_LOADING_CONFIG[category];
+    if (!config) return;
+
+    const interval = setInterval(() => {
+      setMessageIndex((prev) => (prev + 1) % config.messages.length);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [isLoading, category]);
 
   const fetchDetailAnalysis = async () => {
     setIsLoading(true);
@@ -122,46 +294,74 @@ export function DetailAnalysisModal({
     setError(null);
   }, [category]);
 
+  // 콘텐츠 로드 후 스크롤 상단으로
+  useEffect(() => {
+    if (content && contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+  }, [content]);
+
+  // 모달이 열릴 때 body 스크롤 잠금
+  useEffect(() => {
+    if (isOpen) {
+      // 현재 스크롤 위치 저장
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        // 스크롤 복원
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 z-[100] flex flex-col"
+      style={{ touchAction: 'none' }}
+    >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
-      <div className="relative w-full max-w-2xl max-h-[85vh] bg-[#1a1033] rounded-2xl shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-[#a855f7]">
-          <div className="flex items-center gap-3">
-            <Sparkle className="w-6 h-6 text-white" weight="fill" />
-            <h2 className="text-xl font-bold text-white">{categoryTitle} 상세 분석</h2>
+      {/* Modal Container - 모바일 전체화면, 데스크톱 중앙 정렬 */}
+      <div className="relative flex flex-col w-full h-full md:h-auto md:max-h-[85vh] md:max-w-2xl md:m-auto md:rounded-2xl bg-[#1a1033] shadow-2xl overflow-hidden">
+        {/* Header - 항상 상단 고정 */}
+        <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-[#a855f7] z-20">
+          <div className="flex items-center gap-2 md:gap-3">
+            <Sparkle className="w-5 h-5 md:w-6 md:h-6 text-white" weight="fill" />
+            <h2 className="text-base md:text-xl font-bold text-white">{categoryTitle} 상세 분석</h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-white/20 transition-colors"
+            className="p-2 rounded-full hover:bg-white/20 transition-colors active:bg-white/30"
+            aria-label="닫기"
           >
-            <X className="w-5 h-5 text-white" />
+            <X className="w-6 h-6 text-white" />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(85vh-80px)]">
+        {/* Content - 스크롤 가능한 영역 */}
+        <div
+          ref={contentRef}
+          className="flex-1 overflow-y-auto overscroll-contain p-4 md:p-6"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           {isLoading && (
-            <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-[#a855f7] flex items-center justify-center animate-pulse">
-                <Sparkle className="w-8 h-8 text-white" weight="fill" />
-              </div>
-              <p className="text-white/60">
-                상세 분석을 생성하고 있습니다...
-              </p>
-              <p className="text-sm text-white/40">
-                잠시만 기다려주세요
-              </p>
-            </div>
+            <CategoryLoadingAnimation category={category} messageIndex={messageIndex} />
           )}
 
           {error && (
@@ -185,6 +385,9 @@ export function DetailAnalysisModal({
           {content && (
             <MarkdownRenderer content={content} variant="default" />
           )}
+
+          {/* 하단 여백 (iOS Safari safe area) */}
+          <div className="h-6 md:h-0" />
         </div>
       </div>
     </div>

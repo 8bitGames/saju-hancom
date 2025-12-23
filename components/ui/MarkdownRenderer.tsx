@@ -1,18 +1,36 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface MarkdownRendererProps {
   content: string;
   variant?: "default" | "chat";
 }
 
+// 마크다운 전처리 함수 - bold 문법 정규화
+function preprocessMarkdown(text: string): string {
+  // ** 주변의 불필요한 공백 제거 및 정규화
+  let processed = text;
+
+  // **text** 패턴이 깨진 경우 수정 (예: ** text ** -> **text**)
+  processed = processed.replace(/\*\*\s+/g, '**');
+  processed = processed.replace(/\s+\*\*/g, '**');
+
+  // 한글/한자가 포함된 bold 패턴 처리
+  // **text** 가 제대로 닫히지 않은 경우 등
+
+  return processed;
+}
+
 export function MarkdownRenderer({ content, variant = "default" }: MarkdownRendererProps) {
   const isChat = variant === "chat";
+  const processedContent = preprocessMarkdown(content);
 
   return (
     <div className="prose prose-sm dark:prose-invert max-w-none">
       <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ children }) => (
             <h1 className={`font-bold text-[var(--text-primary)] ${isChat ? "text-lg mt-3 mb-2" : "text-xl mt-6 mb-3"} first:mt-0`}>
@@ -136,7 +154,7 @@ export function MarkdownRenderer({ content, variant = "default" }: MarkdownRende
           ),
         }}
       >
-        {content}
+        {processedContent}
       </ReactMarkdown>
     </div>
   );

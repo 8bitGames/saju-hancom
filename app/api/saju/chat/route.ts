@@ -19,6 +19,7 @@ import {
 } from "@/lib/saju/personalized-keywords";
 import type { SajuResult } from "@/lib/saju/types";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
+import { getPersonalizedContext } from "@/lib/saju/agents";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -42,7 +43,7 @@ function createSSEMessage(type: MessageType, data: unknown): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { messages, sajuContext, sajuResult, gender, locale: requestLocale, enableGrounding = true } = body;
+    const { messages, sajuContext, sajuResult, gender, birthYear, locale: requestLocale, enableGrounding = true } = body;
 
     // Determine locale from request body or headers
     const locale: Locale = requestLocale === 'en' ? 'en' :
@@ -58,18 +59,53 @@ export async function POST(request: NextRequest) {
 
     const genderText = getGenderLabel(locale, gender === "female" ? "female" : "male");
     const currentYear = new Date().getFullYear();
-
-    const systemPrompt = getChatPrompt(locale, {
-      genderText,
-      currentYear,
-      sajuContext,
-    });
+    const currentMonth = new Date().getMonth() + 1;
+    const currentDay = new Date().getDate();
 
     // Get the last user message for trigger detection
     const lastUserMessage = messages.filter((m: ChatMessage) => m.role === "user").pop();
     const userMessageText = typeof lastUserMessage?.content === 'string'
       ? lastUserMessage.content
       : "";
+
+    // 초개인화 컨텍스트 생성 (Multi-Agent System)
+    let personalizedContext = "";
+    if (sajuResult && birthYear) {
+      try {
+        const parsedSajuResult: SajuResult = typeof sajuResult === 'string'
+          ? JSON.parse(sajuResult)
+          : sajuResult;
+
+        personalizedContext = await getPersonalizedContext(
+          parsedSajuResult,
+          birthYear,
+          gender === "female" ? "female" : "male",
+          locale,
+          userMessageText
+        );
+      } catch (e) {
+        console.error("Failed to generate personalized context:", e);
+      }
+    }
+
+    // 기본 시스템 프롬프트 + 초개인화 컨텍스트
+    let systemPrompt = getChatPrompt(locale, {
+      genderText,
+      currentYear,
+      sajuContext,
+    });
+
+    // 현재 날짜 정보 추가
+    const dateContext = locale === 'ko'
+      ? `\n\n## 현재 시점\n오늘은 ${currentYear}년 ${currentMonth}월 ${currentDay}일입니다. 모든 조언은 현재 시점을 기준으로 해주세요.`
+      : `\n\n## Current Date\nToday is ${currentMonth}/${currentDay}/${currentYear}. All advice should be based on the current date.`;
+
+    systemPrompt += dateContext;
+
+    // 초개인화 컨텍스트 추가
+    if (personalizedContext) {
+      systemPrompt += "\n" + personalizedContext;
+    }
 
     // Check if we should trigger a search
     const triggerCheck = enableGrounding ? shouldTriggerSearch(userMessageText) : { shouldSearch: false, trigger: null, reason: "grounding_disabled" };

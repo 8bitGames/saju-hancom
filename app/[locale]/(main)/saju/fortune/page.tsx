@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Link, useRouter } from "@/lib/i18n/navigation";
-import { Sparkle, ArrowCounterClockwise, X, ArrowRight, FilePdf } from "@phosphor-icons/react";
+import { Sparkle, ArrowCounterClockwise, X, ArrowRight, FilePdf, Warning } from "@phosphor-icons/react";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import { MysticalLoader } from "@/components/saju/MysticalLoader";
 import { useSajuPipelineStream } from "@/lib/hooks/useSajuPipelineStream";
@@ -13,15 +13,31 @@ import { downloadPipelinePDF } from "@/lib/pdf/generator";
 import { getDetailAnalysisFromStorage } from "@/components/saju/DetailAnalysisModal";
 import type { Gender } from "@/lib/saju/types";
 
+// 총 상세 분석 영역 수
+const TOTAL_DETAIL_AREAS = 8;
+
 function SajuFortuneContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { state, startAnalysis, reset, clearSavedData, loadSavedData, hasSavedData } = useSajuPipelineStream();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showPdfWarning, setShowPdfWarning] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [pendingDetailCount, setPendingDetailCount] = useState(0);
 
-  const handleDownloadPDF = async () => {
+  const handleDownloadPDF = async (skipWarning = false) => {
     if (!state.finalResult || isDownloading) return;
+
+    // 상세 분석 개수 확인
+    const detailAnalyses = getDetailAnalysisFromStorage();
+    const detailCount = Object.keys(detailAnalyses).length;
+
+    // 상세 분석을 다 안 했으면 경고창 표시
+    if (!skipWarning && detailCount < TOTAL_DETAIL_AREAS) {
+      setPendingDetailCount(detailCount);
+      setShowPdfWarning(true);
+      return;
+    }
 
     setIsDownloading(true);
     try {
@@ -32,9 +48,6 @@ function SajuFortuneContent() {
       const minute = parseInt(searchParams.get("minute") || "0");
       const gender = searchParams.get("gender") || "male";
       const isLunar = searchParams.get("isLunar") === "true";
-
-      // Get all saved detail analyses from localStorage
-      const detailAnalyses = getDetailAnalysisFromStorage();
 
       await downloadPipelinePDF({
         birthData: {
@@ -199,7 +212,7 @@ function SajuFortuneContent() {
             return (
               <div className="space-y-2">
                 <button
-                  onClick={handleDownloadPDF}
+                  onClick={() => handleDownloadPDF(false)}
                   disabled={isDownloading}
                   className="w-full h-14 rounded-xl bg-[#22c55e] text-white font-bold text-lg flex items-center justify-center gap-3 hover:bg-[#16a34a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -208,7 +221,7 @@ function SajuFortuneContent() {
                 </button>
                 <p className="text-center text-sm text-white/50">
                   {detailCount > 0
-                    ? `기본 분석 + 상세 분석 ${detailCount}개 영역 포함`
+                    ? `기본 분석 + 상세 분석 ${detailCount}/${TOTAL_DETAIL_AREAS}개 영역 포함`
                     : "상세보기를 클릭하면 PDF에 포함됩니다"}
                 </p>
               </div>
@@ -268,6 +281,49 @@ function SajuFortuneContent() {
                   className="flex-1 py-3 rounded-xl bg-red-500 text-base text-white font-medium hover:bg-red-600 transition-colors"
                 >
                   삭제
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* PDF Warning Modal */}
+        {showPdfWarning && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowPdfWarning(false)}
+            />
+            <div className="relative bg-[#1a1033] rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-white/10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                  <Warning className="w-6 h-6 text-yellow-400" weight="fill" />
+                </div>
+                <h3 className="text-lg font-bold text-white">
+                  상세 분석 미완료
+                </h3>
+              </div>
+              <p className="text-base text-white/60 mb-2">
+                현재 {pendingDetailCount}/{TOTAL_DETAIL_AREAS}개 영역만 상세 분석되었습니다.
+              </p>
+              <p className="text-sm text-white/50 mb-6">
+                모든 영역의 상세보기를 클릭하면 더 풍부한 PDF를 받을 수 있습니다. 지금 다운로드하시겠습니까?
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowPdfWarning(false)}
+                  className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-base text-white/60 font-medium hover:bg-white/10 transition-colors"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={() => {
+                    setShowPdfWarning(false);
+                    handleDownloadPDF(true);
+                  }}
+                  className="flex-1 py-3 rounded-xl bg-[#22c55e] text-base text-white font-medium hover:bg-[#16a34a] transition-colors"
+                >
+                  다운로드
                 </button>
               </div>
             </div>

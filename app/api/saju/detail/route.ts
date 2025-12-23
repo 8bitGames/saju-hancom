@@ -20,6 +20,7 @@ import {
 } from "@/lib/saju/personalized-keywords";
 import type { SajuResult } from "@/lib/saju/types";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
+import { getPersonalizedContext } from "@/lib/saju/agents";
 
 /**
  * 사주 상세 분석 API
@@ -73,6 +74,7 @@ export async function POST(request: NextRequest) {
     const genderText = getGenderLabel(locale, gender === "female" ? "female" : "male");
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
+    const currentDay = new Date().getDate();
 
     // Initialize Google GenAI
     const ai = new GoogleGenAI({
@@ -82,10 +84,40 @@ export async function POST(request: NextRequest) {
     // Check if this category needs Google Grounding
     const needsGrounding = groundingCategories.includes(category as DetailCategory);
 
+    // 초개인화 컨텍스트 생성 (Multi-Agent System)
+    let personalizedContext = "";
+    if (sajuResult && birthYear) {
+      try {
+        const parsedSajuResult: SajuResult = typeof sajuResult === 'string'
+          ? JSON.parse(sajuResult)
+          : sajuResult;
+
+        personalizedContext = await getPersonalizedContext(
+          parsedSajuResult,
+          birthYear,
+          gender === "female" ? "female" : "male",
+          locale,
+          category // 현재 분석 중인 카테고리를 쿼리로 사용
+        );
+      } catch (e) {
+        console.error("Failed to generate personalized context:", e);
+      }
+    }
+
+    // 현재 날짜 컨텍스트 추가
+    const dateContext = locale === 'ko'
+      ? `\n\n## 현재 시점\n오늘은 ${currentYear}년 ${currentMonth}월 ${currentDay}일입니다.`
+      : `\n\n## Current Date\nToday is ${currentMonth}/${currentDay}/${currentYear}.`;
+
     // Build the prompt
     let prompt = locale === 'ko'
-      ? `다음은 ${genderText}의 사주 정보입니다:\n\n${sajuContext}\n\n${getDetailPrompt(locale, category as DetailCategory)}`
-      : `The following is the birth chart information for a ${genderText}:\n\n${sajuContext}\n\n${getDetailPrompt(locale, category as DetailCategory)}`;
+      ? `다음은 ${genderText}의 사주 정보입니다:\n\n${sajuContext}\n\n${getDetailPrompt(locale, category as DetailCategory)}${dateContext}`
+      : `The following is the birth chart information for a ${genderText}:\n\n${sajuContext}\n\n${getDetailPrompt(locale, category as DetailCategory)}${dateContext}`;
+
+    // 초개인화 컨텍스트 추가
+    if (personalizedContext) {
+      prompt += "\n" + personalizedContext;
+    }
 
     // Add grounding context if needed and sajuResult is available
     if (needsGrounding && sajuResult) {

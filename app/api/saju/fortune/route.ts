@@ -11,6 +11,8 @@ import {
 } from "@/lib/i18n/prompts";
 import type { Locale } from "@/lib/i18n/config";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
+import { runPersonalizationEngine } from "@/lib/saju/agents";
+import type { SajuResult } from "@/lib/saju/types";
 
 // 사주 운세 해석 결과 스키마
 const SajuFortuneSchema = z.object({
@@ -77,7 +79,7 @@ const SajuFortuneSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { sajuData, gender, locale: requestLocale } = body;
+    const { sajuData, sajuResult, gender, birthYear, locale: requestLocale } = body;
 
     // Determine locale from request body or headers
     const locale: Locale = requestLocale === 'en' ? 'en' :
@@ -101,6 +103,40 @@ export async function POST(request: NextRequest) {
 
     const genderText = getGenderLabel(locale, gender === "female" ? "female" : "male");
     const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+    const currentDay = new Date().getDate();
+
+    // 초개인화 컨텍스트 생성 (Multi-Agent System)
+    let personalizedContext = "";
+    if (sajuResult && birthYear) {
+      try {
+        const parsedSajuResult: SajuResult = typeof sajuResult === 'string'
+          ? JSON.parse(sajuResult)
+          : sajuResult;
+
+        const personalizationResult = await runPersonalizationEngine({
+          sajuResult: parsedSajuResult,
+          birthYear,
+          gender: gender === "female" ? "female" : "male",
+          locale,
+        });
+
+        personalizedContext = personalizationResult.orchestratorResult.systemPromptAddition;
+      } catch (e) {
+        console.error("Failed to generate personalized context:", e);
+      }
+    }
+
+    // 현재 날짜 컨텍스트
+    const dateContext = locale === 'ko'
+      ? `\n\n## 현재 시점\n오늘은 ${currentYear}년 ${currentMonth}월 ${currentDay}일입니다. 올해의 운세와 월별 하이라이트는 현재 시점을 기준으로 작성해주세요. 지나간 달은 "지난 X월에는..."으로, 다가올 달은 앞으로의 기회와 도전으로 표현해주세요.`
+      : `\n\n## Current Date\nToday is ${currentMonth}/${currentDay}/${currentYear}. Please write yearly fortune and monthly highlights based on the current date. Past months should be referred as "In X month, you had..." and future months as upcoming opportunities and challenges.`;
+
+    // 시스템 프롬프트 구성
+    let systemPrompt = getFortuneSystemPrompt(locale, currentYear) + dateContext;
+    if (personalizedContext) {
+      systemPrompt += "\n" + personalizedContext;
+    }
 
     // Gemini를 사용한 사주 운세 해석
     const result = await generateObject({
@@ -109,7 +145,7 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: "system",
-          content: getFortuneSystemPrompt(locale, currentYear),
+          content: systemPrompt,
         },
         {
           role: "user",

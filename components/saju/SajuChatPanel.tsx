@@ -102,6 +102,30 @@ export function SajuChatPanel({ sajuContext, sajuResult, gender, locale = "ko" }
   };
 
 
+  // 모달이 열릴 때 body 스크롤 잠금 (모바일)
+  useEffect(() => {
+    if (isOpen && !isMinimized) {
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        const scrollY = window.scrollY;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.left = '';
+          document.body.style.right = '';
+          document.body.style.overflow = '';
+          window.scrollTo(0, scrollY);
+        };
+      }
+    }
+  }, [isOpen, isMinimized]);
+
   if (!isOpen) {
     return (
       <button
@@ -115,49 +139,65 @@ export function SajuChatPanel({ sajuContext, sajuResult, gender, locale = "ko" }
 
   return (
     <div
-      className={`fixed bottom-6 right-6 z-50 w-[380px] bg-[var(--background-card)] rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 ${
-        isMinimized ? "h-16" : "h-[600px]"
-      }`}
+      className={`fixed z-[100] transition-all duration-300
+        inset-0 md:inset-auto md:bottom-6 md:right-6 md:w-[400px] md:rounded-2xl
+        ${isMinimized ? "md:h-14" : "md:h-[600px] md:max-h-[80vh]"}
+      `}
+      style={{ touchAction: isMinimized ? 'auto' : 'none' }}
     >
-      {/* Header */}
+      {/* Backdrop - 모바일에서만 표시 */}
       <div
-        className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] text-white cursor-pointer"
-        onClick={() => setIsMinimized(!isMinimized)}
-      >
-        <div className="flex items-center gap-2">
-          <Sparkle className="w-5 h-5" weight="fill" />
-          <span className="font-bold">사주 AI 상담</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsMinimized(!isMinimized);
-            }}
-            className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
-          >
-            <CaretDown
-              className={`w-4 h-4 transition-transform ${
-                isMinimized ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsOpen(false);
-            }}
-            className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm md:hidden"
+        onClick={() => setIsOpen(false)}
+      />
 
-      {!isMinimized && (
-        <>
-          {/* Messages */}
-          <div className="flex-1 h-[calc(600px-64px-72px)] overflow-y-auto p-4 space-y-4">
+      {/* Modal Container */}
+      <div className="relative flex flex-col w-full h-full md:h-auto md:max-h-[600px] bg-[var(--background-card)] md:rounded-2xl shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div
+          className="flex-shrink-0 flex items-center justify-between px-4 py-3 md:py-3 bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] text-white cursor-pointer md:cursor-default"
+          onClick={() => {
+            if (window.innerWidth >= 768) setIsMinimized(!isMinimized);
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <Sparkle className="w-5 h-5" weight="fill" />
+            <span className="font-bold">사주 AI 상담</span>
+          </div>
+          <div className="flex items-center gap-1">
+            {/* 최소화 버튼 - 데스크톱에서만 */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsMinimized(!isMinimized);
+              }}
+              className="hidden md:block p-1.5 rounded-full hover:bg-white/20 transition-colors"
+            >
+              <CaretDown
+                className={`w-4 h-4 transition-transform ${
+                  isMinimized ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsOpen(false);
+              }}
+              className="p-2 rounded-full hover:bg-white/20 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {!isMinimized && (
+          <>
+            {/* Messages */}
+            <div
+              className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-4"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
             {messages.length === 0 && (
               <div className="space-y-4">
                 <div className="text-center py-4">
@@ -330,7 +370,8 @@ export function SajuChatPanel({ sajuContext, sajuResult, gender, locale = "ko" }
           <form
             id="chat-form"
             onSubmit={handleSubmit}
-            className="p-4 border-t border-[var(--border)]"
+            className="flex-shrink-0 p-4 border-t border-[var(--border)] bg-[var(--background-card)]"
+            style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
           >
             <div className="flex items-center gap-2">
               <input
@@ -350,8 +391,9 @@ export function SajuChatPanel({ sajuContext, sajuResult, gender, locale = "ko" }
               </button>
             </div>
           </form>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
