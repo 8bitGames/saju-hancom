@@ -3,11 +3,15 @@ import { createClient } from '@/lib/supabase/server';
 import Stripe from 'stripe';
 import { STRIPE_CONFIG } from '@/lib/stripe/config';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-02-24.acacia',
-});
+// Lazy initialization of Stripe to prevent build-time evaluation errors
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-02-24.acacia',
+  });
+}
 
 export async function POST(request: NextRequest) {
+  const stripe = getStripe();
   try {
     const supabase = await createClient();
 

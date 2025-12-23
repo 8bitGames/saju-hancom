@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 import type { Locale } from "@/lib/i18n/config";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
@@ -203,7 +202,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize Google GenAI
+    // Initialize Google GenAI (dynamic import to prevent build-time evaluation)
+    const { GoogleGenAI } = await import("@google/genai");
     const ai = new GoogleGenAI({
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || "",
     });

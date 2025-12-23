@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import { GoogleGenAI } from "@google/genai";
 import { google } from "@ai-sdk/google";
 import { streamText } from "ai";
 import {
@@ -135,6 +134,8 @@ export async function POST(request: NextRequest) {
       return result.toTextStreamResponse();
     }
 
+    // Dynamic import to prevent build-time evaluation
+    const { GoogleGenAI } = await import("@google/genai");
     const ai = new GoogleGenAI({ apiKey: geminiApiKey });
 
     const stream = new ReadableStream({

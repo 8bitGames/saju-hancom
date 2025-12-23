@@ -2,8 +2,17 @@ import type { Metadata } from 'next';
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://hansa.ai.kr';
 
+// Type definition for page metadata
+interface PageMetadataConfig {
+  title: string;
+  description: string;
+  keywords: string[];
+  canonical: string;
+  ogImage?: string;
+}
+
 // Page-specific metadata configurations
-export const pageMetadata = {
+export const pageMetadata: Record<string, PageMetadataConfig> = {
   // Saju (Four Pillars) page
   saju: {
     title: 'AI 사주팔자 분석 - 무료 사주 풀이',
@@ -112,11 +121,14 @@ export const pageMetadata = {
 
 // Generate metadata for a specific page
 export function generatePageMetadata(
-  pageKey: keyof typeof pageMetadata,
+  pageKey: string,
   locale: string = 'ko',
   overrides?: Partial<Metadata>
 ): Metadata {
   const page = pageMetadata[pageKey];
+  if (!page) {
+    throw new Error(`Page metadata not found for key: ${pageKey}`);
+  }
   const isKorean = locale === 'ko';
   const localePrefix = isKorean ? '' : `/${locale}`;
   const canonicalUrl = `${baseUrl}${localePrefix}${page.canonical}`;
@@ -158,7 +170,7 @@ export function generatePageMetadata(
 }
 
 // Helper to generate metadata with locale param
-export function createMetadataGenerator(pageKey: keyof typeof pageMetadata) {
+export function createMetadataGenerator(pageKey: string) {
   return async function generateMetadata({
     params,
   }: {

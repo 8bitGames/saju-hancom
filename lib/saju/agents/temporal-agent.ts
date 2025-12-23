@@ -8,7 +8,6 @@
  * - 시기 적절한 조언 포인트 도출
  */
 
-import { GoogleGenAI } from "@google/genai";
 import type { TemporalAgentInput, TemporalAgentOutput, Season } from "./types";
 import type { Element } from "../types";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
@@ -131,6 +130,8 @@ async function searchSeasonalInterests(
     };
   }
 
+  // Dynamic import to prevent build-time evaluation
+  const { GoogleGenAI } = await import("@google/genai");
   const ai = new GoogleGenAI({ apiKey });
 
   // 검색 쿼리 생성

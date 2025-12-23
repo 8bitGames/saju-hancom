@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
 
 /**
@@ -90,7 +89,8 @@ export async function POST(request: NextRequest) {
 
     const compatibilityType = type === "couple" ? "couple" : "work";
 
-    // Initialize Google GenAI
+    // Initialize Google GenAI (dynamic import to prevent build-time evaluation)
+    const { GoogleGenAI } = await import("@google/genai");
     const ai = new GoogleGenAI({
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || "",
     });

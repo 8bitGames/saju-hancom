@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 import {
   getDetailedFaceReadingSystemPrompt,
@@ -380,7 +379,8 @@ export async function POST(request: NextRequest) {
     // 성별에 따라 grooming/makeup 필드 조정
     const isFemale = gender === "female";
 
-    // GoogleGenAI 초기화
+    // GoogleGenAI 초기화 (dynamic import to prevent build-time evaluation)
+    const { GoogleGenAI } = await import("@google/genai");
     const ai = new GoogleGenAI({ apiKey });
 
     // Google Search grounding을 위한 검색 쿼리 생성
