@@ -130,6 +130,12 @@ export interface ElementScores {
   water: number;
 }
 
+/** 용신 결정 방법 */
+export type YongShinMethod = "johu" | "eokbu" | "basic";
+
+/** 일간 강약 */
+export type DayMasterStrength = "strong" | "weak" | "neutral";
+
 export interface ElementAnalysis {
   /** 오행 점수 (0-100 스케일) */
   scores: ElementScores;
@@ -139,8 +145,20 @@ export interface ElementAnalysis {
   lacking: Element[];
   /** 균형 상태 */
   balance: "balanced" | "unbalanced";
-  /** 용신 (필요한 오행) */
+  /** 용신 (필요한 오행) - 사주의 균형을 맞추는 핵심 오행 */
   yongShin?: Element;
+  /** 희신 (용신을 생하거나 돕는 오행) */
+  huiShin?: Element;
+  /** 기신 (용신을 극하는 해로운 오행) */
+  jiShin?: Element;
+  /** 구신 (기신을 생하는 오행) */
+  guShin?: Element;
+  /** 한신 (도움도 해도 안 되는 중립 오행) */
+  hanShin?: Element;
+  /** 용신 결정 방법 */
+  yongShinMethod?: YongShinMethod;
+  /** 일간 강약 판정 */
+  dayMasterStrength?: DayMasterStrength;
 }
 
 // ============================================================================

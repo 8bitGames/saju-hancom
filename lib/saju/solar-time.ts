@@ -5,8 +5,15 @@
  * 한국 표준시는 동경 135도 기준이지만,
  * 실제 위치에 따라 태양 시간이 다릅니다.
  *
- * 시차 = (표준경도 - 실제경도) × 4분/도
- * 서울(127도): (135 - 127) × 4 = 32분 빼야 함
+ * 진태양시 = 평균태양시 ± 경도보정 ± 균시차
+ *
+ * 1. 경도 보정: (표준경도 - 실제경도) × 4분/도
+ *    서울(127도): (135 - 127) × 4 = 32분 빼야 함
+ *
+ * 2. 균시차 (Equation of Time):
+ *    지구 공전궤도의 타원형과 자전축 기울기로 인한 시차
+ *    - 11월 3일경: 최대 +16.5분
+ *    - 2월 11일경: 최대 -14.5분
  */
 
 import {
@@ -22,10 +29,49 @@ export interface SolarTimeResult {
   adjusted: Date;
   /** 적용된 경도 */
   longitude: number;
-  /** 보정 시간 (분) */
+  /** 경도 보정 시간 (분) */
+  longitudeOffset: number;
+  /** 균시차 보정 시간 (분) */
+  equationOfTime: number;
+  /** 총 보정 시간 (분) */
   offsetMinutes: number;
   /** 표준시 기준 경도 */
   standardMeridian: number;
+}
+
+/**
+ * 균시차 (Equation of Time) 계산
+ *
+ * 지구 공전궤도의 이심률과 자전축 기울기로 인해
+ * 평균태양시와 진태양시 사이에 차이가 발생합니다.
+ *
+ * @param date - 날짜
+ * @returns 균시차 (분 단위, 양수면 진태양이 빠름)
+ *
+ * @example
+ * ```ts
+ * // 11월 3일경: 약 +16.5분
+ * calculateEquationOfTime(new Date(2024, 10, 3)); // ~16.5
+ *
+ * // 2월 11일경: 약 -14.5분
+ * calculateEquationOfTime(new Date(2024, 1, 11)); // ~-14.5
+ * ```
+ */
+export function calculateEquationOfTime(date: Date): number {
+  // 연중 일수 계산 (1월 1일 = 1)
+  const startOfYear = new Date(date.getFullYear(), 0, 1);
+  const diffMs = date.getTime() - startOfYear.getTime();
+  const dayOfYear = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+
+  // 균시차 공식 (Spencer 공식 기반 근사식)
+  // B = 360/365 × (N - 81) degrees
+  // EoT = 9.87 × sin(2B) - 7.53 × cos(B) - 1.5 × sin(B)
+  const B = (360 / 365) * (dayOfYear - 81) * (Math.PI / 180); // 라디안 변환
+
+  const equationOfTime =
+    9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+
+  return Math.round(equationOfTime * 10) / 10; // 소수점 1자리
 }
 
 /**
@@ -54,18 +100,28 @@ export function adjustToTrueSolarTime(
   // 1도당 4분의 시차
   const MINUTES_PER_DEGREE = 4;
 
-  // 경도 차이에 따른 보정 시간 (분)
-  const offsetMinutes = (standardMeridian - longitude) * MINUTES_PER_DEGREE;
+  // 1. 경도 보정: (표준경도 - 실제경도) × 4분/도
+  const longitudeOffset = (standardMeridian - longitude) * MINUTES_PER_DEGREE;
+
+  // 2. 균시차 계산 (지구 공전궤도 이심률 + 자전축 기울기)
+  const equationOfTime = calculateEquationOfTime(date);
+
+  // 3. 총 보정 시간 = 경도 보정 - 균시차
+  // 진태양시 = 평균태양시 - 경도보정 + 균시차
+  // 따라서 표준시에서 진태양시로 변환: 표준시 - 경도보정 + 균시차
+  const totalOffset = longitudeOffset - equationOfTime;
 
   // 보정된 시간 계산
   const adjusted = new Date(date);
-  adjusted.setMinutes(adjusted.getMinutes() - Math.round(offsetMinutes));
+  adjusted.setMinutes(adjusted.getMinutes() - Math.round(totalOffset));
 
   return {
     original: date,
     adjusted,
     longitude,
-    offsetMinutes: Math.round(offsetMinutes),
+    longitudeOffset: Math.round(longitudeOffset * 10) / 10,
+    equationOfTime,
+    offsetMinutes: Math.round(totalOffset),
     standardMeridian,
   };
 }
