@@ -17,6 +17,7 @@ export default function HomePage() {
       description: t("cards.saju.description"),
       href: "/saju",
       video: "/output-loop/saju-four-pillars-loop.mp4",
+      poster: "/images/saju-cover.jpg",
       theme: {
         primary: "#1a1033",
         secondary: "#2d1b4e",
@@ -30,6 +31,7 @@ export default function HomePage() {
       description: t("cards.compatibility.description"),
       href: "/compatibility",
       video: "/output-loop/workplace-fortune-loop.mp4",
+      poster: "/images/workplace-cover.jpg",
       theme: {
         primary: "#0c1929",
         secondary: "#162d4a",
@@ -43,6 +45,7 @@ export default function HomePage() {
       description: t("cards.couple.description"),
       href: "/couple",
       video: "/output-loop/love-compatibility-loop.mp4",
+      poster: "/images/compatibility-cover.jpg",
       theme: {
         primary: "#1a0a1a",
         secondary: "#2d1533",
@@ -56,6 +59,7 @@ export default function HomePage() {
       description: t("cards.faceReading.description"),
       href: "/face-reading",
       video: "/output-loop/face-reading-loop.mp4",
+      poster: "/images/face-reading-cover.jpg",
       theme: {
         primary: "#1f1a1a",
         secondary: "#3d2929",
@@ -69,6 +73,7 @@ export default function HomePage() {
       description: t("cards.history.description"),
       href: "/history",
       video: "/output-loop/saju-history-loop.mp4",
+      poster: "/images/history-cover.jpg",
       theme: {
         primary: "#0f1f1a",
         secondary: "#1a3329",
