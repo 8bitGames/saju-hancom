@@ -196,45 +196,94 @@ ${searchQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}
       tools: [{ googleSearch: {} }],
     } : {};
 
-    // Call Gemini API
-    const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      config,
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              text: `${getDetailSystemPrompt(locale, currentYear)}\n\n${prompt}`,
-            },
-          ],
-        },
-      ],
+    // Streaming response using Server-Sent Events
+    const encoder = new TextEncoder();
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          // Call Gemini API with streaming
+          const response = await ai.models.generateContentStream({
+            model: GEMINI_MODEL,
+            config,
+            contents: [
+              {
+                role: "user",
+                parts: [
+                  {
+                    text: `${getDetailSystemPrompt(locale, currentYear)}\n\n${prompt}`,
+                  },
+                ],
+              },
+            ],
+          });
+
+          let fullText = "";
+
+          // Stream text chunks as they arrive
+          for await (const chunk of response) {
+            const text = chunk.text || "";
+            if (text) {
+              fullText += text;
+              // Send text chunk as SSE
+              const data = JSON.stringify({ type: "text", content: text });
+              controller.enqueue(encoder.encode(`data: ${data}\n\n`));
+            }
+
+            // Check for grounding metadata in the final chunk
+            const groundingMetadata = chunk.candidates?.[0]?.groundingMetadata;
+            if (groundingMetadata) {
+              const webSearchQueries = groundingMetadata.webSearchQueries || [];
+              const groundingChunks = groundingMetadata.groundingChunks || [];
+
+              const sources = groundingChunks
+                .filter((c: { web?: { uri?: string; title?: string } }) => c.web?.uri)
+                .map((c: { web?: { uri?: string; title?: string } }) => ({
+                  url: c.web?.uri,
+                  title: c.web?.title || "",
+                }))
+                .slice(0, 5);
+
+              // Send grounding metadata
+              if (sources.length > 0 || webSearchQueries.length > 0) {
+                const metaData = JSON.stringify({
+                  type: "metadata",
+                  grounded: needsGrounding,
+                  groundingSources: sources,
+                  searchQueries: webSearchQueries,
+                });
+                controller.enqueue(encoder.encode(`data: ${metaData}\n\n`));
+              }
+            }
+          }
+
+          // Send completion event with full content
+          const doneData = JSON.stringify({
+            type: "done",
+            category,
+            fullContent: fullText,
+          });
+          controller.enqueue(encoder.encode(`data: ${doneData}\n\n`));
+
+          controller.close();
+        } catch (error) {
+          console.error("Streaming error:", error);
+          const errorData = JSON.stringify({
+            type: "error",
+            message: error instanceof Error ? error.message : "스트리밍 오류가 발생했습니다.",
+          });
+          controller.enqueue(encoder.encode(`data: ${errorData}\n\n`));
+          controller.close();
+        }
+      },
     });
 
-    // Extract text from response
-    const responseText = response.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-    // Extract grounding metadata if available
-    const groundingMetadata = response.candidates?.[0]?.groundingMetadata;
-    const webSearchQueries = groundingMetadata?.webSearchQueries || [];
-    const groundingChunks = groundingMetadata?.groundingChunks || [];
-
-    // Extract source URLs from grounding chunks
-    const sources = groundingChunks
-      .filter((chunk: { web?: { uri?: string; title?: string } }) => chunk.web?.uri)
-      .map((chunk: { web?: { uri?: string; title?: string } }) => ({
-        url: chunk.web?.uri,
-        title: chunk.web?.title || "",
-      }))
-      .slice(0, 5); // Limit to 5 sources
-
-    return NextResponse.json({
-      content: responseText,
-      category,
-      grounded: needsGrounding,
-      groundingSources: sources,
-      searchQueries: webSearchQueries,
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+      },
     });
   } catch (error) {
     console.error("Saju detail analysis error:", error);

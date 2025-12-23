@@ -122,7 +122,7 @@ function PersonInputSection({
               type="button"
               onClick={() => onChange("gender", g)}
               className={cn(
-                "h-10 rounded-xl font-medium text-sm transition-all duration-200",
+                "h-12 rounded-xl font-medium text-sm transition-all duration-200",
                 person.gender === g
                   ? "text-white"
                   : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
@@ -148,7 +148,7 @@ function PersonInputSection({
               type="button"
               onClick={() => onChange("isLunar", type === "lunar")}
               className={cn(
-                "h-10 rounded-xl font-medium text-sm transition-all duration-200",
+                "h-12 rounded-xl font-medium text-sm transition-all duration-200",
                 (type === "lunar") === person.isLunar
                   ? "text-white"
                   : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
@@ -169,7 +169,7 @@ function PersonInputSection({
             <select
               value={person.year}
               onChange={(e) => onChange("year", parseInt(e.target.value))}
-              className="w-full h-10 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
+              className="w-full h-12 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
               style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
             >
               {years.map((y) => (
@@ -185,7 +185,7 @@ function PersonInputSection({
           <select
             value={person.month}
             onChange={(e) => onChange("month", parseInt(e.target.value))}
-            className="h-10 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
+            className="h-12 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
             style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
           >
             {months.map((m) => (
@@ -198,7 +198,7 @@ function PersonInputSection({
             <select
               value={person.day}
               onChange={(e) => onChange("day", parseInt(e.target.value))}
-              className="w-full h-10 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
+              className="w-full h-12 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
               style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
             >
               {days.map((d) => (
@@ -224,7 +224,7 @@ function PersonInputSection({
           <select
             value={person.hour}
             onChange={(e) => onChange("hour", parseInt(e.target.value))}
-            className="h-10 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
+            className="h-12 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
             style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
           >
             {HOURS.map((h) => (
@@ -236,7 +236,7 @@ function PersonInputSection({
           <select
             value={person.minute}
             onChange={(e) => onChange("minute", parseInt(e.target.value))}
-            className="h-10 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
+            className="h-12 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
             style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
           >
             {MINUTES.map((m) => (
@@ -257,7 +257,7 @@ function PersonInputSection({
         <select
           value={person.city}
           onChange={(e) => onChange("city", e.target.value)}
-          className="w-full h-10 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
+          className="w-full h-12 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
           style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
         >
           {CITIES.map((city) => (
@@ -407,14 +407,14 @@ export function CoupleForm() {
           <Heart className="w-5 h-5 text-[#f472b6]" weight="fill" />
           <h2 className="text-base font-bold text-white">관계</h2>
         </div>
-        <div className="grid grid-cols-4 gap-1.5">
+        <div className="grid grid-cols-2 gap-2">
           {RELATION_TYPES.map((type) => (
             <button
               key={type.value}
               type="button"
               onClick={() => setFormData((prev) => ({ ...prev, relationType: type.value }))}
               className={cn(
-                "h-9 rounded-xl font-medium text-xs transition-all duration-200",
+                "h-12 rounded-xl font-medium text-sm transition-all duration-200",
                 formData.relationType === type.value
                   ? "bg-[#ec4899] text-white"
                   : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"

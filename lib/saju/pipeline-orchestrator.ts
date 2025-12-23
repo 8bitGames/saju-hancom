@@ -1,6 +1,11 @@
 /**
  * 사주 분석 파이프라인 오케스트레이터
- * 6단계 분석을 순차적으로 실행하고 결과를 축적
+ * 6단계 분석을 실행하고 결과를 축적
+ *
+ * 최적화: Steps 3, 4, 5는 Step 2 완료 후 병렬 실행
+ * - Step 3 (십성): step1, step2 필요
+ * - Step 4 (신살): step1만 필요
+ * - Step 5 (대운/세운): step1, step2 필요
  */
 
 import {
@@ -134,40 +139,42 @@ export async function runSajuPipeline(
     throw new Error(`Step 2 실패: ${errorMessage}`);
   }
 
-  // Step 3: 십성 분석
+  // Steps 3, 4, 5: 병렬 실행 (모두 step1, step2만 필요)
   notifyStep(3, "start");
-  let step3: Step3Result;
-  try {
-    step3 = await analyzeStep3_TenGods(input, step1, step2);
-    notifyStep(3, "complete", step3);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    notifyStep(3, "error", undefined, errorMessage);
-    throw new Error(`Step 3 실패: ${errorMessage}`);
-  }
-
-  // Step 4: 신살 분석 (Step 2 이후 병렬 실행 가능하지만 순차로 구현)
   notifyStep(4, "start");
-  let step4: Step4Result;
-  try {
-    step4 = await analyzeStep4_SpecialStars(input, step1);
-    notifyStep(4, "complete", step4);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    notifyStep(4, "error", undefined, errorMessage);
-    throw new Error(`Step 4 실패: ${errorMessage}`);
-  }
-
-  // Step 5: 대운/세운 분석
   notifyStep(5, "start");
+
+  let step3: Step3Result;
+  let step4: Step4Result;
   let step5: Step5Result;
+
   try {
-    step5 = await analyzeStep5_FortuneTiming(input, step1, step2);
-    notifyStep(5, "complete", step5);
+    // 병렬 실행
+    const [result3, result4, result5] = await Promise.all([
+      analyzeStep3_TenGods(input, step1, step2).then((result) => {
+        notifyStep(3, "complete", result);
+        return result;
+      }),
+      analyzeStep4_SpecialStars(input, step1).then((result) => {
+        notifyStep(4, "complete", result);
+        return result;
+      }),
+      analyzeStep5_FortuneTiming(input, step1, step2).then((result) => {
+        notifyStep(5, "complete", result);
+        return result;
+      }),
+    ]);
+
+    step3 = result3;
+    step4 = result4;
+    step5 = result5;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    // 어떤 단계에서 실패했는지 알 수 없으므로 일반적인 에러 메시지
+    notifyStep(3, "error", undefined, errorMessage);
+    notifyStep(4, "error", undefined, errorMessage);
     notifyStep(5, "error", undefined, errorMessage);
-    throw new Error(`Step 5 실패: ${errorMessage}`);
+    throw new Error(`Step 3/4/5 병렬 실행 실패: ${errorMessage}`);
   }
 
   // Step 6: 종합 분석
@@ -290,7 +297,7 @@ export async function* runSajuPipelineGenerator(
     throw error;
   }
 
-  // Step 3
+  // Steps 3, 4, 5: 병렬 실행 시작
   yield {
     type: "step_start",
     step: 3,
@@ -298,10 +305,35 @@ export async function* runSajuPipelineGenerator(
     stepIcon: PIPELINE_STEPS[2].icon,
     progress: createProgress(3),
   };
+  yield {
+    type: "step_start",
+    step: 4,
+    stepName: PIPELINE_STEPS[3].name,
+    stepIcon: PIPELINE_STEPS[3].icon,
+    progress: createProgress(4),
+  };
+  yield {
+    type: "step_start",
+    step: 5,
+    stepName: PIPELINE_STEPS[4].name,
+    stepIcon: PIPELINE_STEPS[4].icon,
+    progress: createProgress(5),
+  };
 
   let step3: Step3Result;
-  try {
-    step3 = await analyzeStep3_TenGods(input, step1, step2);
+  let step4: Step4Result;
+  let step5: Step5Result;
+
+  // 병렬 실행 with Promise.allSettled for better error handling
+  const [result3, result4, result5] = await Promise.allSettled([
+    analyzeStep3_TenGods(input, step1, step2),
+    analyzeStep4_SpecialStars(input, step1),
+    analyzeStep5_FortuneTiming(input, step1, step2),
+  ]);
+
+  // Step 3 결과 처리
+  if (result3.status === "fulfilled") {
+    step3 = result3.value;
     completedSteps.push({
       step: 3,
       name: PIPELINE_STEPS[2].name,
@@ -315,30 +347,21 @@ export async function* runSajuPipelineGenerator(
       data: step3,
       progress: createProgress(3),
     };
-  } catch (error) {
+  } else {
     yield {
       type: "step_error",
       step: 3,
       stepName: PIPELINE_STEPS[2].name,
       stepIcon: PIPELINE_STEPS[2].icon,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: result3.reason instanceof Error ? result3.reason.message : "Unknown error",
       progress: createProgress(3),
     };
-    throw error;
+    throw result3.reason;
   }
 
-  // Step 4
-  yield {
-    type: "step_start",
-    step: 4,
-    stepName: PIPELINE_STEPS[3].name,
-    stepIcon: PIPELINE_STEPS[3].icon,
-    progress: createProgress(4),
-  };
-
-  let step4: Step4Result;
-  try {
-    step4 = await analyzeStep4_SpecialStars(input, step1);
+  // Step 4 결과 처리
+  if (result4.status === "fulfilled") {
+    step4 = result4.value;
     completedSteps.push({
       step: 4,
       name: PIPELINE_STEPS[3].name,
@@ -352,30 +375,21 @@ export async function* runSajuPipelineGenerator(
       data: step4,
       progress: createProgress(4),
     };
-  } catch (error) {
+  } else {
     yield {
       type: "step_error",
       step: 4,
       stepName: PIPELINE_STEPS[3].name,
       stepIcon: PIPELINE_STEPS[3].icon,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: result4.reason instanceof Error ? result4.reason.message : "Unknown error",
       progress: createProgress(4),
     };
-    throw error;
+    throw result4.reason;
   }
 
-  // Step 5
-  yield {
-    type: "step_start",
-    step: 5,
-    stepName: PIPELINE_STEPS[4].name,
-    stepIcon: PIPELINE_STEPS[4].icon,
-    progress: createProgress(5),
-  };
-
-  let step5: Step5Result;
-  try {
-    step5 = await analyzeStep5_FortuneTiming(input, step1, step2);
+  // Step 5 결과 처리
+  if (result5.status === "fulfilled") {
+    step5 = result5.value;
     completedSteps.push({
       step: 5,
       name: PIPELINE_STEPS[4].name,
@@ -389,16 +403,16 @@ export async function* runSajuPipelineGenerator(
       data: step5,
       progress: createProgress(5),
     };
-  } catch (error) {
+  } else {
     yield {
       type: "step_error",
       step: 5,
       stepName: PIPELINE_STEPS[4].name,
       stepIcon: PIPELINE_STEPS[4].icon,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: result5.reason instanceof Error ? result5.reason.message : "Unknown error",
       progress: createProgress(5),
     };
-    throw error;
+    throw result5.reason;
   }
 
   // Step 6

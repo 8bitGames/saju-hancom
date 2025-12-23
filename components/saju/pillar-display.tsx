@@ -5,11 +5,14 @@ import type { Pillar, Element } from "@/lib/saju/types";
 import {
   STEM_KOREAN,
   STEM_ELEMENTS,
+  STEM_DESCRIPTIONS,
   BRANCH_KOREAN,
   BRANCH_ANIMALS,
   BRANCH_ELEMENTS,
+  BRANCH_DESCRIPTIONS,
   ELEMENT_KOREAN,
 } from "@/lib/saju/constants";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface PillarDisplayProps {
   pillar: Pillar;
@@ -66,60 +69,106 @@ export function PillarDisplay({
         )}
       >
 
-        {/* Stem (Heavenly) */}
-        <div className="flex flex-col items-center">
-          <div
-            className={cn(
-              "w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold",
-              elementColorMap[stemElement],
-              stemElement === "metal" || stemElement === "earth"
-                ? "text-[#0f172a]"
-                : "text-white"
-            )}
+        {/* Stem (Heavenly) - 탭하면 설명 표시 */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button type="button" className="flex flex-col items-center focus:outline-none active:scale-95 transition-transform">
+              <div
+                className={cn(
+                  "w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold",
+                  elementColorMap[stemElement],
+                  stemElement === "metal" || stemElement === "earth"
+                    ? "text-[#0f172a]"
+                    : "text-white"
+                )}
+              >
+                {pillar.gan}
+              </div>
+              <span className="text-xs text-white/60 mt-1">
+                {stemKorean}
+              </span>
+              <span
+                className={cn(
+                  "text-[10px] font-medium",
+                  elementTextColorMap[stemElement]
+                )}
+              >
+                {ELEMENT_KOREAN[stemElement]}
+              </span>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+            sideOffset={8}
           >
-            {pillar.gan}
-          </div>
-          <span className="text-xs text-white/60 mt-1">
-            {stemKorean}
-          </span>
-          <span
-            className={cn(
-              "text-[10px] font-medium",
-              elementTextColorMap[stemElement]
-            )}
-          >
-            {ELEMENT_KOREAN[stemElement]}
-          </span>
-        </div>
+            <div className="flex items-start gap-2">
+              <div
+                className={cn(
+                  "w-6 h-6 rounded flex-shrink-0 flex items-center justify-center text-sm font-bold",
+                  elementColorMap[stemElement],
+                  stemElement === "metal" || stemElement === "earth"
+                    ? "text-[#0f172a]"
+                    : "text-white"
+                )}
+              >
+                {pillar.gan}
+              </div>
+              <p className="text-sm leading-relaxed">{STEM_DESCRIPTIONS[pillar.gan]}</p>
+            </div>
+          </PopoverContent>
+        </Popover>
 
         {/* Divider */}
         <div className="w-full h-px bg-white/10 my-1" />
 
-        {/* Branch (Earthly) */}
-        <div className="flex flex-col items-center">
-          <div
-            className={cn(
-              "w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold",
-              elementColorMap[branchElement],
-              branchElement === "metal" || branchElement === "earth"
-                ? "text-[#0f172a]"
-                : "text-white"
-            )}
+        {/* Branch (Earthly) - 탭하면 설명 표시 */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button type="button" className="flex flex-col items-center focus:outline-none active:scale-95 transition-transform">
+              <div
+                className={cn(
+                  "w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold",
+                  elementColorMap[branchElement],
+                  branchElement === "metal" || branchElement === "earth"
+                    ? "text-[#0f172a]"
+                    : "text-white"
+                )}
+              >
+                {pillar.zhi}
+              </div>
+              <span className="text-xs text-white/60 mt-1">
+                {branchKorean}
+              </span>
+              <span
+                className={cn(
+                  "text-[10px] font-medium",
+                  elementTextColorMap[branchElement]
+                )}
+              >
+                {animal}
+              </span>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+            sideOffset={8}
           >
-            {pillar.zhi}
-          </div>
-          <span className="text-xs text-white/60 mt-1">
-            {branchKorean}
-          </span>
-          <span
-            className={cn(
-              "text-[10px] font-medium",
-              elementTextColorMap[branchElement]
-            )}
-          >
-            {animal}
-          </span>
-        </div>
+            <div className="flex items-start gap-2">
+              <div
+                className={cn(
+                  "w-6 h-6 rounded flex-shrink-0 flex items-center justify-center text-sm font-bold",
+                  elementColorMap[branchElement],
+                  branchElement === "metal" || branchElement === "earth"
+                    ? "text-[#0f172a]"
+                    : "text-white"
+                )}
+              >
+                {pillar.zhi}
+              </div>
+              <p className="text-sm leading-relaxed">{BRANCH_DESCRIPTIONS[pillar.zhi]}</p>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );

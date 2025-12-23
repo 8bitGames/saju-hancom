@@ -96,37 +96,72 @@ const CATEGORY_LOADING_CONFIG: Record<string, {
 // localStorage 키
 const DETAIL_STORAGE_KEY = "saju_detail_analysis";
 
+// 사주 컨텍스트에서 고유 식별자 생성 (생년월일+성별 기반)
+function generateSajuFingerprint(sajuContext: string, gender: string): string {
+  // 간단한 해시 생성: sajuContext의 첫 200자 + gender
+  const contextPart = sajuContext.slice(0, 200);
+  let hash = 0;
+  const str = contextPart + gender;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash).toString(36);
+}
+
+// 캐시 데이터 구조
+interface DetailCacheData {
+  fingerprint: string;
+  analyses: Record<string, string>;
+}
+
 // 상세 분석 저장/로드 유틸리티 (외부에서 호출 가능)
 export function getDetailAnalysisFromStorage(): Record<string, string> {
   if (typeof window === "undefined") return {};
   try {
     const saved = localStorage.getItem(DETAIL_STORAGE_KEY);
     if (!saved) return {};
-    return JSON.parse(saved) as Record<string, string>;
+    const cacheData = JSON.parse(saved) as DetailCacheData;
+    return cacheData.analyses || {};
   } catch {
     return {};
   }
 }
 
-function getDetailFromStorage(category: string): string | null {
+function getDetailFromStorage(category: string, fingerprint: string): string | null {
   if (typeof window === "undefined") return null;
   try {
     const saved = localStorage.getItem(DETAIL_STORAGE_KEY);
     if (!saved) return null;
-    const data: Record<string, string> = JSON.parse(saved);
-    return data[category] || null;
+    const cacheData = JSON.parse(saved) as DetailCacheData;
+    // 지문이 다르면 다른 사람이므로 캐시 무효화
+    if (cacheData.fingerprint !== fingerprint) {
+      return null;
+    }
+    return cacheData.analyses?.[category] || null;
   } catch {
     return null;
   }
 }
 
-function saveDetailToStorage(category: string, content: string): void {
+function saveDetailToStorage(category: string, content: string, fingerprint: string): void {
   if (typeof window === "undefined") return;
   try {
     const saved = localStorage.getItem(DETAIL_STORAGE_KEY);
-    const data: Record<string, string> = saved ? JSON.parse(saved) : {};
-    data[category] = content;
-    localStorage.setItem(DETAIL_STORAGE_KEY, JSON.stringify(data));
+    let cacheData: DetailCacheData = { fingerprint, analyses: {} };
+
+    if (saved) {
+      const existing = JSON.parse(saved) as DetailCacheData;
+      // 지문이 같으면 기존 데이터 유지, 다르면 새로 시작
+      if (existing.fingerprint === fingerprint) {
+        cacheData = existing;
+      }
+    }
+
+    cacheData.fingerprint = fingerprint;
+    cacheData.analyses[category] = content;
+    localStorage.setItem(DETAIL_STORAGE_KEY, JSON.stringify(cacheData));
   } catch {
     // 저장 실패 무시
   }
@@ -250,6 +285,7 @@ export function DetailAnalysisModal({
   const fetchDetailAnalysis = async () => {
     setIsLoading(true);
     setError(null);
+    setContent(""); // 스트리밍 시작 전 초기화
 
     try {
       const response = await fetch("/api/saju/detail", {
@@ -262,13 +298,51 @@ export function DetailAnalysisModal({
         throw new Error("상세 분석을 불러오는데 실패했습니다.");
       }
 
-      const data = await response.json();
-      setContent(data.content);
-      // localStorage에 저장
-      saveDetailToStorage(category, data.content);
+      // 스트리밍 응답 처리
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error("스트리밍을 지원하지 않습니다.");
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let fullContent = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        // SSE 이벤트 파싱
+        const lines = buffer.split("\n\n");
+        buffer = lines.pop() || ""; // 마지막 불완전한 청크는 버퍼에 유지
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              if (data.type === "text") {
+                // 텍스트 청크 - 실시간으로 content에 추가
+                fullContent += data.content;
+                setContent(fullContent);
+                setIsLoading(false); // 첫 청크가 오면 로딩 상태 해제
+              } else if (data.type === "done") {
+                // 완료 - localStorage에 저장 (fingerprint 포함)
+                const fingerprint = generateSajuFingerprint(sajuContext, gender);
+                saveDetailToStorage(category, data.fullContent, fingerprint);
+              } else if (data.type === "error") {
+                throw new Error(data.message);
+              }
+            } catch {
+              // JSON 파싱 실패 무시
+            }
+          }
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "오류가 발생했습니다.");
-    } finally {
       setIsLoading(false);
     }
   };
@@ -277,15 +351,16 @@ export function DetailAnalysisModal({
   useEffect(() => {
     if (isOpen && !initialized) {
       setInitialized(true);
-      // localStorage에서 먼저 확인
-      const savedContent = getDetailFromStorage(category);
+      // localStorage에서 먼저 확인 (fingerprint로 동일인 여부 검증)
+      const fingerprint = generateSajuFingerprint(sajuContext, gender);
+      const savedContent = getDetailFromStorage(category, fingerprint);
       if (savedContent) {
         setContent(savedContent);
       } else {
         fetchDetailAnalysis();
       }
     }
-  }, [isOpen, initialized, category]);
+  }, [isOpen, initialized, category, sajuContext, gender]);
 
   // 카테고리 변경 시 초기화
   useEffect(() => {

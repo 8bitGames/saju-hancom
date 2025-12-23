@@ -53,10 +53,10 @@ export default function MainLayout({
         <div className="fixed top-4 sm:top-6 left-3 sm:left-6 z-50 flex items-center gap-2 sm:gap-3">
           <button
             onClick={() => router.back()}
-            className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
             aria-label="Go back"
           >
-            <CaretLeft className="w-4 h-4 sm:w-5 sm:h-5" weight="bold" />
+            <CaretLeft className="w-5 h-5" weight="bold" />
           </button>
           <button
             onClick={() => router.push("/")}
@@ -70,20 +70,20 @@ export default function MainLayout({
         </div>
 
         {/* Top Right Controls */}
-        <div className="fixed top-4 sm:top-6 right-3 sm:right-6 z-50 flex items-center gap-1.5 sm:gap-3">
+        <div className="fixed top-4 sm:top-6 right-3 sm:right-6 z-50 flex items-center gap-2">
           <button
             onClick={() => setIsCompanyModalOpen(true)}
-            className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
             aria-label="About"
           >
-            <Buildings className="w-4 h-4 sm:w-5 sm:h-5" weight="bold" />
+            <Buildings className="w-5 h-5" weight="bold" />
           </button>
           <button
             onClick={() => router.push("/history")}
-            className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
             aria-label="History"
           >
-            <ClockCounterClockwise className="w-4 h-4 sm:w-5 sm:h-5" weight="bold" />
+            <ClockCounterClockwise className="w-5 h-5" weight="bold" />
           </button>
           <LanguageToggle />
         </div>

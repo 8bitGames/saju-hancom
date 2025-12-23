@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import type { TenGodSummary, TenGod } from "@/lib/saju/types";
 import { TEN_GOD_INFO } from "@/lib/saju/constants";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface TenGodDisplayProps {
   summary: TenGodSummary;
@@ -77,12 +78,29 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {summary.dominant.map((god) => (
-                    <span
-                      key={god}
-                      className="px-2 py-0.5 rounded-full bg-[#22c55e]/20 text-[#22c55e] text-xs"
-                    >
-                      {TEN_GOD_INFO[god].korean}
-                    </span>
+                    <Popover key={god}>
+                      <PopoverTrigger asChild>
+                        <button
+                          type="button"
+                          className="px-2 py-0.5 rounded-full bg-[#22c55e]/20 text-[#22c55e] text-xs hover:bg-[#22c55e]/30 active:bg-[#22c55e]/40 transition-colors"
+                        >
+                          {TEN_GOD_INFO[god].korean}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+                        sideOffset={8}
+                      >
+                        <div className="space-y-1">
+                          <p className="font-medium text-sm">
+                            {TEN_GOD_INFO[god].korean} ({TEN_GOD_INFO[god].hanja})
+                          </p>
+                          <p className="text-xs text-white/70">
+                            {TEN_GOD_INFO[god].description}
+                          </p>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   ))}
                 </div>
               </div>
@@ -94,12 +112,29 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {summary.lacking.map((god) => (
-                    <span
-                      key={god}
-                      className="px-2 py-0.5 rounded-full bg-[#f97316]/20 text-[#f97316] text-xs"
-                    >
-                      {TEN_GOD_INFO[god].korean}
-                    </span>
+                    <Popover key={god}>
+                      <PopoverTrigger asChild>
+                        <button
+                          type="button"
+                          className="px-2 py-0.5 rounded-full bg-[#f97316]/20 text-[#f97316] text-xs hover:bg-[#f97316]/30 active:bg-[#f97316]/40 transition-colors"
+                        >
+                          {TEN_GOD_INFO[god].korean}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+                        sideOffset={8}
+                      >
+                        <div className="space-y-1">
+                          <p className="font-medium text-sm">
+                            {TEN_GOD_INFO[god].korean} ({TEN_GOD_INFO[god].hanja})
+                          </p>
+                          <p className="text-xs text-white/70">
+                            {TEN_GOD_INFO[god].description}
+                          </p>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   ))}
                 </div>
               </div>

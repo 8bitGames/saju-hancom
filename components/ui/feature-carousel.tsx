@@ -163,17 +163,17 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
         </div>
 
         {/* Top Right Controls */}
-        <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-2">
           <button
             onClick={() => setIsCompanyModalOpen(true)}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
             aria-label="About"
           >
             <Buildings className="w-5 h-5" weight="bold" />
           </button>
           <button
             onClick={() => router.push("/history")}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
             aria-label="History"
           >
             <ClockCounterClockwise className="w-5 h-5" weight="bold" />

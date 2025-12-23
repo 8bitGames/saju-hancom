@@ -148,7 +148,7 @@ export default function DeckPage() {
         <button
           onClick={prevSlide}
           disabled={currentSlide === 0}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-all hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-all hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
         >
           <CaretLeft size={20} weight="bold" className="text-white" />
         </button>
@@ -177,7 +177,7 @@ export default function DeckPage() {
         <button
           onClick={nextSlide}
           disabled={currentSlide === slides.length - 1}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-all hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-all hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
         >
           <CaretRight size={20} weight="bold" className="text-white" />
         </button>
@@ -196,7 +196,7 @@ export default function DeckPage() {
       {/* Home Button */}
       <a
         href="/"
-        className="absolute left-6 top-6 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-all hover:bg-white/20"
+        className="absolute left-6 top-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-all hover:bg-white/20"
       >
         <House size={20} className="text-white" />
       </a>
