@@ -37,9 +37,40 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
   const router = useRouter();
   const t = useTranslations("header");
   const locale = useLocale();
+
+  // Handle mobile viewport height (accounts for browser chrome)
+  useEffect(() => {
+    const updateViewportHeight = () => {
+      // Use visualViewport for more accurate height on iOS Chrome/Safari
+      const height = window.visualViewport?.height || window.innerHeight;
+      setViewportHeight(height);
+    };
+
+    updateViewportHeight();
+
+    // Listen to multiple events for cross-browser compatibility
+    window.addEventListener("resize", updateViewportHeight);
+    window.addEventListener("orientationchange", updateViewportHeight);
+
+    // visualViewport resize is most reliable on iOS
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", updateViewportHeight);
+      window.visualViewport.addEventListener("scroll", updateViewportHeight);
+    }
+
+    return () => {
+      window.removeEventListener("resize", updateViewportHeight);
+      window.removeEventListener("orientationchange", updateViewportHeight);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", updateViewportHeight);
+        window.visualViewport.removeEventListener("scroll", updateViewportHeight);
+      }
+    };
+  }, []);
 
   // Detect which card is in view (horizontal scroll)
   useEffect(() => {
@@ -82,14 +113,14 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
     <>
       {/*
         Stars Background Layer
-        - Uses fixed large height (not viewport-based) for iOS Safari
-        - 1200px minimum covers all phone screens including URL bar states
+        - Anchored to bottom to ensure coverage on iOS Safari
+        - Extends upward from bottom to cover entire screen
       */}
       <div
-        className="fixed top-0 left-0 right-0 z-0 pointer-events-none overflow-hidden"
+        className="fixed left-0 right-0 z-0 pointer-events-none overflow-hidden"
         style={{
-          height: '1200px',
-          minHeight: '100vh',
+          top: '-100px',
+          bottom: 0,
           background: '#0f0a1a',
         }}
       >
@@ -114,7 +145,10 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
         }}
       />
 
-      <div className={cn("relative h-screen h-dvh w-full", className)}>
+      <div
+        className={cn("relative w-full", className)}
+        style={{ height: viewportHeight ? `${viewportHeight}px` : "100dvh" }}
+      >
         {/* Branding - Top Left */}
         <div className="fixed top-6 left-6 z-50">
           <span
@@ -155,8 +189,9 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
         {/* Horizontal Cards Container - horizontal scroll only */}
         <div
           ref={containerRef}
-          className="relative z-10 h-screen h-dvh flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden scrollbar-hide"
+          className="relative z-10 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden scrollbar-hide"
           style={{
+            height: viewportHeight ? `${viewportHeight}px` : "100dvh",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
             touchAction: "pan-x",
@@ -165,12 +200,19 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
           {cards.map((card, index) => (
             <div
               key={card.id}
-              className="w-screen h-screen h-dvh flex-shrink-0 snap-center flex items-center justify-center px-4 pt-16 pb-12"
+              className="w-screen flex-shrink-0 snap-center flex items-end justify-center px-4 pb-safe"
+              style={{
+                height: viewportHeight ? `${viewportHeight}px` : "100dvh",
+                paddingTop: "80px",
+                paddingBottom: "40px",
+              }}
             >
               <div
                 onClick={() => handleCardClick(card.href)}
-                className="relative w-full max-w-sm h-[85vh] max-h-[780px] rounded-3xl overflow-hidden cursor-pointer group transition-all duration-500 hover:scale-[1.02]"
+                className="relative w-full max-w-sm rounded-3xl overflow-hidden cursor-pointer group transition-all duration-500 hover:scale-[1.02]"
                 style={{
+                  height: viewportHeight ? `${Math.min(viewportHeight - 104, 720)}px` : "calc(100dvh - 104px)",
+                  maxHeight: "720px",
                   boxShadow: `0 25px 60px -15px ${activeTheme?.accent}50, 0 10px 30px -10px rgba(0,0,0,0.5)`,
                 }}
               >
@@ -239,7 +281,7 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
                       boxShadow: `0 4px 15px ${card.theme.accent}40`,
                     }}
                   >
-                    <span>{t("start")}</span>
+                    <span>{card.id === "history" ? t("view") : t("start")}</span>
                     <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
                 </div>
@@ -256,10 +298,15 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
           ))}
         </div>
 
-        {/* Hide scrollbar CSS */}
+        {/* Hide scrollbar CSS and safe area support */}
         <style jsx global>{`
           .scrollbar-hide::-webkit-scrollbar {
             display: none;
+          }
+          @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .pb-safe {
+              padding-bottom: max(40px, env(safe-area-inset-bottom)) !important;
+            }
           }
         `}</style>
       </div>
