@@ -844,6 +844,8 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
         categoryTitle={modalState.title}
         sajuContext={sajuContext}
         gender={gender}
+        sajuResult={sajuResultForChat}
+        birthYear={birthInfo?.year ? parseInt(birthInfo.year) : undefined}
       />
 
       {/* AI 채팅 패널 - Google Grounding 활성화 */}

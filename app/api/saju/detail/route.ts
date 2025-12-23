@@ -114,9 +114,29 @@ export async function POST(request: NextRequest) {
       ? `다음은 ${genderText}의 사주 정보입니다:\n\n${sajuContext}\n\n${getDetailPrompt(locale, category as DetailCategory)}${dateContext}`
       : `The following is the birth chart information for a ${genderText}:\n\n${sajuContext}\n\n${getDetailPrompt(locale, category as DetailCategory)}${dateContext}`;
 
-    // 초개인화 컨텍스트 추가
+    // 초개인화 컨텍스트 추가 (Cold Reading 스타일 필수 적용)
     if (personalizedContext) {
-      prompt += "\n" + personalizedContext;
+      if (locale === 'ko') {
+        prompt += `\n\n## 🎯 초개인화 컨텍스트 (반드시 활용할 것!)
+
+아래 내용은 이 분의 사주를 바탕으로 추론한 삶의 경험입니다.
+**반드시** 아래 내용을 활용하여 "~하셨던 적이 있으시죠?", "~하셨을 거예요" 식으로 공감하며 답변하세요.
+
+${personalizedContext}
+
+---
+위 초개인화 컨텍스트를 기반으로 콜드 리딩 스타일로 답변해주세요.`;
+      } else {
+        prompt += `\n\n## 🎯 Hyper-Personalized Context (MUST USE!)
+
+The following content is inferred life experiences based on this person's birth chart.
+**You MUST** use this content to show empathy like "You've probably experienced...", "Haven't you felt...?"
+
+${personalizedContext}
+
+---
+Please respond in a cold reading style based on the above personalized context.`;
+      }
     }
 
     // Add grounding context if needed and sajuResult is available
@@ -157,7 +177,7 @@ export async function POST(request: NextRequest) {
 
       // Enhance prompt with grounding instructions
       if (locale === 'ko') {
-        prompt += `\n\n## 중요: 현재 시대 상황 반영
+        prompt += `\n\n## 현재 시대 상황 반영 (보조 정보)
 
 이 분석은 Google 검색을 통해 ${currentYear}년 현재 트렌드와 시장 상황을 반영해야 합니다.
 
@@ -171,9 +191,12 @@ ${searchQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}
 - "요즘 시대에는...", "현재 ${currentYear}년 트렌드를 보면..." 같은 표현으로 시대상 반영
 - 추상적인 사주 해석보다 현실에 적용 가능한 구체적 조언 제공
 - 검색된 최신 정보와 사주 분석을 자연스럽게 결합
-- 마치 세상 돌아가는 걸 다 아는 역술가처럼 현실적인 조언`;
+
+⚠️ **중요**: 위의 트렌드 정보는 보조 자료입니다.
+반드시 "초개인화 컨텍스트"의 삶의 경험 내용을 먼저 활용하여 콜드 리딩 스타일로 답변하세요!
+"~하셨던 적이 있으시죠?", "~하셨을 거예요" 식의 공감 표현이 최우선입니다.`;
       } else {
-        prompt += `\n\n## IMPORTANT: Reflect Current Trends
+        prompt += `\n\n## Reflect Current Trends (Supporting Info)
 
 This analysis should incorporate ${currentYear} current trends and market conditions through Google Search.
 
@@ -187,7 +210,10 @@ ${searchQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}
 - Use expressions like "In today's world...", "Looking at ${currentYear} trends..."
 - Provide concrete, applicable advice rather than abstract interpretations
 - Naturally combine search results with BaZi analysis
-- Give realistic advice like a fortune teller who knows current world affairs`;
+
+⚠️ **IMPORTANT**: The above trend info is supplementary.
+You MUST first use the "Hyper-Personalized Context" life experiences with cold reading style!
+Empathetic expressions like "You've probably...", "Haven't you...?" are the TOP PRIORITY.`;
       }
     }
 

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { X, Sparkle, Warning, User, Briefcase, Coins, Heart, FirstAid, Star, Calendar } from "@phosphor-icons/react";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
+import { saveDetailAnalysis, getDetailAnalysis, checkAuthStatus } from "@/lib/actions/saju";
 
 // 카테고리별 로딩 설정
 const CATEGORY_LOADING_CONFIG: Record<string, {
@@ -251,6 +252,8 @@ interface DetailAnalysisModalProps {
   categoryTitle: string;
   sajuContext: string;
   gender: string;
+  sajuResult?: unknown;  // Cold Reading을 위한 사주 결과 데이터
+  birthYear?: number;    // Cold Reading을 위한 출생년도
 }
 
 export function DetailAnalysisModal({
@@ -260,13 +263,23 @@ export function DetailAnalysisModal({
   categoryTitle,
   sajuContext,
   gender,
+  sajuResult,
+  birthYear,
 }: DetailAnalysisModalProps) {
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
   const [messageIndex, setMessageIndex] = useState(0);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  // 인증 상태 확인
+  useEffect(() => {
+    checkAuthStatus().then((result) => {
+      setIsAuthenticated(result.isAuthenticated);
+    });
+  }, []);
 
   // 로딩 중 메시지 순환
   useEffect(() => {
@@ -291,7 +304,13 @@ export function DetailAnalysisModal({
       const response = await fetch("/api/saju/detail", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ category, sajuContext, gender }),
+        body: JSON.stringify({
+          category,
+          sajuContext,
+          gender,
+          sajuResult,   // Cold Reading을 위한 사주 결과 데이터
+          birthYear,    // Cold Reading을 위한 출생년도
+        }),
       });
 
       if (!response.ok) {
@@ -329,9 +348,18 @@ export function DetailAnalysisModal({
                 setContent(fullContent);
                 setIsLoading(false); // 첫 청크가 오면 로딩 상태 해제
               } else if (data.type === "done") {
-                // 완료 - localStorage에 저장 (fingerprint 포함)
+                // 완료 - 저장
                 const fingerprint = generateSajuFingerprint(sajuContext, gender);
+                // localStorage에 저장
                 saveDetailToStorage(category, data.fullContent, fingerprint);
+                // DB에도 저장 (로그인 시)
+                if (isAuthenticated) {
+                  saveDetailAnalysis({
+                    fingerprint,
+                    category,
+                    content: data.fullContent,
+                  }).catch(console.error);
+                }
               } else if (data.type === "error") {
                 throw new Error(data.message);
               }
@@ -347,20 +375,50 @@ export function DetailAnalysisModal({
     }
   };
 
-  // 모달이 열릴 때 localStorage 확인 후 데이터 불러오기
+  // 모달이 열릴 때 DB/localStorage 확인 후 데이터 불러오기
   useEffect(() => {
     if (isOpen && !initialized) {
       setInitialized(true);
-      // localStorage에서 먼저 확인 (fingerprint로 동일인 여부 검증)
       const fingerprint = generateSajuFingerprint(sajuContext, gender);
-      const savedContent = getDetailFromStorage(category, fingerprint);
-      if (savedContent) {
-        setContent(savedContent);
-      } else {
+
+      const loadContent = async () => {
+        // 1. 로그인 시 DB에서 먼저 확인
+        if (isAuthenticated) {
+          try {
+            const dbResult = await getDetailAnalysis({ fingerprint, category });
+            if (dbResult.success && dbResult.content) {
+              setContent(dbResult.content);
+              // localStorage에도 동기화
+              saveDetailToStorage(category, dbResult.content, fingerprint);
+              return;
+            }
+          } catch (e) {
+            console.error('[DetailAnalysisModal] DB load error:', e);
+          }
+        }
+
+        // 2. localStorage에서 확인
+        const savedContent = getDetailFromStorage(category, fingerprint);
+        if (savedContent) {
+          setContent(savedContent);
+          // 로그인 시 DB에도 동기화
+          if (isAuthenticated) {
+            saveDetailAnalysis({
+              fingerprint,
+              category,
+              content: savedContent,
+            }).catch(console.error);
+          }
+          return;
+        }
+
+        // 3. 둘 다 없으면 API 호출
         fetchDetailAnalysis();
-      }
+      };
+
+      loadContent();
     }
-  }, [isOpen, initialized, category, sajuContext, gender]);
+  }, [isOpen, initialized, category, sajuContext, gender, isAuthenticated]);
 
   // 카테고리 변경 시 초기화
   useEffect(() => {
