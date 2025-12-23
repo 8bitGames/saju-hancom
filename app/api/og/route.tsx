@@ -2,45 +2,26 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-export async function GET() {
-  // Load Noto Sans KR font
-  const notoSansKR = await fetch(
-    new URL("https://fonts.gstatic.com/s/notosanskr/v36/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLGC5nwmPw.woff2")
-  ).then((res) => res.arrayBuffer());
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://hansa.ai.kr";
 
-  // Fixed star positions for consistent rendering
-  const stars = [
-    { x: 5, y: 8, size: 2, opacity: 0.8 },
-    { x: 12, y: 15, size: 1.5, opacity: 0.6 },
-    { x: 25, y: 5, size: 2.5, opacity: 0.9 },
-    { x: 35, y: 20, size: 1, opacity: 0.5 },
-    { x: 45, y: 10, size: 2, opacity: 0.7 },
-    { x: 55, y: 18, size: 1.5, opacity: 0.6 },
-    { x: 65, y: 8, size: 2, opacity: 0.8 },
-    { x: 75, y: 22, size: 1, opacity: 0.5 },
-    { x: 85, y: 12, size: 2.5, opacity: 0.9 },
-    { x: 92, y: 6, size: 1.5, opacity: 0.7 },
-    { x: 8, y: 35, size: 1, opacity: 0.5 },
-    { x: 18, y: 45, size: 2, opacity: 0.8 },
-    { x: 28, y: 38, size: 1.5, opacity: 0.6 },
-    { x: 72, y: 42, size: 2, opacity: 0.7 },
-    { x: 82, y: 35, size: 1.5, opacity: 0.6 },
-    { x: 95, y: 40, size: 1, opacity: 0.5 },
-    { x: 6, y: 55, size: 2, opacity: 0.8 },
-    { x: 15, y: 68, size: 1.5, opacity: 0.6 },
-    { x: 88, y: 58, size: 2, opacity: 0.7 },
-    { x: 95, y: 65, size: 1, opacity: 0.5 },
-    { x: 10, y: 78, size: 1.5, opacity: 0.6 },
-    { x: 22, y: 85, size: 2, opacity: 0.8 },
-    { x: 35, y: 92, size: 1, opacity: 0.5 },
-    { x: 48, y: 88, size: 2.5, opacity: 0.9 },
-    { x: 62, y: 95, size: 1.5, opacity: 0.6 },
-    { x: 75, y: 85, size: 2, opacity: 0.7 },
-    { x: 88, y: 90, size: 1, opacity: 0.5 },
-    { x: 95, y: 82, size: 2, opacity: 0.8 },
-    { x: 3, y: 92, size: 1.5, opacity: 0.6 },
-    { x: 50, y: 3, size: 2, opacity: 0.8 },
-  ];
+  // Video stillshot as card background
+  const cardImageUrl = `${baseUrl}/images/og-frame-5s.jpg`;
+
+  // Load Noto Sans KR font (optional - design works without it)
+  let notoSansKR: ArrayBuffer | null = null;
+  try {
+    const fontResponse = await fetch(
+      "https://fonts.gstatic.com/s/notosanskr/v36/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLGC5nwmPw.woff2",
+      { cache: "force-cache" }
+    );
+    if (fontResponse.ok) {
+      notoSansKR = await fontResponse.arrayBuffer();
+    }
+  } catch {
+    // Continue without custom font
+  }
 
   return new ImageResponse(
     (
@@ -49,134 +30,148 @@ export async function GET() {
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(180deg, #0f0a1a 0%, #1a1033 50%, #2d1b4e 100%)",
-          position: "relative",
+          background: "linear-gradient(160deg, #0a0612 0%, #150d24 40%, #1a1030 70%, #0f0919 100%)",
           fontFamily: "Noto Sans KR",
+          position: "relative",
         }}
       >
-        {/* Background glow */}
+        {/* Subtle purple glow behind card */}
         <div
           style={{
             position: "absolute",
-            width: "800px",
-            height: "800px",
+            width: "500px",
+            height: "700px",
+            background: "radial-gradient(ellipse, rgba(168, 85, 247, 0.25) 0%, rgba(168, 85, 247, 0.1) 40%, transparent 70%)",
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, transparent 70%)",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
           }}
         />
 
-        {/* Decorative circles */}
-        <div
-          style={{
-            position: "absolute",
-            width: "400px",
-            height: "400px",
-            borderRadius: "50%",
-            border: "2px solid rgba(168, 85, 247, 0.3)",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            width: "480px",
-            height: "480px",
-            borderRadius: "50%",
-            border: "1px dashed rgba(168, 85, 247, 0.2)",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        />
-
-        {/* Stars */}
-        {stars.map((star, i) => (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              width: `${star.size}px`,
-              height: `${star.size}px`,
-              borderRadius: "50%",
-              background: `rgba(255, 255, 255, ${star.opacity})`,
-              left: `${star.x}%`,
-              top: `${star.y}%`,
-            }}
-          />
-        ))}
-
-        {/* Content */}
+        {/* Main layout: Text left, Card right - centered together */}
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 10,
+            gap: "60px",
+            position: "relative",
           }}
         >
-          {/* Main title */}
+          {/* Left side - All text */}
           <div
             style={{
-              fontSize: "96px",
-              fontWeight: "700",
-              color: "#ffffff",
-              textShadow: "0 0 60px rgba(168, 85, 247, 0.8), 0 0 120px rgba(168, 85, 247, 0.4)",
-              marginBottom: "24px",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            한사 AI
-          </div>
-
-          {/* Subtitle */}
-          <div
-            style={{
-              fontSize: "36px",
-              color: "#a855f7",
-              fontWeight: "600",
-              marginBottom: "20px",
-            }}
-          >
-            AI 운세 분석
-          </div>
-
-          {/* Tagline */}
-          <div
-            style={{
-              fontSize: "24px",
-              color: "rgba(255, 255, 255, 0.6)",
               display: "flex",
-              gap: "20px",
-              fontWeight: "500",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              justifyContent: "center",
             }}
           >
-            <span>사주</span>
-            <span style={{ color: "rgba(168, 85, 247, 0.6)" }}>•</span>
-            <span>궁합</span>
-            <span style={{ color: "rgba(168, 85, 247, 0.6)" }}>•</span>
-            <span>관상</span>
+            {/* Chinese characters - bigger */}
+            <div
+              style={{
+                fontSize: "32px",
+                color: "rgba(168, 85, 247, 0.9)",
+                fontWeight: "600",
+                letterSpacing: "0.15em",
+                marginBottom: "16px",
+              }}
+            >
+              韓 · 事
+            </div>
+            {/* Main title */}
+            <div
+              style={{
+                fontSize: "108px",
+                fontWeight: "700",
+                color: "#ffffff",
+                textShadow: "0 0 80px rgba(168, 85, 247, 0.5)",
+                letterSpacing: "-0.02em",
+                lineHeight: 1,
+                marginBottom: "24px",
+              }}
+            >
+              한사
+            </div>
+            {/* Subtitle */}
+            <div
+              style={{
+                fontSize: "32px",
+                color: "rgba(255, 255, 255, 0.9)",
+                fontWeight: "500",
+              }}
+            >
+              AI 운세 서비스
+            </div>
+          </div>
+
+          {/* Right side - Card with video stillshot */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            {/* Card container */}
+            <div
+              style={{
+                width: "300px",
+                height: "530px",
+                borderRadius: "16px",
+                background: "linear-gradient(145deg, rgba(168, 85, 247, 0.3) 0%, rgba(168, 85, 247, 0.1) 50%, rgba(168, 85, 247, 0.2) 100%)",
+                padding: "4px",
+                display: "flex",
+                boxShadow: "0 0 60px rgba(168, 85, 247, 0.3), 0 20px 60px rgba(0, 0, 0, 0.5)",
+              }}
+            >
+              {/* Inner card with image */}
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  display: "flex",
+                  position: "relative",
+                  background: "#0a0612",
+                }}
+              >
+                <img
+                  src={cardImageUrl}
+                  alt=""
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+                {/* Subtle overlay on image */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: "linear-gradient(180deg, transparent 60%, rgba(10, 6, 18, 0.6) 100%)",
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Corner decorations */}
+        {/* Corner accents */}
         <div
           style={{
             position: "absolute",
             top: "30px",
             left: "30px",
-            width: "60px",
-            height: "60px",
-            borderLeft: "2px solid rgba(168, 85, 247, 0.5)",
-            borderTop: "2px solid rgba(168, 85, 247, 0.5)",
+            width: "40px",
+            height: "40px",
+            borderLeft: "2px solid rgba(168, 85, 247, 0.4)",
+            borderTop: "2px solid rgba(168, 85, 247, 0.4)",
           }}
         />
         <div
@@ -184,10 +179,10 @@ export async function GET() {
             position: "absolute",
             top: "30px",
             right: "30px",
-            width: "60px",
-            height: "60px",
-            borderRight: "2px solid rgba(168, 85, 247, 0.5)",
-            borderTop: "2px solid rgba(168, 85, 247, 0.5)",
+            width: "40px",
+            height: "40px",
+            borderRight: "2px solid rgba(168, 85, 247, 0.4)",
+            borderTop: "2px solid rgba(168, 85, 247, 0.4)",
           }}
         />
         <div
@@ -195,10 +190,10 @@ export async function GET() {
             position: "absolute",
             bottom: "30px",
             left: "30px",
-            width: "60px",
-            height: "60px",
-            borderLeft: "2px solid rgba(168, 85, 247, 0.5)",
-            borderBottom: "2px solid rgba(168, 85, 247, 0.5)",
+            width: "40px",
+            height: "40px",
+            borderLeft: "2px solid rgba(168, 85, 247, 0.4)",
+            borderBottom: "2px solid rgba(168, 85, 247, 0.4)",
           }}
         />
         <div
@@ -206,10 +201,10 @@ export async function GET() {
             position: "absolute",
             bottom: "30px",
             right: "30px",
-            width: "60px",
-            height: "60px",
-            borderRight: "2px solid rgba(168, 85, 247, 0.5)",
-            borderBottom: "2px solid rgba(168, 85, 247, 0.5)",
+            width: "40px",
+            height: "40px",
+            borderRight: "2px solid rgba(168, 85, 247, 0.4)",
+            borderBottom: "2px solid rgba(168, 85, 247, 0.4)",
           }}
         />
       </div>
@@ -217,14 +212,16 @@ export async function GET() {
     {
       width: 1200,
       height: 630,
-      fonts: [
-        {
-          name: "Noto Sans KR",
-          data: notoSansKR,
-          style: "normal",
-          weight: 700,
-        },
-      ],
+      ...(notoSansKR && {
+        fonts: [
+          {
+            name: "Noto Sans KR",
+            data: notoSansKR,
+            style: "normal" as const,
+            weight: 700 as const,
+          },
+        ],
+      }),
     }
   );
 }
