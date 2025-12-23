@@ -328,8 +328,8 @@ export function DetailAnalysisModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex flex-col"
-      style={{ touchAction: 'none' }}
+      className="fixed top-0 left-0 right-0 bottom-0 z-[100] flex flex-col"
+      style={{ touchAction: 'none', height: '100%', minHeight: '-webkit-fill-available' }}
     >
       {/* Backdrop */}
       <div
@@ -338,7 +338,7 @@ export function DetailAnalysisModal({
       />
 
       {/* Modal Container - 모바일 전체화면, 데스크톱 중앙 정렬 */}
-      <div className="relative flex flex-col w-full h-full md:h-auto md:max-h-[85vh] md:max-w-2xl md:m-auto md:rounded-2xl bg-[#1a1033] shadow-2xl overflow-hidden">
+      <div className="relative flex flex-col w-full flex-1 min-h-0 md:flex-initial md:h-auto md:max-h-[85vh] md:max-w-2xl md:m-auto md:rounded-2xl bg-[#1a1033] shadow-2xl overflow-hidden">
         {/* Header - 항상 상단 고정 */}
         <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-[#a855f7] z-20">
           <div className="flex items-center gap-2 md:gap-3">
@@ -387,7 +387,7 @@ export function DetailAnalysisModal({
           )}
 
           {/* 하단 여백 (iOS Safari safe area) */}
-          <div className="h-6 md:h-0" />
+          <div className="h-16 md:h-4 pb-[env(safe-area-inset-bottom)]" />
         </div>
       </div>
     </div>

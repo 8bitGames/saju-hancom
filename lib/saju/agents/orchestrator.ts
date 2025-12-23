@@ -17,6 +17,8 @@ import type {
   AgeAgentOutput,
   ChartAgentOutput
 } from "./types";
+import type { Element, TenGod } from "../types";
+import { ELEMENT_KEYWORDS, TEN_GOD_KEYWORDS } from "../personalized-keywords";
 
 /**
  * 추천 토픽 결정
@@ -487,6 +489,117 @@ function generatePersonalizationPoints(
 }
 
 /**
+ * 오행/십성 기반 추천 산업 및 투자 스타일 생성
+ * 사주의 용신과 주요 십성을 기반으로 맞춤 추천 생성
+ */
+function generateCareerWealthRecommendations(
+  chart: ChartAgentOutput,
+  locale: "ko" | "en"
+): { industries: string[]; investmentStyles: string[]; careerTypes: string[] } {
+  const industries: string[] = [];
+  const investmentStyles: string[] = [];
+  const careerTypes: string[] = [];
+
+  // 용신(用神) 기반 추천 산업 - 가장 중요
+  const yongShin = chart.yongShin;
+  if (yongShin && ELEMENT_KEYWORDS[yongShin as Element]) {
+    const elementKeywords = ELEMENT_KEYWORDS[yongShin as Element];
+    industries.push(...elementKeywords.modernIndustries.slice(0, 3));
+    investmentStyles.push(...elementKeywords.investmentStyles.slice(0, 2));
+  }
+
+  // 강한 오행 기반 추천 (용신이 없을 경우 보조)
+  const dominantElements = chart.dominantElements || [];
+  for (const element of dominantElements.slice(0, 1)) {
+    if (ELEMENT_KEYWORDS[element as Element]) {
+      const elementKeywords = ELEMENT_KEYWORDS[element as Element];
+      // 이미 추가된 것 제외하고 추가
+      const newIndustries = elementKeywords.modernIndustries.filter(i => !industries.includes(i));
+      industries.push(...newIndustries.slice(0, 2));
+    }
+  }
+
+  // 주요 십성 기반 직업군 추천
+  const dominantTenGods = chart.dominantTenGods.map(t => t.tenGod);
+  for (const tenGod of dominantTenGods.slice(0, 2)) {
+    if (TEN_GOD_KEYWORDS[tenGod as TenGod]) {
+      const tenGodKeywords = TEN_GOD_KEYWORDS[tenGod as TenGod];
+      careerTypes.push(...tenGodKeywords.careerTypes.slice(0, 2));
+    }
+  }
+
+  return {
+    industries: Array.from(new Set(industries)).slice(0, 5),
+    investmentStyles: Array.from(new Set(investmentStyles)).slice(0, 3),
+    careerTypes: Array.from(new Set(careerTypes)).slice(0, 4),
+  };
+}
+
+/**
+ * 사주 기반 재물/직업 조언 섹션 생성
+ */
+function generateCareerWealthAdviceSection(
+  chart: ChartAgentOutput,
+  locale: "ko" | "en"
+): string {
+  const recommendations = generateCareerWealthRecommendations(chart, locale);
+  const yongShin = chart.yongShin;
+  const dominantTenGods = chart.dominantTenGods.map(t => t.tenGod);
+
+  if (locale === "ko") {
+    let section = `
+### 💼 사주 기반 재물/직업 조언 (매우 중요!)
+
+**이 분에게 맞는 산업/분야**:
+- 용신(${yongShin || "분석 필요"}) 기반 추천 산업: ${recommendations.industries.join(", ") || "다양한 분야"}
+- 적합 직업 유형: ${recommendations.careerTypes.join(", ") || "다양한 직업"}
+
+**투자 스타일**:
+- 이 분의 사주에 맞는 투자 방식: ${recommendations.investmentStyles.join(", ") || "안정적 투자"}
+
+**중요 지침**:
+- 재물이나 투자 이야기가 나오면, 절대로 "AI가 유망하다" 같은 뻔한 답변 금지
+- 반드시 이 분의 용신(${yongShin || "오행"})과 십성(${dominantTenGods.slice(0, 2).join(", ") || "분석"})에 맞는 산업을 추천하세요
+- 예: 용신이 木이면 ESG/바이오/헬스케어, 火면 AI/반도체/메타버스, 土면 부동산/인프라, 金이면 핀테크/로봇, 水면 글로벌 이커머스/물류
+`;
+
+    // 십성별 구체적 조언 추가
+    if (dominantTenGods.includes("pyeonjae") || dominantTenGods.includes("gebjae")) {
+      section += `- 편재/겁재가 강하므로: 적극적 투자 성향, 스타트업/성장주 관심 가능하나 리스크 관리 필수\n`;
+    }
+    if (dominantTenGods.includes("jeongjae") || dominantTenGods.includes("siksin")) {
+      section += `- 정재/식신이 강하므로: 안정적 투자 선호, 배당주/채권/부동산 추천\n`;
+    }
+    if (dominantTenGods.includes("sanggwan")) {
+      section += `- 상관이 강하므로: 창의적 분야, 콘텐츠/예술/미디어 관련 투자 고려\n`;
+    }
+    if (dominantTenGods.includes("jeonggwan") || dominantTenGods.includes("pyeongwan")) {
+      section += `- 관성이 강하므로: 대기업/공기업/안정적 직장 선호, 우량주/인덱스 펀드 추천\n`;
+    }
+
+    return section;
+  } else {
+    let section = `
+### 💼 Saju-Based Career/Wealth Advice (Very Important!)
+
+**Industries Suited for This Person**:
+- Based on Yongsin (${yongShin || "needs analysis"}): ${recommendations.industries.join(", ") || "various fields"}
+- Suitable Career Types: ${recommendations.careerTypes.join(", ") || "various careers"}
+
+**Investment Style**:
+- Investment approaches for this chart: ${recommendations.investmentStyles.join(", ") || "stable investments"}
+
+**Important Guidelines**:
+- When discussing money or investments, NEVER give generic answers like "AI is promising"
+- ALWAYS recommend industries based on their Yongsin (${yongShin || "element"}) and Ten Gods
+- Example: Wood → ESG/Bio/Healthcare, Fire → AI/Semiconductor, Earth → Real Estate, Metal → Fintech/Robotics, Water → Global E-commerce
+`;
+
+    return section;
+  }
+}
+
+/**
  * 시스템 프롬프트 추가 문구 생성
  */
 function generateSystemPromptAddition(
@@ -563,6 +676,8 @@ ${temporal.timingAdvice.join("\n")}
 - 현재가 ${temporal.yearlyPillar.description}의 해임을 기억하세요
 - ${age.ageGroup}의 관심사와 고민을 고려하세요
 - 다음 주제는 피하세요: ${avoidTopics.slice(0, 3).join(", ")}
+
+${generateCareerWealthAdviceSection(chart, locale)}
 `;
   } else {
     // 2단계: Life experience section in English
@@ -627,6 +742,8 @@ ${temporal.timingAdvice.join("\n")}
 - Remember this is the year of ${temporal.yearlyPillar.description}
 - Consider the interests and concerns of ${age.ageGroup}
 - Avoid these topics: ${avoidTopics.slice(0, 3).join(", ")}
+
+${generateCareerWealthAdviceSection(chart, locale)}
 `;
   }
 }

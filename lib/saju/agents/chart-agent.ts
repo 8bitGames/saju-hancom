@@ -470,6 +470,9 @@ export async function runChartAgent(input: ChartAgentInput): Promise<ChartAgentO
       element: sajuResult.dayMasterElement,
       description: sajuResult.dayMasterDescription
     },
+    yongShin: sajuResult.elementAnalysis.yongShin,
+    dominantElements: sajuResult.elementAnalysis.dominant,
+    lackingElements: sajuResult.elementAnalysis.lacking,
     personalizationFlags,
     healthFlags,
     personalityProfile,

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "generate-images": "tsx scripts/generate-cover-images.ts"
+    "generate-images": "tsx scripts/generate-cover-images.ts",
+    "test:saju-recs": "tsx scripts/test-saju-recommendations.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.51",

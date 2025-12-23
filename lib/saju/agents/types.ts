@@ -176,6 +176,12 @@ export interface ChartAgentOutput {
     element: Element;
     description: string;
   };
+  /** 용신 (用神) - 유리한 오행 */
+  yongShin?: Element;
+  /** 강한 오행 목록 */
+  dominantElements: Element[];
+  /** 부족한 오행 목록 */
+  lackingElements: Element[];
   /** 개인화 플래그 */
   personalizationFlags: PersonalizationFlags;
   /** 건강 플래그 */

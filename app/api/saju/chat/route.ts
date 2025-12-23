@@ -198,6 +198,26 @@ export async function POST(request: NextRequest) {
             // Get saju profile for context
             const sajuProfile = generateSajuProfile(parsedSajuResult);
 
+            // 사주 기반 맞춤 산업/투자 정보 생성
+            const yongShin = parsedSajuResult.elementAnalysis?.yongShin;
+            const dominantElements = parsedSajuResult.elementAnalysis?.dominant || [];
+            const ELEMENT_KOREAN: Record<string, string> = {
+              wood: "목(木)", fire: "화(火)", earth: "토(土)", metal: "금(金)", water: "수(水)"
+            };
+            const ELEMENT_INDUSTRIES: Record<string, string[]> = {
+              wood: ["친환경", "ESG", "바이오", "헬스케어", "교육테크", "신재생에너지"],
+              fire: ["AI", "반도체", "메타버스", "디지털콘텐츠", "전기차", "배터리"],
+              earth: ["부동산", "인프라", "건설", "물류", "유통", "농식품"],
+              metal: ["핀테크", "로봇", "자동화", "블록체인", "보안", "정밀기계"],
+              water: ["글로벌이커머스", "물류", "여행", "유통", "미디어", "엔터테인먼트"]
+            };
+
+            const yongShinKorean = yongShin ? ELEMENT_KOREAN[yongShin] : "";
+            const yongShinIndustries = yongShin ? ELEMENT_INDUSTRIES[yongShin]?.join(", ") : "";
+            const dominantIndustries = dominantElements.length > 0 && ELEMENT_INDUSTRIES[dominantElements[0]]
+              ? ELEMENT_INDUSTRIES[dominantElements[0]].join(", ")
+              : "";
+
             // Build the enriched prompt
             const enrichedPrompt = locale === 'ko'
               ? `사용자가 "${userMessageText}"라고 물었습니다.
@@ -205,33 +225,43 @@ export async function POST(request: NextRequest) {
 이 분의 사주 프로필:
 ${sajuProfile}
 
-방금 기본 답변을 드렸으니, 이제 최신 정보를 바탕으로 추가 조언을 드려주세요.
+**매우 중요 - 이 분에게 맞는 분야**:
+- 용신(用神): ${yongShinKorean || "분석 필요"} → 추천 산업: ${yongShinIndustries || "다양한 분야"}
+- 강한 오행: ${dominantElements.map(e => ELEMENT_KOREAN[e]).join(", ") || "균형"} → 관련 산업: ${dominantIndustries || "다양한 분야"}
 
-"참, 요즘 세상 돌아가는 걸 보면요..." 또는 "근데 말이에요, 요즘은요..."로 자연스럽게 시작해서
-검색된 ${currentYear}년 최신 트렌드와 이 분의 사주 특성을 결합한 구체적이고 현실적인 조언을 해주세요.
+방금 기본 답변을 드렸으니, 이제 이 분의 사주에 맞는 구체적인 조언을 드려주세요.
 
-- 실제 시장 상황이나 트렌드를 언급하세요
-- 이 분의 사주 특성에 맞춰서 조언하세요
-- 4-6문장 정도로 충분히 설명하세요
-- 역할극 묘사 없이, 대화체로 자연스럽게
+"참, 이 분 사주를 보면요..." 또는 "근데 말이에요, 이 분의 기운을 보면..."로 자연스럽게 시작해서:
 
-검색 주제: ${searchQuery}`
+**반드시 지켜야 할 규칙**:
+1. 절대로 "AI가 유망하다", "반도체에 투자하라" 같은 뻔한 일반론 금지!
+2. 반드시 이 분의 용신(${yongShinKorean || "오행"})에 맞는 산업을 추천하세요
+3. 예: 용신이 木이면 ESG/바이오, 火면 AI/반도체, 土면 부동산, 金이면 핀테크, 水면 글로벌이커머스
+4. ${currentYear}년 해당 산업의 실제 동향을 검색해서 구체적으로 말해주세요
+5. 4-6문장으로 이 분의 사주에 딱 맞는 맞춤 조언을 해주세요
+
+검색 주제: ${yongShin ? `${currentYear}년 ${yongShinIndustries?.split(",")[0]} 산업 전망` : searchQuery}`
               : `The user asked: "${userMessageText}"
 
 This person's BaZi profile:
 ${sajuProfile}
 
-I just gave a basic answer. Now please provide additional advice based on current trends.
+**Very Important - Suitable Fields for This Person**:
+- Yongsin (Beneficial Element): ${yongShin || "needs analysis"} → Recommended industries: ${yongShinIndustries || "various"}
+- Dominant elements: ${dominantElements.join(", ") || "balanced"} → Related industries: ${dominantIndustries || "various"}
 
-Start naturally with "By the way, looking at what's happening these days..." or "You know, lately..."
-Combine the ${currentYear} search results with this person's chart characteristics for specific, practical advice.
+I just gave a basic answer. Now provide advice specifically tailored to their chart.
 
-- Mention actual market conditions or trends
-- Tailor advice to their chart characteristics
-- Use 4-6 sentences to explain fully
-- Natural conversational tone, no roleplay descriptions
+Start naturally with "Looking at your chart..." or "Based on your energy..."
 
-Search topic: ${searchQuery}`;
+**Must Follow These Rules**:
+1. NEVER give generic advice like "AI is promising" or "invest in semiconductors"!
+2. MUST recommend industries aligned with their Yongsin (${yongShin || "element"})
+3. Example: Wood → ESG/Bio, Fire → AI/Semiconductor, Earth → Real Estate, Metal → Fintech, Water → Global E-commerce
+4. Search for ${currentYear} trends in THOSE specific industries
+5. Give 4-6 sentences of personalized advice matching their chart
+
+Search topic: ${yongShin ? `${currentYear} ${yongShinIndustries?.split(",")[0]} industry outlook` : searchQuery}`;
 
             // Call Gemini with Google Search
             const searchResponse = await ai.models.generateContent({

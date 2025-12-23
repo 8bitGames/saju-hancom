@@ -10,15 +10,68 @@ interface MarkdownRendererProps {
 
 // 마크다운 전처리 함수 - bold 문법 정규화
 function preprocessMarkdown(text: string): string {
-  // ** 주변의 불필요한 공백 제거 및 정규화
   let processed = text;
 
-  // **text** 패턴이 깨진 경우 수정 (예: ** text ** -> **text**)
+  // 0. 인라인 불렛 포인트를 줄바꿈으로 변환
+  // "문장입니다. *항목:" 패턴을 "문장입니다.\n\n* 항목:" 으로 변환
+  // 문장 끝(. 또는 다 등) 뒤에 공백과 *가 오고 그 뒤에 텍스트가 오는 패턴
+  processed = processed.replace(/([.다요음])(\s*)\*([^\s*])/g, '$1\n\n* $3');
+
+  // 1. *** 를 ** 로 정규화 (***text** -> **text**)
+  processed = processed.replace(/\*\*\*([^*]+)\*\*/g, '**$1**');
+  processed = processed.replace(/\*\*([^*]+)\*\*\*/g, '**$1**');
+
+  // 2. 콜론이 bold 안에 있는 경우 바깥으로 이동
+  // **text:** -> **text**:
+  // **text:상세** -> **text**:상세 (콜론 뒤에 내용이 있으면 분리)
+  processed = processed.replace(/\*\*([^*:]+):\*\*/g, '**$1**:');
+  processed = processed.replace(/\*\*([^*:]+):([^*]+)\*\*/g, '**$1**:$2');
+
+  // 3. 괄호가 bold를 감싸는 경우 처리
+  // **(text)** -> (**text**)
+  processed = processed.replace(/\*\*\(([^)]+)\)\*\*/g, '(**$1**)');
+  // **text(설명)** -> **text**(설명)
+  processed = processed.replace(/\*\*([^*(]+)\(([^)]+)\)\*\*/g, '**$1**($2)');
+
+  // 4. ** 주변의 따옴표를 bold 바깥으로 이동
+  // **'text'** -> '**text**'
+  // **"text"** -> "**text**"
+  processed = processed.replace(/\*\*(['"])([^'"*]+)\1\*\*/g, '$1**$2**$1');
+
+  // 5. **'text -> '**text  (여는 따옴표가 ** 다음에 바로 오는 경우)
+  processed = processed.replace(/\*\*(['"])/g, '$1**');
+
+  // 6. text'** -> text**' (닫는 따옴표가 ** 바로 앞에 오는 경우)
+  processed = processed.replace(/(['"])\*\*/g, '**$1');
+
+  // 7. ** 바로 뒤에 오는 특수문자 처리
+  // **`text` -> `**text**`
+  processed = processed.replace(/\*\*`([^`]+)`\*\*/g, '`**$1**`');
+
+  // 8. **(text -> (**text 괄호가 ** 다음에 바로 오는 경우
+  processed = processed.replace(/\*\*\(([^)]*[^)*])/g, '(**$1');
+
+  // 9. text)** -> text**) 괄호가 ** 바로 앞에 오는 경우
+  processed = processed.replace(/([^(*][^(]*)\)\*\*/g, '$1**)');
+
+  // 10. 불균형한 ** 패턴 수정 - 열린 **가 닫히지 않은 경우
+  // 라인 단위로 ** 개수 확인하고 홀수면 제거
+  const lines = processed.split('\n');
+  processed = lines.map(line => {
+    const asteriskCount = (line.match(/\*\*/g) || []).length;
+    if (asteriskCount % 2 !== 0) {
+      // 홀수개면 마지막 **를 제거
+      const lastIndex = line.lastIndexOf('**');
+      if (lastIndex !== -1) {
+        return line.substring(0, lastIndex) + line.substring(lastIndex + 2);
+      }
+    }
+    return line;
+  }).join('\n');
+
+  // 11. ** 주변의 불필요한 공백 제거
   processed = processed.replace(/\*\*\s+/g, '**');
   processed = processed.replace(/\s+\*\*/g, '**');
-
-  // 한글/한자가 포함된 bold 패턴 처리
-  // **text** 가 제대로 닫히지 않은 경우 등
 
   return processed;
 }
