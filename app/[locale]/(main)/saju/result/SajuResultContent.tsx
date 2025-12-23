@@ -12,7 +12,7 @@ import { TenGodDisplay } from "@/components/saju/ten-god-display";
 import { StarsDisplay } from "@/components/saju/stars-display";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import { DownloadPDFButton } from "@/components/auth/DownloadPDFButton";
-import { ShareKakaoButton } from "@/components/auth/ShareKakaoButton";
+import { ShareButton } from "@/components/auth/ShareButton";
 import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
 import { autoSaveSajuResult } from "@/lib/actions/saju";
 import type { Gender } from "@/lib/saju/types";
@@ -241,6 +241,7 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
   const [error, setError] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [showLoginCTA, setShowLoginCTA] = useState(false);
+  const [savedResultId, setSavedResultId] = useState<string | undefined>(undefined);
   const hasFetched = useRef(false);
   const hasSaved = useRef(false);
 
@@ -358,6 +359,7 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
 
       if (response.success) {
         setSaveStatus('saved');
+        setSavedResultId(response.resultId);
         // Hide notification after 3 seconds
         setTimeout(() => setSaveStatus('idle'), 3000);
       } else if (response.error === 'Not authenticated') {
@@ -772,7 +774,8 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
           result={result}
           className="w-full h-12 bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs sm:text-sm whitespace-nowrap px-2"
         />
-        <ShareKakaoButton
+        <ShareButton
+          resultId={savedResultId}
           birthData={{
             year,
             month,
@@ -783,7 +786,7 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
             isLunar,
             city,
           }}
-          result={result}
+          resultData={{ ...result, interpretation }}
           className="w-full h-12 text-xs sm:text-sm whitespace-nowrap px-2"
         />
       </motion.div>

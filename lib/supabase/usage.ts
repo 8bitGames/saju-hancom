@@ -554,3 +554,44 @@ export async function getUserFaceReadingResults(userId: string) {
 
   return { success: true, results: data || [] };
 }
+
+/**
+ * Get a saju result by ID for public sharing
+ * Returns only the essential data needed for display (no user info)
+ */
+export async function getSajuResultById(resultId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('saju_results')
+    .select('id, birth_year, birth_month, birth_day, birth_hour, birth_minute, gender, is_lunar, city, result_data, created_at')
+    .eq('id', resultId)
+    .single();
+
+  if (error) {
+    return { success: false, error: error.message, result: null };
+  }
+
+  if (!data) {
+    return { success: false, error: 'Result not found', result: null };
+  }
+
+  return {
+    success: true,
+    result: {
+      id: data.id,
+      birthData: {
+        year: data.birth_year,
+        month: data.birth_month,
+        day: data.birth_day,
+        hour: data.birth_hour,
+        minute: data.birth_minute,
+        gender: data.gender,
+        isLunar: data.is_lunar,
+        city: data.city,
+      },
+      resultData: data.result_data,
+      createdAt: data.created_at,
+    },
+  };
+}
