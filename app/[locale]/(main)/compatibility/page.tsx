@@ -1,10 +1,35 @@
-"use client";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { CompatibilityFormWrapper } from "./compatibility-form-wrapper";
 
-import { useTranslations } from "next-intl";
-import { CompatibilityForm } from "@/components/compatibility/compatibility-form";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://hansa.ai.kr';
 
-export default function CompatibilityPage() {
-  const t = useTranslations("compatibility");
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const isKorean = locale === 'ko';
+  const prefix = isKorean ? '' : `/${locale}`;
+
+  return {
+    title: 'AI 직장 궁합 분석 - 동료와의 궁합',
+    description: '직장 동료와의 사주 궁합을 AI가 분석합니다. 업무 스타일, 소통 방식, 협업 궁합을 확인하고 최적의 팀워크를 만들어보세요.',
+    keywords: ['직장 궁합', '동료 궁합', '업무 궁합', '사주 궁합', 'AI 궁합', '팀 궁합'],
+    alternates: {
+      canonical: `${baseUrl}${prefix}/compatibility`,
+      languages: {
+        'ko-KR': `${baseUrl}/compatibility`,
+        'en-US': `${baseUrl}/en/compatibility`,
+      },
+    },
+    openGraph: {
+      title: 'AI 직장 궁합 분석',
+      description: '직장 동료와의 사주 궁합을 AI가 분석합니다.',
+      images: [{ url: '/images/og-cover-compatibility.jpg', width: 1200, height: 630 }],
+    },
+  };
+}
+
+export default async function CompatibilityPage() {
+  const t = await getTranslations("compatibility");
 
   return (
     <div className="space-y-6">
@@ -23,7 +48,7 @@ export default function CompatibilityPage() {
 
       {/* Form Card */}
       <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
-        <CompatibilityForm />
+        <CompatibilityFormWrapper />
       </div>
 
       {/* Privacy Notice */}

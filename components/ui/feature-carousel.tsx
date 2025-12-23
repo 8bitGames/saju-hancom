@@ -20,6 +20,7 @@ export interface FeatureCard {
   href: string;
   image?: string;
   video?: string;
+  poster?: string; // Thumbnail image for video
   theme: {
     primary: string;
     secondary: string;
@@ -224,11 +225,14 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
                         videoRefs.current[index] = el;
                       }}
                       src={card.video}
+                      poster={card.poster || card.image}
                       loop
                       muted
                       playsInline
-                      preload={index === 0 ? "auto" : "metadata"}
+                      preload={index === 0 ? "auto" : "none"}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      // Defer loading for non-active videos
+                      {...(index !== 0 && { loading: "lazy" })}
                     />
                   ) : card.image ? (
                     <Image
