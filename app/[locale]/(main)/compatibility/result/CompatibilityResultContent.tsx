@@ -2,12 +2,14 @@
 
 import { Link } from "@/lib/i18n/navigation";
 import { motion, useInView } from "framer-motion";
-import { useRef, useEffect, useState, useMemo } from "react";
+import { useRef, useEffect, useState, useMemo, useCallback } from "react";
 import { UsersThree, ArrowCounterClockwise, ChatCircle, Handshake, Heart, ChartBar, Sparkle, User, ArrowRight, Check, Warning, FilePdf, Brain, CircleNotch } from "@phosphor-icons/react";
 import { downloadCompatibilityPDF } from "@/lib/pdf/generator";
 import { ELEMENT_KOREAN } from "@/lib/saju";
 import { calculatePersonCompatibility } from "@/lib/compatibility/calculator";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
+import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
+import { checkAuthStatus, autoSaveCompatibilityResult } from "@/lib/actions/saju";
 import type { Gender } from "@/lib/saju/types";
 import type { CompatibilityGrade, RelationType } from "@/lib/compatibility/types";
 
@@ -313,6 +315,10 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
   const [aiInterpretation, setAiInterpretation] = useState<AIInterpretation | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(true);
   const hasFetched = useRef(false);
+  const [showLoginCTA, setShowLoginCTA] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const hasCheckedAuth = useRef(false);
+  const hasSaved = useRef(false);
 
   // Create cache key from person data
   const cacheKey = useMemo(() =>
@@ -384,6 +390,54 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
 
     fetchAiInterpretation();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Check auth status and auto-save or show login CTA
+  useEffect(() => {
+    if (hasCheckedAuth.current) return;
+    hasCheckedAuth.current = true;
+
+    const checkAndSave = async () => {
+      const { isAuthenticated: authStatus } = await checkAuthStatus();
+      setIsAuthenticated(authStatus);
+
+      if (authStatus && !hasSaved.current) {
+        hasSaved.current = true;
+        // Auto-save for authenticated users
+        await autoSaveCompatibilityResult({
+          person1: {
+            name: person1.name,
+            year: person1.year,
+            month: person1.month,
+            day: person1.day,
+            hour: person1.hour,
+            minute: person1.minute,
+            gender: person1.gender,
+            isLunar: person1.isLunar,
+          },
+          person2: {
+            name: person2.name,
+            year: person2.year,
+            month: person2.month,
+            day: person2.day,
+            hour: person2.hour,
+            minute: person2.minute,
+            gender: person2.gender,
+            isLunar: person2.isLunar,
+          },
+          relationType: relationType || "colleague",
+          resultData: result,
+          interpretation: aiInterpretation,
+        });
+      } else if (!authStatus) {
+        // Show login CTA after a short delay for non-authenticated users
+        setTimeout(() => {
+          setShowLoginCTA(true);
+        }, 2000);
+      }
+    };
+
+    checkAndSave();
+  }, [person1, person2, relationType, result, aiInterpretation]);
 
   const handlePDFDownload = async () => {
     if (isDownloading) return;
@@ -825,6 +879,19 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
       >
         이 분석은 전통 명리학을 기반으로 한 참고용 정보입니다.
       </motion.p>
+
+      {/* Login CTA Modal for non-authenticated users */}
+      <LoginCTAModal
+        open={showLoginCTA}
+        onOpenChange={setShowLoginCTA}
+        resultType="compatibility"
+        onSuccess={() => {
+          // After login, save the result
+          hasSaved.current = false;
+          hasCheckedAuth.current = false;
+          setIsAuthenticated(null);
+        }}
+      />
     </motion.div>
   );
 }

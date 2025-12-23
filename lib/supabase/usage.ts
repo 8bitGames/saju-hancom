@@ -185,3 +185,372 @@ export async function getUserSajuResults(userId: string) {
 
   return { success: true, results: data || [] };
 }
+
+/**
+ * Upsert a saju result - insert new or update existing based on birth data
+ * Uses composite key: (user_id, birth_year, month, day, hour, minute, gender, is_lunar, city)
+ * This prevents duplicate records for the same birth data
+ */
+export async function upsertSajuResult(
+  userId: string,
+  birthData: {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+    city: string;
+  },
+  resultData: any
+): Promise<{ success: boolean; error?: string; resultId?: string; isNew: boolean }> {
+  const supabase = await createClient();
+
+  // Use upsert with onConflict to handle duplicates
+  const { data, error } = await supabase
+    .from('saju_results')
+    .upsert(
+      {
+        user_id: userId,
+        birth_year: birthData.year,
+        birth_month: birthData.month,
+        birth_day: birthData.day,
+        birth_hour: birthData.hour,
+        birth_minute: birthData.minute,
+        gender: birthData.gender,
+        is_lunar: birthData.isLunar,
+        city: birthData.city,
+        result_data: resultData,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: 'user_id,birth_year,birth_month,birth_day,birth_hour,birth_minute,gender,is_lunar,city',
+        ignoreDuplicates: false, // Update on conflict
+      }
+    )
+    .select('id, created_at, updated_at')
+    .single();
+
+  if (error) {
+    console.error('[upsertSajuResult] Error:', error);
+    return { success: false, error: error.message, isNew: false };
+  }
+
+  // Check if this was a new insert or an update
+  const isNew = data.created_at === data.updated_at;
+
+  return { success: true, resultId: data.id, isNew };
+}
+
+/**
+ * Upsert a compatibility result - insert new or update existing based on birth data
+ * Uses composite key for both persons' birth data and relation type
+ */
+export async function upsertCompatibilityResult(
+  userId: string,
+  person1: {
+    name: string;
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  },
+  person2: {
+    name: string;
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  },
+  relationType: string,
+  resultData: any
+): Promise<{ success: boolean; error?: string; resultId?: string; isNew: boolean }> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('compatibility_results')
+    .upsert(
+      {
+        user_id: userId,
+        p1_name: person1.name,
+        p1_birth_year: person1.year,
+        p1_birth_month: person1.month,
+        p1_birth_day: person1.day,
+        p1_birth_hour: person1.hour,
+        p1_birth_minute: person1.minute,
+        p1_gender: person1.gender,
+        p1_is_lunar: person1.isLunar,
+        p2_name: person2.name,
+        p2_birth_year: person2.year,
+        p2_birth_month: person2.month,
+        p2_birth_day: person2.day,
+        p2_birth_hour: person2.hour,
+        p2_birth_minute: person2.minute,
+        p2_gender: person2.gender,
+        p2_is_lunar: person2.isLunar,
+        relation_type: relationType,
+        result_data: resultData,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: 'user_id,p1_birth_year,p1_birth_month,p1_birth_day,p1_birth_hour,p1_birth_minute,p1_gender,p1_is_lunar,p2_birth_year,p2_birth_month,p2_birth_day,p2_birth_hour,p2_birth_minute,p2_gender,p2_is_lunar,relation_type',
+        ignoreDuplicates: false,
+      }
+    )
+    .select('id, created_at, updated_at')
+    .single();
+
+  if (error) {
+    console.error('[upsertCompatibilityResult] Error:', error);
+    return { success: false, error: error.message, isNew: false };
+  }
+
+  const isNew = data.created_at === data.updated_at;
+  return { success: true, resultId: data.id, isNew };
+}
+
+/**
+ * Upsert a couple result - insert new or update existing based on birth data
+ * Uses composite key for both persons' birth data and relation type
+ */
+export async function upsertCoupleResult(
+  userId: string,
+  person1: {
+    name: string;
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  },
+  person2: {
+    name: string;
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  },
+  relationType: string,
+  resultData: any
+): Promise<{ success: boolean; error?: string; resultId?: string; isNew: boolean }> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('couple_results')
+    .upsert(
+      {
+        user_id: userId,
+        p1_name: person1.name,
+        p1_birth_year: person1.year,
+        p1_birth_month: person1.month,
+        p1_birth_day: person1.day,
+        p1_birth_hour: person1.hour,
+        p1_birth_minute: person1.minute,
+        p1_gender: person1.gender,
+        p1_is_lunar: person1.isLunar,
+        p2_name: person2.name,
+        p2_birth_year: person2.year,
+        p2_birth_month: person2.month,
+        p2_birth_day: person2.day,
+        p2_birth_hour: person2.hour,
+        p2_birth_minute: person2.minute,
+        p2_gender: person2.gender,
+        p2_is_lunar: person2.isLunar,
+        relation_type: relationType,
+        result_data: resultData,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: 'user_id,p1_birth_year,p1_birth_month,p1_birth_day,p1_birth_hour,p1_birth_minute,p1_gender,p1_is_lunar,p2_birth_year,p2_birth_month,p2_birth_day,p2_birth_hour,p2_birth_minute,p2_gender,p2_is_lunar,relation_type',
+        ignoreDuplicates: false,
+      }
+    )
+    .select('id, created_at, updated_at')
+    .single();
+
+  if (error) {
+    console.error('[upsertCoupleResult] Error:', error);
+    return { success: false, error: error.message, isNew: false };
+  }
+
+  const isNew = data.created_at === data.updated_at;
+  return { success: true, resultId: data.id, isNew };
+}
+
+/**
+ * Save a face reading result with image upload
+ * Uses hash-based deduplication - if same result hash exists, update it
+ */
+export async function saveFaceReadingResult(
+  userId: string,
+  resultData: any,
+  imageBase64?: string,
+  gender?: string,
+  label?: string
+): Promise<{ success: boolean; error?: string; resultId?: string; isNew: boolean; imageUrl?: string }> {
+  const supabase = await createClient();
+
+  // Create a simple hash from the result data for deduplication
+  const resultHash = JSON.stringify({
+    overallScore: resultData.overallScore,
+    faceShape: resultData.faceShape?.type,
+  });
+
+  let imageUrl: string | undefined;
+
+  // Upload image to Supabase Storage if provided
+  if (imageBase64) {
+    try {
+      // Convert base64 to blob
+      const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+      const buffer = Buffer.from(base64Data, 'base64');
+
+      // Generate unique filename
+      const filename = `${userId}/${Date.now()}.jpg`;
+
+      // Upload to storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('face-readings')
+        .upload(filename, buffer, {
+          contentType: 'image/jpeg',
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error('[saveFaceReadingResult] Image upload error:', uploadError);
+        // Continue without image - don't fail the entire save
+      } else {
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from('face-readings')
+          .getPublicUrl(uploadData.path);
+
+        imageUrl = urlData.publicUrl;
+      }
+    } catch (uploadErr) {
+      console.error('[saveFaceReadingResult] Image processing error:', uploadErr);
+      // Continue without image
+    }
+  }
+
+  // Check if a result with same hash exists
+  const { data: existing } = await supabase
+    .from('face_reading_results')
+    .select('id, image_url')
+    .eq('user_id', userId)
+    .eq('result_hash', resultHash)
+    .single();
+
+  if (existing) {
+    // Update existing
+    const { data, error } = await supabase
+      .from('face_reading_results')
+      .update({
+        result_data: resultData,
+        image_url: imageUrl || existing.image_url, // Keep existing image if no new one
+        gender: gender || 'male',
+        label,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', existing.id)
+      .select('id, image_url')
+      .single();
+
+    if (error) {
+      console.error('[saveFaceReadingResult] Update error:', error);
+      return { success: false, error: error.message, isNew: false };
+    }
+
+    return { success: true, resultId: data.id, isNew: false, imageUrl: data.image_url };
+  }
+
+  // Insert new
+  const { data, error } = await supabase
+    .from('face_reading_results')
+    .insert({
+      user_id: userId,
+      result_data: resultData,
+      result_hash: resultHash,
+      image_url: imageUrl,
+      gender: gender || 'male',
+      label,
+    })
+    .select('id, image_url')
+    .single();
+
+  if (error) {
+    console.error('[saveFaceReadingResult] Insert error:', error);
+    return { success: false, error: error.message, isNew: false };
+  }
+
+  return { success: true, resultId: data.id, isNew: true, imageUrl: data.image_url };
+}
+
+/**
+ * Get user's compatibility results
+ */
+export async function getUserCompatibilityResults(userId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('compatibility_results')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    return { success: false, error: error.message, results: [] };
+  }
+
+  return { success: true, results: data || [] };
+}
+
+/**
+ * Get user's couple results
+ */
+export async function getUserCoupleResults(userId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('couple_results')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    return { success: false, error: error.message, results: [] };
+  }
+
+  return { success: true, results: data || [] };
+}
+
+/**
+ * Get user's face reading results
+ */
+export async function getUserFaceReadingResults(userId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('face_reading_results')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    return { success: false, error: error.message, results: [] };
+  }
+
+  return { success: true, results: data || [] };
+}

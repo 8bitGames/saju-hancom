@@ -161,7 +161,10 @@ export function FaceReadingForm() {
 
       const result = await response.json();
 
+      // Store both the result and the image for the result page
       sessionStorage.setItem("faceReadingResult", JSON.stringify(result));
+      sessionStorage.setItem("faceReadingImage", formData.imagePreview);
+      sessionStorage.setItem("faceReadingGender", formData.gender);
       router.push("/face-reading/result");
     } catch (error) {
       console.error("Face reading error:", error);

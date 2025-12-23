@@ -24,6 +24,7 @@
   "header": {
     "title": "한사 AI",
     "start": "시작하기",
+    "view": "보기",
     "swipeHint": "스와이프"
   },
   "home": {

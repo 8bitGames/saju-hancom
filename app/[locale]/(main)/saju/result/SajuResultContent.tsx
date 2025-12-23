@@ -1,9 +1,9 @@
 "use client";
 
 import { Link } from "@/lib/i18n/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useMemo, useRef } from "react";
-import { ArrowCounterClockwise, ArrowRight, Sparkle, Star, Atom, YinYang, ChatCircle, Lightning, Heart, Lightbulb, Brain } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, ArrowRight, Sparkle, Star, Atom, YinYang, ChatCircle, Lightning, Heart, Lightbulb, Brain, CheckCircle } from "@phosphor-icons/react";
 import { calculateSaju, STEM_KOREAN, ELEMENT_KOREAN } from "@/lib/saju";
 import { getLongitudeByCity } from "@/lib/saju/solar-time";
 import { FourPillarsDisplay } from "@/components/saju/pillar-display";
@@ -11,9 +11,10 @@ import { ElementChart } from "@/components/saju/element-chart";
 import { TenGodDisplay } from "@/components/saju/ten-god-display";
 import { StarsDisplay } from "@/components/saju/stars-display";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
-// import { SaveResultButton } from "@/components/auth/SaveResultButton"; // temporarily hidden
 import { DownloadPDFButton } from "@/components/auth/DownloadPDFButton";
 import { ShareKakaoButton } from "@/components/auth/ShareKakaoButton";
+import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
+import { autoSaveSajuResult } from "@/lib/actions/saju";
 import type { Gender } from "@/lib/saju/types";
 
 interface SearchParams {
@@ -238,7 +239,10 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
   const [interpretation, setInterpretation] = useState<BasicInterpretation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [showLoginCTA, setShowLoginCTA] = useState(false);
   const hasFetched = useRef(false);
+  const hasSaved = useRef(false);
 
   // Create cache key from saju input
   const cacheKey = useMemo(() =>
@@ -327,6 +331,49 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
     fetchInterpretation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
+
+  // Auto-save to database when interpretation is ready
+  useEffect(() => {
+    // Only save once, after interpretation is loaded
+    if (hasSaved.current || isLoading || !interpretation) return;
+    hasSaved.current = true;
+
+    const saveResult = async () => {
+      setSaveStatus('saving');
+
+      const response = await autoSaveSajuResult({
+        birthData: {
+          year,
+          month,
+          day,
+          hour,
+          minute,
+          gender,
+          isLunar,
+          city,
+        },
+        resultData: result,
+        interpretation,
+      });
+
+      if (response.success) {
+        setSaveStatus('saved');
+        // Hide notification after 3 seconds
+        setTimeout(() => setSaveStatus('idle'), 3000);
+      } else if (response.error === 'Not authenticated') {
+        // User not logged in - show login CTA after a delay
+        setSaveStatus('idle');
+        setTimeout(() => {
+          setShowLoginCTA(true);
+        }, 2000);
+      } else {
+        console.error('[AutoSave] Error:', response.error);
+        setSaveStatus('error');
+      }
+    };
+
+    saveResult();
+  }, [interpretation, isLoading, year, month, day, hour, minute, gender, isLunar, city, result]);
 
   const queryString = new URLSearchParams({
     year: year.toString(),
@@ -706,27 +753,11 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         </GlowingCard>
       </div>
 
-      {/* Save and Share Actions */}
+      {/* Share Actions */}
       <motion.div
         className="grid grid-cols-2 gap-2 pt-4"
         variants={itemVariants}
       >
-        {/* SaveResultButton temporarily hidden
-        <SaveResultButton
-          birthData={{
-            year,
-            month,
-            day,
-            hour,
-            minute,
-            gender,
-            isLunar,
-            city,
-          }}
-          resultData={result}
-          className="w-full h-12 bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs sm:text-sm whitespace-nowrap px-2"
-        />
-        */}
         <DownloadPDFButton
           birthData={{
             year,
@@ -793,6 +824,34 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
       >
         이 분석은 전통 명리학을 기반으로 한 참고용 정보입니다.
       </motion.p>
+
+      {/* Auto-save notification */}
+      <AnimatePresence>
+        {saveStatus === 'saved' && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50"
+          >
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/90 text-white text-sm shadow-lg">
+              <CheckCircle className="w-4 h-4" weight="fill" />
+              <span>기록에 저장됨</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Login CTA Modal */}
+      <LoginCTAModal
+        open={showLoginCTA}
+        onOpenChange={setShowLoginCTA}
+        onSuccess={() => {
+          // Re-trigger save after login
+          hasSaved.current = false;
+        }}
+        resultType="saju"
+      />
     </motion.div>
   );
 }

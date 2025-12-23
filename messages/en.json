@@ -24,6 +24,7 @@
   "header": {
     "title": "Hansa AI",
     "start": "Start",
+    "view": "View",
     "swipeHint": "Swipe"
   },
   "home": {

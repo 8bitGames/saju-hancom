@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useRouter } from "@/lib/i18n/navigation";
 import {
   Camera,
@@ -19,6 +19,8 @@ import {
   User,
 } from "@phosphor-icons/react";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
+import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
+import { checkAuthStatus, autoSaveFaceReadingResult } from "@/lib/actions/saju";
 
 interface FaceReadingResult {
   overallScore: number;
@@ -78,15 +80,25 @@ function ScoreBar({ score, label }: { score: number; label: string }) {
 export default function FaceReadingResultPage() {
   const router = useRouter();
   const [result, setResult] = useState<FaceReadingResult | null>(null);
+  const [imageBase64, setImageBase64] = useState<string | null>(null);
+  const [gender, setGender] = useState<string>("male");
   const [isLoading, setIsLoading] = useState(true);
+  const [showLoginCTA, setShowLoginCTA] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const hasCheckedAuth = useRef(false);
+  const hasSaved = useRef(false);
 
   useEffect(() => {
     const storedResult = sessionStorage.getItem("faceReadingResult");
+    const storedImage = sessionStorage.getItem("faceReadingImage");
+    const storedGender = sessionStorage.getItem("faceReadingGender");
 
     if (storedResult) {
       try {
         const parsed = JSON.parse(storedResult);
         setResult(parsed);
+        if (storedImage) setImageBase64(storedImage);
+        if (storedGender) setGender(storedGender);
       } catch {
         router.push("/face-reading");
         return;
@@ -98,6 +110,34 @@ export default function FaceReadingResultPage() {
 
     setIsLoading(false);
   }, [router]);
+
+  // Check auth status and auto-save for authenticated users
+  useEffect(() => {
+    if (!result || hasCheckedAuth.current) return;
+    hasCheckedAuth.current = true;
+
+    const checkAndSave = async () => {
+      const { isAuthenticated: authStatus } = await checkAuthStatus();
+      setIsAuthenticated(authStatus);
+
+      if (authStatus && !hasSaved.current) {
+        hasSaved.current = true;
+        // Auto-save the result with image for authenticated users
+        await autoSaveFaceReadingResult({
+          resultData: result,
+          imageBase64: imageBase64 || undefined,
+          gender,
+        });
+      } else if (!authStatus) {
+        // Show login CTA for non-authenticated users after a delay
+        setTimeout(() => {
+          setShowLoginCTA(true);
+        }, 2000);
+      }
+    };
+
+    checkAndSave();
+  }, [result, imageBase64, gender]);
 
   if (isLoading) {
     return (
@@ -336,6 +376,18 @@ export default function FaceReadingResultPage() {
       <p className="text-center text-sm text-white/40 pt-2 pb-8">
         본 관상 분석은 전통 관상학을 기반으로 한 재미용 콘텐츠입니다.
       </p>
+
+      {/* Login CTA Modal */}
+      <LoginCTAModal
+        open={showLoginCTA}
+        onOpenChange={setShowLoginCTA}
+        onSuccess={() => {
+          // Re-check auth and save after login
+          hasCheckedAuth.current = false;
+          hasSaved.current = false;
+        }}
+        resultType="face"
+      />
     </div>
   );
 }
