@@ -235,23 +235,16 @@ function SajuFortuneContent() {
             </button>
           </Link>
 
-          <Link href="/saju" className="block">
-            <button className="w-full h-14 rounded-xl bg-white/5 border border-white/10 text-base text-white/60 font-medium hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-2">
-              <ArrowCounterClockwise className="w-5 h-5" />
-              다시 분석하기
-            </button>
-          </Link>
-
           <button
             onClick={() => setShowClearConfirm(true)}
-            className="w-full h-12 rounded-xl border border-red-500/30 text-red-400 text-base font-medium hover:bg-red-500/10 transition-colors flex items-center justify-center gap-2"
+            className="w-full h-14 rounded-xl bg-white/5 border border-white/10 text-base text-white/60 font-medium hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-2"
           >
-            <X className="w-4 h-4" />
-            저장된 분석 결과 삭제
+            <ArrowCounterClockwise className="w-5 h-5" />
+            다시 분석하기
           </button>
         </div>
 
-        {/* Delete Confirm Modal */}
+        {/* Reanalyze Confirm Modal */}
         {showClearConfirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div
@@ -260,10 +253,10 @@ function SajuFortuneContent() {
             />
             <div className="relative bg-[#1a1033] rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-white/10">
               <h3 className="text-lg font-bold text-white mb-2">
-                분석 결과 삭제
+                다시 분석하기
               </h3>
               <p className="text-base text-white/60 mb-6">
-                저장된 사주 분석 결과를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+                현재 저장된 분석 결과가 새로운 결과로 덮어쓰기됩니다. 다시 분석하시겠습니까?
               </p>
               <div className="flex gap-3">
                 <button
@@ -278,9 +271,9 @@ function SajuFortuneContent() {
                     setShowClearConfirm(false);
                     router.push("/saju");
                   }}
-                  className="flex-1 py-3 rounded-xl bg-red-500 text-base text-white font-medium hover:bg-red-600 transition-colors"
+                  className="flex-1 py-3 rounded-xl bg-[#a855f7] text-base text-white font-medium hover:bg-[#9333ea] transition-colors"
                 >
-                  삭제
+                  다시 분석하기
                 </button>
               </div>
             </div>
@@ -300,30 +293,38 @@ function SajuFortuneContent() {
                   <Warning className="w-6 h-6 text-yellow-400" weight="fill" />
                 </div>
                 <h3 className="text-lg font-bold text-white">
-                  상세 분석 미완료
+                  상세 분석을 완료해주세요
                 </h3>
               </div>
-              <p className="text-base text-white/60 mb-2">
-                현재 {pendingDetailCount}/{TOTAL_DETAIL_AREAS}개 영역만 상세 분석되었습니다.
+              <p className="text-base text-white/60 mb-3">
+                현재 <span className="text-yellow-400 font-bold">{pendingDetailCount}/{TOTAL_DETAIL_AREAS}개</span> 영역만 상세 분석되었습니다.
               </p>
-              <p className="text-sm text-white/50 mb-6">
-                모든 영역의 상세보기를 클릭하면 더 풍부한 PDF를 받을 수 있습니다. 지금 다운로드하시겠습니까?
+              <div className="bg-white/5 rounded-xl p-4 mb-4">
+                <p className="text-sm text-white/70 mb-2 font-medium">
+                  📖 완전한 PDF를 받으시려면:
+                </p>
+                <p className="text-sm text-white/50">
+                  아래 분석 결과에서 각 영역의 <span className="text-[#a855f7]">"상세보기"</span> 버튼을 모두 클릭하여 8개 영역의 상세 분석을 먼저 확인해주세요.
+                </p>
+              </div>
+              <p className="text-xs text-white/40 mb-5">
+                상세 분석 없이 다운로드하면 기본 분석만 포함됩니다.
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowPdfWarning(false)}
-                  className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-base text-white/60 font-medium hover:bg-white/10 transition-colors"
+                  className="flex-1 py-3 rounded-xl bg-[#a855f7] text-base text-white font-medium hover:bg-[#9333ea] transition-colors"
                 >
-                  취소
+                  상세보기 하러가기
                 </button>
                 <button
                   onClick={() => {
                     setShowPdfWarning(false);
                     handleDownloadPDF(true);
                   }}
-                  className="flex-1 py-3 rounded-xl bg-[#22c55e] text-base text-white font-medium hover:bg-[#16a34a] transition-colors"
+                  className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-base text-white/40 font-medium hover:bg-white/10 transition-colors"
                 >
-                  다운로드
+                  그냥 다운로드
                 </button>
               </div>
             </div>
