@@ -497,7 +497,6 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
                           <motion.div
                             key={i}
                             className="absolute w-1 h-1 rounded-full"
-                            style={{ backgroundColor: card.theme.accent }}
                             initial={{ opacity: 0, scale: 0 }}
                             animate={{
                               opacity: [0, 0.8, 0],
