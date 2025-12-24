@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "@/components/ui/icons";
 import { StarsBackground } from "@/components/aceternity/stars-background";
@@ -108,7 +109,8 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
 
     const handleScroll = () => {
       const scrollLeft = container.scrollLeft;
-      const cardWidth = container.offsetWidth;
+      // 카드 너비가 85vw이므로 그에 맞게 계산
+      const cardWidth = window.innerWidth * 0.85;
       const newIndex = Math.round(scrollLeft / cardWidth);
       setActiveIndex(Math.min(Math.max(newIndex, 0), cards.length - 1));
     };
@@ -117,7 +119,7 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
     return () => container.removeEventListener("scroll", handleScroll);
   }, [cards.length]);
 
-  // Intersection Observer for lazy loading videos
+// Intersection Observer for lazy loading videos
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -148,6 +150,18 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
 
     return () => observer.disconnect();
   }, [cards.length]);
+
+  // 도트 클릭 시 해당 카드로 스크롤
+  const scrollToCard = (index: number) => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const cardWidth = window.innerWidth * 0.85;
+    container.scrollTo({
+      left: cardWidth * index,
+      behavior: "smooth",
+    });
+  };
 
   // Control video playback - only play the active video
   useEffect(() => {
@@ -320,19 +334,23 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
               ref={(el) => {
                 cardRefs.current[index] = el;
               }}
-              className="w-screen flex-shrink-0 snap-center flex items-end justify-center px-4 pb-safe"
+              className="flex-shrink-0 snap-center flex items-end justify-center pb-safe"
               style={{
+                // 카드 너비를 85%로 해서 옆 카드가 살짝 보이게
+                width: "85vw",
                 height: viewportHeight ? `${viewportHeight}px` : "100dvh",
                 paddingTop: "80px",
-                paddingBottom: "40px",
+                paddingBottom: "70px", // 도트 공간 확보
+                paddingLeft: index === 0 ? "calc(7.5vw)" : "2.5vw",
+                paddingRight: index === cards.length - 1 ? "calc(7.5vw)" : "2.5vw",
               }}
             >
               <div
                 onClick={() => handleCardClick(card.href)}
                 className="relative w-full max-w-sm rounded-3xl overflow-hidden cursor-pointer group transition-all duration-500 hover:scale-[1.02]"
                 style={{
-                  height: viewportHeight ? `${Math.min(viewportHeight - 104, 720)}px` : "calc(100dvh - 104px)",
-                  maxHeight: "720px",
+                  height: viewportHeight ? `${Math.min(viewportHeight - 150, 680)}px` : "calc(100dvh - 150px)",
+                  maxHeight: "680px",
                   boxShadow: `0 25px 60px -15px ${activeTheme?.accent}50, 0 10px 30px -10px rgba(0,0,0,0.5)`,
                 }}
               >
@@ -430,6 +448,119 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
           ))}
         </div>
 
+        {/* Mystical Navigation */}
+        <div
+          className="fixed left-0 right-0 z-50 flex justify-center items-center"
+          style={{ bottom: "max(24px, env(safe-area-inset-bottom, 24px))" }}
+        >
+          <div className="relative flex items-center gap-5">
+            {/* Connecting Line */}
+            <div
+              className="absolute top-1/2 left-3 right-3 h-[1px] -translate-y-1/2 pointer-events-none"
+              style={{
+                background: `linear-gradient(90deg, transparent, ${activeTheme?.accent}30 20%, ${activeTheme?.accent}30 80%, transparent)`,
+              }}
+            />
+
+            {cards.map((card, index) => {
+              const isActive = index === activeIndex;
+              return (
+                <button
+                  key={card.id}
+                  onClick={() => scrollToCard(index)}
+                  className="relative flex items-center justify-center w-7 h-7"
+                  aria-label={`${card.title}로 이동`}
+                >
+                  {/* Outer Glow Ring for Active */}
+                  <AnimatePresence>
+                    {isActive && (
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute rounded-full"
+                        style={{
+                          width: 28,
+                          height: 28,
+                          background: `radial-gradient(circle, ${card.theme.accent}50 0%, transparent 70%)`,
+                        }}
+                      />
+                    )}
+                  </AnimatePresence>
+
+                  {/* Orbiting Particles for Active */}
+                  <AnimatePresence>
+                    {isActive && (
+                      <>
+                        {[...Array(3)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className="absolute w-1 h-1 rounded-full"
+                            style={{ backgroundColor: card.theme.accent }}
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{
+                              opacity: [0, 0.8, 0],
+                              scale: [0.5, 1, 0.5],
+                            }}
+                            exit={{ opacity: 0, scale: 0 }}
+                            transition={{
+                              duration: 2,
+                              delay: i * 0.6,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                            style={{
+                              backgroundColor: card.theme.accent,
+                              left: `calc(50% + ${Math.cos((i * 120 * Math.PI) / 180) * 14}px)`,
+                              top: `calc(50% + ${Math.sin((i * 120 * Math.PI) / 180) * 14}px)`,
+                              transform: "translate(-50%, -50%)",
+                              boxShadow: `0 0 4px ${card.theme.accent}`,
+                            }}
+                          />
+                        ))}
+                      </>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Star Core */}
+                  <motion.div
+                    className="relative rounded-full"
+                    animate={{
+                      scale: isActive ? [1, 1.15, 1] : 1,
+                      width: isActive ? 10 : 6,
+                      height: isActive ? 10 : 6,
+                      backgroundColor: isActive ? card.theme.accent : "rgba(255,255,255,0.4)",
+                    }}
+                    transition={{
+                      scale: {
+                        duration: 2,
+                        repeat: isActive ? Infinity : 0,
+                        ease: "easeInOut",
+                      },
+                      width: { type: "spring", stiffness: 300, damping: 30 },
+                      height: { type: "spring", stiffness: 300, damping: 30 },
+                      backgroundColor: { duration: 0.3 },
+                    }}
+                    style={{
+                      boxShadow: isActive
+                        ? `0 0 10px ${card.theme.accent}, 0 0 20px ${card.theme.accent}80`
+                        : "none",
+                    }}
+                  >
+                    {/* Inner Shine */}
+                    <motion.div
+                      className="absolute inset-[2px] rounded-full bg-white/70"
+                      animate={{ opacity: isActive ? 0.8 : 0.3 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </motion.div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Hide scrollbar CSS and safe area support */}
         <style jsx global>{`
           .scrollbar-hide::-webkit-scrollbar {
@@ -437,7 +568,7 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
           }
           @supports (padding-bottom: env(safe-area-inset-bottom)) {
             .pb-safe {
-              padding-bottom: max(40px, env(safe-area-inset-bottom)) !important;
+              padding-bottom: max(70px, calc(env(safe-area-inset-bottom) + 40px)) !important;
             }
           }
         `}</style>
