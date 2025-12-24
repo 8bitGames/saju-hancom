@@ -144,6 +144,10 @@ export async function POST(request: NextRequest) {
 
         try {
           // Build conversation contents for Gemini
+          const acknowledgment = locale === 'ko'
+            ? "네, 알겠습니다. 사주 상담을 시작하겠습니다."
+            : "Yes, I understand. Let me begin the birth chart consultation.";
+
           const conversationContents = [
             {
               role: "user" as const,
@@ -151,7 +155,7 @@ export async function POST(request: NextRequest) {
             },
             {
               role: "model" as const,
-              parts: [{ text: "네, 알겠습니다. 사주 상담을 시작하겠습니다." }],
+              parts: [{ text: acknowledgment }],
             },
             ...(messages as ChatMessage[]).map((m) => ({
               role: m.role === "user" ? "user" as const : "model" as const,

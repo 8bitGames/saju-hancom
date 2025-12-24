@@ -25,10 +25,12 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: 'cover', // For safe area on notched devices
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: light)', color: '#1a1033' },
     { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
   ],
+  colorScheme: 'dark',
 };
 
 export const metadata: Metadata = {

@@ -4,6 +4,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Sparkle, Check } from "@phosphor-icons/react";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 interface MysticalLoaderProps {
   currentStep: number;
@@ -19,6 +20,7 @@ export function MysticalLoader({
   className,
 }: MysticalLoaderProps) {
   const progress = (currentStep / totalSteps) * 100;
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <div className={cn("relative flex flex-col items-center justify-center", className)}>
@@ -27,11 +29,11 @@ export function MysticalLoader({
         {/* Outer glow rings */}
         <motion.div
           className="absolute inset-0 rounded-full bg-[#a855f7]/30"
-          animate={{
+          animate={prefersReducedMotion ? {} : {
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.5, 0.3],
           }}
-          transition={{
+          transition={prefersReducedMotion ? {} : {
             duration: 3,
             repeat: Infinity,
             ease: "easeInOut",
@@ -41,8 +43,8 @@ export function MysticalLoader({
         {/* Rotating mystical ring */}
         <motion.div
           className="absolute inset-2 rounded-full border-2 border-dashed border-[#a855f7]/50"
-          animate={{ rotate: 360 }}
-          transition={{
+          animate={prefersReducedMotion ? {} : { rotate: 360 }}
+          transition={prefersReducedMotion ? {} : {
             duration: 20,
             repeat: Infinity,
             ease: "linear",
@@ -55,8 +57,8 @@ export function MysticalLoader({
           style={{
             borderStyle: "dotted",
           }}
-          animate={{ rotate: -360 }}
-          transition={{
+          animate={prefersReducedMotion ? {} : { rotate: -360 }}
+          transition={prefersReducedMotion ? {} : {
             duration: 15,
             repeat: Infinity,
             ease: "linear",
@@ -66,14 +68,15 @@ export function MysticalLoader({
         {/* Inner glowing orb */}
         <motion.div
           className="absolute inset-6 rounded-full bg-[#a855f7]"
-          animate={{
+          style={prefersReducedMotion ? { boxShadow: "0 0 30px #a855f7, inset 0 0 30px rgba(255,255,255,0.1)" } : {}}
+          animate={prefersReducedMotion ? {} : {
             boxShadow: [
               "0 0 30px #a855f7, inset 0 0 30px rgba(255,255,255,0.1)",
               "0 0 60px #a855f7, inset 0 0 60px rgba(255,255,255,0.2)",
               "0 0 30px #a855f7, inset 0 0 30px rgba(255,255,255,0.1)",
             ],
           }}
-          transition={{
+          transition={prefersReducedMotion ? {} : {
             duration: 2,
             repeat: Infinity,
             ease: "easeInOut",
@@ -85,30 +88,32 @@ export function MysticalLoader({
           <div className="absolute top-2 left-4 w-8 h-4 bg-white/30 rounded-full blur-sm transform -rotate-45" />
         </div>
 
-        {/* Floating particles inside */}
-        <div className="absolute inset-6 rounded-full overflow-hidden">
-          {[...Array(8)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 rounded-full bg-white/60"
-              style={{
-                left: `${30 + Math.random() * 40}%`,
-                top: `${30 + Math.random() * 40}%`,
-              }}
-              animate={{
-                y: [0, -20, 0],
-                opacity: [0.3, 1, 0.3],
-                scale: [0.5, 1, 0.5],
-              }}
-              transition={{
-                duration: 2 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
-        </div>
+        {/* Floating particles inside - skip if reduced motion */}
+        {!prefersReducedMotion && (
+          <div className="absolute inset-6 rounded-full overflow-hidden">
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-1 rounded-full bg-white/60"
+                style={{
+                  left: `${30 + Math.random() * 40}%`,
+                  top: `${30 + Math.random() * 40}%`,
+                }}
+                animate={{
+                  y: [0, -20, 0],
+                  opacity: [0.3, 1, 0.3],
+                  scale: [0.5, 1, 0.5],
+                }}
+                transition={{
+                  duration: 2 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                  ease: "easeInOut",
+                }}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Progress arc */}
         <svg className="absolute inset-0 w-full h-full -rotate-90">
@@ -139,11 +144,11 @@ export function MysticalLoader({
         {/* Center icon with step number */}
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.div
-            animate={{
+            animate={prefersReducedMotion ? {} : {
               scale: [1, 1.1, 1],
               rotateY: [0, 180, 360],
             }}
-            transition={{
+            transition={prefersReducedMotion ? {} : {
               duration: 4,
               repeat: Infinity,
               ease: "easeInOut",
@@ -157,18 +162,18 @@ export function MysticalLoader({
       {/* Step indicator */}
       <motion.div
         className="mt-6 text-center"
-        initial={{ opacity: 0, y: 10 }}
+        initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+        transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.3 }}
       >
         <AnimatePresence mode="wait">
           <motion.p
             key={stepName}
             className="text-lg sm:text-xl font-medium text-[#a855f7]"
-            initial={{ opacity: 0, y: -10 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.3 }}
+            exit={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
           >
             {stepName}
           </motion.p>
@@ -178,27 +183,29 @@ export function MysticalLoader({
         </p>
       </motion.div>
 
-      {/* Mystical energy waves */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(3)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#a855f7]/20"
-            initial={{ width: 0, height: 0, opacity: 0.5 }}
-            animate={{
-              width: [0, 300, 400],
-              height: [0, 300, 400],
-              opacity: [0.5, 0.2, 0],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              delay: i * 1,
-              ease: "easeOut",
-            }}
-          />
-        ))}
-      </div>
+      {/* Mystical energy waves - skip if reduced motion */}
+      {!prefersReducedMotion && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {[...Array(3)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#a855f7]/20"
+              initial={{ width: 0, height: 0, opacity: 0.5 }}
+              animate={{
+                width: [0, 300, 400],
+                height: [0, 300, 400],
+                opacity: [0.5, 0.2, 0],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                delay: i * 1,
+                ease: "easeOut",
+              }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

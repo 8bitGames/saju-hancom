@@ -25,7 +25,11 @@
     "title": "한사 AI",
     "start": "시작하기",
     "view": "보기",
-    "swipeHint": "스와이프"
+    "swipeHint": "스와이프",
+    "menu": "메뉴",
+    "about": "회사 정보",
+    "record": "기록",
+    "language": "언어"
   },
   "home": {
     "title": "AI 운세 마스터",

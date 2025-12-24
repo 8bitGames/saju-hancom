@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
 
 interface ShootingStar {
@@ -26,6 +26,18 @@ interface ShootingStarsProps {
 
 // Fixed minimum height matching stars-background.tsx
 const MIN_HEIGHT = 1200;
+
+// Check for reduced motion preference
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Check if device is mobile for frame rate optimization
+const isMobile = () =>
+  typeof window !== "undefined" &&
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
 
 const getRandomStartPoint = () => {
   const side = Math.floor(Math.random() * 4);
@@ -59,38 +71,85 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
 }) => {
   const [star, setStar] = useState<ShootingStar | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const isVisibleRef = useRef(true);
+  const animationFrameId = useRef<number>(0);
+  const lastFrameTime = useRef(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Frame rate: 60fps on desktop, 30fps on mobile
+  const targetFPS = isMobile() ? 30 : 60;
+  const frameInterval = 1000 / targetFPS;
+
+  // Page Visibility API - pause animation when tab is not visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      isVisibleRef.current = !document.hidden;
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  // Don't render shooting stars if user prefers reduced motion
+  const shouldAnimate = !prefersReducedMotion();
+
+  const createStar = useCallback(() => {
+    if (!shouldAnimate || !isVisibleRef.current) return;
+
+    const { x, y, angle } = getRandomStartPoint();
+    const newStar: ShootingStar = {
+      id: Date.now(),
+      x,
+      y,
+      angle,
+      scale: 1,
+      speed: Math.random() * (maxSpeed - minSpeed) + minSpeed,
+      distance: 0,
+    };
+    setStar(newStar);
+
+    const animationDuration = Math.random() * (maxDelay - minDelay) + minDelay;
+    setTimeout(() => {
+      setStar(null);
+    }, animationDuration);
+  }, [shouldAnimate, minSpeed, maxSpeed, minDelay, maxDelay]);
 
   useEffect(() => {
-    const createStar = () => {
-      const { x, y, angle } = getRandomStartPoint();
-      const newStar: ShootingStar = {
-        id: Date.now(),
-        x,
-        y,
-        angle,
-        scale: 1,
-        speed: Math.random() * (maxSpeed - minSpeed) + minSpeed,
-        distance: 0,
-      };
-      setStar(newStar);
-
-      const animationDuration = Math.random() * (maxDelay - minDelay) + minDelay;
-      setTimeout(() => {
-        setStar(null);
-      }, animationDuration);
-    };
+    if (!shouldAnimate) return;
 
     createStar();
 
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       createStar();
     }, Math.random() * (maxDelay - minDelay) + minDelay);
 
-    return () => clearInterval(interval);
-  }, [minSpeed, maxSpeed, minDelay, maxDelay]);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [shouldAnimate, createStar, minDelay, maxDelay]);
 
   useEffect(() => {
-    const moveStar = () => {
+    if (!shouldAnimate) return;
+
+    const moveStar = (currentTime: number) => {
+      // Skip frame if page is not visible
+      if (!isVisibleRef.current) {
+        animationFrameId.current = requestAnimationFrame(moveStar);
+        return;
+      }
+
+      // Throttle frame rate on mobile
+      const elapsed = currentTime - lastFrameTime.current;
+      if (elapsed < frameInterval) {
+        animationFrameId.current = requestAnimationFrame(moveStar);
+        return;
+      }
+      lastFrameTime.current = currentTime - (elapsed % frameInterval);
+
       if (star) {
         const height = Math.max(window.innerHeight, window.screen?.height || 0, MIN_HEIGHT);
         setStar((prevStar) => {
@@ -120,16 +179,24 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
           };
         });
       }
+
+      animationFrameId.current = requestAnimationFrame(moveStar);
     };
 
-    const animationFrame = requestAnimationFrame(moveStar);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [star]);
+    animationFrameId.current = requestAnimationFrame(moveStar);
+    return () => cancelAnimationFrame(animationFrameId.current);
+  }, [star, shouldAnimate, frameInterval]);
+
+  // Don't render anything if reduced motion is preferred
+  if (!shouldAnimate) {
+    return null;
+  }
 
   return (
     <svg
       ref={svgRef}
       className={cn("w-full h-full absolute inset-0", className)}
+      style={{ willChange: "transform" }}
     >
       {star && (
         <rect

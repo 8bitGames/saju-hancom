@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { CaretLeft, Buildings, ClockCounterClockwise } from "@phosphor-icons/react";
+import { CaretLeft, Buildings, ClockCounterClockwise, List, X, Globe } from "@phosphor-icons/react";
 import { StarsBackground } from "@/components/aceternity/stars-background";
 import { ShootingStars } from "@/components/aceternity/shooting-stars";
-import { LanguageToggle } from "@/components/layout/language-toggle";
 import { CompanyModal } from "@/components/layout/company-modal";
+import { usePathname, useRouter as useI18nRouter } from "@/lib/i18n/navigation";
+import { locales, localeNames, type Locale } from "@/lib/i18n/config";
 
 export default function MainLayout({
   children,
@@ -15,9 +16,33 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const locale = useLocale();
+  const i18nRouter = useI18nRouter();
+  const pathname = usePathname();
+  const locale = useLocale() as Locale;
   const t = useTranslations("header");
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLanguageExpanded, setIsLanguageExpanded] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+        setIsLanguageExpanded(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const switchLocale = (newLocale: Locale) => {
+    i18nRouter.replace(pathname, { locale: newLocale });
+    setIsMenuOpen(false);
+    setIsLanguageExpanded(false);
+  };
 
   return (
     <>
@@ -69,23 +94,79 @@ export default function MainLayout({
           </button>
         </div>
 
-        {/* Top Right Controls */}
-        <div className="fixed top-4 sm:top-6 right-3 sm:right-6 z-50 flex items-center gap-2">
+        {/* Top Right Hamburger Menu */}
+        <div className="fixed top-4 sm:top-6 right-3 sm:right-6 z-50" ref={menuRef}>
           <button
-            onClick={() => setIsCompanyModalOpen(true)}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
-            aria-label="About"
+            aria-label={isMenuOpen ? t("menu") : t("menu")}
           >
-            <Buildings className="w-5 h-5" weight="bold" />
+            {isMenuOpen ? (
+              <X className="w-5 h-5" weight="bold" />
+            ) : (
+              <List className="w-5 h-5" weight="bold" />
+            )}
           </button>
-          <button
-            onClick={() => router.push("/history")}
-            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
-            aria-label="History"
-          >
-            <ClockCounterClockwise className="w-5 h-5" weight="bold" />
-          </button>
-          <LanguageToggle />
+
+          {/* Dropdown Menu */}
+          {isMenuOpen && (
+            <div className="absolute top-full right-0 mt-2 w-48 rounded-2xl bg-black/80 backdrop-blur-md border border-white/20 shadow-xl overflow-hidden animate-fade-in">
+              {/* About / Company */}
+              <button
+                onClick={() => {
+                  setIsCompanyModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+                className="w-full px-4 py-3 flex items-center gap-3 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+              >
+                <Buildings className="w-5 h-5" weight="bold" />
+                <span className="text-sm font-medium">{t("about")}</span>
+              </button>
+
+              {/* History / Record */}
+              <button
+                onClick={() => {
+                  router.push("/history");
+                  setIsMenuOpen(false);
+                }}
+                className="w-full px-4 py-3 flex items-center gap-3 text-white/80 hover:bg-white/10 hover:text-white transition-colors border-t border-white/10"
+              >
+                <ClockCounterClockwise className="w-5 h-5" weight="bold" />
+                <span className="text-sm font-medium">{t("record")}</span>
+              </button>
+
+              {/* Language */}
+              <div className="border-t border-white/10">
+                <button
+                  onClick={() => setIsLanguageExpanded(!isLanguageExpanded)}
+                  className="w-full px-4 py-3 flex items-center gap-3 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+                >
+                  <Globe className="w-5 h-5" weight="bold" />
+                  <span className="text-sm font-medium">{t("language")}</span>
+                  <span className="ml-auto text-xs text-white/50">{localeNames[locale]}</span>
+                </button>
+
+                {/* Language Options */}
+                {isLanguageExpanded && (
+                  <div className="bg-white/5">
+                    {locales.map((l) => (
+                      <button
+                        key={l}
+                        onClick={() => switchLocale(l)}
+                        className={`w-full px-4 py-2 pl-12 text-left text-sm transition-colors ${
+                          l === locale
+                            ? "text-purple-400 font-medium bg-purple-500/10"
+                            : "text-white/60 hover:bg-white/5 hover:text-white/80"
+                        }`}
+                      >
+                        {localeNames[l]}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Company Modal */}

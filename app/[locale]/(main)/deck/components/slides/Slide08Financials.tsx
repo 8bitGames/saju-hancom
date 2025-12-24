@@ -9,7 +9,7 @@ import {
   Target,
 } from '@phosphor-icons/react';
 import { SlideWrapper, SlideTitle } from '../ui/SlideWrapper';
-import { LineChart } from '../charts/ChartWrapper';
+import { DynamicLineChart } from '@/components/ui/dynamic-imports';
 
 export default function Slide08Financials() {
   const projections = [
@@ -94,7 +94,7 @@ export default function Slide08Financials() {
           >
             <div className="rounded-xl border border-white/10 bg-white/5 p-4">
               <div className="h-48">
-                <LineChart data={chartData} />
+                <DynamicLineChart data={chartData} />
               </div>
             </div>
           </motion.div>

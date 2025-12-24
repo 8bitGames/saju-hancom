@@ -1,10 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/lib/i18n/navigation";
 import { Calendar, Clock, MapPin, User, Sparkle, ArrowRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+
+// Haptic feedback utility for touch devices
+const triggerHaptic = (style: "light" | "medium" | "heavy" = "light") => {
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+    const patterns = {
+      light: [10],
+      medium: [20],
+      heavy: [30],
+    };
+    navigator.vibrate(patterns[style]);
+  }
+};
 
 type Gender = "male" | "female";
 
@@ -146,7 +158,10 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
             <button
               key={g}
               type="button"
-              onClick={() => handleChange("gender", g)}
+              onClick={() => {
+                triggerHaptic("light");
+                handleChange("gender", g);
+              }}
               className={cn(
                 "h-12 rounded-xl font-medium text-base transition-all duration-200",
                 formData.gender === g
@@ -171,7 +186,10 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
             <button
               key={type}
               type="button"
-              onClick={() => handleChange("isLunar", type === "lunar")}
+              onClick={() => {
+                triggerHaptic("light");
+                handleChange("isLunar", type === "lunar");
+              }}
               className={cn(
                 "h-12 rounded-xl font-medium text-base transition-all duration-200",
                 (type === "lunar") === formData.isLunar
@@ -298,7 +316,8 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
       {/* Submit Button */}
       <button
         type="submit"
-        className="w-full h-14 flex items-center justify-center gap-2 bg-[#a855f7] text-white font-bold text-lg rounded-xl hover:bg-[#9333ea] transition-colors"
+        onClick={() => triggerHaptic("medium")}
+        className="w-full h-14 flex items-center justify-center gap-2 bg-[#a855f7] text-white font-bold text-lg rounded-xl hover:bg-[#9333ea] active:scale-[0.98] transition-all"
       >
         {t("submit")}
         <ArrowRight className="w-5 h-5" weight="bold" />

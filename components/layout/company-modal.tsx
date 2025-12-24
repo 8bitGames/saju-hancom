@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useLocale } from "next-intl";
 import {
   X,
@@ -24,6 +25,7 @@ interface CompanyModalProps {
 
 export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
   const locale = useLocale();
+  const prefersReducedMotion = useReducedMotion();
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -130,39 +132,55 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
 
   const t = content[locale as "en" | "ko"] || content.en;
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-    exit: { opacity: 0, transition: { duration: 0.2 } },
-  };
+  const containerVariants = prefersReducedMotion
+    ? {
+        hidden: { opacity: 1 },
+        visible: { opacity: 1 },
+        exit: { opacity: 1 },
+      }
+    : {
+        hidden: { opacity: 0 },
+        visible: {
+          opacity: 1,
+          transition: {
+            staggerChildren: 0.1,
+            delayChildren: 0.2,
+          },
+        },
+        exit: { opacity: 0, transition: { duration: 0.2 } },
+      };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: "easeOut" as const },
-    },
-  };
+  const itemVariants = prefersReducedMotion
+    ? {
+        hidden: { opacity: 1, y: 0 },
+        visible: { opacity: 1, y: 0 },
+      }
+    : {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.5, ease: "easeOut" as const },
+        },
+      };
 
-  const letterVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.03,
-        duration: 0.5,
-        ease: "easeOut" as const,
-      },
-    }),
-  };
+  const letterVariants = prefersReducedMotion
+    ? {
+        hidden: { opacity: 1, y: 0 },
+        visible: { opacity: 1, y: 0 },
+      }
+    : {
+        hidden: { opacity: 0, y: 50 },
+        visible: (i: number) => ({
+          opacity: 1,
+          y: 0,
+          transition: {
+            delay: i * 0.03,
+            duration: 0.5,
+            ease: "easeOut" as const,
+          },
+        }),
+      };
 
   return (
     <AnimatePresence>
@@ -185,17 +203,17 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
           {/* Modal Content */}
           <motion.div
             className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4 bg-gradient-to-br from-[#1a1033] via-[#0f0a1a] to-[#1a0a2a] rounded-3xl border border-white/10 shadow-2xl"
-            initial={{ scale: 0.9, opacity: 0, y: 50 }}
+            initial={prefersReducedMotion ? { opacity: 1, scale: 1, y: 0 } : { scale: 0.9, opacity: 0, y: 50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 50 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            exit={prefersReducedMotion ? { opacity: 1, scale: 1, y: 0 } : { scale: 0.9, opacity: 0, y: 50 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 25 }}
           >
             {/* Close Button */}
             <motion.button
               onClick={onClose}
               className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-20"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
+              whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
             >
               <X className="w-5 h-5 text-white" weight="bold" />
             </motion.button>
@@ -262,11 +280,11 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.6 + index * 0.1 }}
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
                     >
                       <motion.div
                         className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center mb-3"
-                        whileHover={{ rotate: 10 }}
+                        whileHover={prefersReducedMotion ? {} : { rotate: 10 }}
                       >
                         <item.icon className="w-5 h-5 text-purple-400" weight="duotone" />
                       </motion.div>
@@ -347,8 +365,8 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
               <motion.button
                 onClick={onClose}
                 className="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:from-purple-500 hover:to-pink-500 transition-all"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
                 variants={itemVariants}
               >
                 {t.close}

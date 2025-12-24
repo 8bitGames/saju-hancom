@@ -12,7 +12,7 @@ import {
   Sparkle,
 } from '@phosphor-icons/react';
 import { SlideWrapper, SlideTitle } from '../ui/SlideWrapper';
-import { DoughnutChart } from '../charts/ChartWrapper';
+import { DynamicDoughnutChart } from '@/components/ui/dynamic-imports';
 
 export default function Slide12Ask() {
   const allocationData = {
@@ -92,7 +92,7 @@ export default function Slide12Ask() {
           >
             {/* Chart */}
             <div className="flex h-40 w-40 items-center justify-center rounded-xl border border-white/10 bg-white/5 p-3">
-              <DoughnutChart data={allocationData} />
+              <DynamicDoughnutChart data={allocationData} />
             </div>
 
             {/* Allocation Details */}

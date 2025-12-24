@@ -25,7 +25,11 @@
     "title": "Hansa AI",
     "start": "Start",
     "view": "View",
-    "swipeHint": "Swipe"
+    "swipeHint": "Swipe",
+    "menu": "Menu",
+    "about": "About",
+    "record": "History",
+    "language": "Language"
   },
   "home": {
     "title": "AI Fortune Master",

@@ -21,6 +21,7 @@ import {
 } from "./pipeline-schemas";
 import type { SajuAnalysisInput } from "./pipeline-types";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
+import type { Locale } from "@/lib/i18n/config";
 
 // ============================================================================
 // 공통 유틸리티
@@ -30,6 +31,16 @@ const getModel = () => google(GEMINI_MODEL);
 
 const currentYear = new Date().getFullYear();
 
+// Helper function to get locale from input
+const getLocale = (input: SajuAnalysisInput): Locale =>
+  input.locale === 'en' ? 'en' : 'ko';
+
+// Helper function to get gender text
+const getGenderText = (locale: Locale, gender: "male" | "female"): string =>
+  locale === 'ko'
+    ? (gender === "female" ? "여성" : "남성")
+    : (gender === "female" ? "female" : "male");
+
 // ============================================================================
 // Step 1: 기초 구조 분석
 // ============================================================================
@@ -37,15 +48,11 @@ const currentYear = new Date().getFullYear();
 export async function analyzeStep1_Foundation(
   input: SajuAnalysisInput
 ): Promise<Step1Result> {
-  const genderText = input.gender === "female" ? "여성" : "남성";
+  const locale = getLocale(input);
+  const genderText = getGenderText(locale, input.gender);
 
-  const result = await generateObject({
-    model: getModel(),
-    schema: Step1Schema,
-    messages: [
-      {
-        role: "system",
-        content: `당신은 전통 동양 명리학(四柱命理學) 전문가입니다.
+  const systemPrompt = locale === 'ko'
+    ? `당신은 전통 동양 명리학(四柱命理學) 전문가입니다.
 주어진 생년월일시를 바탕으로 사주팔자의 기초 구조를 분석합니다.
 
 ## 분석 과제
@@ -70,19 +77,49 @@ export async function analyzeStep1_Foundation(
 - 육합: 子丑合, 寅亥合, 卯戌合, 辰酉合, 巳申合, 午未合
 - 충: 子午沖, 丑未沖, 寅申沖, 卯酉沖, 辰戌沖, 巳亥沖
 
-정확하고 체계적으로 분석해주세요.`,
-      },
-      {
-        role: "user",
-        content: `다음 정보로 사주 기초 구조를 분석해주세요.
+정확하고 체계적으로 분석해주세요.`
+    : `You are an expert in traditional Eastern astrology (Four Pillars of Destiny / BaZi).
+Analyze the foundational structure of the birth chart based on the given birth date and time.
+
+## Analysis Tasks
+1. Derive accurate Year, Month, Day, and Hour Pillars based on the Chinese calendar
+2. Assign the Five Elements to each pillar's Heavenly Stem and Earthly Branch
+3. Calculate Five Element scores (Stem 2pts, Branch Main Qi 2pts, Secondary Qi 1pt, Residual Qi 0.5pt)
+4. Identify Heavenly Stem relationships (combinations, clashes)
+5. Identify Earthly Branch relationships (Three Harmonies, Six Harmonies, Directional Harmonies, Clashes, Punishments)
+
+## Five Element Score Calculation Rules
+- Heavenly Stem: +2 points for that element
+- Branch Main Qi: +2 points
+- Branch Secondary Qi: +1 point
+- Branch Residual Qi: +0.5 points
+
+Analyze systematically and accurately.`;
+
+  const userPrompt = locale === 'ko'
+    ? `다음 정보로 사주 기초 구조를 분석해주세요.
 
 생년월일: ${input.birthDate}
 태어난 시간: ${input.birthTime}
 성별: ${genderText}
 ${input.isLunar ? "(음력)" : "(양력)"}
 
-만세력 기준으로 정확한 사주팔자를 도출하고, 오행 분포와 간지 관계를 분석해주세요.`,
-      },
+만세력 기준으로 정확한 사주팔자를 도출하고, 오행 분포와 간지 관계를 분석해주세요.`
+    : `Please analyze the foundational structure of the birth chart with the following information.
+
+Birth Date: ${input.birthDate}
+Birth Time: ${input.birthTime}
+Gender: ${genderText}
+${input.isLunar ? "(Lunar calendar)" : "(Solar calendar)"}
+
+Derive the accurate Four Pillars based on the Chinese calendar and analyze the Five Element distribution and Stem-Branch relationships.`;
+
+  const result = await generateObject({
+    model: getModel(),
+    schema: Step1Schema,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
     ],
   });
 
@@ -97,15 +134,11 @@ export async function analyzeStep2_DayMaster(
   input: SajuAnalysisInput,
   step1: Step1Result
 ): Promise<Step2Result> {
-  const genderText = input.gender === "female" ? "여성" : "남성";
+  const locale = getLocale(input);
+  const genderText = getGenderText(locale, input.gender);
 
-  const result = await generateObject({
-    model: getModel(),
-    schema: Step2Schema,
-    messages: [
-      {
-        role: "system",
-        content: `당신은 전통 동양 명리학(四柱命理學) 전문가입니다.
+  const systemPrompt = locale === 'ko'
+    ? `당신은 전통 동양 명리학(四柱命理學) 전문가입니다.
 일간(日干)을 중심으로 심층 분석을 수행합니다.
 
 ## 일간(日干) 상세 특성
@@ -170,11 +203,76 @@ export async function analyzeStep2_DayMaster(
 - 신강: 식상, 재성, 관성으로 설기하거나 억제
 - 신약: 비겁, 인성으로 일간을 도움
 - 조후: 계절에 따른 한난조습 조절
-- 억부용신: 과한 것은 억제, 부족한 것은 보충`,
-      },
-      {
-        role: "user",
-        content: `이 ${genderText}의 일간을 심층 분석해주세요.
+- 억부용신: 과한 것은 억제, 부족한 것은 보충`
+    : `You are an expert in traditional Eastern astrology (Four Pillars of Destiny / BaZi).
+Perform in-depth analysis centered on the Day Master (Day Stem).
+
+## Day Master Characteristics
+
+### 甲 Jia Wood - Large Tree
+- Personality: Honest, upright, strong self-esteem, leadership
+- Strengths: Growth-oriented, adventurous, righteous
+- Weaknesses: Stubborn, inflexible, uncompromising
+
+### 乙 Yi Wood - Grass and Vines
+- Personality: Flexible, adaptable, artistic sense
+- Strengths: Patient, persistent, delicate
+- Weaknesses: Indecisive, dependent, passive
+
+### 丙 Bing Fire - Sun
+- Personality: Bright, proactive, passionate, loves attention
+- Strengths: Optimistic, sociable, expressive
+- Weaknesses: Impatient, lacks endurance, showy
+
+### 丁 Ding Fire - Candle
+- Personality: Warm, delicate, inner passion
+- Strengths: Persistent, intuitive, meticulous
+- Weaknesses: Sensitive, timid, suspicious
+
+### 戊 Wu Earth - Mountain
+- Personality: Reliable, trustworthy, mediating
+- Strengths: Embracing, stable, credible
+- Weaknesses: Slow, stubborn, resists change
+
+### 己 Ji Earth - Garden Soil
+- Personality: Practical, realistic, meticulous
+- Strengths: Patient, diligent, considerate
+- Weaknesses: Timid, worrisome, selfish
+
+### 庚 Geng Metal - Raw Ore
+- Personality: Strong, decisive, righteous
+- Strengths: Competitive, driven, loyal
+- Weaknesses: Cold, aggressive, self-righteous
+
+### 辛 Xin Metal - Jewelry
+- Personality: Sensitive, perfectionist, aesthetic
+- Strengths: Clean, analytical, proud
+- Weaknesses: Picky, critical, nervous
+
+### 壬 Ren Water - River and Ocean
+- Personality: Wise, embracing, adaptable
+- Strengths: Driven, active, strategic
+- Weaknesses: Fickle, indulgent, irresponsible
+
+### 癸 Gui Water - Rain and Dew
+- Personality: Smart, intuitive, sensitive
+- Strengths: Creative, observant, research-minded
+- Weaknesses: Gloomy, melancholic, secretive
+
+## Body Strength Assessment Criteria
+1. Monthly Branch Analysis: Whether Day Master is in season (strong) or out of season (weak)
+2. Root Analysis: Whether Day Master has roots in the Earthly Branches
+3. Stem Support: Whether supporting elements appear in Heavenly Stems
+4. Day Branch Support: Whether Day Branch supports the Day Master
+
+## Useful God Selection Principles
+- Strong Body: Use Output, Wealth, or Power to drain or control
+- Weak Body: Use Parallel or Resource to support Day Master
+- Climate Adjustment: Balance hot/cold, dry/wet based on season
+- Balancing: Suppress excess, supplement deficiency`;
+
+  const userPrompt = locale === 'ko'
+    ? `이 ${genderText}의 일간을 심층 분석해주세요.
 
 사주 원국:
 - 년주: ${step1.pillars.year.stem}${step1.pillars.year.branch}
@@ -195,8 +293,36 @@ export async function analyzeStep2_DayMaster(
 천간 관계: ${step1.stemRelations.join(", ") || "없음"}
 지지 관계: ${step1.branchRelations.join(", ") || "없음"}
 
-일간의 특성, 월령 득실령, 신강/신약, 용신/희신/기신을 상세히 분석해주세요.`,
-      },
+일간의 특성, 월령 득실령, 신강/신약, 용신/희신/기신을 상세히 분석해주세요.`
+    : `Please perform in-depth Day Master analysis for this ${genderText}.
+
+Birth Chart:
+- Year Pillar: ${step1.pillars.year.stem}${step1.pillars.year.branch}
+- Month Pillar: ${step1.pillars.month.stem}${step1.pillars.month.branch}
+- Day Pillar: ${step1.pillars.day.stem}${step1.pillars.day.branch}
+- Hour Pillar: ${step1.pillars.time.stem}${step1.pillars.time.branch}
+
+Five Element Scores:
+- Wood: ${step1.elementScores.wood}
+- Fire: ${step1.elementScores.fire}
+- Earth: ${step1.elementScores.earth}
+- Metal: ${step1.elementScores.metal}
+- Water: ${step1.elementScores.water}
+
+Dominant Elements: ${step1.dominantElements.join(", ")}
+Lacking Elements: ${step1.lackingElements.join(", ")}
+
+Stem Relations: ${step1.stemRelations.join(", ") || "None"}
+Branch Relations: ${step1.branchRelations.join(", ") || "None"}
+
+Analyze the Day Master characteristics, seasonal strength, body strength (strong/weak), and Useful/Supporting/Unfavorable Gods in detail.`;
+
+  const result = await generateObject({
+    model: getModel(),
+    schema: Step2Schema,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
     ],
   });
 
@@ -212,15 +338,11 @@ export async function analyzeStep3_TenGods(
   step1: Step1Result,
   step2: Step2Result
 ): Promise<Step3Result> {
-  const genderText = input.gender === "female" ? "여성" : "남성";
+  const locale = getLocale(input);
+  const genderText = getGenderText(locale, input.gender);
 
-  const result = await generateObject({
-    model: getModel(),
-    schema: Step3Schema,
-    messages: [
-      {
-        role: "system",
-        content: `당신은 전통 동양 명리학(四柱命理學) 전문가입니다.
+  const systemPrompt = locale === 'ko'
+    ? `당신은 전통 동양 명리학(四柱命理學) 전문가입니다.
 십성(十星) 분석을 통해 성격, 적성, 관계 스타일을 분석합니다.
 
 ## 십성(十星) 상세 해설
@@ -281,11 +403,72 @@ export async function analyzeStep3_TenGods(
 - 직업: 교육, 학술, 전문직
 
 ## 격국(格局) 판단
-월지 장간을 기준으로 격국을 정하되, 투출된 천간을 우선합니다.`,
-      },
-      {
-        role: "user",
-        content: `이 ${genderText}의 십성을 분석해주세요.
+월지 장간을 기준으로 격국을 정하되, 투출된 천간을 우선합니다.`
+    : `You are an expert in traditional Eastern astrology (Four Pillars of Destiny / BaZi).
+Analyze the Ten Gods (十星) to understand personality, aptitudes, and relationship styles.
+
+## Ten Gods Detailed Guide
+
+### Parallel/Rob Wealth - Equal energy to self
+**Parallel (比肩)**: Self, independence, siblings
+- Too many: Stubborn, competitive
+- Moderate: Self-reliance, drive
+- Careers: Independent business, professional
+
+**Rob Wealth (劫財)**: Competitive spirit, challenge, change
+- Too many: Impulsive, speculative, financial loss possible
+- Moderate: Adventurous, driven
+- Careers: Sales, investment, sports
+
+### Output (食傷) - What I produce
+**Eating God (食神)**: Optimism, leisure, artistry
+- Too many: Lazy, gluttonous
+- Moderate: Stability, fortune, longevity
+- Careers: Food industry, arts, education
+
+**Hurting Officer (傷官)**: Expression, creativity, rebellious
+- Too many: Sensitive, critical, challenges authority
+- Moderate: Creative, eloquent
+- Careers: Media, arts, lawyer
+
+### Wealth (財星) - What I control
+**Indirect Wealth (偏財)**: Business acumen, flexibility, pleasure
+- Too many: Wasteful, unfaithful
+- Moderate: Business skills, wealth luck
+- Careers: Entrepreneur, trade, finance
+
+**Direct Wealth (正財)**: Diligence, savings, stability
+- Too many: Stingy, timid
+- Moderate: Savings, stable wealth
+- Careers: Accounting, finance, management
+
+### Power (官星) - What controls me
+**Seven Killings (偏官)**: Authority, drive, charisma
+- Too many: Aggressive, authoritarian
+- Moderate: Success, power
+- Careers: Military, police, politician
+
+**Direct Officer (正官)**: Honor, responsibility, morality
+- Too many: Timid, fearful
+- Moderate: Social status, credibility
+- Careers: Civil servant, management, legal
+
+### Resource (印星) - What produces me
+**Indirect Seal (偏印)**: Uniqueness, originality, scholarship
+- Too many: Isolated, narrow-minded, artistic
+- Moderate: Original, spiritual
+- Careers: Research, religion, arts
+
+**Direct Seal (正印)**: Learning, mother, benevolence
+- Too many: Dependent, lazy
+- Moderate: Wisdom, scholarship
+- Careers: Education, academia, professional
+
+## Structure Assessment
+Determine the structure based on the Monthly Branch's hidden stems, prioritizing visible Heavenly Stems.`;
+
+  const userPrompt = locale === 'ko'
+    ? `이 ${genderText}의 십성을 분석해주세요.
 
 사주 원국:
 - 년주: ${step1.pillars.year.stem}${step1.pillars.year.branch}
@@ -299,8 +482,29 @@ export async function analyzeStep3_TenGods(
 - 용신: ${step2.usefulGod.primary}
 
 각 기둥의 천간과 지지를 일간 기준으로 십성으로 변환하고,
-격국, 성격 특성, 직업 적성, 대인관계 스타일을 분석해주세요.`,
-      },
+격국, 성격 특성, 직업 적성, 대인관계 스타일을 분석해주세요.`
+    : `Please analyze the Ten Gods for this ${genderText}.
+
+Birth Chart:
+- Year Pillar: ${step1.pillars.year.stem}${step1.pillars.year.branch}
+- Month Pillar: ${step1.pillars.month.stem}${step1.pillars.month.branch}
+- Day Pillar: ${step1.pillars.day.stem}${step1.pillars.day.branch}
+- Hour Pillar: ${step1.pillars.time.stem}${step1.pillars.time.branch}
+
+Day Master Info:
+- Day Master: ${step2.dayMaster} (${step2.dayMasterKorean})
+- Body Strength: ${step2.bodyStrength}
+- Useful God: ${step2.usefulGod.primary}
+
+Convert each pillar's stems and branches to Ten Gods based on the Day Master,
+and analyze the structure, personality traits, career aptitudes, and relationship style.`;
+
+  const result = await generateObject({
+    model: getModel(),
+    schema: Step3Schema,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
     ],
   });
 
@@ -315,15 +519,11 @@ export async function analyzeStep4_SpecialStars(
   input: SajuAnalysisInput,
   step1: Step1Result
 ): Promise<Step4Result> {
-  const genderText = input.gender === "female" ? "여성" : "남성";
+  const locale = getLocale(input);
+  const genderText = getGenderText(locale, input.gender);
 
-  const result = await generateObject({
-    model: getModel(),
-    schema: Step4Schema,
-    messages: [
-      {
-        role: "system",
-        content: `당신은 전통 동양 명리학(四柱命理學) 전문가입니다.
+  const systemPrompt = locale === 'ko'
+    ? `당신은 전통 동양 명리학(四柱命理學) 전문가입니다.
 신살(神煞)을 분석하여 특별한 기운과 영향을 파악합니다.
 
 ## 주요 길신(吉神)
@@ -388,11 +588,76 @@ export async function analyzeStep4_SpecialStars(
 - 주의: 평판 관리
 - 긍정적 활용: 겸손, 신중함 계발
 
-각 신살의 위치(년/월/일/시)와 영향력을 분석해주세요.`,
-      },
-      {
-        role: "user",
-        content: `이 ${genderText}의 신살을 분석해주세요.
+각 신살의 위치(년/월/일/시)와 영향력을 분석해주세요.`
+    : `You are an expert in traditional Eastern astrology (Four Pillars of Destiny / BaZi).
+Analyze the Special Stars (神煞) to identify unique energies and influences.
+
+## Major Auspicious Stars (吉神)
+
+### Heavenly Noble (天乙貴人)
+- Meaning: Helpful people appear in times of difficulty
+- Application: Social activities, interpersonal relationships
+
+### Literary Star (文昌貴人)
+- Meaning: Academic and exam fortune
+- Application: Studies, certifications, intellectual activities
+
+### Monthly Virtue (月德貴人)
+- Meaning: Blessings come from accumulating virtue
+- Application: Service, charitable activities
+
+### Heavenly Virtue (天德貴人)
+- Meaning: Heaven's protection
+- Application: Protected from danger
+
+### Golden Carriage (金輿祿)
+- Meaning: Material abundance
+- Application: Wealth-related activities
+
+### General Star (將星)
+- Meaning: Leadership and authority
+- Application: Organizational activities, leadership roles
+
+### Canopy Star (華蓋)
+- Meaning: Artistry, spirituality
+- Application: Creative work, spiritual practice
+
+## Major Inauspicious Stars (凶神) - Including Positive Applications
+
+### Peach Blossom (桃花殺)
+- Meaning: Romantic charm, artistry
+- Caution: Relationship issues
+- Positive use: Arts, entertainment, service industry
+
+### Traveling Horse (驛馬殺)
+- Meaning: Movement and change
+- Caution: Instability
+- Positive use: International work, trade, sales
+
+### Blade Star (羊刃殺)
+- Meaning: Boldness, decisiveness
+- Caution: Conflict, accidents
+- Positive use: Surgeon, military, prosecutor
+
+### Ghost Gate (鬼門關殺)
+- Meaning: Sensitivity, spiritual awareness
+- Caution: Mental health
+- Positive use: Religion, counseling
+
+### Robbery Star (劫殺)
+- Meaning: Sudden change, loss
+- Caution: Financial loss
+- Positive use: Crisis management, leading change
+
+### Reputation Star (亡身殺)
+- Meaning: Reputation damage
+- Caution: Reputation management
+- Positive use: Developing humility, prudence
+
+Analyze each star's position (Year/Month/Day/Hour) and influence.`;
+
+  const userPrompt = locale === 'ko'
+    ? `이 ${genderText}의 신살을 분석해주세요.
 
 사주 원국:
 - 년주: ${step1.pillars.year.stem}${step1.pillars.year.branch}
@@ -402,8 +667,25 @@ export async function analyzeStep4_SpecialStars(
 
 사주에 존재하는 길신과 흉신을 모두 찾아내고,
 각각의 의미, 영향, 활용법을 설명해주세요.
-흉신은 반드시 긍정적으로 활용하는 방법도 함께 제시해주세요.`,
-      },
+흉신은 반드시 긍정적으로 활용하는 방법도 함께 제시해주세요.`
+    : `Please analyze the Special Stars for this ${genderText}.
+
+Birth Chart:
+- Year Pillar: ${step1.pillars.year.stem}${step1.pillars.year.branch}
+- Month Pillar: ${step1.pillars.month.stem}${step1.pillars.month.branch}
+- Day Pillar: ${step1.pillars.day.stem}${step1.pillars.day.branch}
+- Hour Pillar: ${step1.pillars.time.stem}${step1.pillars.time.branch}
+
+Find all auspicious and inauspicious stars in the chart,
+and explain each one's meaning, influence, and application.
+For inauspicious stars, also provide positive ways to utilize them.`;
+
+  const result = await generateObject({
+    model: getModel(),
+    schema: Step4Schema,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
     ],
   });
 
@@ -419,17 +701,14 @@ export async function analyzeStep5_FortuneTiming(
   step1: Step1Result,
   step2: Step2Result
 ): Promise<Step5Result> {
-  const genderText = input.gender === "female" ? "여성" : "남성";
+  const locale = getLocale(input);
+  const genderText = getGenderText(locale, input.gender);
   const birthYear = parseInt(input.birthDate.split("-")[0]);
-  const currentAge = currentYear - birthYear + 1; // 한국 나이
+  const currentAge = currentYear - birthYear + 1; // Korean age
+  const westernAge = currentAge - 1;
 
-  const result = await generateObject({
-    model: getModel(),
-    schema: Step5Schema,
-    messages: [
-      {
-        role: "system",
-        content: `당신은 전통 동양 명리학(四柱命理學) 전문가입니다.
+  const systemPrompt = locale === 'ko'
+    ? `당신은 전통 동양 명리학(四柱命理學) 전문가입니다.
 대운(大運)과 세운(歲運)을 분석하여 현재와 미래의 운세 흐름을 파악합니다.
 
 ## 대운(大運) 분석
@@ -457,14 +736,42 @@ export async function analyzeStep5_FortuneTiming(
 각 월의 지지와 원국/대운과의 관계를 분석
 
 현재 연도: ${currentYear}년
-분석 대상 나이: 만 ${currentAge - 1}세 (한국 나이 ${currentAge}세)`,
-      },
-      {
-        role: "user",
-        content: `이 ${genderText}의 대운과 세운을 분석해주세요.
+분석 대상 나이: 만 ${westernAge}세 (한국 나이 ${currentAge}세)`
+    : `You are an expert in traditional Eastern astrology (Four Pillars of Destiny / BaZi).
+Analyze the Major Fortune (大運) and Annual Fortune (歲運) to understand current and future fortune flow.
+
+## Major Fortune (大運) Analysis
+- 10-year cycles of fortune
+- Direction determined by Month Pillar
+- Male born in Yang year, Female born in Yin year: Forward
+- Male born in Yin year, Female born in Yang year: Backward
+
+## Annual Fortune (歲運) Analysis - ${currentYear} (Yi Si year)
+- This year's fortune: 乙巳 (Yi Si)
+- Yi (乙): Yin Wood, flexibility, adaptation
+- Si (巳): Fire, passion, change
+
+## Harmony and Clash Analysis
+### Relationship between Natal Chart and Major Fortune
+- Many harmonies: Coordination, opportunities
+- Many clashes: Change, challenges
+
+### Relationship between Natal Chart and Annual Fortune
+- Harmony: Good connections this year, opportunities
+- Clash: Change, new beginnings
+- Punishment: Conflict, growth through trials
+
+## Monthly Fortune Analysis
+Analyze each month's branch relationship with the natal chart and major fortune
+
+Current Year: ${currentYear}
+Age: ${westernAge} years old (Korean age ${currentAge})`;
+
+  const userPrompt = locale === 'ko'
+    ? `이 ${genderText}의 대운과 세운을 분석해주세요.
 
 생년월일: ${input.birthDate}
-현재 나이: 만 ${currentAge - 1}세 (한국 나이 ${currentAge}세)
+현재 나이: 만 ${westernAge}세 (한국 나이 ${currentAge}세)
 
 사주 원국:
 - 년주: ${step1.pillars.year.stem}${step1.pillars.year.branch}
@@ -480,8 +787,34 @@ export async function analyzeStep5_FortuneTiming(
 1. 현재 대운 분석 (10년 운)
 2. ${currentYear}년 세운 분석
 3. 올해 주요 월별 운세 포인트
-4. 시기별 조언을 제공해주세요.`,
-      },
+4. 시기별 조언을 제공해주세요.`
+    : `Please analyze the Major Fortune and Annual Fortune for this ${genderText}.
+
+Birth Date: ${input.birthDate}
+Current Age: ${westernAge} years old (Korean age ${currentAge})
+
+Birth Chart:
+- Year Pillar: ${step1.pillars.year.stem}${step1.pillars.year.branch}
+- Month Pillar: ${step1.pillars.month.stem}${step1.pillars.month.branch}
+- Day Pillar: ${step1.pillars.day.stem}${step1.pillars.day.branch}
+- Hour Pillar: ${step1.pillars.time.stem}${step1.pillars.time.branch}
+
+Day Master Info:
+- Day Master: ${step2.dayMaster}
+- Body Strength: ${step2.bodyStrength}
+- Useful God: ${step2.usefulGod.primary}
+
+1. Current Major Fortune analysis (10-year cycle)
+2. ${currentYear} Annual Fortune analysis
+3. Key monthly fortune points for this year
+4. Advice for each period`;
+
+  const result = await generateObject({
+    model: getModel(),
+    schema: Step5Schema,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
     ],
   });
 
@@ -500,15 +833,11 @@ export async function analyzeStep6_Synthesis(
   step4: Step4Result,
   step5: Step5Result
 ): Promise<Step6Result> {
-  const genderText = input.gender === "female" ? "여성" : "남성";
+  const locale = getLocale(input);
+  const genderText = getGenderText(locale, input.gender);
 
-  const result = await generateObject({
-    model: getModel(),
-    schema: Step6Schema,
-    messages: [
-      {
-        role: "system",
-        content: `당신은 전통 동양 명리학(四柱命理學) 전문가입니다.
+  const systemPrompt = locale === 'ko'
+    ? `당신은 전통 동양 명리학(四柱命理學) 전문가입니다.
 모든 분석 결과를 종합하여 실용적인 조언과 함께 최종 결과를 제공합니다.
 
 ## 종합 분석 원칙
@@ -542,11 +871,52 @@ export async function analyzeStep6_Synthesis(
 - 용신 관련 방향
 - 용신 관련 활동
 
-한국어로 전문적이면서도 따뜻하게 설명해주세요.`,
-      },
-      {
-        role: "user",
-        content: `이 ${genderText}의 사주 분석을 종합해주세요.
+한국어로 전문적이면서도 따뜻하게 설명해주세요.`
+    : `You are an expert in traditional Eastern astrology (Four Pillars of Destiny / BaZi).
+Synthesize all analysis results and provide practical advice with final conclusions.
+
+## Synthesis Principles
+
+### 1. Balanced Evaluation
+- Mention both strengths and cautions
+- Neither overly positive nor negative
+- Scores should be realistic in the 60-90 range
+
+### 2. Practical Advice
+- Advice applicable to real life rather than abstract interpretations
+- Include immediately actionable items
+- Provide long-term direction
+
+### 3. Grade Criteria
+- excellent (85-100): Very auspicious
+- good (70-84): Auspicious
+- normal (55-69): Average
+- caution (40-54): Needs attention
+- challenging (0-39): Challenging
+
+### 4. Area Analysis
+- Personality: Based on Ten Gods and Day Master
+- Career: Based on Structure and Ten Gods
+- Wealth: Based on Wealth Stars and Useful God
+- Relationships: Based on Parallel and Power Stars
+- Health: Based on Five Elements balance and lacking elements
+
+### 5. Lucky Elements
+- Colors from Useful/Supporting God elements
+- Directions related to Useful God
+- Activities related to Useful God
+
+Explain professionally yet warmly.`;
+
+  const auspiciousStarsText = locale === 'ko'
+    ? (step4.auspiciousStars.map(s => s.koreanName).join(", ") || "없음")
+    : (step4.auspiciousStars.map(s => s.name || s.koreanName).join(", ") || "None");
+  const inauspiciousStarsText = locale === 'ko'
+    ? (step4.inauspiciousStars.map(s => s.koreanName).join(", ") || "없음")
+    : (step4.inauspiciousStars.map(s => s.name || s.koreanName).join(", ") || "None");
+
+  const userPrompt = locale === 'ko'
+    ? `이 ${genderText}의 사주 분석을 종합해주세요.
 
 ## 기초 분석 결과
 - 강한 오행: ${step1.dominantElements.join(", ")}
@@ -567,8 +937,8 @@ export async function analyzeStep6_Synthesis(
 - 직업 적성: ${step3.careerAptitude.suitableFields.join(", ")}
 
 ## 신살 분석 결과
-- 길신: ${step4.auspiciousStars.map(s => s.koreanName).join(", ") || "없음"}
-- 흉신: ${step4.inauspiciousStars.map(s => s.koreanName).join(", ") || "없음"}
+- 길신: ${auspiciousStarsText}
+- 흉신: ${inauspiciousStarsText}
 - 신살 영향: ${step4.overallStarInfluence}
 
 ## 대운/세운 분석 결과
@@ -584,8 +954,51 @@ export async function analyzeStep6_Synthesis(
 5. 행운의 요소 (색상, 숫자, 방향, 활동)
 6. 한줄 운세 메시지
 
-를 제공해주세요.`,
-      },
+를 제공해주세요.`
+    : `Please synthesize the birth chart analysis for this ${genderText}.
+
+## Foundation Analysis Results
+- Dominant Elements: ${step1.dominantElements.join(", ")}
+- Lacking Elements: ${step1.lackingElements.join(", ")}
+- Chart Summary: ${step1.summary}
+
+## Day Master Analysis Results
+- Day Master: ${step2.dayMaster} (${step2.dayMasterKorean})
+- Body Strength: ${step2.bodyStrength}
+- Useful God: ${step2.usefulGod.primary} (${step2.usefulGod.primaryElement})
+- Supporting God: ${step2.usefulGod.supporting}
+- Reasoning: ${step2.usefulGod.reasoning}
+
+## Ten Gods Analysis Results
+- Structure: ${step3.structure}
+- Dominant Ten Gods: ${step3.dominantGods.join(", ")}
+- Personality: ${step3.personality.description}
+- Career Aptitude: ${step3.careerAptitude.suitableFields.join(", ")}
+
+## Special Stars Analysis Results
+- Auspicious Stars: ${auspiciousStarsText}
+- Inauspicious Stars: ${inauspiciousStarsText}
+- Star Influence: ${step4.overallStarInfluence}
+
+## Fortune Timing Analysis Results
+- Current Major Fortune: ${step5.currentMajorFortune.theme}
+- This Year's Fortune: ${step5.yearlyFortune.theme}
+- This Year's Score: ${step5.yearlyFortune.score} points
+
+Please synthesize all analyses and provide:
+1. Overall score and grade
+2. Scores and summary for each area (Personality, Career, Wealth, Relationships, Health)
+3. Core insights and strengths
+4. Practical advice (immediate/short-term/long-term)
+5. Lucky elements (colors, numbers, directions, activities)
+6. One-line fortune message`;
+
+  const result = await generateObject({
+    model: getModel(),
+    schema: Step6Schema,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
     ],
   });
 

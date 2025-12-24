@@ -23,6 +23,18 @@ interface StarsBackgroundProps {
 // iPhone 14 Pro Max is ~932pt, plus URL bar, safe areas, etc.
 const CANVAS_MIN_HEIGHT = 1200;
 
+// Check for reduced motion preference
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Check if device is mobile for frame rate optimization
+const isMobile = () =>
+  typeof window !== "undefined" &&
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+
 export const StarsBackground: React.FC<StarsBackgroundProps> = ({
   starDensity = 0.00015,
   allStarsTwinkle = true,
@@ -33,6 +45,13 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
 }) => {
   const [stars, setStars] = useState<Star[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationFrameId = useRef<number>(0);
+  const isVisibleRef = useRef(true);
+  const lastFrameTime = useRef(0);
+
+  // Frame rate: 60fps on desktop, 30fps on mobile
+  const targetFPS = isMobile() ? 30 : 60;
+  const frameInterval = 1000 / targetFPS;
 
   const generateStars = useCallback(
     (width: number, height: number): Star[] => {
@@ -98,6 +117,18 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
     };
   }, [generateStars]);
 
+  // Page Visibility API - pause animation when tab is not visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      isVisibleRef.current = !document.hidden;
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -105,9 +136,33 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animationFrameId: number;
+    // If user prefers reduced motion, render static stars once
+    if (prefersReducedMotion()) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach((star) => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fill();
+      });
+      return;
+    }
 
-    const render = () => {
+    const render = (currentTime: number) => {
+      // Skip frame if page is not visible
+      if (!isVisibleRef.current) {
+        animationFrameId.current = requestAnimationFrame(render);
+        return;
+      }
+
+      // Throttle frame rate on mobile
+      const elapsed = currentTime - lastFrameTime.current;
+      if (elapsed < frameInterval) {
+        animationFrameId.current = requestAnimationFrame(render);
+        return;
+      }
+      lastFrameTime.current = currentTime - (elapsed % frameInterval);
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       stars.forEach((star) => {
         ctx.beginPath();
@@ -122,20 +177,21 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
         }
       });
 
-      animationFrameId = requestAnimationFrame(render);
+      animationFrameId.current = requestAnimationFrame(render);
     };
 
-    render();
+    animationFrameId.current = requestAnimationFrame(render);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      cancelAnimationFrame(animationFrameId.current);
     };
-  }, [stars]);
+  }, [stars, frameInterval]);
 
   return (
     <canvas
       ref={canvasRef}
       className={cn("absolute inset-0 w-full h-full", className)}
+      style={{ willChange: "transform" }}
     />
   );
 };

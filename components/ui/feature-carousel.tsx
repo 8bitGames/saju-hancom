@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
@@ -8,9 +8,10 @@ import { cn } from "@/lib/utils";
 import { ArrowRight } from "@/components/ui/icons";
 import { StarsBackground } from "@/components/aceternity/stars-background";
 import { ShootingStars } from "@/components/aceternity/shooting-stars";
-import { LanguageToggle } from "@/components/layout/language-toggle";
 import { CompanyModal } from "@/components/layout/company-modal";
-import { Buildings, ClockCounterClockwise } from "@phosphor-icons/react";
+import { Buildings, ClockCounterClockwise, List, X, Globe } from "@phosphor-icons/react";
+import { usePathname, useRouter as useI18nRouter } from "@/lib/i18n/navigation";
+import { locales, localeNames, type Locale } from "@/lib/i18n/config";
 
 export interface FeatureCard {
   id: string;
@@ -36,12 +37,39 @@ interface FeatureCarouselProps {
 export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLanguageExpanded, setIsLanguageExpanded] = useState(false);
   const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+  // Track which videos should be loaded (near viewport)
+  const [loadedVideos, setLoadedVideos] = useState<Set<number>>(new Set([0]));
   const router = useRouter();
+  const i18nRouter = useI18nRouter();
+  const pathname = usePathname();
   const t = useTranslations("header");
-  const locale = useLocale();
+  const locale = useLocale() as Locale;
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+        setIsLanguageExpanded(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const switchLocale = (newLocale: Locale) => {
+    i18nRouter.replace(pathname, { locale: newLocale });
+    setIsMenuOpen(false);
+    setIsLanguageExpanded(false);
+  };
 
   // Handle mobile viewport height (accounts for browser chrome)
   useEffect(() => {
@@ -87,6 +115,38 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
 
     container.addEventListener("scroll", handleScroll, { passive: true });
     return () => container.removeEventListener("scroll", handleScroll);
+  }, [cards.length]);
+
+  // Intersection Observer for lazy loading videos
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const index = cardRefs.current.findIndex((ref) => ref === entry.target);
+          if (index !== -1 && entry.isIntersecting) {
+            setLoadedVideos((prev) => {
+              const newSet = new Set(prev);
+              // Also preload adjacent cards
+              newSet.add(index);
+              if (index > 0) newSet.add(index - 1);
+              if (index < cards.length - 1) newSet.add(index + 1);
+              return newSet;
+            });
+          }
+        });
+      },
+      {
+        root: containerRef.current,
+        rootMargin: "100px", // Preload when 100px away
+        threshold: 0.1,
+      }
+    );
+
+    cardRefs.current.forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => observer.disconnect();
   }, [cards.length]);
 
   // Control video playback - only play the active video
@@ -162,23 +222,79 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
           </span>
         </div>
 
-        {/* Top Right Controls */}
-        <div className="fixed top-6 right-6 z-50 flex items-center gap-2">
+        {/* Top Right Hamburger Menu */}
+        <div className="fixed top-6 right-6 z-50" ref={menuRef}>
           <button
-            onClick={() => setIsCompanyModalOpen(true)}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
-            aria-label="About"
+            aria-label={t("menu")}
           >
-            <Buildings className="w-5 h-5" weight="bold" />
+            {isMenuOpen ? (
+              <X className="w-5 h-5" weight="bold" />
+            ) : (
+              <List className="w-5 h-5" weight="bold" />
+            )}
           </button>
-          <button
-            onClick={() => router.push("/history")}
-            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white"
-            aria-label="History"
-          >
-            <ClockCounterClockwise className="w-5 h-5" weight="bold" />
-          </button>
-          <LanguageToggle />
+
+          {/* Dropdown Menu */}
+          {isMenuOpen && (
+            <div className="absolute top-full right-0 mt-2 w-48 rounded-2xl bg-black/80 backdrop-blur-md border border-white/20 shadow-xl overflow-hidden animate-fade-in">
+              {/* About / Company */}
+              <button
+                onClick={() => {
+                  setIsCompanyModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+                className="w-full px-4 py-3 flex items-center gap-3 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+              >
+                <Buildings className="w-5 h-5" weight="bold" />
+                <span className="text-sm font-medium">{t("about")}</span>
+              </button>
+
+              {/* History / Record */}
+              <button
+                onClick={() => {
+                  router.push("/history");
+                  setIsMenuOpen(false);
+                }}
+                className="w-full px-4 py-3 flex items-center gap-3 text-white/80 hover:bg-white/10 hover:text-white transition-colors border-t border-white/10"
+              >
+                <ClockCounterClockwise className="w-5 h-5" weight="bold" />
+                <span className="text-sm font-medium">{t("record")}</span>
+              </button>
+
+              {/* Language */}
+              <div className="border-t border-white/10">
+                <button
+                  onClick={() => setIsLanguageExpanded(!isLanguageExpanded)}
+                  className="w-full px-4 py-3 flex items-center gap-3 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+                >
+                  <Globe className="w-5 h-5" weight="bold" />
+                  <span className="text-sm font-medium">{t("language")}</span>
+                  <span className="ml-auto text-xs text-white/50">{localeNames[locale]}</span>
+                </button>
+
+                {/* Language Options */}
+                {isLanguageExpanded && (
+                  <div className="bg-white/5">
+                    {locales.map((l) => (
+                      <button
+                        key={l}
+                        onClick={() => switchLocale(l)}
+                        className={`w-full px-4 py-2 pl-12 text-left text-sm transition-colors ${
+                          l === locale
+                            ? "text-purple-400 font-medium bg-purple-500/10"
+                            : "text-white/60 hover:bg-white/5 hover:text-white/80"
+                        }`}
+                      >
+                        {localeNames[l]}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Company Modal */}
@@ -201,6 +317,9 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
           {cards.map((card, index) => (
             <div
               key={card.id}
+              ref={(el) => {
+                cardRefs.current[index] = el;
+              }}
               className="w-screen flex-shrink-0 snap-center flex items-end justify-center px-4 pb-safe"
               style={{
                 height: viewportHeight ? `${viewportHeight}px` : "100dvh",
@@ -219,7 +338,7 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
               >
                 {/* Card Media (Video or Image) */}
                 <div className="absolute inset-0">
-                  {card.video ? (
+                  {card.video && loadedVideos.has(index) ? (
                     <video
                       ref={(el) => {
                         videoRefs.current[index] = el;
@@ -229,10 +348,19 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
                       loop
                       muted
                       playsInline
-                      preload={index === 0 ? "auto" : "none"}
+                      preload={index === 0 ? "auto" : "metadata"}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      // Defer loading for non-active videos
-                      {...(index !== 0 && { loading: "lazy" })}
+                    />
+                  ) : card.video && !loadedVideos.has(index) && card.poster ? (
+                    // Show poster image while video is not loaded
+                    <Image
+                      src={card.poster}
+                      alt={card.title}
+                      fill
+                      unoptimized
+                      priority={index === 0}
+                      fetchPriority={index === 0 ? "high" : "auto"}
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                   ) : card.image ? (
                     <Image

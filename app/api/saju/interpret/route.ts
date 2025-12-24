@@ -327,8 +327,17 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Saju interpretation error:", error);
 
+    // Try to get locale from request for error message
+    let errorLocale: Locale = 'ko';
+    try {
+      const body = await request.clone().json();
+      errorLocale = body.locale === 'en' ? 'en' : 'ko';
+    } catch {
+      // Default to Korean if we can't parse the body
+    }
+
     return NextResponse.json(
-      { error: "사주 해석 중 오류가 발생했습니다." },
+      { error: errorLocale === 'ko' ? "사주 해석 중 오류가 발생했습니다." : "An error occurred during birth chart interpretation." },
       { status: 500 }
     );
   }
