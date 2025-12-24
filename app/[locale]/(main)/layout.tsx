@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { CaretLeft, Buildings, ClockCounterClockwise, List, X, Globe } from "@phosphor-icons/react";
+import { CaretLeft, Buildings, ClockCounterClockwise, List, X, Globe, House } from "@phosphor-icons/react";
 import { StarsBackground } from "@/components/aceternity/stars-background";
 import { ShootingStars } from "@/components/aceternity/shooting-stars";
 import { CompanyModal } from "@/components/layout/company-modal";
@@ -77,7 +77,14 @@ export default function MainLayout({
         {/* Branding - Top Left */}
         <div className="fixed top-4 sm:top-6 left-3 sm:left-6 z-50 flex items-center gap-2 sm:gap-3">
           <button
-            onClick={() => router.back()}
+            onClick={() => {
+              // 히스토리가 있으면 뒤로가기, 없으면 홈으로
+              if (window.history.length > 1) {
+                router.back();
+              } else {
+                router.push("/");
+              }
+            }}
             className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
             aria-label="Go back"
           >
@@ -111,13 +118,25 @@ export default function MainLayout({
           {/* Dropdown Menu */}
           {isMenuOpen && (
             <div className="absolute top-full right-0 mt-2 w-48 rounded-2xl bg-black/80 backdrop-blur-md border border-white/20 shadow-xl overflow-hidden animate-fade-in">
+              {/* Home */}
+              <button
+                onClick={() => {
+                  router.push("/");
+                  setIsMenuOpen(false);
+                }}
+                className="w-full px-4 py-3 flex items-center gap-3 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+              >
+                <House className="w-5 h-5" weight="bold" />
+                <span className="text-sm font-medium">{t("home")}</span>
+              </button>
+
               {/* About / Company */}
               <button
                 onClick={() => {
                   setIsCompanyModalOpen(true);
                   setIsMenuOpen(false);
                 }}
-                className="w-full px-4 py-3 flex items-center gap-3 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+                className="w-full px-4 py-3 flex items-center gap-3 text-white/80 hover:bg-white/10 hover:text-white transition-colors border-t border-white/10"
               >
                 <Buildings className="w-5 h-5" weight="bold" />
                 <span className="text-sm font-medium">{t("about")}</span>
