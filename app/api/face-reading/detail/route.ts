@@ -10,23 +10,92 @@ import {
 import type { Locale } from "@/lib/i18n/config";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
 
-// 관상 관련 검색 쿼리 생성
-function generateFaceReadingSearchQueries(locale: Locale, currentYear: number): string[] {
+// 🆕 나이대 계산 함수
+function getAgeGroup(birthYear: number, currentYear: number): string {
+  const age = currentYear - birthYear + 1;
+  if (age < 20) return "10대";
+  if (age < 30) return "20대";
+  if (age < 40) return "30대";
+  if (age < 50) return "40대";
+  if (age < 60) return "50대";
+  return "60대 이상";
+}
+
+// 🆕 관상 관련 검색 쿼리 생성 (성별/나이대 개인화)
+function generateFaceReadingSearchQueries(
+  locale: Locale,
+  currentYear: number,
+  gender?: string,
+  birthYear?: number
+): string[] {
+  const queries: string[] = [];
+  const isFemale = gender === "female";
+  const ageGroup = birthYear ? getAgeGroup(birthYear, currentYear) : undefined;
+
   if (locale === "ko") {
-    return [
-      `${currentYear}년 관상 트렌드 인기 이목구비`,
-      `관상학 성공하는 얼굴 특징`,
-      `재물운 좋은 관상 코 이마`,
-      `대인관계 좋은 관상 특징`,
-    ];
+    // 기본 쿼리
+    queries.push(`${currentYear}년 관상 트렌드`);
+
+    // 성별 맞춤 쿼리
+    if (isFemale) {
+      queries.push(`여성 성공 관상 특징 ${currentYear}`);
+      queries.push(`여성 재물운 좋은 관상`);
+    } else {
+      queries.push(`남성 리더 관상 특징 ${currentYear}`);
+      queries.push(`남성 사업운 좋은 관상`);
+    }
+
+    // 나이대 맞춤 쿼리
+    if (ageGroup) {
+      switch (ageGroup) {
+        case "20대":
+          queries.push(`${currentYear}년 20대 취업 면접 관상`);
+          queries.push(`청년 연애운 관상 특징`);
+          break;
+        case "30대":
+          queries.push(`${currentYear}년 30대 결혼운 관상`);
+          queries.push(`${ageGroup} 직장인 승진 관상`);
+          break;
+        case "40대":
+          queries.push(`${currentYear}년 중년 재물운 관상`);
+          queries.push(`40대 건강 관상 주의점`);
+          break;
+        case "50대":
+        case "60대 이상":
+          queries.push(`${currentYear}년 장년 건강운 관상`);
+          queries.push(`말년 복 관상 특징`);
+          break;
+        default:
+          queries.push(`대인관계 좋은 관상 특징`);
+      }
+    } else {
+      queries.push(`대인관계 좋은 관상 특징`);
+    }
   } else {
-    return [
-      `face reading physiognomy trends ${currentYear}`,
-      `facial features success personality`,
-      `face shape fortune meaning`,
-      `eye nose mouth personality traits`,
-    ];
+    // English queries
+    queries.push(`face reading physiognomy trends ${currentYear}`);
+
+    if (isFemale) {
+      queries.push(`women successful facial features ${currentYear}`);
+    } else {
+      queries.push(`men leadership facial features ${currentYear}`);
+    }
+
+    if (ageGroup) {
+      const ageNumber = birthYear ? currentYear - birthYear + 1 : 35;
+      if (ageNumber < 30) {
+        queries.push(`young adult career face reading ${currentYear}`);
+      } else if (ageNumber < 50) {
+        queries.push(`middle age wealth physiognomy ${currentYear}`);
+      } else {
+        queries.push(`mature age health longevity face reading`);
+      }
+    } else {
+      queries.push(`personality traits facial features`);
+    }
   }
+
+  return queries;
 }
 
 // 상세 관상 분석 결과 스키마
@@ -351,7 +420,7 @@ const DetailedFaceReadingSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { imageBase64, gender, locale: requestLocale } = body;
+    const { imageBase64, gender, birthYear, locale: requestLocale } = body;
 
     // Determine locale from request body or headers
     const locale: Locale = requestLocale === 'en' ? 'en' :
@@ -383,9 +452,9 @@ export async function POST(request: NextRequest) {
     const { GoogleGenAI } = await import("@google/genai");
     const ai = new GoogleGenAI({ apiKey });
 
-    // Google Search grounding을 위한 검색 쿼리 생성
+    // Google Search grounding을 위한 검색 쿼리 생성 (🆕 성별/나이대 개인화)
     const currentYear = new Date().getFullYear();
-    const searchQueries = generateFaceReadingSearchQueries(locale, currentYear);
+    const searchQueries = generateFaceReadingSearchQueries(locale, currentYear, gender, birthYear);
 
     // 시스템 프롬프트와 사용자 프롬프트 생성
     const systemPrompt = getDetailedFaceReadingSystemPrompt(locale);

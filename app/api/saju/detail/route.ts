@@ -14,8 +14,12 @@ import {
   generateHealthQueries,
   generateFortuneQueries,
   generateSajuProfile,
+  extractSajuProfile,
   getAgeGroup,
+  getGroundingPrompt,
+  getGroundingIntensity,
   type GroundingContext,
+  type ExtractedSajuProfile,
 } from "@/lib/saju/personalized-keywords";
 import type { SajuResult } from "@/lib/saju/types";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
@@ -140,20 +144,31 @@ Please respond in a cold reading style based on the above personalized context.`
     }
 
     // Add grounding context if needed and sajuResult is available
+    let extractedProfile: ExtractedSajuProfile | null = null;
+    let searchQueries: string[] = [];
+    // 🆕 Phase 6: 그라운딩 강도 (전체 스코프에서 접근 가능하도록)
+    const groundingIntensityLevel = getGroundingIntensity(category as string);
+
     if (needsGrounding && sajuResult) {
       const parsedSajuResult: SajuResult = typeof sajuResult === 'string'
         ? JSON.parse(sajuResult)
         : sajuResult;
 
+      // 🆕 현재 나이 계산 (한국 나이)
+      const currentAge = birthYear ? currentYear - birthYear + 1 : undefined;
+
+      // 🆕 Phase 3: 구조화된 사주 프로필 추출
+      extractedProfile = extractSajuProfile(parsedSajuResult);
+
       const groundingContext: GroundingContext = {
         currentYear,
         currentMonth,
         ageGroup: birthYear ? getAgeGroup(birthYear, currentYear) : "30대",
+        currentAge,
         sajuResult: parsedSajuResult,
       };
 
       // Generate personalized search queries based on category
-      let searchQueries: string[] = [];
       switch (category) {
         case "career":
           searchQueries = generateCareerQueries(groundingContext);
@@ -172,44 +187,70 @@ Please respond in a cold reading style based on the above personalized context.`
           break;
       }
 
-      // Generate saju profile summary
-      const sajuProfile = generateSajuProfile(parsedSajuResult);
+      // Generate saju profile summary (🆕 대운 정보 포함)
+      const sajuProfile = generateSajuProfile(parsedSajuResult, currentAge);
+
+      // 🆕 Phase 3: 개인화된 특성 프롬프트에 추가
+      if (locale === 'ko') {
+        prompt += `\n\n## 이 분의 사주 특성 (개인화 핵심 정보)
+- 성향: ${extractedProfile.personality}
+- 적합 분야: ${extractedProfile.suitableIndustry}
+- 투자 스타일: ${extractedProfile.investmentStyle}
+- 강점: ${extractedProfile.strengths}
+- 적합 직업: ${extractedProfile.careerTypes}`;
+      } else {
+        prompt += `\n\n## This Person's BaZi Traits (Core Personalization)
+- Personality: ${extractedProfile.personality}
+- Suitable Industries: ${extractedProfile.suitableIndustry}
+- Investment Style: ${extractedProfile.investmentStyle}
+- Strengths: ${extractedProfile.strengths}
+- Career Types: ${extractedProfile.careerTypes}`;
+      }
+
+      // 🆕 Phase 6: 카테고리별 그라운딩 강도 적용
+      const groundingPromptText = getGroundingPrompt(category, locale, currentYear);
 
       // Enhance prompt with grounding instructions
       if (locale === 'ko') {
-        prompt += `\n\n## 현재 시대 상황 반영 (보조 정보)
+        prompt += `\n\n## 현재 시대 상황 반영
 
-이 분석은 Google 검색을 통해 ${currentYear}년 현재 트렌드와 시장 상황을 반영해야 합니다.
+${groundingPromptText}
 
 ### 이 분의 사주 프로필
 ${sajuProfile}
 
-### 검색할 주제
+### 검색 고려 주제
 ${searchQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}
 
 ### 분석 가이드라인
-- "요즘 시대에는...", "현재 ${currentYear}년 트렌드를 보면..." 같은 표현으로 시대상 반영
-- 추상적인 사주 해석보다 현실에 적용 가능한 구체적 조언 제공
-- 검색된 최신 정보와 사주 분석을 자연스럽게 결합
+${groundingIntensityLevel === 'HIGH' ? `- **핵심**: 위 주제들을 반드시 검색하고, ${currentYear}년 실제 데이터와 트렌드를 인용하세요
+- 구체적인 수치, 통계, 최신 뉴스를 포함해야 신뢰도가 높아집니다` :
+groundingIntensityLevel === 'MEDIUM' ? `- 시의성 있는 정보가 도움이 된다면 검색 결과를 인용하세요
+- "요즘 시대에는...", "현재 ${currentYear}년 트렌드를 보면..." 같은 표현으로 시대상 반영` :
+`- 전통적인 사주 해석을 중심으로 답변하세요
+- 최신 트렌드는 보조적으로만 활용하세요`}
 
 ⚠️ **중요**: 위의 트렌드 정보는 보조 자료입니다.
 반드시 "초개인화 컨텍스트"의 삶의 경험 내용을 먼저 활용하여 콜드 리딩 스타일로 답변하세요!
 "~하셨던 적이 있으시죠?", "~하셨을 거예요" 식의 공감 표현이 최우선입니다.`;
       } else {
-        prompt += `\n\n## Reflect Current Trends (Supporting Info)
+        prompt += `\n\n## Reflect Current Trends
 
-This analysis should incorporate ${currentYear} current trends and market conditions through Google Search.
+${groundingPromptText}
 
 ### This Person's BaZi Profile
 ${sajuProfile}
 
-### Topics to Search
+### Topics to Consider Searching
 ${searchQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}
 
 ### Analysis Guidelines
-- Use expressions like "In today's world...", "Looking at ${currentYear} trends..."
-- Provide concrete, applicable advice rather than abstract interpretations
-- Naturally combine search results with BaZi analysis
+${groundingIntensityLevel === 'HIGH' ? `- **KEY**: You MUST search the above topics and cite actual ${currentYear} data and trends
+- Include specific numbers, statistics, and recent news for credibility` :
+groundingIntensityLevel === 'MEDIUM' ? `- Cite search results when timely information would be helpful
+- Use expressions like "In today's world...", "Looking at ${currentYear} trends..."` :
+`- Focus on traditional birth chart interpretation
+- Use current trends only as supplementary information`}
 
 ⚠️ **IMPORTANT**: The above trend info is supplementary.
 You MUST first use the "Hyper-Personalized Context" life experiences with cold reading style!
@@ -283,11 +324,16 @@ Empathetic expressions like "You've probably...", "Haven't you...?" are the TOP 
             }
           }
 
-          // Send completion event with full content
+          // Send completion event with full content (🆕 Phase 6: 그라운딩 강도 정보 추가)
           const doneData = JSON.stringify({
             type: "done",
             category,
             fullContent: fullText,
+            // Phase 3: 개인화 메타데이터
+            personalizedFor: extractedProfile?.summary || null,
+            searchQueries: searchQueries.length > 0 ? searchQueries : null,
+            // Phase 6: 그라운딩 강도 정보
+            groundingIntensity: groundingIntensityLevel,
           });
           controller.enqueue(encoder.encode(`data: ${doneData}\n\n`));
 

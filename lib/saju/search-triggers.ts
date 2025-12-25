@@ -1,7 +1,18 @@
 /**
  * 채팅 검색 트리거 시스템
  * 사용자 메시지에서 키워드를 감지하여 Google Grounding 검색 여부 결정
+ * 사주 프로필 기반 개인화 검색 쿼리 생성 지원
  */
+
+import type { SajuResult, Element } from "./types";
+import {
+  TEN_GOD_KEYWORDS,
+  ELEMENT_KEYWORDS,
+  ELEMENT_HEALTH_KEYWORDS,
+  getAgeGroup,
+  getCurrentMajorFortune,
+  getMajorFortuneKeywords,
+} from "./personalized-keywords";
 
 // ============================================================================
 // 타입 정의
@@ -393,4 +404,233 @@ ${searchResults}
 
 위 정보를 바탕으로 현재 시대 상황을 반영한 실질적인 조언을 해주세요.
 `.trim();
+}
+
+// ============================================================================
+// 사주 기반 개인화 검색 쿼리 생성 (Phase 2 개선)
+// ============================================================================
+
+export interface PersonalizedSearchContext {
+  /** 사주 결과 */
+  sajuResult: SajuResult;
+  /** 출생년도 */
+  birthYear: number;
+  /** 현재 연도 */
+  currentYear: number;
+  /** 현재 나이 (한국식) */
+  currentAge?: number;
+}
+
+/**
+ * 사주 프로필에서 주요 십성 추출 (내부 헬퍼)
+ */
+function getDominantTenGods(sajuResult: SajuResult): string[] {
+  const summary = sajuResult.tenGodSummary;
+  if (summary.dominant.length > 0) {
+    return summary.dominant.slice(0, 2);
+  }
+  const sorted = Object.entries(summary.counts)
+    .sort(([, a], [, b]) => b - a)
+    .filter(([, count]) => count > 0);
+  return sorted.length > 0 ? [sorted[0][0]] : [];
+}
+
+/**
+ * 트리거 + 사주 기반 개인화 검색 쿼리 생성
+ * 검색 트리거가 감지되었을 때 사주 프로필을 활용하여 맞춤형 검색 쿼리 생성
+ */
+export function generatePersonalizedTriggerQuery(
+  trigger: TriggerResult,
+  context: PersonalizedSearchContext,
+  userMessage: string
+): string[] {
+  const { sajuResult, currentYear, birthYear } = context;
+  const currentAge = currentYear - birthYear + 1;
+  const ageGroup = getAgeGroup(birthYear, currentYear);
+  const queries: string[] = [];
+
+  // 대운 정보 추출
+  const fortuneInfo = getMajorFortuneKeywords(sajuResult, currentAge);
+  const currentFortune = getCurrentMajorFortune(sajuResult, currentAge);
+
+  // 주요 십성 추출
+  const dominantGods = getDominantTenGods(sajuResult);
+  const dominantElement = sajuResult.elementAnalysis?.dominant?.[0];
+  const yongShin = sajuResult.elementAnalysis?.yongShin;
+
+  switch (trigger.category) {
+    case "career":
+      // 대운 기반 직업 변화 쿼리
+      if (fortuneInfo?.keywords[0]) {
+        queries.push(`${currentYear}년 ${fortuneInfo.keywords[0]} 직업 전환 전략`);
+      }
+      // 현재 대운 오행 기반 산업
+      if (currentFortune) {
+        const fortuneElement = currentFortune.pillar.ganElement;
+        const elementKeywords = ELEMENT_KEYWORDS[fortuneElement];
+        if (elementKeywords?.modernIndustries[0]) {
+          queries.push(`${currentYear}년 ${elementKeywords.modernIndustries[0]} 취업 동향`);
+        }
+      }
+      // 십성 기반 직업군
+      for (const god of dominantGods.slice(0, 1)) {
+        const keywords = TEN_GOD_KEYWORDS[god as keyof typeof TEN_GOD_KEYWORDS];
+        if (keywords?.careerTypes[0]) {
+          queries.push(`${ageGroup} ${keywords.careerTypes[0]} 전망 ${currentYear}`);
+        }
+      }
+      // 용신 기반 권장 산업
+      if (yongShin) {
+        const yongShinKeywords = ELEMENT_KEYWORDS[yongShin];
+        if (yongShinKeywords?.modernIndustries[0]) {
+          queries.push(`${currentYear}년 ${yongShinKeywords.modernIndustries[0]} 채용 시장`);
+        }
+      }
+      break;
+
+    case "wealth":
+      // 대운 상태에 따른 재물 전략
+      if (fortuneInfo?.keywords.includes("운세 상승기")) {
+        queries.push(`${currentYear}년 상승기 공격적 투자 전략`);
+      } else if (fortuneInfo?.keywords.includes("도전의 시기")) {
+        queries.push(`${currentYear}년 안정적 자산 관리 방법`);
+      }
+      // 대운 오행 기반 투자 분야
+      if (currentFortune) {
+        const fortuneElement = currentFortune.pillar.ganElement;
+        const elementKeywords = ELEMENT_KEYWORDS[fortuneElement];
+        if (elementKeywords?.investmentStyles[0]) {
+          queries.push(`${currentYear}년 ${elementKeywords.investmentStyles[0]} 전망`);
+        }
+      }
+      // 십성 기반 투자 성향
+      for (const god of dominantGods.slice(0, 1)) {
+        if (god === "pyeonjae" || god === "gebjae") {
+          queries.push(`${currentYear}년 고수익 투자 방법 ${ageGroup}`);
+        } else if (god === "jeongjae" || god === "siksin") {
+          queries.push(`${currentYear}년 안전한 재테크 ${ageGroup}`);
+        }
+      }
+      // 용신 기반 투자
+      if (yongShin) {
+        const yongShinKeywords = ELEMENT_KEYWORDS[yongShin];
+        if (yongShinKeywords?.investmentStyles[0]) {
+          queries.push(`${yongShinKeywords.investmentStyles[0]} 투자 시기 ${currentYear}`);
+        }
+      }
+      break;
+
+    case "relationship":
+      // 나이대 + 대운 기반 연애 트렌드
+      if (fortuneInfo?.keywords[0]) {
+        queries.push(`${currentYear}년 ${fortuneInfo.keywords[0]} 연애운`);
+      }
+      // 일간 오행 기반 연애 스타일
+      const dayMasterElement = sajuResult.dayMasterElement;
+      if (dayMasterElement) {
+        queries.push(`${currentYear}년 ${ageGroup} 연애 트렌드`);
+      }
+      queries.push(`${currentYear}년 ${ageGroup} 만남 어플 추천`);
+      break;
+
+    case "health":
+      // 부족한 오행 기반 건강 주의점
+      const lackingElements = sajuResult.elementAnalysis?.lacking || [];
+      for (const element of lackingElements.slice(0, 1)) {
+        const healthKeywords = ELEMENT_HEALTH_KEYWORDS[element];
+        if (healthKeywords?.vulnerableAreas[0]) {
+          queries.push(`${healthKeywords.vulnerableAreas[0]} 건강 관리법 ${currentYear}`);
+        }
+      }
+      // 일간 오행 기반 건강 케어
+      if (sajuResult.dayMasterElement) {
+        const healthKeywords = ELEMENT_HEALTH_KEYWORDS[sajuResult.dayMasterElement];
+        if (healthKeywords?.recommendedCare[0]) {
+          queries.push(`${ageGroup} ${healthKeywords.recommendedCare[0]} 추천`);
+        }
+      }
+      queries.push(`${currentYear}년 ${ageGroup} 건강검진 가이드`);
+      break;
+
+    case "fortune":
+      // 대운 기반 종합운
+      if (currentFortune) {
+        const fortuneKorean = currentFortune.pillar.koreanReading;
+        queries.push(`${fortuneKorean}운 시기 인생 조언`);
+      }
+      queries.push(`${currentYear}년 경제 전망 트렌드`);
+      queries.push(`${currentYear}년 ${ageGroup} 라이프스타일`);
+      break;
+
+    default:
+      // 일반 키워드 기반
+      queries.push(`${currentYear}년 ${trigger.matchedKeyword} 트렌드`);
+      break;
+  }
+
+  // 사용자 메시지에서 추가 키워드 추출하여 보강
+  if (userMessage.length > 10 && queries.length < 3) {
+    queries.push(`${trigger.matchedKeyword} ${userMessage.slice(0, 20)} ${currentYear}`);
+  }
+
+  return queries.slice(0, 3); // 최대 3개
+}
+
+/**
+ * 사주 기반 대운 상태 요약 (2차 응답용)
+ */
+export function getMajorFortuneSummary(
+  sajuResult: SajuResult,
+  birthYear: number,
+  currentYear: number
+): string | null {
+  const currentAge = currentYear - birthYear + 1;
+  const fortuneInfo = getMajorFortuneKeywords(sajuResult, currentAge);
+  const currentFortune = getCurrentMajorFortune(sajuResult, currentAge);
+
+  if (!fortuneInfo || !currentFortune) return null;
+
+  return `현재 ${currentFortune.pillar.koreanReading}운(${currentFortune.startAge}~${currentFortune.endAge}세)으로 ${fortuneInfo.description}`;
+}
+
+/**
+ * 검색 트리거와 사주 컨텍스트를 결합한 종합 판단
+ */
+export function shouldTriggerSearchWithContext(
+  message: string,
+  context?: PersonalizedSearchContext
+): {
+  shouldSearch: boolean;
+  trigger: TriggerResult | null;
+  personalizedQueries: string[];
+  reason: string;
+} {
+  // 기본 트리거 검사
+  const baseResult = shouldTriggerSearch(message);
+
+  if (!baseResult.shouldSearch || !baseResult.trigger) {
+    return {
+      shouldSearch: false,
+      trigger: null,
+      personalizedQueries: [],
+      reason: baseResult.reason,
+    };
+  }
+
+  // 사주 컨텍스트가 있으면 개인화 쿼리 생성
+  let personalizedQueries: string[] = [];
+  if (context) {
+    personalizedQueries = generatePersonalizedTriggerQuery(
+      baseResult.trigger,
+      context,
+      message
+    );
+  }
+
+  return {
+    shouldSearch: true,
+    trigger: baseResult.trigger,
+    personalizedQueries,
+    reason: "trigger_detected_with_personalization",
+  };
 }

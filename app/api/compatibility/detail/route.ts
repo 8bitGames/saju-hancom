@@ -8,13 +8,121 @@ import {
 } from "@/lib/i18n/prompts";
 import type { Locale } from "@/lib/i18n/config";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
+import type { Element } from "@/lib/saju/types";
+import { ELEMENT_KOREAN } from "@/lib/saju/constants";
 
-// 관계 유형별 검색 쿼리 생성
-function generateCompatibilitySearchQueries(
+// 오행 상생상극 관계 분석
+type ElementRelation = "상생" | "상극" | "비화" | "설기" | "극설";
+
+function getElementRelation(element1: Element, element2: Element): ElementRelation {
+  const relations: Record<Element, { generates: Element; controlledBy: Element }> = {
+    wood: { generates: "fire", controlledBy: "metal" },
+    fire: { generates: "earth", controlledBy: "water" },
+    earth: { generates: "metal", controlledBy: "wood" },
+    metal: { generates: "water", controlledBy: "fire" },
+    water: { generates: "wood", controlledBy: "earth" },
+  };
+
+  if (element1 === element2) return "비화"; // 같은 오행
+  if (relations[element1].generates === element2) return "설기"; // 내가 상대를 생함
+  if (relations[element2].generates === element1) return "상생"; // 상대가 나를 생함
+  if (relations[element1].controlledBy === element2) return "상극"; // 상대가 나를 극함
+  return "극설"; // 내가 상대를 극함
+}
+
+// 🆕 오행 관계 기반 검색 쿼리 생성
+function generateElementBasedQueries(
+  person1Element: Element | undefined,
+  person2Element: Element | undefined,
   relationType: string,
   locale: Locale,
   currentYear: number
 ): string[] {
+  const queries: string[] = [];
+  const isRomantic = ["lover", "spouse"].includes(relationType);
+  const isWork = ["colleague", "supervisor", "subordinate", "partner", "client", "mentor", "mentee"].includes(relationType);
+
+  if (person1Element && person2Element) {
+    const relation = getElementRelation(person1Element, person2Element);
+    const el1Korean = ELEMENT_KOREAN[person1Element];
+    const el2Korean = ELEMENT_KOREAN[person2Element];
+
+    if (locale === "ko") {
+      // 오행 관계에 따른 맞춤 쿼리
+      switch (relation) {
+        case "상생":
+          queries.push(`${currentYear}년 상생 관계 시너지 내는 방법`);
+          if (isRomantic) {
+            queries.push(`서로 돕는 커플 관계 유지 비결`);
+          } else if (isWork) {
+            queries.push(`상호 보완적 팀워크 성공 사례`);
+          }
+          break;
+        case "상극":
+          queries.push(`${currentYear}년 성격 다른 두 사람 갈등 해결법`);
+          if (isRomantic) {
+            queries.push(`상극 오행 커플 극복 방법`);
+          } else if (isWork) {
+            queries.push(`의견 충돌 건설적 해결 방법`);
+          }
+          break;
+        case "비화":
+          queries.push(`${currentYear}년 비슷한 성격 관계 장단점`);
+          if (isRomantic) {
+            queries.push(`동류형 커플 관계 유지 팁`);
+          } else if (isWork) {
+            queries.push(`비슷한 성향 동료 효율적 협업 방법`);
+          }
+          break;
+        case "설기":
+        case "극설":
+          queries.push(`${currentYear}년 주도적 관계 균형 잡는 방법`);
+          break;
+      }
+
+      // 두 오행 조합 검색
+      queries.push(`${el1Korean} ${el2Korean} 궁합 조화로운 관계`);
+    } else {
+      // English queries
+      switch (relation) {
+        case "상생":
+          queries.push(`${currentYear} harmonious relationship synergy tips`);
+          break;
+        case "상극":
+          queries.push(`${currentYear} resolving personality conflicts relationship`);
+          break;
+        case "비화":
+          queries.push(`${currentYear} similar personality relationship pros cons`);
+          break;
+        default:
+          queries.push(`${currentYear} balancing dominant relationship dynamics`);
+      }
+    }
+  }
+
+  return queries;
+}
+
+// 관계 유형별 검색 쿼리 생성 (🆕 오행 정보 추가)
+function generateCompatibilitySearchQueries(
+  relationType: string,
+  locale: Locale,
+  currentYear: number,
+  person1Element?: Element,
+  person2Element?: Element
+): string[] {
+  const queries: string[] = [];
+
+  // 🆕 오행 기반 쿼리 먼저 추가
+  const elementQueries = generateElementBasedQueries(
+    person1Element,
+    person2Element,
+    relationType,
+    locale,
+    currentYear
+  );
+  queries.push(...elementQueries);
+
   const isWork = ["colleague", "supervisor", "subordinate", "partner", "client", "mentor", "mentee"].includes(relationType);
   const isRomantic = ["lover", "spouse"].includes(relationType);
 
@@ -23,76 +131,66 @@ function generateCompatibilitySearchQueries(
       const workQueries: Record<string, string[]> = {
         colleague: [
           `${currentYear}년 직장 동료 관계 좋게 하는 방법`,
-          `MZ세대 직장 동료 소통 팁`,
           `팀워크 향상 방법 ${currentYear}`,
         ],
         supervisor: [
           `${currentYear}년 좋은 상사 부하 관계 만들기`,
-          `상사 보고 잘하는 방법 트렌드`,
           `직장 상하관계 소통 ${currentYear}`,
         ],
         subordinate: [
           `${currentYear}년 부하직원 관리 방법`,
-          `MZ세대 부하직원 소통 방법`,
           `리더십 트렌드 ${currentYear}`,
         ],
         partner: [
           `${currentYear}년 비즈니스 파트너십 성공 사례`,
           `동업자 관계 유지 방법`,
-          `협업 성공 비결 ${currentYear}`,
         ],
         client: [
           `${currentYear}년 고객 관계 관리 트렌드`,
-          `거래처 좋은 관계 유지 방법`,
           `비즈니스 네트워킹 ${currentYear}`,
         ],
         mentor: [
           `${currentYear}년 좋은 멘토링 방법`,
           `멘토 멘티 관계 성공 사례`,
-          `직장 멘토링 트렌드`,
         ],
         mentee: [
           `${currentYear}년 멘티 성장 방법`,
-          `멘토에게 배우는 방법`,
           `커리어 성장 조언 ${currentYear}`,
         ],
       };
-      return workQueries[relationType] || workQueries.colleague;
+      queries.push(...(workQueries[relationType] || workQueries.colleague));
     } else if (isRomantic) {
-      return [
+      queries.push(
         `${currentYear}년 연인 관계 트렌드`,
         `좋은 커플 관계 유지 비결`,
-        `결혼 전 확인할 것 ${currentYear}`,
-      ];
+      );
     } else {
-      return [
+      queries.push(
         `${currentYear}년 좋은 인간관계 만들기`,
         `친구 관계 유지 방법`,
-        `가족 관계 개선 ${currentYear}`,
-      ];
+      );
     }
   } else {
     // English queries
     if (isWork) {
-      return [
+      queries.push(
         `workplace relationship tips ${currentYear}`,
-        `team collaboration best practices`,
         `professional communication trends`,
-      ];
+      );
     } else if (isRomantic) {
-      return [
+      queries.push(
         `relationship advice ${currentYear}`,
         `couple compatibility tips`,
-        `marriage preparation guide`,
-      ];
+      );
     } else {
-      return [
+      queries.push(
         `building good relationships ${currentYear}`,
         `friendship maintenance tips`,
-        `family relationship improvement`,
-      ];
+      );
     }
   }
+
+  return queries.slice(0, 4); // 최대 4개
 }
 
 // 상세 궁합 분석 결과 스키마
@@ -337,7 +435,18 @@ export async function POST(request: NextRequest) {
 
     // Google Search grounding을 위한 검색 쿼리 생성
     const currentYear = new Date().getFullYear();
-    const searchQueries = generateCompatibilitySearchQueries(effectiveRelationType, locale, currentYear);
+
+    // 🆕 두 사람의 일간(日干) 오행 추출
+    const person1Element = person1?.sajuResult?.dayMaster?.element as Element | undefined;
+    const person2Element = person2?.sajuResult?.dayMaster?.element as Element | undefined;
+
+    const searchQueries = generateCompatibilitySearchQueries(
+      effectiveRelationType,
+      locale,
+      currentYear,
+      person1Element,
+      person2Element
+    );
 
     // 시스템 프롬프트와 사용자 프롬프트 생성
     const systemPrompt = getDetailedCompatibilitySystemPrompt(locale, effectiveRelationType);

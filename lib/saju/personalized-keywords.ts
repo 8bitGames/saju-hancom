@@ -3,7 +3,7 @@
  * 사주 데이터를 Google Grounding 검색용 개인화 키워드로 변환
  */
 
-import type { TenGod, Element, TenGodSummary, ElementAnalysis, SajuResult } from "./types";
+import type { TenGod, Element, TenGodSummary, ElementAnalysis, SajuResult, MajorFortunePeriod } from "./types";
 import { TEN_GOD_INFO, ELEMENT_KOREAN } from "./constants";
 
 // ============================================================================
@@ -53,6 +53,8 @@ export interface GroundingContext {
   currentMonth: number;
   /** 나이대 */
   ageGroup: string;
+  /** 현재 나이 (한국 나이) */
+  currentAge?: number;
   /** 사주 결과 */
   sajuResult: SajuResult;
 }
@@ -258,15 +260,125 @@ export function getAgeGroup(birthYear: number, currentYear: number): string {
 }
 
 /**
+ * 현재 대운 기간 찾기
+ */
+export function getCurrentMajorFortune(
+  sajuResult: SajuResult,
+  currentAge: number
+): MajorFortunePeriod | null {
+  if (!sajuResult.majorFortune?.periods) return null;
+
+  for (const period of sajuResult.majorFortune.periods) {
+    if (currentAge >= period.startAge && currentAge <= period.endAge) {
+      return period;
+    }
+  }
+  return null;
+}
+
+/**
+ * 대운 오행과 일간의 관계 분석
+ */
+export function analyzeMajorFortuneRelation(
+  dayMasterElement: Element,
+  fortuneElement: Element
+): "생조" | "극제" | "비화" | "설기" | "중화" {
+  // 오행 상생상극 관계
+  const relations: Record<Element, { generates: Element; controls: Element; controlledBy: Element; generatedBy: Element }> = {
+    wood: { generates: "fire", controls: "earth", controlledBy: "metal", generatedBy: "water" },
+    fire: { generates: "earth", controls: "metal", controlledBy: "water", generatedBy: "wood" },
+    earth: { generates: "metal", controls: "water", controlledBy: "wood", generatedBy: "fire" },
+    metal: { generates: "water", controls: "wood", controlledBy: "fire", generatedBy: "earth" },
+    water: { generates: "wood", controls: "fire", controlledBy: "earth", generatedBy: "metal" },
+  };
+
+  const rel = relations[dayMasterElement];
+
+  if (fortuneElement === rel.generatedBy) return "생조"; // 대운이 나를 생해줌
+  if (fortuneElement === rel.controlledBy) return "극제"; // 대운이 나를 극함
+  if (fortuneElement === dayMasterElement) return "비화"; // 같은 오행
+  if (fortuneElement === rel.generates) return "설기"; // 내가 대운을 생함 (기운 소모)
+  return "중화"; // 내가 대운을 극함 (기운 소모)
+}
+
+/**
+ * 대운 기반 검색 키워드 생성
+ */
+export function getMajorFortuneKeywords(
+  sajuResult: SajuResult,
+  currentAge: number
+): { keywords: string[]; description: string } | null {
+  const currentFortune = getCurrentMajorFortune(sajuResult, currentAge);
+  if (!currentFortune) return null;
+
+  const fortuneElement = currentFortune.pillar.ganElement;
+  const dayMasterElement = sajuResult.dayMasterElement;
+  const relation = analyzeMajorFortuneRelation(dayMasterElement, fortuneElement);
+
+  const fortuneGan = currentFortune.pillar.gan;
+  const fortuneKorean = currentFortune.pillar.koreanReading;
+  const elementKorean = ELEMENT_KOREAN[fortuneElement];
+
+  const keywords: string[] = [];
+  let description = "";
+
+  switch (relation) {
+    case "생조":
+      keywords.push("운세 상승기", "기회의 시기", "발전 가능성");
+      description = `${fortuneKorean} 대운으로 ${elementKorean}의 기운이 도움을 주는 시기`;
+      break;
+    case "극제":
+      keywords.push("도전의 시기", "변화 대응", "위기 관리");
+      description = `${fortuneKorean} 대운으로 ${elementKorean}의 기운이 도전을 주는 시기`;
+      break;
+    case "비화":
+      keywords.push("경쟁과 협력", "동료 관계", "자기 강화");
+      description = `${fortuneKorean} 대운으로 같은 기운이 강해지는 시기`;
+      break;
+    case "설기":
+      keywords.push("표현의 시기", "창작 활동", "에너지 분출");
+      description = `${fortuneKorean} 대운으로 기운을 발산하는 시기`;
+      break;
+    case "중화":
+      keywords.push("리더십 발휘", "통제력 향상", "주도적 활동");
+      description = `${fortuneKorean} 대운으로 주도적인 역할이 강해지는 시기`;
+      break;
+  }
+
+  return { keywords, description };
+}
+
+/**
  * 커리어 관련 개인화 검색 쿼리 생성
  */
 export function generateCareerQueries(context: GroundingContext): string[] {
-  const { currentYear, sajuResult, ageGroup } = context;
+  const { currentYear, sajuResult, ageGroup, currentAge } = context;
   const queries: string[] = [];
 
   const dominantGods = getDominantTenGods(sajuResult.tenGodSummary);
   const dominantElement = sajuResult.elementAnalysis.dominant[0];
   const yongShin = sajuResult.elementAnalysis.yongShin;
+
+  // 🆕 대운 기반 검색 쿼리 (최우선)
+  if (currentAge) {
+    const fortuneInfo = getMajorFortuneKeywords(sajuResult, currentAge);
+    if (fortuneInfo) {
+      const { keywords } = fortuneInfo;
+      if (keywords[0]) {
+        queries.push(`${currentYear}년 ${keywords[0]} 직업 변화 전략`);
+      }
+    }
+
+    // 현재 대운 천간 기반 검색
+    const currentFortune = getCurrentMajorFortune(sajuResult, currentAge);
+    if (currentFortune) {
+      const fortuneElement = currentFortune.pillar.ganElement;
+      const elementKeywords = ELEMENT_KEYWORDS[fortuneElement];
+      if (elementKeywords?.modernIndustries.length > 0) {
+        queries.push(`${currentYear}년 ${elementKeywords.modernIndustries[0]} 진출 시기`);
+      }
+    }
+  }
 
   // 십성 기반 직업 검색
   for (const god of dominantGods) {
@@ -294,18 +406,42 @@ export function generateCareerQueries(context: GroundingContext): string[] {
     }
   }
 
-  return queries.slice(0, 3); // 최대 3개
+  return queries.slice(0, 4); // 최대 4개로 확대
 }
 
 /**
  * 재물운 관련 개인화 검색 쿼리 생성
  */
 export function generateWealthQueries(context: GroundingContext): string[] {
-  const { currentYear, sajuResult } = context;
+  const { currentYear, sajuResult, currentAge } = context;
   const queries: string[] = [];
 
   const dominantGods = getDominantTenGods(sajuResult.tenGodSummary);
   const dominantElement = sajuResult.elementAnalysis.dominant[0];
+
+  // 🆕 대운 기반 재물운 검색 쿼리 (최우선)
+  if (currentAge) {
+    const fortuneInfo = getMajorFortuneKeywords(sajuResult, currentAge);
+    if (fortuneInfo) {
+      const { keywords } = fortuneInfo;
+      // 대운 상태에 따른 재물 전략
+      if (keywords.includes("운세 상승기")) {
+        queries.push(`${currentYear}년 상승기 재테크 투자 전략`);
+      } else if (keywords.includes("도전의 시기")) {
+        queries.push(`${currentYear}년 안정적 자산 보호 전략`);
+      }
+    }
+
+    // 현재 대운 오행 기반 투자 분야
+    const currentFortune = getCurrentMajorFortune(sajuResult, currentAge);
+    if (currentFortune) {
+      const fortuneElement = currentFortune.pillar.ganElement;
+      const elementKeywords = ELEMENT_KEYWORDS[fortuneElement];
+      if (elementKeywords?.investmentStyles.length > 0) {
+        queries.push(`${currentYear}년 ${elementKeywords.investmentStyles[0]} 투자 시기`);
+      }
+    }
+  }
 
   // 십성 기반 투자 성향
   for (const god of dominantGods) {
@@ -331,7 +467,7 @@ export function generateWealthQueries(context: GroundingContext): string[] {
     }
   }
 
-  return queries.slice(0, 3);
+  return queries.slice(0, 4);
 }
 
 /**
@@ -392,13 +528,34 @@ export function generateHealthQueries(context: GroundingContext): string[] {
  * 전체 운세 관련 개인화 검색 쿼리 생성
  */
 export function generateFortuneQueries(context: GroundingContext): string[] {
-  const { currentYear, currentMonth } = context;
+  const { currentYear, currentMonth, sajuResult, currentAge, ageGroup } = context;
   const queries: string[] = [];
 
-  queries.push(`${currentYear}년 ${currentMonth}월 경제 전망`);
-  queries.push(`${currentYear}년 하반기 트렌드 전망`);
+  // 🆕 대운 기반 종합운 검색 쿼리 (최우선)
+  if (currentAge) {
+    const fortuneInfo = getMajorFortuneKeywords(sajuResult, currentAge);
+    if (fortuneInfo) {
+      const { description } = fortuneInfo;
+      // 대운 시기에 맞는 조언 검색
+      const currentFortune = getCurrentMajorFortune(sajuResult, currentAge);
+      if (currentFortune) {
+        const fortuneKorean = currentFortune.pillar.koreanReading;
+        queries.push(`${fortuneKorean}운 시기 인생 조언`);
+      }
+    }
+  }
 
-  return queries.slice(0, 2);
+  // 일간 오행 기반 월별 운세
+  const dayMasterElement = sajuResult.dayMasterElement;
+  if (dayMasterElement) {
+    const elementKorean = ELEMENT_KOREAN[dayMasterElement];
+    queries.push(`${currentYear}년 ${currentMonth}월 ${elementKorean}일간 운세`);
+  }
+
+  queries.push(`${currentYear}년 ${currentMonth}월 경제 전망`);
+  queries.push(`${currentYear}년 ${ageGroup} 라이프스타일 트렌드`);
+
+  return queries.slice(0, 3);
 }
 
 /**
@@ -417,7 +574,7 @@ export function generateAllPersonalizedQueries(context: GroundingContext): Perso
 /**
  * 사주 프로필 요약 생성 (검색 컨텍스트용)
  */
-export function generateSajuProfile(sajuResult: SajuResult): string {
+export function generateSajuProfile(sajuResult: SajuResult, currentAge?: number): string {
   const parts: string[] = [];
 
   // 일간 성향
@@ -459,7 +616,78 @@ export function generateSajuProfile(sajuResult: SajuResult): string {
     parts.push(`용신(필요한 기운): ${ELEMENT_KOREAN[sajuResult.elementAnalysis.yongShin]}`);
   }
 
+  // 🆕 대운 정보 추가
+  if (currentAge) {
+    const fortuneInfo = getMajorFortuneKeywords(sajuResult, currentAge);
+    if (fortuneInfo) {
+      parts.push(`현재 대운: ${fortuneInfo.description}`);
+    }
+  }
+
   return parts.join("\n");
+}
+
+/**
+ * 사주 프로필 구조화된 추출 (Phase 3)
+ * 성격, 적합 산업, 투자 스타일을 명확하게 추출
+ */
+export interface ExtractedSajuProfile {
+  /** 성격 특성 */
+  personality: string;
+  /** 적합한 현대 산업 */
+  suitableIndustry: string;
+  /** 투자 스타일 */
+  investmentStyle: string;
+  /** 적합 직업군 */
+  careerTypes: string;
+  /** 강점 */
+  strengths: string;
+  /** 요약 설명 */
+  summary: string;
+}
+
+export function extractSajuProfile(sajuResult: SajuResult): ExtractedSajuProfile {
+  const dominantGods = getDominantTenGods(sajuResult.tenGodSummary);
+  const dominantElement = sajuResult.elementAnalysis.dominant[0];
+  const yongShin = sajuResult.elementAnalysis.yongShin;
+
+  // 주요 십성에서 성격/직업 키워드 추출
+  let personality = "균형 잡힌";
+  let careerTypes = "다양한 분야";
+  let strengths = "적응력";
+
+  if (dominantGods.length > 0) {
+    const mainGod = dominantGods[0];
+    const godKeywords = TEN_GOD_KEYWORDS[mainGod];
+    if (godKeywords) {
+      personality = godKeywords.personality.slice(0, 2).join(", ");
+      careerTypes = godKeywords.careerTypes.slice(0, 3).join(", ");
+      strengths = godKeywords.strengths.slice(0, 2).join(", ");
+    }
+  }
+
+  // 용신 또는 강한 오행에서 산업/투자 스타일 추출
+  const targetElement = yongShin || dominantElement;
+  let suitableIndustry = "다양한 분야";
+  let investmentStyle = "분산 투자";
+
+  if (targetElement && ELEMENT_KEYWORDS[targetElement]) {
+    const elementKeywords = ELEMENT_KEYWORDS[targetElement];
+    suitableIndustry = elementKeywords.modernIndustries.slice(0, 3).join(", ");
+    investmentStyle = elementKeywords.investmentStyles.slice(0, 2).join(", ");
+  }
+
+  // 요약 생성
+  const summary = `${personality} 성향으로 ${suitableIndustry} 분야에 적합하며, ${investmentStyle} 스타일 선호`;
+
+  return {
+    personality,
+    suitableIndustry,
+    investmentStyle,
+    careerTypes,
+    strengths,
+    summary,
+  };
 }
 
 /**
@@ -508,4 +736,95 @@ export function generateChatSearchQuery(
   const keywordPart = categoryKeywords.length > 0 ? categoryKeywords[0] : "";
 
   return `${currentYear}년 ${keywordPart} ${userMessage}`.trim();
+}
+
+// ============================================================================
+// 그라운딩 강도 설정 (Phase 6 최적화)
+// ============================================================================
+
+/**
+ * 그라운딩 강도 레벨
+ * - HIGH: 시의성 필수 (career, wealth) - 명시적 검색 지시
+ * - MEDIUM: 트렌드 참고 가치 (health, fortune) - 조건부 검색
+ * - LOW: 전통 해석 중심 (relationship, dayMaster, tenGods, stars) - 선택적 검색
+ */
+export type GroundingIntensity = "HIGH" | "MEDIUM" | "LOW";
+
+/**
+ * 카테고리별 그라운딩 강도 매핑
+ */
+export const CATEGORY_GROUNDING_INTENSITY: Record<string, GroundingIntensity> = {
+  career: "HIGH",
+  wealth: "HIGH",
+  health: "MEDIUM",
+  fortune: "MEDIUM",
+  relationship: "LOW",
+  dayMaster: "LOW",
+  tenGods: "LOW",
+  stars: "LOW",
+};
+
+/**
+ * 그라운딩 강도별 프롬프트 템플릿 (한국어)
+ */
+export const GROUNDING_PROMPTS_KO: Record<GroundingIntensity, string> = {
+  HIGH: `⚠️ **중요: 반드시 검색을 활용하세요!**
+이 카테고리는 시의성 있는 정보가 핵심입니다.
+반드시 {year}년 최신 정보를 Google 검색하여 구체적인 데이터와 트렌드를 인용하세요.
+검색 없이는 정확한 조언이 불가능합니다.`,
+
+  MEDIUM: `📊 **최신 트렌드 참고 권장**
+{year}년 관련 트렌드나 통계가 답변 품질을 높일 수 있다면 검색을 활용하세요.
+전통적 해석과 현대 트렌드를 적절히 조화시켜 답변해주세요.`,
+
+  LOW: `📖 **전통적 해석 중심**
+사주의 전통적 해석을 중심으로 답변하세요.
+최신 트렌드 검색은 특별히 필요한 경우에만 활용하세요.`,
+};
+
+/**
+ * 그라운딩 강도별 프롬프트 템플릿 (영어)
+ */
+export const GROUNDING_PROMPTS_EN: Record<GroundingIntensity, string> = {
+  HIGH: `⚠️ **IMPORTANT: You MUST use search!**
+This category requires timely information.
+You MUST search for {year} latest data and trends using Google Search.
+Accurate advice is impossible without searching.`,
+
+  MEDIUM: `📊 **Recommended: Reference Current Trends**
+If {year} trends or statistics would improve your answer quality, use search.
+Balance traditional interpretation with modern trends in your response.`,
+
+  LOW: `📖 **Traditional Interpretation Focus**
+Focus on traditional birth chart interpretation.
+Use trend searching only when specifically needed.`,
+};
+
+/**
+ * 카테고리에 맞는 그라운딩 프롬프트 생성
+ */
+export function getGroundingPrompt(
+  category: string,
+  locale: "ko" | "en",
+  currentYear: number
+): string {
+  const intensity = CATEGORY_GROUNDING_INTENSITY[category] || "LOW";
+  const templates = locale === "ko" ? GROUNDING_PROMPTS_KO : GROUNDING_PROMPTS_EN;
+
+  return templates[intensity].replace("{year}", currentYear.toString());
+}
+
+/**
+ * 카테고리의 그라운딩 강도 확인
+ */
+export function getGroundingIntensity(category: string): GroundingIntensity {
+  return CATEGORY_GROUNDING_INTENSITY[category] || "LOW";
+}
+
+/**
+ * 그라운딩이 필요한 카테고리인지 확인
+ */
+export function needsGrounding(category: string): boolean {
+  const intensity = getGroundingIntensity(category);
+  return intensity === "HIGH" || intensity === "MEDIUM";
 }

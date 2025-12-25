@@ -9,8 +9,11 @@ import {
 } from "@/lib/i18n/prompts";
 import type { Locale } from "@/lib/i18n/config";
 import {
-  shouldTriggerSearch,
+  shouldTriggerSearchWithContext,
+  generatePersonalizedTriggerQuery,
+  getMajorFortuneSummary,
   type TriggerResult,
+  type PersonalizedSearchContext,
 } from "@/lib/saju/search-triggers";
 import {
   generateChatSearchQuery,
@@ -106,8 +109,30 @@ export async function POST(request: NextRequest) {
       systemPrompt += "\n" + personalizedContext;
     }
 
-    // Check if we should trigger a search
-    const triggerCheck = enableGrounding ? shouldTriggerSearch(userMessageText) : { shouldSearch: false, trigger: null, reason: "grounding_disabled" };
+    // 🆕 사주 컨텍스트 기반 검색 트리거 감지 (Phase 2 개선)
+    let searchContext: PersonalizedSearchContext | undefined;
+    let parsedSajuForTrigger: SajuResult | undefined;
+
+    if (sajuResult && birthYear) {
+      try {
+        parsedSajuForTrigger = typeof sajuResult === 'string'
+          ? JSON.parse(sajuResult)
+          : sajuResult;
+        searchContext = {
+          sajuResult: parsedSajuForTrigger!,
+          birthYear,
+          currentYear,
+          currentAge: currentYear - birthYear + 1,
+        };
+      } catch (e) {
+        console.error("Failed to parse saju result for trigger:", e);
+      }
+    }
+
+    // 사주 컨텍스트가 있으면 개인화된 트리거 감지 사용
+    const triggerCheck = enableGrounding
+      ? shouldTriggerSearchWithContext(userMessageText, searchContext)
+      : { shouldSearch: false, trigger: null, personalizedQueries: [], reason: "grounding_disabled" };
 
     // If no trigger or grounding disabled, use simple streaming response
     if (!triggerCheck.shouldSearch || !triggerCheck.trigger) {
@@ -191,16 +216,25 @@ export async function POST(request: NextRequest) {
               ? JSON.parse(sajuResult)
               : sajuResult;
 
-            // Generate personalized search query
-            const searchQuery = generateChatSearchQuery(
-              userMessageText,
-              parsedSajuResult,
-              trigger.category as "career" | "wealth" | "relationship" | "health" | "fortune",
-              currentYear
-            );
+            // 🆕 Phase 2 개선: 개인화된 검색 쿼리 사용
+            const personalizedQueries = triggerCheck.personalizedQueries;
+            const searchQuery = personalizedQueries.length > 0
+              ? personalizedQueries[0]
+              : generateChatSearchQuery(
+                  userMessageText,
+                  parsedSajuResult,
+                  trigger.category as "career" | "wealth" | "relationship" | "health" | "fortune",
+                  currentYear
+                );
 
-            // Get saju profile for context
-            const sajuProfile = generateSajuProfile(parsedSajuResult);
+            // Get saju profile for context (with current age for 대운)
+            const currentAge = birthYear ? currentYear - birthYear + 1 : undefined;
+            const sajuProfile = generateSajuProfile(parsedSajuResult, currentAge);
+
+            // 🆕 대운 상태 요약 추가
+            const fortuneSummary = birthYear
+              ? getMajorFortuneSummary(parsedSajuResult, birthYear, currentYear)
+              : null;
 
             // 사주 기반 맞춤 산업/투자 정보 생성
             const yongShin = parsedSajuResult.elementAnalysis?.yongShin;
@@ -222,12 +256,13 @@ export async function POST(request: NextRequest) {
               ? ELEMENT_INDUSTRIES[dominantElements[0]].join(", ")
               : "";
 
-            // Build the enriched prompt
+            // Build the enriched prompt (🆕 대운 정보 및 개인화 쿼리 추가)
             const enrichedPrompt = locale === 'ko'
               ? `사용자가 "${userMessageText}"라고 물었습니다.
 
 이 분의 사주 프로필:
 ${sajuProfile}
+${fortuneSummary ? `\n**현재 대운 상태**: ${fortuneSummary}` : ""}
 
 **매우 중요 - 이 분에게 맞는 분야**:
 - 용신(用神): ${yongShinKorean || "분석 필요"} → 추천 산업: ${yongShinIndustries || "다양한 분야"}
@@ -243,12 +278,14 @@ ${sajuProfile}
 3. 예: 용신이 木이면 ESG/바이오, 火면 AI/반도체, 土면 부동산, 金이면 핀테크, 水면 글로벌이커머스
 4. ${currentYear}년 해당 산업의 실제 동향을 검색해서 구체적으로 말해주세요
 5. 4-6문장으로 이 분의 사주에 딱 맞는 맞춤 조언을 해주세요
+${fortuneSummary ? `6. 현재 대운 시기를 고려하여 시기적 조언도 해주세요` : ""}
 
-검색 주제: ${yongShin ? `${currentYear}년 ${yongShinIndustries?.split(",")[0]} 산업 전망` : searchQuery}`
+검색 주제: ${personalizedQueries.length > 0 ? personalizedQueries.join(" / ") : (yongShin ? `${currentYear}년 ${yongShinIndustries?.split(",")[0]} 산업 전망` : searchQuery)}`
               : `The user asked: "${userMessageText}"
 
 This person's BaZi profile:
 ${sajuProfile}
+${fortuneSummary ? `\n**Current Major Fortune Period**: ${fortuneSummary}` : ""}
 
 **Very Important - Suitable Fields for This Person**:
 - Yongsin (Beneficial Element): ${yongShin || "needs analysis"} → Recommended industries: ${yongShinIndustries || "various"}
@@ -264,8 +301,9 @@ Start naturally with "Looking at your chart..." or "Based on your energy..."
 3. Example: Wood → ESG/Bio, Fire → AI/Semiconductor, Earth → Real Estate, Metal → Fintech, Water → Global E-commerce
 4. Search for ${currentYear} trends in THOSE specific industries
 5. Give 4-6 sentences of personalized advice matching their chart
+${fortuneSummary ? `6. Consider their current major fortune period for timing advice` : ""}
 
-Search topic: ${yongShin ? `${currentYear} ${yongShinIndustries?.split(",")[0]} industry outlook` : searchQuery}`;
+Search topic: ${personalizedQueries.length > 0 ? personalizedQueries.join(" / ") : (yongShin ? `${currentYear} ${yongShinIndustries?.split(",")[0]} industry outlook` : searchQuery)}`;
 
             // Call Gemini with Google Search
             const searchResponse = await ai.models.generateContent({

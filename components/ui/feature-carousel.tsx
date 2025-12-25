@@ -320,12 +320,15 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
         {/* Horizontal Cards Container - horizontal scroll only */}
         <div
           ref={containerRef}
-          className="relative z-10 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden scrollbar-hide"
+          className="relative z-10 flex snap-x snap-proximity overflow-x-auto overflow-y-hidden scrollbar-hide"
           style={{
             height: viewportHeight ? `${viewportHeight}px` : "100dvh",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
             touchAction: "pan-x",
+            WebkitOverflowScrolling: "touch",
+            overscrollBehaviorX: "contain",
+            scrollBehavior: "smooth",
           }}
         >
           {cards.map((card, index) => (
