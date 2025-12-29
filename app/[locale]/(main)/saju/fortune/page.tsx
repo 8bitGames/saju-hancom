@@ -8,7 +8,7 @@ import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect
 import { MysticalLoader } from "@/components/saju/MysticalLoader";
 import { useSajuPipelineStream } from "@/lib/hooks/useSajuPipelineStream";
 import PipelineProgress from "@/components/saju/PipelineProgress";
-import PipelineResult from "@/components/saju/PipelineResult";
+import PipelineResult, { type TabType } from "@/components/saju/PipelineResult";
 import { downloadPipelinePDF } from "@/lib/pdf/generator";
 import { getDetailAnalysisFromStorage } from "@/components/saju/DetailAnalysisModal";
 import type { Gender } from "@/lib/saju/types";
@@ -24,6 +24,7 @@ function SajuFortuneContent() {
   const [showPdfWarning, setShowPdfWarning] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [pendingDetailCount, setPendingDetailCount] = useState(0);
+  const [currentTab, setCurrentTab] = useState<TabType>("overview");
 
   const handleDownloadPDF = async (skipWarning = false) => {
     if (!state.finalResult || isDownloading) return;
@@ -202,47 +203,50 @@ function SajuFortuneContent() {
             minute: searchParams.get("minute") || undefined,
             isLunar: searchParams.get("isLunar") === "true",
           }}
+          onTabChange={setCurrentTab}
         />
 
-        {/* Action Buttons */}
-        <div className="space-y-4 pt-4">
-          {/* PDF Download Button */}
-          {(() => {
-            const detailCount = Object.keys(getDetailAnalysisFromStorage()).length;
-            return (
-              <div className="space-y-2">
-                <button
-                  onClick={() => handleDownloadPDF(false)}
-                  disabled={isDownloading}
-                  className="w-full h-14 rounded-xl bg-[#22c55e] text-white font-bold text-lg flex items-center justify-center gap-3 hover:bg-[#16a34a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <FilePdf className="w-5 h-5" weight="fill" />
-                  {isDownloading ? "PDF 생성 중..." : "전체 분석 결과 PDF 다운로드"}
-                </button>
-                <p className="text-center text-sm text-white/50">
-                  {detailCount > 0
-                    ? `기본 분석 + 상세 분석 ${detailCount}/${TOTAL_DETAIL_AREAS}개 영역 포함`
-                    : "상세보기를 클릭하면 PDF에 포함됩니다"}
-                </p>
-              </div>
-            );
-          })()}
+        {/* Action Buttons - 조언 탭에서만 표시 */}
+        {currentTab === "advice" && (
+          <div className="space-y-4 pt-4">
+            {/* PDF Download Button */}
+            {(() => {
+              const detailCount = Object.keys(getDetailAnalysisFromStorage()).length;
+              return (
+                <div className="space-y-2">
+                  <button
+                    onClick={() => handleDownloadPDF(false)}
+                    disabled={isDownloading}
+                    className="w-full h-14 rounded-xl bg-[#22c55e] text-white font-bold text-lg flex items-center justify-center gap-3 hover:bg-[#16a34a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <FilePdf className="w-5 h-5" weight="fill" />
+                    {isDownloading ? "PDF 생성 중..." : "전체 분석 결과 PDF 다운로드"}
+                  </button>
+                  <p className="text-center text-sm text-white/50">
+                    {detailCount > 0
+                      ? `기본 분석 + 상세 분석 ${detailCount}/${TOTAL_DETAIL_AREAS}개 영역 포함`
+                      : "상세보기를 클릭하면 PDF에 포함됩니다"}
+                  </p>
+                </div>
+              );
+            })()}
 
-          <Link href={`/saju/result?${searchParams.toString()}`} className="block">
-            <button className="w-full h-14 rounded-xl bg-[#a855f7] text-white font-bold text-lg flex items-center justify-center gap-3 hover:bg-[#9333ea] transition-colors">
-              <Sparkle className="w-5 h-5" weight="fill" />
-              기본 사주 결과 보기
+            <Link href={`/saju/result?${searchParams.toString()}`} className="block">
+              <button className="w-full h-14 rounded-xl bg-[#a855f7] text-white font-bold text-lg flex items-center justify-center gap-3 hover:bg-[#9333ea] transition-colors">
+                <Sparkle className="w-5 h-5" weight="fill" />
+                기본 사주 결과 보기
+              </button>
+            </Link>
+
+            <button
+              onClick={() => setShowClearConfirm(true)}
+              className="w-full h-14 rounded-xl bg-white/5 border border-white/10 text-base text-white/60 font-medium hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-2"
+            >
+              <ArrowCounterClockwise className="w-5 h-5" />
+              다시 분석하기
             </button>
-          </Link>
-
-          <button
-            onClick={() => setShowClearConfirm(true)}
-            className="w-full h-14 rounded-xl bg-white/5 border border-white/10 text-base text-white/60 font-medium hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-2"
-          >
-            <ArrowCounterClockwise className="w-5 h-5" />
-            다시 분석하기
-          </button>
-        </div>
+          </div>
+        )}
 
         {/* Reanalyze Confirm Modal */}
         {showClearConfirm && (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { X, Sparkle, Warning, User, Briefcase, Coins, Heart, FirstAid, Star, Calendar } from "@phosphor-icons/react";
+import { X, Sparkle, Warning, User, Briefcase, Coins, Heart, FirstAid, Star, Calendar, ArrowRight } from "@phosphor-icons/react";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { saveDetailAnalysis, getDetailAnalysis, checkAuthStatus } from "@/lib/actions/saju";
 
@@ -254,6 +254,12 @@ interface DetailAnalysisModalProps {
   gender: string;
   sajuResult?: unknown;  // Cold Reading을 위한 사주 결과 데이터
   birthYear?: number;    // Cold Reading을 위한 출생년도
+  // 다음 상세보기 연결을 위한 props
+  nextCategory?: {
+    category: string;
+    title: string;
+  };
+  onNextCategory?: () => void;
 }
 
 export function DetailAnalysisModal({
@@ -265,6 +271,8 @@ export function DetailAnalysisModal({
   gender,
   sajuResult,
   birthYear,
+  nextCategory,
+  onNextCategory,
 }: DetailAnalysisModalProps) {
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -519,9 +527,32 @@ export function DetailAnalysisModal({
             <MarkdownRenderer content={content} variant="default" />
           )}
 
-          {/* 하단 여백 (iOS Safari safe area) */}
-          <div className="h-16 md:h-4 pb-[env(safe-area-inset-bottom)]" />
+          {/* 하단 여백 - 푸터 영역 확보 */}
+          <div className="h-4" />
         </div>
+
+        {/* Footer - 닫기 + 다음 상세보기 버튼 */}
+        {(content || error) && !isLoading && (
+          <div className="flex-shrink-0 px-4 py-3 md:px-6 md:py-4 bg-[#1a1033] border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
+            <div className="flex gap-3">
+              <button
+                onClick={onClose}
+                className="flex-1 py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20 transition-colors"
+              >
+                닫기
+              </button>
+              {nextCategory && onNextCategory && (
+                <button
+                  onClick={onNextCategory}
+                  className="flex-1 py-3 rounded-xl bg-[#a855f7] text-white font-medium hover:bg-[#9333ea] transition-colors flex items-center justify-center gap-2"
+                >
+                  <span>{nextCategory.title} 상세보기</span>
+                  <ArrowRight className="w-5 h-5" weight="bold" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

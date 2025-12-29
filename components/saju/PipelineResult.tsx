@@ -117,11 +117,30 @@ interface PipelineResultProps {
     minute?: string;
     isLunar?: boolean;
   };
+  onTabChange?: (tab: TabType) => void;
 }
 
-type TabType = "overview" | "daymaster" | "tengods" | "stars" | "timing" | "advice";
+export type TabType = "overview" | "daymaster" | "tengods" | "stars" | "timing" | "advice";
 
 type DetailCategory = "dayMaster" | "tenGods" | "stars" | "fortune" | "career" | "relationship" | "health" | "wealth";
+
+// 종합 탭에서 상세보기 순서 정의 (성격 → 직업 → 재물 → 관계 → 건강)
+const OVERVIEW_DETAIL_SEQUENCE: Array<{ category: DetailCategory; title: string }> = [
+  { category: "dayMaster", title: "성격운" },
+  { category: "career", title: "직업운" },
+  { category: "wealth", title: "재물운" },
+  { category: "relationship", title: "관계운" },
+  { category: "health", title: "건강운" },
+];
+
+// 현재 카테고리의 다음 카테고리 반환 (종합 탭 시퀀스용)
+function getNextCategoryInSequence(currentCategory: DetailCategory): { category: string; title: string } | undefined {
+  const currentIndex = OVERVIEW_DETAIL_SEQUENCE.findIndex(item => item.category === currentCategory);
+  if (currentIndex === -1 || currentIndex === OVERVIEW_DETAIL_SEQUENCE.length - 1) {
+    return undefined; // 마지막이거나 시퀀스에 없으면 다음 없음
+  }
+  return OVERVIEW_DETAIL_SEQUENCE[currentIndex + 1];
+}
 
 const TABS: Array<{ id: TabType; label: string; icon: React.ReactNode }> = [
   { id: "overview", label: "종합", icon: <ChartBar className="w-4 h-4" weight="fill" /> },
@@ -145,18 +164,25 @@ function DetailButton({ onClick, label }: { onClick: () => void; label: string }
   );
 }
 
-export default function PipelineResult({ result, gender = "male", birthInfo }: PipelineResultProps) {
+export default function PipelineResult({ result, gender = "male", birthInfo, onTabChange }: PipelineResultProps) {
   const [activeTab, setActiveTab] = useState<TabType>("overview");
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     category: DetailCategory;
     title: string;
+    isOverviewSequence: boolean; // 종합 탭에서 순차적으로 열린 경우
   }>({
     isOpen: false,
     category: "dayMaster",
     title: "",
+    isOverviewSequence: false,
   });
   const [detailAnalyses, setDetailAnalyses] = useState<Record<string, string>>({});
+
+  // 탭 변경 시 부모 컴포넌트에 알림
+  useEffect(() => {
+    onTabChange?.(activeTab);
+  }, [activeTab, onTabChange]);
 
   // 상세 분석 데이터 로드 (채팅 컨텍스트에 포함시키기 위해)
   useEffect(() => {
@@ -234,12 +260,25 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
 ` : ''}
 `.trim();
 
-  const openDetailModal = (category: DetailCategory, title: string) => {
-    setModalState({ isOpen: true, category, title });
+  const openDetailModal = (category: DetailCategory, title: string, isOverviewSequence = false) => {
+    setModalState({ isOpen: true, category, title, isOverviewSequence });
   };
 
   const closeDetailModal = () => {
     setModalState({ ...modalState, isOpen: false });
+  };
+
+  // 다음 상세보기 열기 (종합 탭 시퀀스용)
+  const openNextCategory = () => {
+    const nextCategory = getNextCategoryInSequence(modalState.category);
+    if (nextCategory) {
+      setModalState({
+        isOpen: true,
+        category: nextCategory.category as DetailCategory,
+        title: nextCategory.title,
+        isOverviewSequence: true,
+      });
+    }
   };
 
   const getGradeColor = (grade: string) => {
@@ -408,7 +447,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                       <div
                         key={key}
                         className="text-center p-2.5 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl cursor-pointer hover:bg-white/10 transition-colors border border-white/10"
-                        onClick={() => openDetailModal(config.category, `${config.name}운`)}
+                        onClick={() => openDetailModal(config.category, `${config.name}운`, true)}
                       >
                         <div className="flex justify-center mb-2">
                           <div className="w-8 h-8 rounded-lg bg-[#a855f7]/20 flex items-center justify-center text-[#a855f7]">
@@ -476,10 +515,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
           {/* 일간 탭 */}
           {activeTab === "daymaster" && (
             <div className="space-y-4 sm:space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base sm:text-lg font-semibold text-white">일간 분석</h3>
-                <DetailButton onClick={() => openDetailModal("dayMaster", "일간")} label="상세 분석" />
-              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-white">일간 분석</h3>
 
               <div className="text-center p-4 sm:p-6 bg-[#a855f7]/10 rounded-lg sm:rounded-xl border border-[#a855f7]/30">
                 <p className="text-3xl sm:text-5xl mb-1 sm:mb-2">{step2.dayMaster}</p>
@@ -529,16 +565,18 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                 </div>
                 <p className="text-xs sm:text-sm text-white/60 mt-2 sm:mt-3">{step2.usefulGod.reasoning}</p>
               </div>
+
+              {/* 상세 분석 버튼 */}
+              <div className="flex justify-center pt-2">
+                <DetailButton onClick={() => openDetailModal("dayMaster", "일간")} label="일간 상세 분석 보기" />
+              </div>
             </div>
           )}
 
           {/* 십성 탭 */}
           {activeTab === "tengods" && (
             <div className="space-y-4 sm:space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base sm:text-lg font-semibold text-white">십성 분석</h3>
-                <DetailButton onClick={() => openDetailModal("tenGods", "십성")} label="상세 분석" />
-              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-white">십성 분석</h3>
 
               <div className="text-center p-3 sm:p-4 bg-[#a855f7]/10 rounded-lg sm:rounded-xl border border-[#a855f7]/30">
                 <p className="text-xs sm:text-sm text-white/60">격국</p>
@@ -605,16 +643,18 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                   <strong className="text-white">이상적 파트너:</strong> {step3.relationshipStyle.idealPartnerTraits.join(", ")}
                 </p>
               </div>
+
+              {/* 상세 분석 버튼 */}
+              <div className="flex justify-center pt-2">
+                <DetailButton onClick={() => openDetailModal("tenGods", "십성")} label="십성 상세 분석 보기" />
+              </div>
             </div>
           )}
 
           {/* 신살 탭 */}
           {activeTab === "stars" && (
             <div className="space-y-4 sm:space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base sm:text-lg font-semibold text-white">신살 분석</h3>
-                <DetailButton onClick={() => openDetailModal("stars", "신살")} label="상세 분석" />
-              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-white">신살 분석</h3>
 
               <p className="text-xs sm:text-sm text-white/60">{step4.overallStarInfluence}</p>
 
@@ -665,16 +705,18 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                   ))}
                 </div>
               </div>
+
+              {/* 상세 분석 버튼 */}
+              <div className="flex justify-center pt-2">
+                <DetailButton onClick={() => openDetailModal("stars", "신살")} label="신살 상세 분석 보기" />
+              </div>
             </div>
           )}
 
           {/* 운세 탭 */}
           {activeTab === "timing" && (
             <div className="space-y-4 sm:space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base sm:text-lg font-semibold text-white">대운/세운 분석</h3>
-                <DetailButton onClick={() => openDetailModal("fortune", "운세")} label="상세 분석" />
-              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-white">대운/세운 분석</h3>
 
               {/* 현재 대운 */}
               <div className="p-3 sm:p-4 bg-[#3b82f6]/10 rounded-lg sm:rounded-xl border border-[#3b82f6]/30">
@@ -731,6 +773,11 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* 상세 분석 버튼 */}
+              <div className="flex justify-center pt-2">
+                <DetailButton onClick={() => openDetailModal("fortune", "운세")} label="운세 상세 분석 보기" />
               </div>
             </div>
           )}
@@ -846,6 +893,8 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
         gender={gender}
         sajuResult={sajuResultForChat}
         birthYear={birthInfo?.year ? parseInt(birthInfo.year) : undefined}
+        nextCategory={modalState.isOverviewSequence ? getNextCategoryInSequence(modalState.category) : undefined}
+        onNextCategory={modalState.isOverviewSequence ? openNextCategory : undefined}
       />
 
       {/* AI 채팅 패널 - Google Grounding 활성화 */}
