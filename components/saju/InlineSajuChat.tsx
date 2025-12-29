@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   PaperPlaneTilt,
@@ -12,11 +12,20 @@ import {
   CurrencyCircleDollar,
   Calendar,
   Users,
+  Microphone,
+  MicrophoneSlash,
+  Phone,
+  PhoneDisconnect,
+  Waveform,
+  SpinnerGap,
+  Stop,
 } from "@phosphor-icons/react";
 import { useSajuChat } from "@/lib/hooks/useSajuChat";
+import { useVoiceChat } from "@/hooks/useVoiceChat";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { STEM_KOREAN, ELEMENT_KOREAN } from "@/lib/saju";
 import type { SajuResult } from "@/lib/saju/types";
+import type { VoiceSessionConfig, SajuContext } from "@/lib/voice/types";
 
 // Suggested question categories with icons
 const QUESTION_CATEGORIES = [
@@ -93,6 +102,29 @@ export function InlineSajuChat({ sajuResult, gender }: InlineSajuChatProps) {
   // Build saju context for AI
   const sajuContext = useMemo(() => buildSajuContext(sajuResult, gender), [sajuResult, gender]);
 
+  // Build voice config
+  const voiceConfig = useMemo<VoiceSessionConfig>(() => {
+    const pillarsString = `${sajuResult.pillars.year.ganZhi} ${sajuResult.pillars.month.ganZhi} ${sajuResult.pillars.day.ganZhi} ${sajuResult.pillars.time.ganZhi}`;
+    const dayMasterString = `${sajuResult.dayMaster} (${STEM_KOREAN[sajuResult.dayMaster]}, ${ELEMENT_KOREAN[sajuResult.dayMasterElement]})`;
+
+    const sajuContextData: SajuContext = {
+      type: "saju",
+      data: {
+        pillars: pillarsString,
+        dayMaster: dayMasterString,
+        elements: `강한: ${sajuResult.elementAnalysis.dominant.map(e => ELEMENT_KOREAN[e]).join(", ")}, 부족: ${sajuResult.elementAnalysis.lacking.map(e => ELEMENT_KOREAN[e]).join(", ")}`,
+        analysis: {
+          personality: sajuResult.tenGodSummary.dominant.join(", "),
+        },
+      },
+    };
+
+    return {
+      locale: "ko",
+      primaryContext: sajuContextData,
+    };
+  }, [sajuResult]);
+
   // Use chat hook
   const { messages, sendMessage, isLoading, error } = useSajuChat({
     sajuContext,
@@ -102,10 +134,58 @@ export function InlineSajuChat({ sajuResult, gender }: InlineSajuChatProps) {
     enableGrounding: true,
   });
 
+  // Use voice chat hook
+  const {
+    state: voiceState,
+    isConnected: isVoiceConnected,
+    isMuted,
+    error: voiceError,
+    userTranscript,
+    aiTranscript,
+    messages: voiceMessages,
+    connect: connectVoice,
+    disconnect: disconnectVoice,
+    toggleMute,
+    interrupt,
+  } = useVoiceChat({
+    config: voiceConfig,
+    onMessage: () => {
+      // Voice messages are handled separately
+    },
+    onError: (err) => {
+      console.error("[InlineSajuChat] Voice error:", err);
+    },
+  });
+
+  // Handle voice button click
+  const handleVoiceClick = useCallback(() => {
+    if (voiceState === "idle" || voiceState === "error") {
+      connectVoice();
+    } else if (voiceState === "speaking") {
+      interrupt();
+    } else if (isVoiceConnected) {
+      disconnectVoice();
+    }
+  }, [voiceState, isVoiceConnected, connectVoice, disconnectVoice, interrupt]);
+
+  // Combine text and voice messages
+  const allMessages = useMemo(() => {
+    const combined = [
+      ...messages.map(m => ({ ...m, channel: "text" as const })),
+      ...voiceMessages.map(m => ({ ...m, channel: "voice" as const })),
+    ];
+    // Sort by timestamp if available, otherwise by order
+    return combined.sort((a, b) => {
+      const aTime = "timestamp" in a && a.timestamp ? new Date(a.timestamp).getTime() : 0;
+      const bTime = "timestamp" in b && b.timestamp ? new Date(b.timestamp).getTime() : 0;
+      return aTime - bTime;
+    });
+  }, [messages, voiceMessages]);
+
   // Scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [allMessages, userTranscript, aiTranscript]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,8 +284,8 @@ export function InlineSajuChat({ sajuResult, gender }: InlineSajuChatProps) {
           </motion.div>
         )}
 
-        {/* Chat Messages */}
-        {messages.map((message, index) => (
+        {/* Chat Messages (Text + Voice) */}
+        {allMessages.map((message, index) => (
           <motion.div
             key={message.id || index}
             className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
@@ -215,14 +295,22 @@ export function InlineSajuChat({ sajuResult, gender }: InlineSajuChatProps) {
             <div
               className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                 message.role === "user"
-                  ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+                  ? message.channel === "voice"
+                    ? "bg-gradient-to-r from-violet-500 to-purple-500 text-white"
+                    : "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
                   : "bg-white/10 text-white"
               }`}
             >
+              {message.channel === "voice" && (
+                <div className="flex items-center gap-1 mb-1">
+                  <Waveform className="w-3 h-3 text-white/60" weight="fill" />
+                  <span className="text-[10px] text-white/60">음성</span>
+                </div>
+              )}
               {message.role === "assistant" ? (
                 <>
                   <MarkdownRenderer content={message.content} variant="chat" />
-                  {message.isSearching && (
+                  {"isSearching" in message && message.isSearching && (
                     <div className="mt-3 flex items-center gap-2 text-xs text-white/50">
                       <div className="flex gap-1">
                         <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" />
@@ -246,6 +334,63 @@ export function InlineSajuChat({ sajuResult, gender }: InlineSajuChatProps) {
           </motion.div>
         ))}
 
+        {/* Voice Activity Indicator */}
+        {isVoiceConnected && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-start"
+          >
+            <div className="bg-gradient-to-r from-violet-500/20 to-purple-500/20 border border-violet-500/30 rounded-2xl px-4 py-3">
+              {voiceState === "listening" && (
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1">
+                    {[...Array(4)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-1 bg-violet-400 rounded-full animate-pulse"
+                        style={{
+                          height: `${8 + Math.random() * 8}px`,
+                          animationDelay: `${i * 0.1}s`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm text-violet-300">
+                    {userTranscript || "듣고 있어요..."}
+                  </span>
+                </div>
+              )}
+              {voiceState === "processing" && (
+                <div className="flex items-center gap-2 text-violet-300">
+                  <SpinnerGap className="w-4 h-4 animate-spin" weight="bold" />
+                  <span className="text-sm">생각하고 있어요...</span>
+                </div>
+              )}
+              {voiceState === "speaking" && (
+                <div className="flex items-center gap-2">
+                  <Waveform className="w-4 h-4 text-violet-400 animate-pulse" weight="fill" />
+                  <span className="text-sm text-violet-300">
+                    {aiTranscript || "말하고 있어요..."}
+                  </span>
+                </div>
+              )}
+              {voiceState === "connecting" && (
+                <div className="flex items-center gap-2 text-violet-300">
+                  <SpinnerGap className="w-4 h-4 animate-spin" weight="bold" />
+                  <span className="text-sm">연결 중...</span>
+                </div>
+              )}
+              {voiceState === "ready" && (
+                <div className="flex items-center gap-2 text-violet-300">
+                  <Microphone className="w-4 h-4" weight="fill" />
+                  <span className="text-sm">말씀하세요</span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+
         {/* Loading indicator */}
         {isLoading && messages.length > 0 && messages[messages.length - 1]?.content === "" && (
           <div className="flex justify-start">
@@ -266,10 +411,10 @@ export function InlineSajuChat({ sajuResult, gender }: InlineSajuChatProps) {
         )}
 
         {/* Error */}
-        {error && (
+        {(error || voiceError) && (
           <div className="flex justify-center">
             <div className="bg-red-500/20 border border-red-500/30 rounded-xl px-4 py-2 text-sm text-red-300">
-              {error}
+              {error || voiceError}
             </div>
           </div>
         )}
@@ -284,13 +429,45 @@ export function InlineSajuChat({ sajuResult, gender }: InlineSajuChatProps) {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="궁금한 것을 물어보세요..."
-          className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          disabled={isLoading}
+          placeholder={isVoiceConnected ? "음성 대화 중..." : "궁금한 것을 물어보세요..."}
+          className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+          disabled={isLoading || isVoiceConnected}
         />
+
+        {/* Voice Button */}
+        <button
+          type="button"
+          onClick={handleVoiceClick}
+          className={`p-3 rounded-xl transition-all ${
+            isVoiceConnected
+              ? voiceState === "speaking"
+                ? "bg-amber-500 hover:bg-amber-600 text-white animate-pulse"
+                : "bg-gradient-to-r from-violet-500 to-purple-500 text-white animate-pulse"
+              : "bg-white/10 border border-white/20 text-white/70 hover:bg-violet-500/20 hover:border-violet-500/50 hover:text-violet-300"
+          }`}
+          title={
+            isVoiceConnected
+              ? voiceState === "speaking"
+                ? "탭해서 중단"
+                : "음성 종료"
+              : "음성 대화"
+          }
+        >
+          {voiceState === "connecting" ? (
+            <SpinnerGap className="w-5 h-5 animate-spin" weight="bold" />
+          ) : voiceState === "speaking" ? (
+            <Stop className="w-5 h-5" weight="fill" />
+          ) : isVoiceConnected ? (
+            <PhoneDisconnect className="w-5 h-5" weight="fill" />
+          ) : (
+            <Microphone className="w-5 h-5" weight="fill" />
+          )}
+        </button>
+
+        {/* Send Button */}
         <button
           type="submit"
-          disabled={isLoading || !input.trim()}
+          disabled={isLoading || !input.trim() || isVoiceConnected}
           className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
         >
           <PaperPlaneTilt className="w-5 h-5" weight="fill" />

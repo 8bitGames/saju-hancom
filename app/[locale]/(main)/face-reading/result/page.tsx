@@ -359,12 +359,14 @@ export default function FaceReadingResultPage() {
             전통 관상학 상세 분석 보기
           </button>
         </Link>
-        <Link href="/face-reading" className="block">
-          <button className="w-full h-11 sm:h-12 rounded-lg sm:rounded-xl bg-[#ef4444] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-[#dc2626] transition-colors">
-            <ArrowCounterClockwise className="w-4 h-4 sm:w-5 sm:h-5" />
-            다시 분석하기
-          </button>
-        </Link>
+        <div className="flex gap-2 sm:gap-3">
+          <Link href="/face-reading" className="flex-1">
+            <button className="w-full h-11 sm:h-12 rounded-lg sm:rounded-xl bg-[#ef4444] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-[#dc2626] transition-colors">
+              <ArrowCounterClockwise className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="whitespace-nowrap">다시 분석</span>
+            </button>
+          </Link>
+        </div>
         <Link href="/" className="block">
           <button className="w-full h-10 sm:h-11 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 text-xs sm:text-sm text-white/60 font-medium hover:bg-white/10 hover:text-white transition-colors">
             홈으로 돌아가기
@@ -388,6 +390,7 @@ export default function FaceReadingResultPage() {
         }}
         resultType="face"
       />
+
     </div>
   );
 }

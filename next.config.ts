@@ -107,7 +107,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(self), microphone=(), geolocation=(), interest-cohort=()',
+            value: 'camera=(self), microphone=(self), geolocation=(), interest-cohort=()',
           },
           {
             key: 'Content-Security-Policy',
@@ -118,7 +118,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https:",
               "font-src 'self' data:",
               "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://generativelanguage.googleapis.com https://*.sentry.io https://*.ingest.sentry.io",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://generativelanguage.googleapis.com https://*.sentry.io https://*.ingest.sentry.io https://hansa-voice.fly.dev wss://hansa-voice.fly.dev ws://localhost:3001 http://localhost:3001",
               "media-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",

@@ -857,16 +857,6 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
               <span className="text-base font-medium">다시 분석</span>
             </motion.button>
           </Link>
-          <Link href="/saju" className="flex-1">
-            <motion.button
-              className="w-full h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2 text-white/60 hover:text-white hover:bg-white/10 transition-colors"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Sparkle className="w-5 h-5" weight="fill" />
-              <span className="text-base font-medium">사주 분석</span>
-            </motion.button>
-          </Link>
         </div>
       </motion.div>
 
@@ -892,6 +882,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
           setIsAuthenticated(null);
         }}
       />
+
     </motion.div>
   );
 }

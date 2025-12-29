@@ -437,25 +437,25 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
       >
         <button
           onClick={() => setActiveTab("analysis")}
-          className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
             activeTab === "analysis"
               ? "bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-lg"
               : "text-white/60 hover:text-white hover:bg-white/5"
           }`}
         >
-          <Sparkle className="w-4 h-4" weight="fill" />
-          분석 결과
+          <Sparkle className="w-4 h-4 flex-shrink-0" weight="fill" />
+          <span className="whitespace-nowrap">분석 결과</span>
         </button>
         <button
           onClick={() => setActiveTab("chat")}
-          className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
             activeTab === "chat"
               ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg"
               : "text-white/60 hover:text-white hover:bg-white/5"
           }`}
         >
-          <ChatCircleDots className="w-4 h-4" weight="fill" />
-          AI 상담
+          <ChatCircleDots className="w-4 h-4 flex-shrink-0" weight="fill" />
+          <span className="whitespace-nowrap">AI 상담</span>
         </button>
       </motion.div>
 
@@ -1028,6 +1028,7 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         }}
         resultType="saju"
       />
+
     </motion.div>
   );
 }

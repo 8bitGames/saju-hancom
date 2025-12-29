@@ -42,4 +42,13 @@ export {
   Minus,
   MagnifyingGlass,
   Globe,
+  // Voice chat icons
+  Microphone,
+  MicrophoneSlash,
+  Phone,
+  PhoneDisconnect,
+  Waveform,
+  SpeakerHigh,
+  SpeakerSlash,
+  Stop,
 } from "@phosphor-icons/react";
