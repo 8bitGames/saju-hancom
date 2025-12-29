@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { cn } from "@/lib/utils";
 
 interface Star {
@@ -44,13 +44,19 @@ export const StarsBackground: React.FC<StarsBackgroundProps> = ({
   className,
 }) => {
   const [stars, setStars] = useState<Star[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationFrameId = useRef<number>(0);
   const isVisibleRef = useRef(true);
   const lastFrameTime = useRef(0);
 
-  // Frame rate: 60fps on desktop, 30fps on mobile
-  const targetFPS = isMobile() ? 30 : 60;
+  // Track if component is mounted (client-side only)
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Frame rate: 60fps on desktop, 30fps on mobile (only check on client)
+  const targetFPS = useMemo(() => (isMounted && isMobile() ? 30 : 60), [isMounted]);
   const frameInterval = 1000 / targetFPS;
 
   const generateStars = useCallback(

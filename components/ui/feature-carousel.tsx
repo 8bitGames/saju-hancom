@@ -514,8 +514,8 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
                             }}
                             style={{
                               backgroundColor: card.theme.accent,
-                              left: `calc(50% + ${Math.cos((i * 120 * Math.PI) / 180) * 14}px)`,
-                              top: `calc(50% + ${Math.sin((i * 120 * Math.PI) / 180) * 14}px)`,
+                              left: `calc(50% + ${Math.round(Math.cos((i * 120 * Math.PI) / 180) * 14)}px)`,
+                              top: `calc(50% + ${Math.round(Math.sin((i * 120 * Math.PI) / 180) * 14)}px)`,
                               transform: "translate(-50%, -50%)",
                               boxShadow: `0 0 4px ${card.theme.accent}`,
                             }}

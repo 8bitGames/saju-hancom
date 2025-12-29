@@ -1,0 +1,71 @@
+name: Preview Deployment Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  preview-check:
+    name: Preview Readiness
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for breaking changes
+        run: |
+          echo "🔍 Checking for potential breaking changes..."
+
+          # Check if API routes changed
+          if git diff --name-only origin/main...HEAD | grep -q "app/api/"; then
+            echo "⚠️ API routes modified - ensure backward compatibility"
+          fi
+
+          # Check if database types changed
+          if git diff --name-only origin/main...HEAD | grep -q "lib/supabase/types.ts"; then
+            echo "⚠️ Database types modified - verify migrations are in sync"
+          fi
+
+          # Check if environment variables might be needed
+          if git diff origin/main...HEAD | grep -qE "process\.env\.[A-Z_]+"; then
+            echo "⚠️ New environment variables may be required"
+            git diff origin/main...HEAD | grep -oE "process\.env\.[A-Z_]+" | sort -u
+          fi
+
+      - name: Comment PR with preview info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('Preview Deployment')
+            );
+
+            const body = `## 🚀 Preview Deployment
+
+            Vercel will automatically deploy a preview for this PR.
+
+            **Checklist before merge:**
+            - [ ] Tested on preview URL
+            - [ ] Mobile responsive checked
+            - [ ] No console errors
+            - [ ] API endpoints working
+
+            ---
+            *Automated by GitHub Actions*`;
+
+            if (!botComment) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            }

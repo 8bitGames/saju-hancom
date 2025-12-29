@@ -44,18 +44,18 @@
     "cards": {
       "saju": {
         "title": "사주 분석",
-        "description": "생년월일시를 입력하면 AI가 사주팔자를 분석하고 운세를 알려드립니다."
+        "description": "올해 을사년, 이달의 기운이 당신 사주와 어떻게 만나는지 봐드리겠습니다."
       },
       "compatibility": {
         "title": "직장 동료 궁합",
-        "description": "직장 동료, 상사, 부하직원과의 궁합을 분석하여 관계운을 확인하세요.",
+        "description": "지금 이 시기, 그 분과의 업무 인연이 어떤지 살펴보겠습니다.",
         "colleague": "동료",
         "boss": "상사",
         "partner": "파트너"
       },
       "faceReading": {
         "title": "관상 분석",
-        "description": "얼굴 사진을 업로드하면 AI가 관상을 분석하고 특징을 알려드립니다.",
+        "description": "얼굴에 새겨진 운명과 지금 흐르는 운기를 함께 읽어드립니다.",
         "forehead": "이마",
         "eyes": "눈",
         "nose": "코",
@@ -63,11 +63,11 @@
       },
       "history": {
         "title": "분석 기록",
-        "description": "지금까지의 사주, 궁합, 관상 분석 결과를 한눈에 확인하세요."
+        "description": "지금까지 봐드린 운세들, 여기 모아두었습니다."
       },
       "couple": {
         "title": "연인 궁합",
-        "description": "사주로 알아보는 연인과의 궁합과 인연의 깊이를 확인하세요."
+        "description": "요즘 두 분 사이에 어떤 기운이 흐르는지 들여다봐 드릴게요."
       }
     },
     "elements": {

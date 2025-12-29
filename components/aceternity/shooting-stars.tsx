@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { cn } from "@/lib/utils";
 
 interface ShootingStar {
@@ -70,14 +70,20 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
   className,
 }) => {
   const [star, setStar] = useState<ShootingStar | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
   const isVisibleRef = useRef(true);
   const animationFrameId = useRef<number>(0);
   const lastFrameTime = useRef(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Track if component is mounted (client-side only)
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Frame rate: 60fps on desktop, 30fps on mobile
-  const targetFPS = isMobile() ? 30 : 60;
+  const targetFPS = useMemo(() => (isMounted && isMobile() ? 30 : 60), [isMounted]);
   const frameInterval = 1000 / targetFPS;
 
   // Page Visibility API - pause animation when tab is not visible
@@ -92,8 +98,8 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
     };
   }, []);
 
-  // Don't render shooting stars if user prefers reduced motion
-  const shouldAnimate = !prefersReducedMotion();
+  // Don't render shooting stars if user prefers reduced motion (only check on client)
+  const shouldAnimate = isMounted && !prefersReducedMotion();
 
   const createStar = useCallback(() => {
     if (!shouldAnimate || !isVisibleRef.current) return;

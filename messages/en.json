@@ -44,18 +44,18 @@
     "cards": {
       "saju": {
         "title": "Birth Chart Analysis",
-        "description": "Enter your birth date and time for AI-powered Four Pillars of Destiny analysis."
+        "description": "Let me show you how this year's energy meets your birth chart in this very moment."
       },
       "compatibility": {
         "title": "Workplace Compatibility",
-        "description": "Analyze compatibility with your colleagues, bosses, and team members.",
+        "description": "Let me look into how your professional bond flows at this time.",
         "colleague": "Colleague",
         "boss": "Boss",
         "partner": "Partner"
       },
       "faceReading": {
         "title": "Face Reading",
-        "description": "Upload your photo for AI-powered face reading and personality analysis.",
+        "description": "I'll read both the destiny in your features and the fortune flowing through you now.",
         "forehead": "Forehead",
         "eyes": "Eyes",
         "nose": "Nose",
@@ -63,11 +63,11 @@
       },
       "history": {
         "title": "Analysis History",
-        "description": "View all your past birth chart, compatibility, and face reading results."
+        "description": "All the readings I've done for you are gathered here."
       },
       "couple": {
         "title": "Couple Compatibility",
-        "description": "Discover your romantic compatibility and relationship destiny with your partner."
+        "description": "Let me see what energy flows between you two these days."
       }
     },
     "elements": {

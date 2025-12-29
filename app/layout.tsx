@@ -6,17 +6,24 @@ import { HomePageSchema } from "@/lib/seo/structured-data";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+  preload: false, // Mono is less critical, load on demand
 });
 
 const notoSansKR = Noto_Sans_KR({
   variable: "--font-noto-sans-kr",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "700"], // Removed 600, use 500 or 700 instead
+  display: "swap",
+  preload: true,
+  adjustFontFallback: true, // Reduce CLS by adjusting fallback metrics
 });
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://hansa.ai.kr';

@@ -3,7 +3,7 @@
 import { Link } from "@/lib/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useMemo, useRef } from "react";
-import { ArrowCounterClockwise, ArrowRight, Sparkle, Star, Atom, YinYang, ChatCircle, Lightning, Heart, Lightbulb, Brain, CheckCircle } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, ArrowRight, Sparkle, Star, Atom, YinYang, ChatCircle, Lightning, Heart, Lightbulb, Brain, CheckCircle, ChatCircleDots, RocketLaunch, Chats } from "@phosphor-icons/react";
 import { calculateSaju, STEM_KOREAN, ELEMENT_KOREAN } from "@/lib/saju";
 import { getLongitudeByCity } from "@/lib/saju/solar-time";
 import { FourPillarsDisplay } from "@/components/saju/pillar-display";
@@ -15,7 +15,11 @@ import { DownloadPDFButton } from "@/components/auth/DownloadPDFButton";
 import { ShareButton } from "@/components/auth/ShareButton";
 import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
 import { autoSaveSajuResult } from "@/lib/actions/saju";
+import { InlineSajuChat } from "@/components/saju/InlineSajuChat";
 import type { Gender } from "@/lib/saju/types";
+
+// Tab types for content switching
+type ContentTab = "analysis" | "chat";
 
 interface SearchParams {
   year?: string;
@@ -224,6 +228,9 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
 
   const longitude = getLongitudeByCity(city);
 
+  // Tab state for switching between analysis and chat
+  const [activeTab, setActiveTab] = useState<ContentTab>("analysis");
+
   // Memoize to prevent infinite useEffect loop
   const result = useMemo(() => calculateSaju({
     year,
@@ -423,6 +430,65 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         />
       </motion.div>
 
+      {/* Tab Navigation */}
+      <motion.div
+        className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/10"
+        variants={itemVariants}
+      >
+        <button
+          onClick={() => setActiveTab("analysis")}
+          className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 ${
+            activeTab === "analysis"
+              ? "bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-lg"
+              : "text-white/60 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <Sparkle className="w-4 h-4" weight="fill" />
+          분석 결과
+        </button>
+        <button
+          onClick={() => setActiveTab("chat")}
+          className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 ${
+            activeTab === "chat"
+              ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg"
+              : "text-white/60 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <ChatCircleDots className="w-4 h-4" weight="fill" />
+          AI 상담
+        </button>
+      </motion.div>
+
+      {/* Content based on active tab */}
+      <AnimatePresence mode="wait">
+        {activeTab === "chat" ? (
+          <motion.div
+            key="chat"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            <InlineSajuChat sajuResult={result} gender={gender} />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="analysis"
+            initial="hidden"
+            animate="visible"
+            exit={{ opacity: 0, x: 20 }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.08,
+                  delayChildren: 0.05,
+                },
+              },
+            }}
+            className="space-y-6"
+          >
       {/* Four Pillars - First */}
       <GlowingCard glowColor="rgba(168, 85, 247, 0.4)" variants={itemVariants}>
         <div className="p-5 space-y-4">
@@ -755,6 +821,110 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         </GlowingCard>
       </div>
 
+      {/* AI Chat CTA Section - Prominent feature highlight */}
+      <GlowingCard glowColor="rgba(59, 130, 246, 0.5)" variants={itemVariants}>
+        <div className="p-6 space-y-5">
+          {/* Header with animated icon */}
+          <motion.div
+            className="flex items-center gap-3"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.9 }}
+          >
+            <motion.div
+              className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30"
+              animate={{
+                scale: [1, 1.05, 1],
+                boxShadow: [
+                  "0 10px 25px -5px rgba(59, 130, 246, 0.3)",
+                  "0 10px 30px -5px rgba(59, 130, 246, 0.5)",
+                  "0 10px 25px -5px rgba(59, 130, 246, 0.3)"
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <ChatCircleDots className="w-6 h-6 text-white" weight="fill" />
+            </motion.div>
+            <div>
+              <h2 className="font-bold text-white text-lg">AI 사주 상담</h2>
+              <p className="text-sm text-blue-300">나만의 사주 전문가와 대화하세요</p>
+            </div>
+          </motion.div>
+
+          {/* Value proposition */}
+          <motion.div
+            className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
+          >
+            <p className="text-white/90 text-sm leading-relaxed">
+              방금 분석한 <span className="text-blue-300 font-semibold">당신의 사주 데이터</span>를 기반으로
+              연애, 직업, 재물, 건강 등 <span className="text-cyan-300 font-semibold">맞춤형 상담</span>을
+              AI가 즉시 답변해드립니다.
+            </p>
+          </motion.div>
+
+          {/* Suggested questions */}
+          <motion.div
+            className="space-y-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.1 }}
+          >
+            <p className="text-xs text-white/50 flex items-center gap-1.5">
+              <Chats className="w-4 h-4" />
+              이런 것들을 물어볼 수 있어요
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {[
+                "올해 연애운은?",
+                "이직해도 될까요?",
+                "재테크 조언",
+                "건강 주의점",
+              ].map((question, idx) => (
+                <motion.span
+                  key={question}
+                  className="px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-200 text-xs border border-blue-500/30 hover:bg-blue-500/30 transition-colors cursor-default"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 1.15 + idx * 0.05 }}
+                >
+                  {question}
+                </motion.span>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* CTA Button */}
+          <Link href={`/saju/chat?${queryString}`} className="block">
+            <motion.button
+              className="w-full h-14 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center gap-3 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-blue-500/30"
+              whileHover={{ scale: 1.02, boxShadow: "0 0 35px rgba(59, 130, 246, 0.5)" }}
+              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2 }}
+            >
+              <RocketLaunch className="w-5 h-5" weight="fill" />
+              AI 상담 시작하기
+              <ArrowRight className="w-5 h-5" weight="bold" />
+            </motion.button>
+          </Link>
+
+          {/* Trust badge */}
+          <motion.p
+            className="text-center text-xs text-white/40 flex items-center justify-center gap-1.5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.3 }}
+          >
+            <Sparkle className="w-3.5 h-3.5 text-blue-400" weight="fill" />
+            Google AI 기반 실시간 맞춤 상담
+          </motion.p>
+        </div>
+      </GlowingCard>
+
       {/* Share Actions */}
       <motion.div
         className="grid grid-cols-2 gap-2 pt-4"
@@ -827,6 +997,9 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
       >
         이 분석은 전통 명리학을 기반으로 한 참고용 정보입니다.
       </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Auto-save notification */}
       <AnimatePresence>
