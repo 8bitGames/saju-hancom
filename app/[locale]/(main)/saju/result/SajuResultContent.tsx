@@ -469,7 +469,7 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
           >
-            <InlineSajuChat sajuResult={result} gender={gender} />
+            <InlineSajuChat sajuResult={result} gender={gender} interpretation={interpretation ?? undefined} />
           </motion.div>
         ) : (
           <motion.div

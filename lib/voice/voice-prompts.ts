@@ -198,6 +198,7 @@ export function buildVoiceSystemPrompt(
 
 /**
  * Format the primary context (current page's analysis)
+ * Prioritizes Gemini-generated interpretation when available
  */
 function formatPrimaryContext(
   contextType: "saju" | "compatibility" | "faceReading",
@@ -213,11 +214,63 @@ function formatPrimaryContext(
 
   const header = headers[lang as keyof typeof headers] || headers.ko;
 
-  if (contextType === "saju" && contextData.formattedContext) {
-    return `${header}\n${contextData.formattedContext}`;
+  // For saju context, prioritize Gemini interpretation if available
+  if (contextType === "saju") {
+    const interpretation = contextData.interpretation;
+
+    if (interpretation) {
+      // Use the detailed Gemini-generated interpretation
+      const parts: string[] = [header];
+
+      // Basic saju data for reference
+      if (contextData.pillars) {
+        parts.push(`사주팔자: ${contextData.pillars}`);
+      }
+      if (contextData.dayMaster) {
+        parts.push(`일간: ${contextData.dayMaster}`);
+      }
+      if (contextData.elements) {
+        parts.push(`오행: ${contextData.elements}`);
+      }
+
+      parts.push("\n[AI 상세 분석 결과]");
+
+      // Personality analysis
+      if (interpretation.personalityReading?.summary) {
+        parts.push(`\n성격 분석:\n${interpretation.personalityReading.summary}`);
+      }
+      if (interpretation.personalityReading?.strengths?.length) {
+        parts.push(`강점: ${interpretation.personalityReading.strengths.join(", ")}`);
+      }
+      if (interpretation.personalityReading?.challenges?.length) {
+        parts.push(`주의점: ${interpretation.personalityReading.challenges.join(", ")}`);
+      }
+
+      // Element insight
+      if (interpretation.elementInsight?.balance) {
+        parts.push(`\n오행 분석:\n${interpretation.elementInsight.balance}`);
+      }
+
+      // Ten god insight
+      if (interpretation.tenGodInsight?.dominant) {
+        parts.push(`\n십성 분석:\n${interpretation.tenGodInsight.dominant}`);
+      }
+
+      // Overall message
+      if (interpretation.overallMessage) {
+        parts.push(`\n종합 메시지:\n${interpretation.overallMessage}`);
+      }
+
+      return parts.join("\n");
+    }
+
+    // Fallback to formattedContext if available
+    if (contextData.formattedContext) {
+      return `${header}\n${contextData.formattedContext}`;
+    }
   }
 
-  // Generic formatting for other types
+  // Generic formatting for other types or fallback
   return `${header}\n${JSON.stringify(contextData, null, 2)}`;
 }
 

@@ -32,6 +32,29 @@ export interface Conversation {
 // ============================================
 
 // Generic context data - allows flexible data structure per context type
+// Gemini-generated interpretation (from /api/saju/interpret)
+export interface SajuInterpretation {
+  personalityReading?: {
+    summary?: string;
+    coreTraits?: string[];
+    strengths?: string[];
+    challenges?: string[];
+  };
+  elementInsight?: {
+    balance?: string;
+    recommendation?: string;
+  };
+  tenGodInsight?: {
+    dominant?: string;
+    lifePattern?: string;
+  };
+  starInsight?: {
+    positive?: string;
+    caution?: string;
+  };
+  overallMessage?: string;
+}
+
 export interface SajuContext {
   type: "saju";
   data: {
@@ -48,6 +71,8 @@ export interface SajuContext {
       health?: string;
     };
     advice?: string[];
+    // Gemini-generated detailed interpretation (takes precedence when available)
+    interpretation?: SajuInterpretation;
     [key: string]: unknown; // Allow additional fields
   };
 }

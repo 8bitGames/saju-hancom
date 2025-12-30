@@ -25,7 +25,7 @@ import { useVoiceChat } from "@/hooks/useVoiceChat";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { STEM_KOREAN, ELEMENT_KOREAN } from "@/lib/saju";
 import type { SajuResult } from "@/lib/saju/types";
-import type { VoiceSessionConfig, SajuContext } from "@/lib/voice/types";
+import type { VoiceSessionConfig, SajuContext, SajuInterpretation } from "@/lib/voice/types";
 
 // Suggested question categories with icons
 const QUESTION_CATEGORIES = [
@@ -70,6 +70,7 @@ const QUESTION_CATEGORIES = [
 interface InlineSajuChatProps {
   sajuResult: SajuResult;
   gender: string;
+  interpretation?: SajuInterpretation;
 }
 
 // Build saju context string from result
@@ -93,7 +94,7 @@ function buildSajuContext(result: SajuResult, gender: string): string {
   return parts.join("\n");
 }
 
-export function InlineSajuChat({ sajuResult, gender }: InlineSajuChatProps) {
+export function InlineSajuChat({ sajuResult, gender, interpretation }: InlineSajuChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [input, setInput] = useState("");
@@ -102,7 +103,7 @@ export function InlineSajuChat({ sajuResult, gender }: InlineSajuChatProps) {
   // Build saju context for AI
   const sajuContext = useMemo(() => buildSajuContext(sajuResult, gender), [sajuResult, gender]);
 
-  // Build voice config
+  // Build voice config with interpretation when available
   const voiceConfig = useMemo<VoiceSessionConfig>(() => {
     const pillarsString = `${sajuResult.pillars.year.ganZhi} ${sajuResult.pillars.month.ganZhi} ${sajuResult.pillars.day.ganZhi} ${sajuResult.pillars.time.ganZhi}`;
     const dayMasterString = `${sajuResult.dayMaster} (${STEM_KOREAN[sajuResult.dayMaster]}, ${ELEMENT_KOREAN[sajuResult.dayMasterElement]})`;
@@ -116,6 +117,8 @@ export function InlineSajuChat({ sajuResult, gender }: InlineSajuChatProps) {
         analysis: {
           personality: sajuResult.tenGodSummary.dominant.join(", "),
         },
+        // Include Gemini interpretation when available (takes precedence in voice prompts)
+        interpretation: interpretation,
       },
     };
 
@@ -123,7 +126,7 @@ export function InlineSajuChat({ sajuResult, gender }: InlineSajuChatProps) {
       locale: "ko",
       primaryContext: sajuContextData,
     };
-  }, [sajuResult]);
+  }, [sajuResult, interpretation]);
 
   // Use chat hook
   const { messages, sendMessage, isLoading, error } = useSajuChat({
