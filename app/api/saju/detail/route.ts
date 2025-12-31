@@ -38,11 +38,13 @@ type DetailCategory =
   | "career"
   | "relationship"
   | "health"
-  | "wealth";
+  | "wealth"
+  | "personality";  // 종합탭 성격 분석 전용 (dayMaster와 분리)
 
 const validCategories: DetailCategory[] = [
   "dayMaster", "tenGods", "stars", "fortune",
-  "career", "relationship", "health", "wealth"
+  "career", "relationship", "health", "wealth",
+  "personality"  // 종합탭 성격 분석
 ];
 
 // Google Grounding이 필요한 카테고리

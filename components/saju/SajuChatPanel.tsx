@@ -28,6 +28,7 @@ const DETAIL_CATEGORIES = [
   { key: "tenGods", name: "십성", icon: "⭐" },
   { key: "stars", name: "신살", icon: "🌟" },
   { key: "fortune", name: "운세", icon: "📅" },
+  { key: "personality", name: "성격", icon: "🎭" },  // 종합탭 성격 분석 (dayMaster와 분리)
   { key: "career", name: "직업운", icon: "💼" },
   { key: "relationship", name: "대인관계", icon: "💕" },
   { key: "health", name: "건강운", icon: "💪" },

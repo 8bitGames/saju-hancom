@@ -7,7 +7,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { MagnifyingGlass, User, Star, Sparkle, Calendar, Lightbulb, ChartBar, Heart, Briefcase, Coins, FirstAid, Check, Warning, ArrowRight, Palette, Hash, Compass, Sun, Lightning } from "@phosphor-icons/react";
+import { MagnifyingGlass, User, Star, Sparkle, Calendar, Lightbulb, ChartBar, Heart, Briefcase, Coins, FirstAid, Check, Warning, ArrowRight, Palette, Hash, Compass, Sun, Lightning, Lock, LockOpen } from "@phosphor-icons/react";
 import type { SajuPipelineResult } from "@/lib/saju/pipeline-types";
 import type { SajuResult, Element, TenGod, TenGodSummary, ElementAnalysis } from "@/lib/saju/types";
 import { DetailAnalysisModal, getDetailAnalysisFromStorage } from "./DetailAnalysisModal";
@@ -122,11 +122,12 @@ interface PipelineResultProps {
 
 export type TabType = "overview" | "daymaster" | "tengods" | "stars" | "timing" | "advice";
 
-type DetailCategory = "dayMaster" | "tenGods" | "stars" | "fortune" | "career" | "relationship" | "health" | "wealth";
+type DetailCategory = "dayMaster" | "tenGods" | "stars" | "fortune" | "career" | "relationship" | "health" | "wealth" | "personality";
 
 // 종합 탭에서 상세보기 순서 정의 (성격 → 직업 → 재물 → 관계 → 건강)
+// personality 프롬프트 사용 (dayMaster와 분리)
 const OVERVIEW_DETAIL_SEQUENCE: Array<{ category: DetailCategory; title: string }> = [
-  { category: "dayMaster", title: "성격운" },
+  { category: "personality", title: "성격운" },
   { category: "career", title: "직업운" },
   { category: "wealth", title: "재물운" },
   { category: "relationship", title: "관계운" },
@@ -142,14 +143,20 @@ function getNextCategoryInSequence(currentCategory: DetailCategory): { category:
   return OVERVIEW_DETAIL_SEQUENCE[currentIndex + 1];
 }
 
+// 탭 순서: 일간 → 십성 → 신살 → 운세 → 종합 → 조언
+// 사용자가 개별 분석(일간/십성/신살/운세)을 먼저 본 후 종합을 볼 수 있도록 순서 조정
 const TABS: Array<{ id: TabType; label: string; icon: React.ReactNode }> = [
-  { id: "overview", label: "종합", icon: <ChartBar className="w-4 h-4" weight="fill" /> },
   { id: "daymaster", label: "일간", icon: <User className="w-4 h-4" weight="fill" /> },
   { id: "tengods", label: "십성", icon: <Star className="w-4 h-4" weight="fill" /> },
   { id: "stars", label: "신살", icon: <Sparkle className="w-4 h-4" weight="fill" /> },
   { id: "timing", label: "운세", icon: <Calendar className="w-4 h-4" weight="fill" /> },
+  { id: "overview", label: "종합", icon: <ChartBar className="w-4 h-4" weight="fill" /> },
   { id: "advice", label: "조언", icon: <Lightbulb className="w-4 h-4" weight="fill" /> },
 ];
+
+// 종합탭 상세보기 잠금 해제를 위한 필수 상세분석 카테고리
+// 일간(dayMaster), 십성(tenGods), 신살(stars), 운세(fortune) 상세보기를 모두 완료해야 종합탭 상세보기 가능
+const PREREQUISITE_CATEGORIES = ["dayMaster", "tenGods", "stars", "fortune"] as const;
 
 // 상세보기 버튼 컴포넌트
 function DetailButton({ onClick, label }: { onClick: () => void; label: string }) {
@@ -165,7 +172,8 @@ function DetailButton({ onClick, label }: { onClick: () => void; label: string }
 }
 
 export default function PipelineResult({ result, gender = "male", birthInfo, onTabChange }: PipelineResultProps) {
-  const [activeTab, setActiveTab] = useState<TabType>("overview");
+  // 기본 탭을 "daymaster"로 설정 (일간부터 시작하여 순차적으로 진행)
+  const [activeTab, setActiveTab] = useState<TabType>("daymaster");
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     category: DetailCategory;
@@ -178,6 +186,17 @@ export default function PipelineResult({ result, gender = "male", birthInfo, onT
     isOverviewSequence: false,
   });
   const [detailAnalyses, setDetailAnalyses] = useState<Record<string, string>>({});
+
+  // 종합탭 상세보기 잠금 해제 상태 계산
+  // 필수 카테고리(일간/십성/신살/운세)를 모두 완료했는지 확인
+  const isOverviewDetailUnlocked = useMemo(() => {
+    return PREREQUISITE_CATEGORIES.every(cat => detailAnalyses[cat]);
+  }, [detailAnalyses]);
+
+  // 완료된 필수 카테고리 개수
+  const completedPrerequisiteCount = useMemo(() => {
+    return PREREQUISITE_CATEGORIES.filter(cat => detailAnalyses[cat]).length;
+  }, [detailAnalyses]);
 
   // 탭 변경 시 부모 컴포넌트에 알림
   useEffect(() => {
@@ -431,40 +450,77 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
               <div>
                 <div className="flex items-center justify-between mb-3 sm:mb-4">
                   <h3 className="text-base sm:text-lg font-semibold text-white">영역별 분석</h3>
+                  {/* 잠금 해제 진행 상태 표시 */}
+                  {!isOverviewDetailUnlocked && (
+                    <div className="flex items-center gap-2 text-xs text-white/60">
+                      <Lock className="w-4 h-4 text-[#f59e0b]" />
+                      <span>일간/십성/신살/운세 상세분석 필요 ({completedPrerequisiteCount}/4)</span>
+                    </div>
+                  )}
+                  {isOverviewDetailUnlocked && (
+                    <div className="flex items-center gap-2 text-xs text-[#22c55e]">
+                      <LockOpen className="w-4 h-4" />
+                      <span>잠금 해제됨</span>
+                    </div>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-4">
                   {Object.entries(step6.areas).map(([key, area]) => {
+                    // 종합탭 영역별 분석 - personality 전용 프롬프트 사용 (dayMaster와 분리)
                     const areaConfig: Record<string, { name: string; category: DetailCategory }> = {
-                      personality: { name: "성격", category: "dayMaster" },
+                      personality: { name: "성격", category: "personality" },
                       career: { name: "직업", category: "career" },
                       wealth: { name: "재물", category: "wealth" },
                       relationship: { name: "관계", category: "relationship" },
                       health: { name: "건강", category: "health" },
                     };
                     const config = areaConfig[key];
+                    const isLocked = !isOverviewDetailUnlocked;
 
                     return (
                       <div
                         key={key}
-                        className="text-center p-2.5 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl cursor-pointer hover:bg-white/10 transition-colors border border-white/10"
-                        onClick={() => openDetailModal(config.category, `${config.name}운`, true)}
+                        className={`text-center p-2.5 sm:p-4 rounded-lg sm:rounded-xl transition-colors border ${
+                          isLocked
+                            ? "bg-white/5 border-white/5 cursor-not-allowed opacity-60"
+                            : "bg-white/5 border-white/10 cursor-pointer hover:bg-white/10"
+                        }`}
+                        onClick={() => {
+                          if (!isLocked) {
+                            openDetailModal(config.category, `${config.name}운`, true);
+                          }
+                        }}
                       >
-                        <div className="flex justify-center mb-2">
-                          <div className="w-8 h-8 rounded-lg bg-[#a855f7]/20 flex items-center justify-center text-[#a855f7]">
-                            {areaIcons[key]}
+                        <div className="flex justify-center mb-2 relative">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                            isLocked ? "bg-white/10 text-white/40" : "bg-[#a855f7]/20 text-[#a855f7]"
+                          }`}>
+                            {isLocked ? <Lock className="w-4 h-4" weight="fill" /> : areaIcons[key]}
                           </div>
                         </div>
-                        <p className="text-xl sm:text-3xl font-bold text-[#a855f7]">{area.score}</p>
-                        <p className="text-xs sm:text-sm text-white/60 mt-0.5 sm:mt-1">
+                        <p className={`text-xl sm:text-3xl font-bold ${
+                          isLocked ? "text-white/40" : "text-[#a855f7]"
+                        }`}>{isLocked ? "??" : area.score}</p>
+                        <p className={`text-xs sm:text-sm mt-0.5 sm:mt-1 ${
+                          isLocked ? "text-white/40" : "text-white/60"
+                        }`}>
                           {config.name}
                         </p>
-                        <span className={`inline-block mt-1.5 sm:mt-2 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full ${getGradeColor(area.grade)}`}>
-                          {area.grade === "excellent" ? "매우좋음" :
-                           area.grade === "good" ? "좋음" :
-                           area.grade === "normal" ? "보통" :
-                           area.grade === "caution" ? "주의" : "도전"}
-                        </span>
-                        <p className="text-[10px] sm:text-xs text-[#a855f7] mt-1.5 sm:mt-2">상세보기</p>
+                        {isLocked ? (
+                          <span className="inline-block mt-1.5 sm:mt-2 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 text-white/40">
+                            잠금됨
+                          </span>
+                        ) : (
+                          <span className={`inline-block mt-1.5 sm:mt-2 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full ${getGradeColor(area.grade)}`}>
+                            {area.grade === "excellent" ? "매우좋음" :
+                             area.grade === "good" ? "좋음" :
+                             area.grade === "normal" ? "보통" :
+                             area.grade === "caution" ? "주의" : "도전"}
+                          </span>
+                        )}
+                        <p className={`text-[10px] sm:text-xs mt-1.5 sm:mt-2 ${
+                          isLocked ? "text-white/30" : "text-[#a855f7]"
+                        }`}>{isLocked ? "🔒 상세보기" : "상세보기"}</p>
                       </div>
                     );
                   })}

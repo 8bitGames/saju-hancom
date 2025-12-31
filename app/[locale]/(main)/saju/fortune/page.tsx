@@ -13,8 +13,8 @@ import { downloadPipelinePDF } from "@/lib/pdf/generator";
 import { getDetailAnalysisFromStorage } from "@/components/saju/DetailAnalysisModal";
 import type { Gender } from "@/lib/saju/types";
 
-// 총 상세 분석 영역 수
-const TOTAL_DETAIL_AREAS = 8;
+// 총 상세 분석 영역 수 (personality 카테고리 추가로 8→9)
+const TOTAL_DETAIL_AREAS = 9;
 
 function SajuFortuneContent() {
   const router = useRouter();

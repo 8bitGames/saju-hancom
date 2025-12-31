@@ -91,6 +91,17 @@ const CATEGORY_LOADING_CONFIG: Record<string, {
       "대운과 세운을 살펴보는 중...",
       "시간의 기운을 탐색하고 있습니다..."
     ]
+  },
+  // 종합탭 성격 분석 전용 (dayMaster와 분리)
+  personality: {
+    icon: <User className="w-8 h-8 text-white" weight="fill" />,
+    color: "#a855f7",
+    bgColor: "bg-[#a855f7]",
+    messages: [
+      "성격과 기질을 깊이 분석하고 있습니다...",
+      "일간과 십성의 조합을 살펴보는 중...",
+      "내면의 성격 발현을 탐색하고 있습니다..."
+    ]
   }
 };
 

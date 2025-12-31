@@ -458,7 +458,7 @@ Please include analysis of personality, career fortune, wealth fortune, relation
 // ==========================================
 // Detail Analysis Prompts
 // ==========================================
-type DetailCategory = 'dayMaster' | 'tenGods' | 'stars' | 'fortune' | 'career' | 'relationship' | 'health' | 'wealth';
+type DetailCategory = 'dayMaster' | 'tenGods' | 'stars' | 'fortune' | 'career' | 'relationship' | 'health' | 'wealth' | 'personality';
 
 const detailPrompts: Record<Locale, Record<DetailCategory, string>> = {
   ko: {
@@ -711,6 +711,54 @@ const detailPrompts: Record<Locale, Record<DetailCategory, string>> = {
    - 부족한 오행 색상, 방향, 숫자 활용
 
 전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.`,
+
+    personality: `성격과 기질에 대해 종합적으로 깊이 분석해주세요.
+
+**중요: 이 분석은 일간 자체의 특성이 아닌, 일간과 십성이 결합하여 나타나는 실제 성격 발현에 집중합니다.**
+
+다음 내용을 상세히 설명해주세요:
+
+1. **핵심 기질 (일간 + 월주)**:
+   - 일간의 본질적 성격이 월주(계절)의 영향으로 어떻게 발현되는지
+   - 신강/신약에 따른 자아 강도와 주도성
+   - 음양 균형이 성격에 미치는 영향
+
+2. **사고방식 (인성 분석)**:
+   - 정인(正印): 논리적/학구적 사고, 정통적 가치관
+   - 편인(偏印): 직관적/창의적 사고, 독창적 관점
+   - 인성 부재 시: 자기 주관이 강하거나 학습 방식의 특성
+
+3. **행동양식 (비겁 분석)**:
+   - 비견(比肩): 독립심, 자존감, 동료의식
+   - 겁재(劫財): 승부욕, 추진력, 도전정신
+   - 비겁 과다/부족이 행동 패턴에 미치는 영향
+
+4. **감정표현 (식상 분석)**:
+   - 식신(食神): 온화한 표현, 낙천성, 여유로움
+   - 상관(傷官): 강렬한 표현, 예민함, 창의성
+   - 감정 처리 방식과 스트레스 대응
+
+5. **결단력과 책임감 (관성 분석)**:
+   - 정관(正官): 원칙, 책임감, 사회적 규범 중시
+   - 편관(七殺): 과감함, 카리스마, 결단력
+   - 의사결정 스타일과 리더십 특성
+
+6. **가치관 (재성 분석)**:
+   - 정재(正財): 안정 추구, 실용성, 현실 중시
+   - 편재(偏財): 자유 추구, 융통성, 가능성 중시
+   - 물질적/정신적 가치의 우선순위
+
+7. **성격 발전 포인트**:
+   - 부족한 십성을 보완하여 성격의 균형 찾기
+   - 과다한 십성의 에너지를 긍정적으로 활용하는 방법
+   - 성격적 강점을 살리는 생활 습관
+
+**분석 시 주의사항**:
+- 직업 추천, 재물운, 건강 문제는 다루지 마세요 (별도 분석 영역)
+- 오직 성격, 기질, 사고방식, 행동패턴에만 집중하세요
+- 대인관계 스타일은 간략히만 언급 (관계 분석에서 상세히 다룸)
+
+전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.`,
   },
 
   en: {
@@ -822,6 +870,55 @@ Please explain the following in detail:
 5. **Wealth Timing**: Good and cautionary periods for finances
 6. **Wealth Accumulation**: Long-term methods for building wealth
 7. **Wealth and Luck**: Feng shui advice for improving wealth fortune
+
+Use professional astrological terms while explaining clearly for general understanding.
+IMPORTANT: Respond entirely in English.`,
+
+    personality: `Please provide a comprehensive analysis of personality and temperament.
+
+**Important: This analysis focuses on the actual personality expression from the combination of Day Master and Ten Gods, not just the Day Master's inherent traits.**
+
+Please explain the following in detail:
+
+1. **Core Temperament (Day Master + Month Pillar)**:
+   - How the Day Master's fundamental personality manifests through seasonal influence
+   - Self-strength and initiative based on strong/weak body status
+   - How Yin-Yang balance affects personality
+
+2. **Thinking Style (Resource Stars Analysis)**:
+   - Direct Resource (正印): Logical/scholarly thinking, traditional values
+   - Indirect Resource (偏印): Intuitive/creative thinking, unique perspectives
+   - When Resource is absent: Strong self-opinion or unique learning style
+
+3. **Behavioral Patterns (Parallel Stars Analysis)**:
+   - Friend (比肩): Independence, self-esteem, sense of camaraderie
+   - Rob Wealth (劫財): Competitive spirit, drive, challenging nature
+   - How excess/lack of Parallels affects behavior patterns
+
+4. **Emotional Expression (Output Stars Analysis)**:
+   - Eating God (食神): Gentle expression, optimism, leisureliness
+   - Hurting Officer (傷官): Intense expression, sensitivity, creativity
+   - Emotional processing and stress response styles
+
+5. **Decision-Making & Responsibility (Power Stars Analysis)**:
+   - Direct Officer (正官): Principles, responsibility, respect for social norms
+   - Seven Killings (七殺): Boldness, charisma, decisiveness
+   - Decision-making style and leadership characteristics
+
+6. **Values (Wealth Stars Analysis)**:
+   - Direct Wealth (正財): Seeking stability, practicality, realism
+   - Indirect Wealth (偏財): Seeking freedom, flexibility, possibilities
+   - Priority between material and spiritual values
+
+7. **Personality Development Points**:
+   - Finding balance by supplementing lacking Ten Gods
+   - Positively channeling excess Ten Gods energy
+   - Lifestyle habits that leverage personality strengths
+
+**Analysis Notes**:
+- Do NOT cover career recommendations, wealth fortune, or health issues (separate analysis areas)
+- Focus ONLY on personality, temperament, thinking patterns, and behavioral patterns
+- Mention interpersonal style only briefly (covered in detail in relationship analysis)
 
 Use professional astrological terms while explaining clearly for general understanding.
 IMPORTANT: Respond entirely in English.`,

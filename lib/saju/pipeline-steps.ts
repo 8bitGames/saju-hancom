@@ -859,12 +859,40 @@ export async function analyzeStep6_Synthesis(
 - caution (40-54): 주의 필요
 - challenging (0-39): 도전적
 
-### 4. 영역별 분석
-- 성격: 십성과 일간 기반
-- 직업: 격국과 십성 기반
-- 재물: 재성과 용신 기반
-- 대인관계: 비겁과 관성 기반
-- 건강: 오행 균형과 부족한 오행 기반
+### 4. 영역별 분석 (각 영역은 명확히 구분된 주제만 다룸)
+
+#### 성격 분석 (personality)
+- **분석 범위**: 기질, 사고방식, 행동패턴, 감정표현, 가치관
+- **핵심 데이터**: 일간 특성 + 십성 배치(인성/비겁/식상 중심) + 음양 균형
+- **다룰 내용**: 내향/외향, 이성/감성, 신중/즉흥, 독립/의존, 스트레스 대응
+- **제외**: 직업선택, 돈 관리, 건강 문제, 연애 상세
+
+#### 직업 분석 (career)
+- **분석 범위**: 적합 분야, 업무 스타일, 리더십, 팀워크, 승진/이직운
+- **핵심 데이터**: 격국 + 관성/인성 배치 + 대운 흐름 + 식상생재 여부
+- **다룰 내용**: 직장vs사업, 전문직vs관리직, 안정vs도전, 독립vs협업
+- **제외**: 개인 성격 묘사, 연애, 건강, 재물 상세
+
+#### 재물 분석 (wealth)
+- **분석 범위**: 수입 패턴, 소비 성향, 투자 스타일, 재물 획득 시기
+- **핵심 데이터**: 재성(정재/편재) 위치와 힘 + 신강/신약 + 용신과 재성 관계
+- **다룰 내용**: 고정수입/변동수입, 저축형/투자형, 안전자산/공격투자
+- **제외**: 직업 추천, 성격 분석, 인간관계 상세
+
+#### 대인관계 분석 (relationship)
+- **분석 범위**: 대인관계 스타일, 연애/결혼, 가족관계, 사회적 교류
+- **핵심 데이터**: 비겁/관성 배치 + 배우자궁(일지) 상태 + 도화살/홍염살
+- **다룰 내용**: 사교적/내성적, 헌신/독립, 로맨틱/현실적, 결혼 시기
+- **제외**: 직업, 돈, 건강 상세
+
+#### 건강 분석 (health)
+- **분석 범위**: 체질, 취약 장기, 스트레스 패턴, 운동 추천
+- **핵심 데이터**: 오행 과다/부족 장기 대응 + 충(沖) 관계 + 일간 건강 특성
+- **다룰 내용**: 심장/간/폐/신장/위장, 체력/정신력, 유산소/근력
+- **제외**: 성격, 직업, 재물 상세
+
+**중요**: 각 영역 점수와 요약은 해당 영역 주제에만 집중하여 작성하세요.
+같은 사주 정보라도 각 영역에서 다루는 관점이 달라야 합니다.
 
 ### 5. 행운 요소
 - 용신/희신 오행의 색상
@@ -894,12 +922,40 @@ Synthesize all analysis results and provide practical advice with final conclusi
 - caution (40-54): Needs attention
 - challenging (0-39): Challenging
 
-### 4. Area Analysis
-- Personality: Based on Ten Gods and Day Master
-- Career: Based on Structure and Ten Gods
-- Wealth: Based on Wealth Stars and Useful God
-- Relationships: Based on Parallel and Power Stars
-- Health: Based on Five Elements balance and lacking elements
+### 4. Area Analysis (Each area covers only its distinct topics)
+
+#### Personality Analysis
+- **Scope**: Temperament, thinking patterns, behavioral patterns, emotional expression, values
+- **Core Data**: Day Master traits + Ten Gods placement (Resource/Parallel/Output focus) + Yin-Yang balance
+- **Topics**: Introvert/extrovert, rational/emotional, cautious/spontaneous, independent/dependent
+- **Exclude**: Career selection, money management, health issues, detailed romance
+
+#### Career Analysis
+- **Scope**: Suitable fields, work style, leadership, teamwork, promotion/job change fortune
+- **Core Data**: Structure + Power/Resource placement + Major Fortune flow + Output-to-Wealth patterns
+- **Topics**: Employment vs business, specialist vs manager, stability vs challenge
+- **Exclude**: Personal character description, romance, health, detailed wealth
+
+#### Wealth Analysis
+- **Scope**: Income patterns, spending tendencies, investment style, wealth timing
+- **Core Data**: Wealth Stars position and strength + Body strength + Useful God-Wealth relationship
+- **Topics**: Fixed/variable income, saving/investing type, safe/aggressive assets
+- **Exclude**: Career recommendations, personality analysis, detailed relationships
+
+#### Relationship Analysis
+- **Scope**: Interpersonal style, romance/marriage, family relationships, social interactions
+- **Core Data**: Parallel/Power placement + Spouse Palace (Day Branch) + Peach Blossom stars
+- **Topics**: Social/introverted, devoted/independent, romantic/practical, marriage timing
+- **Exclude**: Career, money, detailed health
+
+#### Health Analysis
+- **Scope**: Constitution, vulnerable organs, stress patterns, exercise recommendations
+- **Core Data**: Element excess/deficiency organ mapping + Clash relationships + Day Master health traits
+- **Topics**: Heart/liver/lungs/kidneys/stomach, physical/mental strength, cardio/strength training
+- **Exclude**: Personality, career, detailed wealth
+
+**Important**: Each area's score and summary must focus only on that area's topics.
+Same birth chart data should be interpreted from different perspectives for each area.
 
 ### 5. Lucky Elements
 - Colors from Useful/Supporting God elements
