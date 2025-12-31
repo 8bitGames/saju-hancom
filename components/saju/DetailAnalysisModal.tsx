@@ -446,10 +446,19 @@ export function DetailAnalysisModal({
     setError(null);
   }, [category]);
 
-  // 콘텐츠 로드 후 스크롤 상단으로
+  // 스트리밍 시작 시에만 스크롤 상단으로 (스트리밍 중에는 리셋하지 않음)
+  const hasResetScroll = useRef(false);
+
   useEffect(() => {
-    if (content && contentRef.current) {
+    // 카테고리가 변경되면 스크롤 리셋 플래그 초기화
+    hasResetScroll.current = false;
+  }, [category]);
+
+  useEffect(() => {
+    // 콘텐츠가 처음 도착했을 때만 스크롤을 상단으로 (이후 스트리밍 중에는 리셋 안함)
+    if (content && contentRef.current && !hasResetScroll.current) {
       contentRef.current.scrollTop = 0;
+      hasResetScroll.current = true;
     }
   }, [content]);
 
