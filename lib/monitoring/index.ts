@@ -5,7 +5,6 @@
 
 export {
   reportMetric,
-  initWebVitals,
   trackTiming,
   mark,
   useRenderTime,

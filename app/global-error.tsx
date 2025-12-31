@@ -1,6 +1,5 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
 import { WarningCircle, ArrowClockwise } from "@phosphor-icons/react";
 
@@ -12,8 +11,8 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Report error to Sentry
-    Sentry.captureException(error);
+    // Log error to console in development
+    console.error("Global error:", error);
   }, [error]);
 
   return (

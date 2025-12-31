@@ -3,8 +3,6 @@
  * Production-ready logging with context and log levels
  */
 
-import * as Sentry from "@sentry/nextjs";
-
 type LogLevel = "debug" | "info" | "warn" | "error";
 
 interface LogContext {
@@ -96,27 +94,9 @@ function log(level: LogLevel, message: string, context?: LogContext, error?: Err
       break;
     case "warn":
       console.warn(formattedLog);
-      // Also report warnings to Sentry as breadcrumbs
-      Sentry.addBreadcrumb({
-        category: "log",
-        message,
-        level: "warning",
-        data: context,
-      });
       break;
     case "error":
       console.error(formattedLog);
-      // Report errors to Sentry
-      if (error) {
-        Sentry.captureException(error, {
-          extra: context,
-        });
-      } else {
-        Sentry.captureMessage(message, {
-          level: "error",
-          extra: context,
-        });
-      }
       break;
   }
 }

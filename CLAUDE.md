@@ -5,10 +5,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev      # Start development server (http://localhost:3000)
-npm run build    # Production build
-npm run start    # Start production server
-npm run lint     # Run ESLint
+npm run dev          # Start development server (http://localhost:3000)
+npm run build        # Production build
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run typecheck    # Run TypeScript type checking
+npm run analyze      # Bundle analyzer (ANALYZE=true)
+npm run check-env    # Verify environment variables
+npm run generate-images    # Generate cover images
+npm run test:saju-recs     # Test saju recommendations
 ```
 
 ## Tech Stack
@@ -17,59 +22,78 @@ npm run lint     # Run ESLint
 - **React**: 19.2.3
 - **Styling**: Tailwind CSS v4 (uses `@import "tailwindcss"` syntax, no config file needed)
 - **Language**: TypeScript (strict mode)
-- **Fonts**: Geist Sans and Geist Mono via `next/font/google`
+- **Database**: Supabase (project ID: `ypwvlmhdqavbqltsetmk`)
+- **AI**: Gemini via `@google/genai` and Vercel AI SDK
+- **Payments**: Stripe
+- **State**: Zustand
+- **i18n**: next-intl (Korean/English)
 
 ## Architecture
 
-This project uses Next.js App Router with the `/app` directory structure:
+### Route Structure
+```
+app/
+├── [locale]/(main)/     # Localized app routes (ko, en)
+│   ├── saju/            # Saju fortune reading
+│   ├── compatibility/   # Compatibility analysis
+│   ├── couple/          # Couple fortune
+│   ├── face-reading/    # Face reading feature
+│   ├── history/         # User history
+│   ├── premium/         # Premium subscription
+│   └── profile/         # User profile
+├── api/                 # API routes (non-localized)
+│   ├── saju/            # Saju analysis endpoints
+│   ├── compatibility/
+│   ├── face-reading/
+│   ├── stripe/
+│   └── voice/
+└── auth/callback/       # Supabase auth callback
+```
 
-- `app/layout.tsx` - Root layout with font configuration and global CSS
-- `app/page.tsx` - Home page component
-- `app/globals.css` - Global styles with Tailwind v4 and CSS custom properties for theming
+### Core Libraries (`lib/`)
+
+**Saju Engine** (`lib/saju/`):
+- `calculator.ts` - Four Pillars (사주팔자) calculation using `lunar-javascript`
+- `pipeline-orchestrator.ts` - 6-step AI analysis pipeline with parallel execution (steps 3,4,5 run in parallel after step 2)
+- `pipeline-steps.ts` - Individual analysis step implementations
+- `agents/` - Specialized AI agents (age, chart, temporal analysis)
+- `elements.ts` - Five elements (오행) scoring and analysis
+- `ten-gods.ts` - Ten Gods (십성) calculation
+- `stars.ts` - Special stars (신살) calculation
+
+**Supporting Libraries**:
+- `lib/supabase/` - Client, server, and middleware utilities
+- `lib/i18n/` - Locale config and translation utilities
+- `lib/stripe/` - Payment integration
+- `lib/voice/` - Voice chat feature
+- `lib/compatibility/` - Compatibility calculator
+- `lib/face-reading/` - Face reading analyzer
+
+### Components
+- `components/ui/` - shadcn/ui components (Radix-based)
+- `components/aceternity/` - Aceternity UI effects
+- `components/saju/` - Saju-specific components
+- `components/auth/` - Auth-related components
+
+### Middleware
+The app uses chained middleware (`middleware.ts`) for:
+1. Supabase session management
+2. next-intl locale routing (`localePrefix: 'as-needed'`)
 
 ## Path Aliases
 
 `@/*` maps to the project root (configured in `tsconfig.json`)
 
-## Styling Notes
+## i18n
 
-- Tailwind CSS v4 uses the new `@theme inline` directive for custom theme values
-- Dark mode uses `prefers-color-scheme` media query with CSS custom properties
-- No separate tailwind.config file - configuration is done inline in CSS
+- Locales: `ko` (default), `en`
+- Translation files: `messages/ko.json`, `messages/en.json`
+- Config: `lib/i18n/config.ts`
+- Uses `next-intl` with `localePrefix: 'as-needed'`
 
-## Claude Rules
+## AI Integration
 
-### General Restrictions
-
-- Do NOT run `npm run dev` or `npm run build` without explicit user permission
-- Do NOT create README or markdown files unless explicitly told to
-
-### Database Operations
-
-- ALWAYS use Supabase MCP tools (`mcp__supabase__*`) for database migrations and schema lookups instead of raw SQL files or Drizzle CLI
-
-### Documentation
-
-- ALWAYS check with Context7 MCP tool (`mcp__context7__*`) for library documentation before implementing code
-
-### Gemini AI Integration
-
-When using Gemini AI, follow these requirements:
-
-#### Dependencies
-
-```bash
-npm install @google/genai mime
-npm install -D @types/node
-```
-
-#### Model Selection
-
-- All models use constant from `lib/constants/ai.ts`
-- Default model: `gemini-3-flash-preview`
-
-#### Required Code Pattern
-
+### Gemini API Pattern
 ```typescript
 import { GoogleGenAI } from '@google/genai';
 import { GEMINI_MODEL } from '@/lib/constants/ai';
@@ -78,32 +102,32 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
-const tools = [{ googleSearch: {} }];
-
-const config = {
-  tools,
-};
-
 const response = await ai.models.generateContentStream({
   model: GEMINI_MODEL,
-  config,
-  contents: [
-    {
-      role: 'user',
-      parts: [{ text: 'your prompt here' }],
-    },
-  ],
+  config: { tools: [{ googleSearch: {} }] },
+  contents: [{ role: 'user', parts: [{ text: 'prompt' }] }],
 });
-
-for await (const chunk of response) {
-  console.log(chunk.text);
-}
 ```
 
-## Other Rules
+### Model Constants
+- `GEMINI_MODEL`: `gemini-3-flash-preview` (defined in `lib/constants/ai.ts`)
+- Do NOT change AI models without explicit permission
 
-- DB operations → Use Supabase MCP tools
-- Library docs → Check Context7 MCP
-- `npm run dev/build` → Do not run without permission
-- AI model changes → Do not change without permission
-- this is the supabase you need to use ypwvlmhdqavbqltsetmk
+## SSE Streaming Pattern
+
+The saju analysis uses Server-Sent Events for real-time progress:
+- Endpoint: `POST /api/saju/analyze/stream`
+- Events: `pipeline_start`, step events, `pipeline_complete`, `stream_end`
+
+## Claude Rules
+
+### General Restrictions
+- Do NOT run `npm run dev` or `npm run build` without explicit user permission
+- Do NOT create README or markdown files unless explicitly told to
+- Do NOT change AI model constants without permission
+
+### Database Operations
+- ALWAYS use Supabase MCP tools (`mcp__supabase__*`) for database migrations and schema lookups instead of raw SQL files
+
+### Documentation
+- ALWAYS check with Context7 MCP tool (`mcp__context7__*`) for library documentation before implementing code

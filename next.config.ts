@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withSentryConfig } from "@sentry/nextjs";
 import createNextIntlPlugin from 'next-intl/plugin';
 import withBundleAnalyzer from '@next/bundle-analyzer';
 
@@ -118,7 +117,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https:",
               "font-src 'self' data:",
               "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://generativelanguage.googleapis.com https://*.sentry.io https://*.ingest.sentry.io https://hansa-voice.fly.dev wss://hansa-voice.fly.dev ws://localhost:3001 http://localhost:3001",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://generativelanguage.googleapis.com https://hansa-voice.fly.dev wss://hansa-voice.fly.dev ws://localhost:3001 http://localhost:3001",
               "media-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",
@@ -133,31 +132,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Sentry configuration options
-const sentryConfig = {
-  // For all available options, see:
-  // https://github.com/getsentry/sentry-webpack-plugin#options
-
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-
-  // Only print logs for uploading source maps in CI
-  silent: !process.env.CI,
-
-  // Upload source maps for better error tracking
-  widenClientFileUpload: true,
-
-  // Route browser requests to Sentry through a Next.js rewrite
-  tunnelRoute: "/monitoring",
-
-  // Hides source maps from generated client bundles
-  hideSourceMaps: true,
-
-  // Automatically tree-shake Sentry logger statements
-  disableLogger: true,
-
-  // Enables automatic instrumentation of Vercel Cron Monitors
-  automaticVercelMonitors: true,
-};
-
-export default withSentryConfig(bundleAnalyzer(withNextIntl(nextConfig)), sentryConfig);
+export default bundleAnalyzer(withNextIntl(nextConfig));

@@ -5,8 +5,6 @@
  * Tracks Core Web Vitals and custom metrics
  */
 
-import * as Sentry from "@sentry/nextjs";
-
 interface PerformanceMetric {
   name: string;
   value: number;
@@ -14,23 +12,13 @@ interface PerformanceMetric {
   timestamp: number;
 }
 
-// Thresholds for Core Web Vitals (INP replaces FID in web-vitals v4+)
-const THRESHOLDS: Record<string, { good: number; poor: number }> = {
-  LCP: { good: 2500, poor: 4000 },
-  CLS: { good: 0.1, poor: 0.25 },
-  FCP: { good: 1800, poor: 3000 },
-  TTFB: { good: 800, poor: 1800 },
-  INP: { good: 200, poor: 500 },
-};
-
 function getRating(
-  name: string,
-  value: number
+  value: number,
+  goodThreshold: number,
+  poorThreshold: number
 ): PerformanceMetric["rating"] {
-  const threshold = THRESHOLDS[name];
-  if (!threshold) return "good";
-  if (value <= threshold.good) return "good";
-  if (value <= threshold.poor) return "needs-improvement";
+  if (value <= goodThreshold) return "good";
+  if (value <= poorThreshold) return "needs-improvement";
   return "poor";
 }
 
@@ -47,64 +35,6 @@ export function reportMetric(metric: PerformanceMetric) {
         ? "\x1b[33m"
         : "\x1b[31m";
     console.log(`${color}[PERF] ${metric.name}: ${metric.value.toFixed(2)} (${metric.rating})\x1b[0m`);
-  }
-
-  // Report to Sentry
-  Sentry.addBreadcrumb({
-    category: "performance",
-    message: `${metric.name}: ${metric.value.toFixed(2)}`,
-    level: metric.rating === "poor" ? "warning" : "info",
-    data: metric,
-  });
-
-  // Send custom transaction for poor metrics
-  if (metric.rating === "poor") {
-    Sentry.captureMessage(`Poor ${metric.name}: ${metric.value.toFixed(2)}`, {
-      level: "warning",
-      tags: {
-        metric: metric.name,
-        rating: metric.rating,
-      },
-      extra: {
-        name: metric.name,
-        value: metric.value,
-        rating: metric.rating,
-        timestamp: metric.timestamp,
-      },
-    });
-  }
-}
-
-/**
- * Initialize Web Vitals monitoring
- * Call this in your app's root component
- */
-export async function initWebVitals() {
-  if (typeof window === "undefined") return;
-
-  try {
-    // Note: onFID was removed in web-vitals v4, replaced by INP
-    const { onCLS, onFCP, onLCP, onTTFB, onINP } = await import("web-vitals");
-
-    const handleMetric = (name: string) => (
-      metric: { value: number; name: string }
-    ) => {
-      reportMetric({
-        name,
-        value: metric.value,
-        rating: getRating(name, metric.value),
-        timestamp: Date.now(),
-      });
-    };
-
-    onCLS(handleMetric("CLS"));
-    onFCP(handleMetric("FCP"));
-    onLCP(handleMetric("LCP"));
-    onTTFB(handleMetric("TTFB"));
-    onINP(handleMetric("INP"));
-  } catch (error) {
-    // web-vitals might not be installed, silently fail
-    console.debug("Web Vitals not available:", error);
   }
 }
 
@@ -128,7 +58,7 @@ export function trackTiming(name: string, startMark: string, endMark?: string) {
       reportMetric({
         name,
         value: lastEntry.duration,
-        rating: lastEntry.duration < 100 ? "good" : lastEntry.duration < 300 ? "needs-improvement" : "poor",
+        rating: getRating(lastEntry.duration, 100, 300),
         timestamp: Date.now(),
       });
     }
@@ -185,7 +115,7 @@ export async function trackApiCall<T>(
     reportMetric({
       name: `api-${name}`,
       value: duration,
-      rating: duration < 200 ? "good" : duration < 1000 ? "needs-improvement" : "poor",
+      rating: getRating(duration, 200, 1000),
       timestamp: Date.now(),
     });
 
