@@ -232,14 +232,21 @@ export const ELEMENT_HEALTH_KEYWORDS: Record<Element, HealthKeywords> = {
 /**
  * 사주 결과에서 주요 십성 추출
  */
-function getDominantTenGods(summary: TenGodSummary): TenGod[] {
+function getDominantTenGods(summary: TenGodSummary | undefined): TenGod[] {
+  // 🛡️ 방어적 null 체크
+  if (!summary) {
+    return [];
+  }
+
   // 지배적인 십성이 있으면 해당 십성 반환
-  if (summary.dominant.length > 0) {
-    return summary.dominant.slice(0, 2); // 최대 2개
+  const dominant = summary.dominant || [];
+  if (dominant.length > 0) {
+    return dominant.slice(0, 2); // 최대 2개
   }
 
   // 없으면 가장 많이 나온 십성 찾기
-  const sorted = Object.entries(summary.counts)
+  const counts = summary.counts || {};
+  const sorted = Object.entries(counts)
     .sort(([, a], [, b]) => b - a)
     .filter(([, count]) => count > 0);
 
@@ -578,12 +585,16 @@ export function generateSajuProfile(sajuResult: SajuResult, currentAge?: number)
   const parts: string[] = [];
 
   // 일간 성향
-  parts.push(`일간: ${sajuResult.dayMasterDescription}`);
+  const dayMasterDesc = sajuResult?.dayMasterDescription || "알 수 없음";
+  parts.push(`일간: ${dayMasterDesc}`);
 
   // 주요 십성
-  const dominantGods = getDominantTenGods(sajuResult.tenGodSummary);
+  const dominantGods = getDominantTenGods(sajuResult?.tenGodSummary);
   if (dominantGods.length > 0) {
-    const godNames = dominantGods.map(g => TEN_GOD_INFO[g].korean).join(", ");
+    // 🛡️ 방어적 null 체크: TEN_GOD_INFO에 해당 키가 있는지 확인
+    const godNames = dominantGods
+      .map(g => TEN_GOD_INFO[g]?.korean || g)
+      .join(", ");
     parts.push(`주요 십성: ${godNames}`);
 
     // 십성별 성격
@@ -596,24 +607,30 @@ export function generateSajuProfile(sajuResult: SajuResult, currentAge?: number)
   }
 
   // 강한 오행
-  if (sajuResult.elementAnalysis.dominant.length > 0) {
-    const elements = sajuResult.elementAnalysis.dominant
-      .map(e => ELEMENT_KOREAN[e])
+  // 🛡️ 방어적 null 체크
+  const elementAnalysis = sajuResult?.elementAnalysis;
+  const dominantElements = elementAnalysis?.dominant || [];
+  if (dominantElements.length > 0) {
+    const elements = dominantElements
+      .map(e => ELEMENT_KOREAN[e] || e)
       .join(", ");
     parts.push(`강한 오행: ${elements}`);
   }
 
   // 부족한 오행
-  if (sajuResult.elementAnalysis.lacking.length > 0) {
-    const elements = sajuResult.elementAnalysis.lacking
-      .map(e => ELEMENT_KOREAN[e])
+  // 🛡️ 방어적 null 체크
+  const lackingElements = elementAnalysis?.lacking || [];
+  if (lackingElements.length > 0) {
+    const elements = lackingElements
+      .map(e => ELEMENT_KOREAN[e] || e)
       .join(", ");
     parts.push(`부족한 오행: ${elements}`);
   }
 
   // 용신
-  if (sajuResult.elementAnalysis.yongShin) {
-    parts.push(`용신(필요한 기운): ${ELEMENT_KOREAN[sajuResult.elementAnalysis.yongShin]}`);
+  const yongShin = elementAnalysis?.yongShin;
+  if (yongShin) {
+    parts.push(`용신(필요한 기운): ${ELEMENT_KOREAN[yongShin] || yongShin}`);
   }
 
   // 🆕 대운 정보 추가
@@ -647,9 +664,11 @@ export interface ExtractedSajuProfile {
 }
 
 export function extractSajuProfile(sajuResult: SajuResult): ExtractedSajuProfile {
-  const dominantGods = getDominantTenGods(sajuResult.tenGodSummary);
-  const dominantElement = sajuResult.elementAnalysis.dominant[0];
-  const yongShin = sajuResult.elementAnalysis.yongShin;
+  const dominantGods = getDominantTenGods(sajuResult?.tenGodSummary);
+  // 🛡️ 방어적 null 체크
+  const elementAnalysis = sajuResult?.elementAnalysis;
+  const dominantElement = elementAnalysis?.dominant?.[0];
+  const yongShin = elementAnalysis?.yongShin;
 
   // 주요 십성에서 성격/직업 키워드 추출
   let personality = "균형 잡힌";

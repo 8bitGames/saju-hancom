@@ -1,6 +1,7 @@
 /**
  * Multi-Agent 초개인화 사주 시스템
  * 진입점 및 통합 엔진
+ * 🆕 카테고리별 필터링 지원
  */
 
 export * from "./types";
@@ -17,7 +18,8 @@ import type {
   PersonalizationEngineInput,
   PersonalizationEngineOutput,
   Locale,
-  Gender
+  Gender,
+  DetailCategory
 } from "./types";
 
 /**
@@ -44,7 +46,8 @@ export async function runPersonalizationEngine(
     gender,
     locale,
     currentDate = new Date(),
-    userQuery
+    userQuery,
+    category  // 🆕 카테고리별 필터링용
   } = input;
 
   const currentYear = currentDate.getFullYear();
@@ -75,13 +78,14 @@ export async function runPersonalizationEngine(
     })
   ]);
 
-  // Orchestrator로 결과 통합
+  // Orchestrator로 결과 통합 (🆕 카테고리 전달)
   const orchestratorResult = await runOrchestrator({
     temporal: temporalResult,
     age: ageResult,
     chart: chartResult,
     userQuery,
-    locale: locale as Locale
+    locale: locale as Locale,
+    category  // 🆕 카테고리별 콘텐츠 필터링
   });
 
   return {
@@ -104,20 +108,24 @@ export async function runPersonalizationEngine(
  *
  * 기존 API에서 쉽게 통합할 수 있도록
  * 시스템 프롬프트에 추가할 문자열만 반환
+ *
+ * 🆕 v1.2: category 파라미터 추가 - 카테고리별로 다른 콘텐츠 생성
  */
 export async function getPersonalizedContext(
   sajuResult: PersonalizationEngineInput["sajuResult"],
   birthYear: number,
   gender: Gender,
   locale: Locale = "ko",
-  userQuery?: string
+  userQuery?: string,
+  category?: DetailCategory  // 🆕 카테고리별 필터링
 ): Promise<string> {
   const result = await runPersonalizationEngine({
     sajuResult,
     birthYear,
     gender,
     locale,
-    userQuery
+    userQuery,
+    category  // 🆕 카테고리 전달
   });
 
   return result.orchestratorResult.systemPromptAddition;

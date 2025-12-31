@@ -208,6 +208,18 @@ export interface ChartAgentOutput {
 // Context Orchestrator (통합 오케스트레이터)
 // ============================================================================
 
+/** 상세 분석 카테고리 타입 */
+export type DetailCategory =
+  | "dayMaster"
+  | "tenGods"
+  | "stars"
+  | "fortune"
+  | "career"
+  | "relationship"
+  | "health"
+  | "wealth"
+  | "personality";
+
 export interface OrchestratorInput {
   temporal: TemporalAgentOutput;
   age: AgeAgentOutput;
@@ -216,6 +228,8 @@ export interface OrchestratorInput {
   userQuery?: string;
   /** 로케일 */
   locale: Locale;
+  /** 🆕 분석 카테고리 (카테고리별 필터링을 위해) */
+  category?: DetailCategory;
 }
 
 export interface OrchestratorOutput {
@@ -250,6 +264,8 @@ export interface PersonalizationEngineInput {
   currentDate?: Date;
   /** 사용자 질문 (있는 경우) */
   userQuery?: string;
+  /** 🆕 상세 분석 카테고리 (카테고리별 필터링용) */
+  category?: DetailCategory;
 }
 
 export interface PersonalizationEngineOutput {

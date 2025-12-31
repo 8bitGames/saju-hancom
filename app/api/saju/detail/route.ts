@@ -52,6 +52,198 @@ const groundingCategories: DetailCategory[] = [
   "career", "wealth", "relationship", "health", "fortune"
 ];
 
+/**
+ * 🆕 카테고리별 콘텐츠 분리 지침
+ * 각 카테고리는 해당 주제만 다루고 다른 영역 침범 금지
+ */
+function getCategoryBoundaryInstructions(category: DetailCategory, locale: string): string {
+  const boundaries: Record<DetailCategory, { ko: string; en: string }> = {
+    dayMaster: {
+      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
+**이 섹션은 '일간(日干) 상세 분석'입니다.**
+✅ 다뤄야 할 주제: 일간의 오행 특성, 성격의 핵심, 자아 정체성
+❌ 절대 다루지 말 것:
+- 직업/커리어 조언 (→ 직업운에서 다룸)
+- 투자/재물 조언 (→ 재물운에서 다룸)
+- 연애/결혼 조언 (→ 관계운에서 다룸)
+- 건강 조언 (→ 건강운에서 다룸)
+순수하게 일간의 기본 특성만 심층 분석하세요.`,
+      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
+**This section is for 'Day Master Detailed Analysis' only.**
+✅ Topics to cover: Day Master's Five Element traits, core personality, self-identity
+❌ DO NOT cover:
+- Career/job advice (→ covered in Career section)
+- Investment/wealth advice (→ covered in Wealth section)
+- Romance/marriage advice (→ covered in Relationship section)
+- Health advice (→ covered in Health section)
+Focus purely on the fundamental characteristics of the Day Master.`
+    },
+    personality: {
+      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
+**이 섹션은 '종합 성격 분석'입니다.**
+✅ 다뤄야 할 주제: 전체적인 성격 패턴, 행동 양식, 대인관계 스타일, 강점/약점
+❌ 절대 다루지 말 것:
+- 구체적인 직업 추천 (→ 직업운에서 다룸)
+- 재테크/투자 조언 (→ 재물운에서 다룸)
+- 연애/결혼 시기 조언 (→ 관계운에서 다룸)
+- 건강 주의사항 (→ 건강운에서 다룸)
+종합적인 성격 분석에만 집중하세요.`,
+      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
+**This section is for 'Comprehensive Personality Analysis' only.**
+✅ Topics to cover: Overall personality patterns, behavioral styles, interpersonal dynamics, strengths/weaknesses
+❌ DO NOT cover:
+- Specific job recommendations (→ covered in Career section)
+- Financial/investment advice (→ covered in Wealth section)
+- Romance/marriage timing (→ covered in Relationship section)
+- Health precautions (→ covered in Health section)
+Focus only on comprehensive personality analysis.`
+    },
+    career: {
+      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
+**이 섹션은 '직업운/커리어 분석'입니다.**
+✅ 다뤄야 할 주제: 적합 직업군, 업무 스타일, 직장 내 관계, 승진/성공 패턴
+❌ 절대 다루지 말 것:
+- 투자/재테크 조언 (→ 재물운에서 다룸)
+- 연애/결혼 관련 (→ 관계운에서 다룸)
+- 건강 관리 조언 (→ 건강운에서 다룸)
+- 일반적인 성격 분석 (→ 일간/성격에서 다룸)
+순수하게 직업과 커리어에만 집중하세요.`,
+      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
+**This section is for 'Career Analysis' only.**
+✅ Topics to cover: Suitable careers, work style, workplace relationships, promotion patterns
+❌ DO NOT cover:
+- Investment/financial advice (→ covered in Wealth section)
+- Romance/marriage topics (→ covered in Relationship section)
+- Health management (→ covered in Health section)
+- General personality analysis (→ covered in Day Master/Personality section)
+Focus purely on career and professional life.`
+    },
+    wealth: {
+      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
+**이 섹션은 '재물운/재테크 분석'입니다.**
+✅ 다뤄야 할 주제: 재물 패턴, 투자 성향, 돈 관리 스타일, 재물운 흐름
+❌ 절대 다루지 말 것:
+- 직업/커리어 조언 (→ 직업운에서 다룸)
+- 연애/결혼 관련 (→ 관계운에서 다룸)
+- 건강 관리 조언 (→ 건강운에서 다룸)
+- 일반적인 성격 분석 (→ 일간/성격에서 다룸)
+순수하게 재물과 금전에만 집중하세요.`,
+      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
+**This section is for 'Wealth Analysis' only.**
+✅ Topics to cover: Wealth patterns, investment tendencies, money management style, financial fortune flow
+❌ DO NOT cover:
+- Career/job advice (→ covered in Career section)
+- Romance/marriage topics (→ covered in Relationship section)
+- Health management (→ covered in Health section)
+- General personality analysis (→ covered in Day Master/Personality section)
+Focus purely on wealth and finances.`
+    },
+    relationship: {
+      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
+**이 섹션은 '관계운/대인관계 분석'입니다.**
+✅ 다뤄야 할 주제: 연애 패턴, 결혼운, 가족관계, 친구/동료 관계
+❌ 절대 다루지 말 것:
+- 직업/커리어 조언 (→ 직업운에서 다룸)
+- 투자/재테크 조언 (→ 재물운에서 다룸)
+- 건강 관리 조언 (→ 건강운에서 다룸)
+- 일반적인 성격 분석 (→ 일간/성격에서 다룸)
+순수하게 인간관계에만 집중하세요.`,
+      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
+**This section is for 'Relationship Analysis' only.**
+✅ Topics to cover: Romance patterns, marriage fortune, family relationships, friendships
+❌ DO NOT cover:
+- Career/job advice (→ covered in Career section)
+- Investment/financial advice (→ covered in Wealth section)
+- Health management (→ covered in Health section)
+- General personality analysis (→ covered in Day Master/Personality section)
+Focus purely on relationships and interpersonal connections.`
+    },
+    health: {
+      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
+**이 섹션은 '건강운 분석'입니다.**
+✅ 다뤄야 할 주제: 오행별 건강 취약점, 주의해야 할 신체 부위, 건강 관리 방향
+❌ 절대 다루지 말 것:
+- 직업/커리어 조언 (→ 직업운에서 다룸)
+- 투자/재테크 조언 (→ 재물운에서 다룸)
+- 연애/결혼 관련 (→ 관계운에서 다룸)
+- 일반적인 성격 분석 (→ 일간/성격에서 다룸)
+순수하게 건강에만 집중하세요.`,
+      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
+**This section is for 'Health Analysis' only.**
+✅ Topics to cover: Health vulnerabilities by Five Elements, body areas to watch, health management directions
+❌ DO NOT cover:
+- Career/job advice (→ covered in Career section)
+- Investment/financial advice (→ covered in Wealth section)
+- Romance/marriage topics (→ covered in Relationship section)
+- General personality analysis (→ covered in Day Master/Personality section)
+Focus purely on health and wellness.`
+    },
+    fortune: {
+      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
+**이 섹션은 '운세 흐름 분석'입니다.**
+✅ 다뤄야 할 주제: 대운 흐름, 연운/월운, 시기별 기운의 변화, 행운의 타이밍
+❌ 절대 다루지 말 것:
+- 구체적인 직업 추천 (→ 직업운에서 다룸)
+- 구체적인 투자 방법 (→ 재물운에서 다룸)
+- 구체적인 연애 조언 (→ 관계운에서 다룸)
+- 구체적인 건강 조언 (→ 건강운에서 다룸)
+시간 흐름에 따른 운의 변화에만 집중하세요.`,
+      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
+**This section is for 'Fortune Flow Analysis' only.**
+✅ Topics to cover: Major fortune periods, yearly/monthly fortune, timing changes, lucky periods
+❌ DO NOT cover:
+- Specific job recommendations (→ covered in Career section)
+- Specific investment methods (→ covered in Wealth section)
+- Specific romance advice (→ covered in Relationship section)
+- Specific health advice (→ covered in Health section)
+Focus only on the flow of fortune over time.`
+    },
+    tenGods: {
+      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
+**이 섹션은 '십성(十星) 상세 분석'입니다.**
+✅ 다뤄야 할 주제: 십성 구성 분석, 각 십성의 의미, 십성 간 상호작용
+❌ 절대 다루지 말 것:
+- 구체적인 직업 추천 (→ 직업운에서 다룸)
+- 구체적인 투자 조언 (→ 재물운에서 다룸)
+- 구체적인 연애 시기 (→ 관계운에서 다룸)
+- 구체적인 건강 조언 (→ 건강운에서 다룸)
+십성의 구조와 의미에만 집중하세요.`,
+      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
+**This section is for 'Ten Gods Analysis' only.**
+✅ Topics to cover: Ten Gods composition, meaning of each Ten God, interactions between Ten Gods
+❌ DO NOT cover:
+- Specific job recommendations (→ covered in Career section)
+- Specific investment advice (→ covered in Wealth section)
+- Specific romance timing (→ covered in Relationship section)
+- Specific health advice (→ covered in Health section)
+Focus only on the structure and meaning of Ten Gods.`
+    },
+    stars: {
+      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
+**이 섹션은 '신살(神煞) 상세 분석'입니다.**
+✅ 다뤄야 할 주제: 주요 신살 해석, 신살의 영향력, 신살 활용법
+❌ 절대 다루지 말 것:
+- 구체적인 직업 추천 (→ 직업운에서 다룸)
+- 구체적인 투자 조언 (→ 재물운에서 다룸)
+- 구체적인 연애 조언 (→ 관계운에서 다룸)
+- 구체적인 건강 조언 (→ 건강운에서 다룸)
+신살의 의미와 영향에만 집중하세요.`,
+      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
+**This section is for 'Special Stars Analysis' only.**
+✅ Topics to cover: Major star interpretations, influence of stars, how to utilize stars
+❌ DO NOT cover:
+- Specific job recommendations (→ covered in Career section)
+- Specific investment advice (→ covered in Wealth section)
+- Specific romance advice (→ covered in Relationship section)
+- Specific health advice (→ covered in Health section)
+Focus only on the meaning and influence of special stars.`
+    }
+  };
+
+  const boundary = boundaries[category];
+  return boundary ? (locale === 'ko' ? boundary.ko : boundary.en) : '';
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -91,6 +283,7 @@ export async function POST(request: NextRequest) {
     const needsGrounding = groundingCategories.includes(category as DetailCategory);
 
     // 초개인화 컨텍스트 생성 (Multi-Agent System)
+    // 🆕 v1.2: 카테고리별 필터링으로 중복 방지
     let personalizedContext = "";
     if (sajuResult && birthYear) {
       try {
@@ -103,7 +296,8 @@ export async function POST(request: NextRequest) {
           birthYear,
           gender === "female" ? "female" : "male",
           locale,
-          category // 현재 분석 중인 카테고리를 쿼리로 사용
+          undefined,  // userQuery
+          category as DetailCategory  // 🆕 카테고리별 콘텐츠 필터링
         );
       } catch (e) {
         console.error("Failed to generate personalized context:", e);
@@ -143,6 +337,12 @@ ${personalizedContext}
 ---
 Please respond in a cold reading style based on the above personalized context.`;
       }
+    }
+
+    // 🆕 카테고리별 콘텐츠 분리 지침 추가 (중복 방지)
+    const categoryBoundaryInstructions = getCategoryBoundaryInstructions(category as DetailCategory, locale);
+    if (categoryBoundaryInstructions) {
+      prompt += categoryBoundaryInstructions;
     }
 
     // Add grounding context if needed and sajuResult is available

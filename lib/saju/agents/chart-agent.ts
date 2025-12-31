@@ -88,7 +88,7 @@ const TEN_GOD_MEANINGS: Record<TenGod, { ko: TenGodMeaning; en: TenGodMeaning }>
 /**
  * 신살에서 개인화 플래그 추출
  */
-function extractPersonalizationFlags(stars: Star[], locale: "ko" | "en"): PersonalizationFlags {
+function extractPersonalizationFlags(stars: Star[] | undefined, locale: "ko" | "en"): PersonalizationFlags {
   const flags: PersonalizationFlags = {
     avoidMarriageAdvice: false,
     emphasizeCareer: false,
@@ -100,8 +100,13 @@ function extractPersonalizationFlags(stars: Star[], locale: "ko" | "en"): Person
     emphasizeLeadership: false
   };
 
-  const starNames = stars.map(s => s.name.toLowerCase());
-  const starHanja = stars.map(s => s.hanja);
+  // 🛡️ 방어적 null 체크
+  if (!stars || !Array.isArray(stars) || stars.length === 0) {
+    return flags;
+  }
+
+  const starNames = stars.map(s => s.name?.toLowerCase() || "");
+  const starHanja = stars.map(s => s.hanja || "");
 
   // 역마살 (驛馬殺) - 이동/변화 많음, 결혼 피하기
   if (starHanja.includes("驛馬") || starNames.some(n => n.includes("역마"))) {
@@ -156,21 +161,28 @@ function extractHealthFlags(
   sajuResult: SajuResult,
   locale: "ko" | "en"
 ): HealthFlags {
-  const { elementAnalysis } = sajuResult;
+  const elementAnalysis = sajuResult?.elementAnalysis;
   const watchAreas: string[] = [];
   const recommendations: string[] = [];
 
+  // 🛡️ 방어적 null 체크
+  if (!elementAnalysis) {
+    return { watchAreas: [], recommendations: [] };
+  }
+
   // 부족한 오행의 관련 장기 주의
-  for (const element of elementAnalysis.lacking) {
+  const lacking = elementAnalysis.lacking || [];
+  for (const element of lacking) {
     const organs = ELEMENT_ORGANS[element]?.[locale] || [];
     watchAreas.push(...organs);
   }
 
   // 과다한 오행 확인
   const excessElements: Element[] = [];
-  const lackingElements = elementAnalysis.lacking;
+  const lackingElements = lacking;
+  const scores = elementAnalysis.scores || {};
 
-  for (const [element, score] of Object.entries(elementAnalysis.scores) as [Element, number][]) {
+  for (const [element, score] of Object.entries(scores) as [Element, number][]) {
     if (score > 30) {
       excessElements.push(element);
     }
