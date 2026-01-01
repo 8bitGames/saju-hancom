@@ -141,6 +141,42 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
         />
       </motion.div>
 
+      {/* Catchphrase & Tags - from pipeline step6 */}
+      {result.step6?.catchphrase && (
+        <motion.div
+          className="bg-white/5 rounded-xl p-4 border border-white/10"
+          variants={itemVariants}
+        >
+          {/* 캐치프레이즈 */}
+          <motion.p
+            className="text-center text-base sm:text-lg font-medium text-white/90 italic mb-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+          >
+            &ldquo;{result.step6.catchphrase}&rdquo;
+          </motion.p>
+          {/* 태그 */}
+          {result.step6.tags && result.step6.tags.length > 0 && (
+            <motion.div
+              className="flex flex-wrap justify-center gap-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.45 }}
+            >
+              {result.step6.tags.map((tag: string, index: number) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 text-xs sm:text-sm font-medium text-[#a855f7] bg-[#a855f7]/10 rounded-full border border-[#a855f7]/30"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </motion.div>
+          )}
+        </motion.div>
+      )}
+
       {/* Four Pillars */}
       <GlowingCard glowColor="rgba(168, 85, 247, 0.4)" variants={itemVariants}>
         <div className="p-5 space-y-4">

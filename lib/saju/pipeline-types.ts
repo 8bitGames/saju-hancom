@@ -304,6 +304,12 @@ export interface LuckyElements {
 }
 
 export interface Step6_Synthesis {
+  /** 캐치프레이즈 - 사주를 한 문장으로 표현 */
+  catchphrase: string;
+
+  /** 성격/특성 태그 (3-5개) */
+  tags: string[];
+
   /** 종합 점수 (0-100) */
   overallScore: number;
 

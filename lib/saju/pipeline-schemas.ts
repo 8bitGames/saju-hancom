@@ -210,6 +210,8 @@ const AreaScoreSchema = z.object({
 });
 
 export const Step6Schema = z.object({
+  catchphrase: z.string().describe("캐치프레이즈 - 사주를 한 문장으로 표현 (예: '불꽃처럼 뜨거운 열정의 소유자', '고요한 바다 같은 깊은 지혜의 사람')"),
+  tags: z.array(z.string()).min(3).max(5).describe("성격/특성 태그 3-5개 (예: ['리더십', '창의성', '도전정신', '감성적', '분석력'])"),
   overallScore: z.number().min(0).max(100).describe("종합 점수"),
   overallGrade: z.enum(["excellent", "good", "normal", "caution", "challenging"]).describe("종합 등급"),
   gradeText: z.string().describe("등급 텍스트 (대길, 길, 보통 등)"),

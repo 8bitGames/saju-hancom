@@ -1003,12 +1003,19 @@ Explain professionally yet warmly.`;
 - 올해 점수: ${step5.yearlyFortune.score}점
 
 모든 분석을 종합하여:
-1. 종합 점수와 등급
-2. 영역별 (성격, 직업, 재물, 관계, 건강) 점수와 요약
-3. 핵심 인사이트와 강점
-4. 실용적 조언 (즉시/단기/장기)
-5. 행운의 요소 (색상, 숫자, 방향, 활동)
-6. 한줄 운세 메시지
+1. **캐치프레이즈**: 이 사람의 사주를 한 문장으로 매력적이게 표현 (예: "불꽃처럼 뜨거운 열정의 소유자", "고요한 바다 같은 깊은 지혜의 사람", "세상을 밝히는 따뜻한 등불")
+2. **성격 태그**: 핵심 특성을 나타내는 키워드 3-5개 (예: "리더십", "창의성", "도전정신")
+3. 종합 점수와 등급
+4. 영역별 (성격, 직업, 재물, 관계, 건강) 점수와 요약
+5. 핵심 인사이트와 강점
+6. 실용적 조언 (즉시/단기/장기)
+7. 행운의 요소 (색상, 숫자, 방향, 활동)
+8. 한줄 운세 메시지
+
+**캐치프레이즈 작성 팁**:
+- 일간의 특성과 주요 십성을 반영
+- 시적이고 긍정적인 표현 사용
+- 20자 내외로 간결하게
 
 를 제공해주세요.`
     : `Please synthesize the birth chart analysis for this ${genderText}.
@@ -1042,12 +1049,19 @@ Explain professionally yet warmly.`;
 - This Year's Score: ${step5.yearlyFortune.score} points
 
 Please synthesize all analyses and provide:
-1. Overall score and grade
-2. Scores and summary for each area (Personality, Career, Wealth, Relationships, Health)
-3. Core insights and strengths
-4. Practical advice (immediate/short-term/long-term)
-5. Lucky elements (colors, numbers, directions, activities)
-6. One-line fortune message`;
+1. **Catchphrase**: Express this person's destiny in one attractive sentence (e.g., "A passionate soul burning like fire", "A person of deep wisdom like a calm ocean")
+2. **Personality Tags**: 3-5 keywords representing core traits (e.g., "Leadership", "Creativity", "Adventurous")
+3. Overall score and grade
+4. Scores and summary for each area (Personality, Career, Wealth, Relationships, Health)
+5. Core insights and strengths
+6. Practical advice (immediate/short-term/long-term)
+7. Lucky elements (colors, numbers, directions, activities)
+8. One-line fortune message
+
+**Catchphrase Tips**:
+- Reflect the Day Master characteristics and main Ten Gods
+- Use poetic and positive expressions
+- Keep it concise (around 10-15 words)`;
 
   const result = await generateObject({
     model: getModel(),

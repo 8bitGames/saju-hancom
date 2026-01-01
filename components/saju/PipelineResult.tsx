@@ -178,6 +178,11 @@ export default function PipelineResult({ result, gender = "male", birthInfo, onT
   const [showInfoTooltip, setShowInfoTooltip] = useState<TabType | null>(null);
   // 탭 콘텐츠 ref (탭 전환 시 스크롤 위치 조정용)
   const tabContentRef = useRef<HTMLDivElement>(null);
+  // 탭별 스크롤 위치 저장 (탭 전환 시 위치 기억)
+  const scrollPositionsRef = useRef<Record<TabType, number>>({
+    overview: 0, daymaster: 0, tengods: 0,
+    stars: 0, timing: 0, advice: 0,
+  });
 
   // 인포 툴팁 표시 함수 (1.5초 후 자동 숨김)
   const handleInfoClick = (tabId: TabType) => {
@@ -395,6 +400,29 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
           </div>
         </div>
 
+        {/* 캐치프레이즈 & 태그 */}
+        {step6.catchphrase && (
+          <div className="bg-white/5 rounded-xl p-3 sm:p-4 mb-3 sm:mb-4 border border-white/10">
+            {/* 캐치프레이즈 */}
+            <p className="text-center text-base sm:text-lg font-medium text-white/90 italic mb-3">
+              &ldquo;{step6.catchphrase}&rdquo;
+            </p>
+            {/* 태그 */}
+            {step6.tags && step6.tags.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2">
+                {step6.tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 text-xs sm:text-sm font-medium text-[#a855f7] bg-[#a855f7]/10 rounded-full border border-[#a855f7]/30"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* 탭 네비게이션 - Sticky */}
         <div className="sticky top-[60px] sm:top-[76px] z-40 -mx-4 px-4 py-2.5 sm:py-3 bg-[#1a1033] border-y border-[#a855f7]/30 shadow-lg shadow-black/30">
           <div className="flex gap-1.5 sm:gap-2">
@@ -402,10 +430,19 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
               <button
                 key={tab.id}
                 onClick={() => {
+                  // 현재 탭의 스크롤 위치 저장
+                  scrollPositionsRef.current[activeTab] = window.scrollY;
+
                   setActiveTab(tab.id);
-                  // 탭 전환 시 콘텐츠 상단으로 스크롤 (sticky 헤더 높이 고려)
+
+                  // 새 탭의 저장된 위치로 복원 (방문한 적 없으면 상단)
                   setTimeout(() => {
-                    tabContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const savedPosition = scrollPositionsRef.current[tab.id];
+                    if (savedPosition > 0) {
+                      window.scrollTo({ top: savedPosition, behavior: 'smooth' });
+                    } else {
+                      tabContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                   }, 0);
                 }}
                 className={`flex-1 flex items-center justify-center px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all text-sm sm:text-base font-semibold ${

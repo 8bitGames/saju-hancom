@@ -8,6 +8,7 @@ import { UpgradeDialog } from "./UpgradeDialog";
 import { toast } from "sonner";
 
 interface ShareKakaoButtonProps {
+  resultId?: string;
   birthData: {
     year: number;
     month: number;
@@ -18,21 +19,30 @@ interface ShareKakaoButtonProps {
     isLunar: boolean;
     city: string;
   };
-  result: any;
+  resultData?: any;
   className?: string;
 }
 
 export function ShareKakaoButton({
+  resultId: initialResultId,
   birthData,
-  result,
+  resultData,
   className,
 }: ShareKakaoButtonProps) {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [currentResultId, setCurrentResultId] = useState<string | undefined>(initialResultId);
 
   const supabase = createClient();
+
+  // Update currentResultId when prop changes
+  useEffect(() => {
+    if (initialResultId) {
+      setCurrentResultId(initialResultId);
+    }
+  }, [initialResultId]);
 
   // Prevent hydration mismatch and load Kakao SDK
   useEffect(() => {
@@ -92,19 +102,30 @@ export function ShareKakaoButton({
         return;
       }
 
-      // Create share URL with query params
-      const queryString = new URLSearchParams({
-        year: birthData.year.toString(),
-        month: birthData.month.toString(),
-        day: birthData.day.toString(),
-        hour: birthData.hour.toString(),
-        minute: birthData.minute.toString(),
-        gender: birthData.gender,
-        isLunar: birthData.isLunar.toString(),
-        city: birthData.city,
-      }).toString();
+      let shareResultId = currentResultId;
 
-      const shareUrl = `${window.location.origin}/saju/result?${queryString}`;
+      // If no resultId, save first to get one
+      if (!shareResultId && resultData) {
+        const saveResponse = await fetch("/api/saju/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ birthData, resultData }),
+        });
+        const saveData = await saveResponse.json();
+
+        if (saveData.success && saveData.resultId) {
+          shareResultId = saveData.resultId;
+          setCurrentResultId(shareResultId);
+        }
+      }
+
+      if (!shareResultId) {
+        toast.error("결과가 아직 저장되지 않았습니다. 잠시 후 다시 시도해주세요.");
+        return;
+      }
+
+      // Create share URL with result ID
+      const shareUrl = `${window.location.origin}/saju/s/${shareResultId}`;
 
       window.Kakao.Link.sendDefault({
         objectType: "feed",
