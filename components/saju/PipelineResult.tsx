@@ -6,7 +6,7 @@
 
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { MagnifyingGlass, User, Star, Sparkle, Calendar, Lightbulb, ChartBar, Heart, Briefcase, Coins, FirstAid, Check, Warning, ArrowRight, Palette, Hash, Compass, Sun, Lightning, Lock, LockOpen, Info } from "@phosphor-icons/react";
 import type { SajuPipelineResult } from "@/lib/saju/pipeline-types";
 import type { SajuResult, Element, TenGod, TenGodSummary, ElementAnalysis } from "@/lib/saju/types";
@@ -176,6 +176,8 @@ export default function PipelineResult({ result, gender = "male", birthInfo, onT
   const [activeTab, setActiveTab] = useState<TabType>("daymaster");
   // 타이틀 옆 info 버튼 툴팁 표시 상태 (표시할 탭 ID, null이면 숨김)
   const [showInfoTooltip, setShowInfoTooltip] = useState<TabType | null>(null);
+  // 탭 콘텐츠 ref (탭 전환 시 스크롤 위치 조정용)
+  const tabContentRef = useRef<HTMLDivElement>(null);
 
   // 인포 툴팁 표시 함수 (1.5초 후 자동 숨김)
   const handleInfoClick = (tabId: TabType) => {
@@ -399,7 +401,13 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
             {TABS.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  // 탭 전환 시 콘텐츠 상단으로 스크롤 (sticky 헤더 높이 고려)
+                  setTimeout(() => {
+                    tabContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 0);
+                }}
                 className={`flex-1 flex items-center justify-center px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all text-sm sm:text-base font-semibold ${
                   activeTab === tab.id
                     ? "bg-[#a855f7] text-white shadow-lg shadow-[#a855f7]/40"
@@ -416,7 +424,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
         <div className="h-2 sm:h-4" />
 
         {/* 탭 컨텐츠 */}
-        <div className="bg-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/10">
+        <div ref={tabContentRef} className="bg-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/10 scroll-mt-[120px] sm:scroll-mt-[140px]">
           {/* 종합 탭 */}
           {activeTab === "overview" && (
             <div className="space-y-4 sm:space-y-6">
