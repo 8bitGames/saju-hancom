@@ -24,6 +24,7 @@ import {
 import type { SajuResult } from "@/lib/saju/types";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
 import { getPersonalizedContext } from "@/lib/saju/agents";
+import { isBasicCategory } from "@/lib/saju/basic-analysis-data";
 
 /**
  * 사주 상세 분석 API
@@ -53,190 +54,381 @@ const groundingCategories: DetailCategory[] = [
 ];
 
 /**
- * 🆕 카테고리별 콘텐츠 분리 지침
- * 각 카테고리는 해당 주제만 다루고 다른 영역 침범 금지
+ * 🆕 카테고리별 콘텐츠 분리 지침 (v1.4)
+ * - 기본 분석: WHAT/WHY (구성 발견, 교육적 설명)
+ * - 종합 분석: HOW/WHEN (개인화된 조언, 콜드 리딩)
  */
 function getCategoryBoundaryInstructions(category: DetailCategory, locale: string): string {
   const boundaries: Record<DetailCategory, { ko: string; en: string }> = {
     dayMaster: {
-      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
-**이 섹션은 '일간(日干) 상세 분석'입니다.**
-✅ 다뤄야 할 주제: 일간의 오행 특성, 성격의 핵심, 자아 정체성
-❌ 절대 다루지 말 것:
-- 직업/커리어 조언 (→ 직업운에서 다룸)
-- 투자/재물 조언 (→ 재물운에서 다룸)
-- 연애/결혼 조언 (→ 관계운에서 다룸)
-- 건강 조언 (→ 건강운에서 다룸)
-순수하게 일간의 기본 특성만 심층 분석하세요.`,
-      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
-**This section is for 'Day Master Detailed Analysis' only.**
-✅ Topics to cover: Day Master's Five Element traits, core personality, self-identity
-❌ DO NOT cover:
-- Career/job advice (→ covered in Career section)
-- Investment/wealth advice (→ covered in Wealth section)
-- Romance/marriage advice (→ covered in Relationship section)
-- Health advice (→ covered in Health section)
-Focus purely on the fundamental characteristics of the Day Master.`
+      ko: `\n\n## 📋 콘텐츠 역할 지침 (필수 준수)
+
+### 🏷️ 이 탭의 역할: "나의 사주 DNA 발견하기"
+**목적**: 일간이 무엇인지, 왜 중요한지 **발견형 스토리텔링**으로 설명
+
+### ✅ 다뤄야 할 주제 (WHAT/WHY)
+- 일간의 오행 특성과 자연 상징
+- 같은 오행 내 다른 천간과의 비교 (예: 甲木 vs 乙木)
+- "당신은 10가지 중 이것을 타고났습니다" 식의 발견 경험
+- 일간의 기본적인 성격 경향성 소개
+
+### ❌ 절대 다루지 말 것 (HOW/WHEN은 종합 탭에서)
+- 구체적인 직업 추천/커리어 조언 → "더 알아보려면 [직업운] 탭으로"
+- 투자/재물 관리 방법 → "재물 패턴은 [재물운] 탭에서"
+- 연애/결혼 시기/방법 → "관계 패턴은 [관계운] 탭에서"
+- 건강 관리 구체적 조언 → "건강 주의점은 [건강운] 탭에서"
+
+### 🔗 마무리 안내 (필수)
+분석 끝에 자연스럽게: "이 일간이 **실제 삶에서 어떻게 나타나는지** 궁금하시다면, [성격] 탭에서 더 깊이 알아보세요." 형태의 안내 포함`,
+      en: `\n\n## 📋 Content Role Instructions (MUST FOLLOW)
+
+### 🏷️ This Tab's Role: "Discover Your Saju DNA"
+**Purpose**: Explain WHAT Day Master is and WHY it matters through **discovery storytelling**
+
+### ✅ Topics to Cover (WHAT/WHY)
+- Day Master's Five Element traits and natural symbols
+- Comparison with other Heavenly Stems in same element (e.g., 甲Wood vs 乙Wood)
+- "You were born with this one out of ten" discovery experience
+- Basic personality tendencies of this Day Master
+
+### ❌ DO NOT Cover (HOW/WHEN belong to comprehensive tabs)
+- Specific career recommendations → "Learn more in [Career] tab"
+- Investment/wealth management methods → "See wealth patterns in [Wealth] tab"
+- Romance/marriage timing/methods → "See relationship patterns in [Relationship] tab"
+- Specific health management advice → "See health tips in [Health] tab"
+
+### 🔗 Closing Guide (Required)
+End with natural transition: "Curious how this Day Master **manifests in real life**? Explore deeper in the [Personality] tab."`
     },
     personality: {
-      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
-**이 섹션은 '종합 성격 분석'입니다.**
-✅ 다뤄야 할 주제: 전체적인 성격 패턴, 행동 양식, 대인관계 스타일, 강점/약점
-❌ 절대 다루지 말 것:
-- 구체적인 직업 추천 (→ 직업운에서 다룸)
-- 재테크/투자 조언 (→ 재물운에서 다룸)
-- 연애/결혼 시기 조언 (→ 관계운에서 다룸)
-- 건강 주의사항 (→ 건강운에서 다룸)
-종합적인 성격 분석에만 집중하세요.`,
-      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
-**This section is for 'Comprehensive Personality Analysis' only.**
-✅ Topics to cover: Overall personality patterns, behavioral styles, interpersonal dynamics, strengths/weaknesses
-❌ DO NOT cover:
-- Specific job recommendations (→ covered in Career section)
-- Financial/investment advice (→ covered in Wealth section)
-- Romance/marriage timing (→ covered in Relationship section)
-- Health precautions (→ covered in Health section)
-Focus only on comprehensive personality analysis.`
+      ko: `\n\n## 📋 콘텐츠 역할 지침 (필수 준수)
+
+### 🏷️ 이 탭의 역할: "나의 성격 심층 해석" (종합 분석)
+**목적**: 기본 분석에서 발견한 요소들이 **실제 삶에서 어떻게 나타나는지** 콜드 리딩 스타일로 해석
+
+### ✅ 다뤄야 할 주제 (HOW - 실제 삶 적용)
+- 일간 + 십성 + 신살이 조합되어 만드는 **성격 패턴**
+- "~하신 적 있으시죠?", "~한 경향이 있으셨을 거예요" 형태의 공감
+- 강점/약점이 실제 상황에서 어떻게 발현되는지
+- 대인관계에서의 행동 패턴
+
+### ❌ 다루지 말 것
+- 구체적인 직업 추천 → [직업운] 탭에서
+- 재테크/투자 조언 → [재물운] 탭에서
+- 연애/결혼 구체적 조언 → [관계운] 탭에서
+- 건강 구체적 조언 → [건강운] 탭에서
+
+### 💡 응답 스타일 (콜드 리딩)
+"당신은 아마... ~하셨을 거예요", "혹시 ~한 경험이 있으신가요?" 형태로 공감 유도`,
+      en: `\n\n## 📋 Content Role Instructions (MUST FOLLOW)
+
+### 🏷️ This Tab's Role: "Deep Personality Interpretation" (Comprehensive Analysis)
+**Purpose**: Interpret HOW the elements discovered in basic analysis **manifest in real life** using cold reading style
+
+### ✅ Topics to Cover (HOW - Real Life Application)
+- **Personality patterns** created by Day Master + Ten Gods + Stars combination
+- Empathetic expressions like "You've probably experienced...", "You tend to..."
+- How strengths/weaknesses manifest in actual situations
+- Behavioral patterns in interpersonal relationships
+
+### ❌ DO NOT Cover
+- Specific career recommendations → [Career] tab
+- Financial/investment advice → [Wealth] tab
+- Specific romance/marriage advice → [Relationship] tab
+- Specific health advice → [Health] tab
+
+### 💡 Response Style (Cold Reading)
+Use empathetic expressions like "You probably...", "Have you ever experienced...?"`
     },
     career: {
-      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
-**이 섹션은 '직업운/커리어 분석'입니다.**
-✅ 다뤄야 할 주제: 적합 직업군, 업무 스타일, 직장 내 관계, 승진/성공 패턴
-❌ 절대 다루지 말 것:
-- 투자/재테크 조언 (→ 재물운에서 다룸)
-- 연애/결혼 관련 (→ 관계운에서 다룸)
-- 건강 관리 조언 (→ 건강운에서 다룸)
-- 일반적인 성격 분석 (→ 일간/성격에서 다룸)
-순수하게 직업과 커리어에만 집중하세요.`,
-      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
-**This section is for 'Career Analysis' only.**
-✅ Topics to cover: Suitable careers, work style, workplace relationships, promotion patterns
-❌ DO NOT cover:
-- Investment/financial advice (→ covered in Wealth section)
-- Romance/marriage topics (→ covered in Relationship section)
-- Health management (→ covered in Health section)
-- General personality analysis (→ covered in Day Master/Personality section)
-Focus purely on career and professional life.`
+      ko: `\n\n## 📋 콘텐츠 역할 지침 (필수 준수)
+
+### 🏷️ 이 탭의 역할: "나의 직업운 심층 해석" (종합 분석)
+**목적**: 사주 구성이 **직업/커리어에서 구체적으로 어떻게 작용하는지** 콜드 리딩 + 현재 트렌드로 해석
+
+### ✅ 다뤄야 할 주제 (HOW/WHEN - 직업 구체적 적용)
+- 이 분에게 맞는 **구체적인 직업군/산업** 추천
+- "직장에서 ~한 경험이 있으셨을 거예요" 형태의 공감
+- 업무 스타일과 강점이 발휘되는 구체적 상황
+- 대운/세운에 따른 **커리어 타이밍** 조언
+- ${new Date().getFullYear()}년 현재 트렌드를 반영한 직업 조언
+
+### ❌ 다루지 말 것
+- 투자/재테크 조언 → [재물운] 탭에서
+- 연애/결혼 조언 → [관계운] 탭에서
+- 건강 관리 조언 → [건강운] 탭에서
+- 기본적인 일간/십성 설명 → [일간], [십성] 탭에서 이미 다룸
+
+### 💡 응답 스타일 (콜드 리딩 + 그라운딩)
+"아마 직장에서 ~한 상황을 겪으셨을 거예요" + "요즘 ${new Date().getFullYear()}년 트렌드를 보면..."`,
+      en: `\n\n## 📋 Content Role Instructions (MUST FOLLOW)
+
+### 🏷️ This Tab's Role: "Deep Career Fortune Interpretation" (Comprehensive Analysis)
+**Purpose**: Interpret HOW the Saju composition **specifically affects career** using cold reading + current trends
+
+### ✅ Topics to Cover (HOW/WHEN - Career Specific Application)
+- **Specific job categories/industries** suitable for this person
+- Empathetic expressions like "You've probably experienced... at work"
+- Specific situations where work style and strengths shine
+- **Career timing** advice based on Major/Annual fortune
+- Career advice reflecting ${new Date().getFullYear()} current trends
+
+### ❌ DO NOT Cover
+- Investment/financial advice → [Wealth] tab
+- Romance/marriage advice → [Relationship] tab
+- Health management advice → [Health] tab
+- Basic Day Master/Ten Gods explanation → Already covered in [Day Master], [Ten Gods] tabs
+
+### 💡 Response Style (Cold Reading + Grounding)
+"You've probably experienced... at work" + "Looking at ${new Date().getFullYear()} trends..."`
     },
     wealth: {
-      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
-**이 섹션은 '재물운/재테크 분석'입니다.**
-✅ 다뤄야 할 주제: 재물 패턴, 투자 성향, 돈 관리 스타일, 재물운 흐름
-❌ 절대 다루지 말 것:
-- 직업/커리어 조언 (→ 직업운에서 다룸)
-- 연애/결혼 관련 (→ 관계운에서 다룸)
-- 건강 관리 조언 (→ 건강운에서 다룸)
-- 일반적인 성격 분석 (→ 일간/성격에서 다룸)
-순수하게 재물과 금전에만 집중하세요.`,
-      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
-**This section is for 'Wealth Analysis' only.**
-✅ Topics to cover: Wealth patterns, investment tendencies, money management style, financial fortune flow
-❌ DO NOT cover:
-- Career/job advice (→ covered in Career section)
-- Romance/marriage topics (→ covered in Relationship section)
-- Health management (→ covered in Health section)
-- General personality analysis (→ covered in Day Master/Personality section)
-Focus purely on wealth and finances.`
+      ko: `\n\n## 📋 콘텐츠 역할 지침 (필수 준수)
+
+### 🏷️ 이 탭의 역할: "나의 재물운 심층 해석" (종합 분석)
+**목적**: 사주 구성이 **재물/금전에서 구체적으로 어떻게 작용하는지** 콜드 리딩 + 현재 트렌드로 해석
+
+### ✅ 다뤄야 할 주제 (HOW/WHEN - 재물 구체적 적용)
+- 이 분의 **재물 획득/관리 패턴** (정재형 vs 편재형)
+- "돈과 관련해서 ~한 경험이 있으셨을 거예요" 형태의 공감
+- 투자 성향과 맞는 구체적인 투자 방식
+- 대운/세운에 따른 **재물운 타이밍** 조언
+- ${new Date().getFullYear()}년 현재 경제 트렌드를 반영한 재테크 조언
+
+### ❌ 다루지 말 것
+- 직업/커리어 조언 → [직업운] 탭에서
+- 연애/결혼 조언 → [관계운] 탭에서
+- 건강 관리 조언 → [건강운] 탭에서
+- 기본적인 십성 설명 → [십성] 탭에서 이미 다룸
+
+### 💡 응답 스타일 (콜드 리딩 + 그라운딩)
+"아마 돈 관리에서 ~한 경향이 있으셨을 거예요" + "요즘 ${new Date().getFullYear()}년 경제 상황을 보면..."`,
+      en: `\n\n## 📋 Content Role Instructions (MUST FOLLOW)
+
+### 🏷️ This Tab's Role: "Deep Wealth Fortune Interpretation" (Comprehensive Analysis)
+**Purpose**: Interpret HOW the Saju composition **specifically affects wealth/money** using cold reading + current trends
+
+### ✅ Topics to Cover (HOW/WHEN - Wealth Specific Application)
+- This person's **wealth acquisition/management patterns** (Direct vs Indirect Wealth type)
+- Empathetic expressions like "You've probably experienced... with money"
+- Specific investment methods matching their investment tendencies
+- **Wealth timing** advice based on Major/Annual fortune
+- Financial advice reflecting ${new Date().getFullYear()} current economic trends
+
+### ❌ DO NOT Cover
+- Career/job advice → [Career] tab
+- Romance/marriage advice → [Relationship] tab
+- Health management advice → [Health] tab
+- Basic Ten Gods explanation → Already covered in [Ten Gods] tab
+
+### 💡 Response Style (Cold Reading + Grounding)
+"You've probably had a tendency to... with money" + "Looking at ${new Date().getFullYear()} economic trends..."`
     },
     relationship: {
-      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
-**이 섹션은 '관계운/대인관계 분석'입니다.**
-✅ 다뤄야 할 주제: 연애 패턴, 결혼운, 가족관계, 친구/동료 관계
-❌ 절대 다루지 말 것:
-- 직업/커리어 조언 (→ 직업운에서 다룸)
-- 투자/재테크 조언 (→ 재물운에서 다룸)
-- 건강 관리 조언 (→ 건강운에서 다룸)
-- 일반적인 성격 분석 (→ 일간/성격에서 다룸)
-순수하게 인간관계에만 집중하세요.`,
-      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
-**This section is for 'Relationship Analysis' only.**
-✅ Topics to cover: Romance patterns, marriage fortune, family relationships, friendships
-❌ DO NOT cover:
-- Career/job advice (→ covered in Career section)
-- Investment/financial advice (→ covered in Wealth section)
-- Health management (→ covered in Health section)
-- General personality analysis (→ covered in Day Master/Personality section)
-Focus purely on relationships and interpersonal connections.`
+      ko: `\n\n## 📋 콘텐츠 역할 지침 (필수 준수)
+
+### 🏷️ 이 탭의 역할: "나의 관계운 심층 해석" (종합 분석)
+**목적**: 사주 구성이 **대인관계/연애/결혼에서 구체적으로 어떻게 작용하는지** 콜드 리딩 + 현재 트렌드로 해석
+
+### ✅ 다뤄야 할 주제 (HOW/WHEN - 관계 구체적 적용)
+- 이 분의 **연애/결혼 패턴** (어떤 타입에게 끌리는지, 관계 스타일)
+- "연애나 인간관계에서 ~한 경험이 있으셨을 거예요" 형태의 공감
+- 배우자운, 이성운의 구체적 특징
+- 대운/세운에 따른 **연애/결혼 타이밍** 조언
+- ${new Date().getFullYear()}년 현재 MZ세대 연애 트렌드 반영
+
+### ❌ 다루지 말 것
+- 직업/커리어 조언 → [직업운] 탭에서
+- 투자/재테크 조언 → [재물운] 탭에서
+- 건강 관리 조언 → [건강운] 탭에서
+- 기본적인 십성 설명 → [십성] 탭에서 이미 다룸
+
+### 💡 응답 스타일 (콜드 리딩 + 그라운딩)
+"아마 연애에서 ~한 경향이 있으셨을 거예요" + "요즘 ${new Date().getFullYear()}년 연애 트렌드를 보면..."`,
+      en: `\n\n## 📋 Content Role Instructions (MUST FOLLOW)
+
+### 🏷️ This Tab's Role: "Deep Relationship Fortune Interpretation" (Comprehensive Analysis)
+**Purpose**: Interpret HOW the Saju composition **specifically affects relationships/romance/marriage** using cold reading + current trends
+
+### ✅ Topics to Cover (HOW/WHEN - Relationship Specific Application)
+- This person's **romance/marriage patterns** (what types they're attracted to, relationship style)
+- Empathetic expressions like "You've probably experienced... in relationships"
+- Specific characteristics of spouse fortune, attraction patterns
+- **Romance/marriage timing** advice based on Major/Annual fortune
+- Reflecting ${new Date().getFullYear()} current dating trends
+
+### ❌ DO NOT Cover
+- Career/job advice → [Career] tab
+- Investment/financial advice → [Wealth] tab
+- Health management advice → [Health] tab
+- Basic Ten Gods explanation → Already covered in [Ten Gods] tab
+
+### 💡 Response Style (Cold Reading + Grounding)
+"You've probably had a tendency to... in relationships" + "Looking at ${new Date().getFullYear()} dating trends..."`
     },
     health: {
-      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
-**이 섹션은 '건강운 분석'입니다.**
-✅ 다뤄야 할 주제: 오행별 건강 취약점, 주의해야 할 신체 부위, 건강 관리 방향
-❌ 절대 다루지 말 것:
-- 직업/커리어 조언 (→ 직업운에서 다룸)
-- 투자/재테크 조언 (→ 재물운에서 다룸)
-- 연애/결혼 관련 (→ 관계운에서 다룸)
-- 일반적인 성격 분석 (→ 일간/성격에서 다룸)
-순수하게 건강에만 집중하세요.`,
-      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
-**This section is for 'Health Analysis' only.**
-✅ Topics to cover: Health vulnerabilities by Five Elements, body areas to watch, health management directions
-❌ DO NOT cover:
-- Career/job advice (→ covered in Career section)
-- Investment/financial advice (→ covered in Wealth section)
-- Romance/marriage topics (→ covered in Relationship section)
-- General personality analysis (→ covered in Day Master/Personality section)
-Focus purely on health and wellness.`
+      ko: `\n\n## 📋 콘텐츠 역할 지침 (필수 준수)
+
+### 🏷️ 이 탭의 역할: "나의 건강운 심층 해석" (종합 분석)
+**목적**: 사주 구성이 **건강에서 구체적으로 어떻게 작용하는지** 콜드 리딩 + 현대 의학 관점으로 해석
+
+### ✅ 다뤄야 할 주제 (HOW/WHEN - 건강 구체적 적용)
+- 오행 밸런스에 따른 **구체적인 취약 신체 부위**
+- "건강 면에서 ~한 경험이 있으셨을 거예요" 형태의 공감
+- 계절별/시기별 건강 관리 포인트
+- 대운/세운에 따른 **건강 주의 시기** 조언
+- ${new Date().getFullYear()}년 현재 건강 트렌드 반영 (스트레스 관리, 멘탈 케어 등)
+
+### ❌ 다루지 말 것
+- 직업/커리어 조언 → [직업운] 탭에서
+- 투자/재테크 조언 → [재물운] 탭에서
+- 연애/결혼 조언 → [관계운] 탭에서
+- 기본적인 오행 설명 → [일간] 탭에서 이미 다룸
+
+### 💡 응답 스타일 (콜드 리딩 + 그라운딩)
+"아마 건강 면에서 ~한 경향이 있으셨을 거예요" + "요즘 ${new Date().getFullYear()}년 건강 관리 트렌드를 보면..."`,
+      en: `\n\n## 📋 Content Role Instructions (MUST FOLLOW)
+
+### 🏷️ This Tab's Role: "Deep Health Fortune Interpretation" (Comprehensive Analysis)
+**Purpose**: Interpret HOW the Saju composition **specifically affects health** using cold reading + modern health perspectives
+
+### ✅ Topics to Cover (HOW/WHEN - Health Specific Application)
+- **Specific vulnerable body areas** based on Five Elements balance
+- Empathetic expressions like "You've probably experienced... health-wise"
+- Health management points by season/timing
+- **Health caution periods** advice based on Major/Annual fortune
+- Reflecting ${new Date().getFullYear()} current health trends (stress management, mental care, etc.)
+
+### ❌ DO NOT Cover
+- Career/job advice → [Career] tab
+- Investment/financial advice → [Wealth] tab
+- Romance/marriage advice → [Relationship] tab
+- Basic Five Elements explanation → Already covered in [Day Master] tab
+
+### 💡 Response Style (Cold Reading + Grounding)
+"You've probably had a tendency to... health-wise" + "Looking at ${new Date().getFullYear()} health trends..."`
     },
     fortune: {
-      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
-**이 섹션은 '운세 흐름 분석'입니다.**
-✅ 다뤄야 할 주제: 대운 흐름, 연운/월운, 시기별 기운의 변화, 행운의 타이밍
-❌ 절대 다루지 말 것:
-- 구체적인 직업 추천 (→ 직업운에서 다룸)
-- 구체적인 투자 방법 (→ 재물운에서 다룸)
-- 구체적인 연애 조언 (→ 관계운에서 다룸)
-- 구체적인 건강 조언 (→ 건강운에서 다룸)
-시간 흐름에 따른 운의 변화에만 집중하세요.`,
-      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
-**This section is for 'Fortune Flow Analysis' only.**
-✅ Topics to cover: Major fortune periods, yearly/monthly fortune, timing changes, lucky periods
-❌ DO NOT cover:
-- Specific job recommendations (→ covered in Career section)
-- Specific investment methods (→ covered in Wealth section)
-- Specific romance advice (→ covered in Relationship section)
-- Specific health advice (→ covered in Health section)
-Focus only on the flow of fortune over time.`
+      ko: `\n\n## 📋 콘텐츠 역할 지침 (필수 준수)
+
+### 🏷️ 이 탭의 역할: "나의 인생 타임라인 파악하기"
+**목적**: 대운/세운/월운이 무엇인지, 운의 흐름 구조를 **타임라인 스토리텔링**으로 설명
+
+### ✅ 다뤄야 할 주제 (WHAT/WHY)
+- 대운(大運)이란? 10년 단위의 큰 파도 개념
+- 세운(歲運)이란? 1년 단위의 중간 파도 개념
+- 월운(月運)이란? 1달 단위의 작은 파도 개념
+- 이 분의 현재 위치: "지금 몇 번째 대운에 있는지" 시각화
+- 순행/역행 운의 흐름 방향 설명
+
+### ❌ 절대 다루지 말 것 (HOW/WHEN의 구체적 조언은 종합 탭에서)
+- 구체적인 직업 타이밍 조언 → "직업운의 구체적 시기는 [직업운] 탭에서"
+- 구체적인 투자 타이밍 조언 → "재물운의 구체적 시기는 [재물운] 탭에서"
+- 구체적인 연애 타이밍 조언 → "관계운의 구체적 시기는 [관계운] 탭에서"
+- 구체적인 건강 타이밍 조언 → "건강운의 구체적 시기는 [건강운] 탭에서"
+
+### 🔗 마무리 안내 (필수)
+"각 영역별 **구체적인 운세 활용법**이 궁금하시다면, [직업운], [재물운], [관계운], [건강운] 탭에서 시기별 조언을 확인하세요."`,
+      en: `\n\n## 📋 Content Role Instructions (MUST FOLLOW)
+
+### 🏷️ This Tab's Role: "Map Your Life Timeline"
+**Purpose**: Explain WHAT Major/Annual/Monthly fortune are and HOW the fortune flow structure works through **timeline storytelling**
+
+### ✅ Topics to Cover (WHAT/WHY)
+- What is Major Fortune (大運)? Big waves in 10-year cycles
+- What is Annual Fortune (歲運)? Medium waves in yearly cycles
+- What is Monthly Fortune (月運)? Small waves in monthly cycles
+- This person's current position: "Which Major Fortune period are you in?" visualization
+- Forward/backward fortune flow direction explanation
+
+### ❌ DO NOT Cover (Specific HOW/WHEN advice belongs to comprehensive tabs)
+- Specific career timing advice → "Detailed career timing in [Career] tab"
+- Specific investment timing advice → "Detailed wealth timing in [Wealth] tab"
+- Specific romance timing advice → "Detailed relationship timing in [Relationship] tab"
+- Specific health timing advice → "Detailed health timing in [Health] tab"
+
+### 🔗 Closing Guide (Required)
+"Curious about **specific fortune utilization** in each area? Check [Career], [Wealth], [Relationship], and [Health] tabs for timing-based advice."`
     },
     tenGods: {
-      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
-**이 섹션은 '십성(十星) 상세 분석'입니다.**
-✅ 다뤄야 할 주제: 십성 구성 분석, 각 십성의 의미, 십성 간 상호작용
-❌ 절대 다루지 말 것:
-- 구체적인 직업 추천 (→ 직업운에서 다룸)
-- 구체적인 투자 조언 (→ 재물운에서 다룸)
-- 구체적인 연애 시기 (→ 관계운에서 다룸)
-- 구체적인 건강 조언 (→ 건강운에서 다룸)
-십성의 구조와 의미에만 집중하세요.`,
-      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
-**This section is for 'Ten Gods Analysis' only.**
-✅ Topics to cover: Ten Gods composition, meaning of each Ten God, interactions between Ten Gods
-❌ DO NOT cover:
-- Specific job recommendations (→ covered in Career section)
-- Specific investment advice (→ covered in Wealth section)
-- Specific romance timing (→ covered in Relationship section)
-- Specific health advice (→ covered in Health section)
-Focus only on the structure and meaning of Ten Gods.`
+      ko: `\n\n## 📋 콘텐츠 역할 지침 (필수 준수)
+
+### 🏷️ 이 탭의 역할: "나의 에너지 지도 탐험하기"
+**목적**: 십성이 무엇인지, 나의 에너지 분포가 어떤지 **탐험형 스토리텔링**으로 설명
+
+### ✅ 다뤄야 할 주제 (WHAT/WHY)
+- 10가지 십성의 의미와 역할 소개
+- 이 분의 사주에 어떤 십성이 강하고 약한지 분포 분석
+- "당신에게 풍부한 에너지 vs 보완이 필요한 에너지" 발견
+- 십성 간 상호작용과 밸런스 설명
+
+### ❌ 절대 다루지 말 것 (HOW/WHEN은 종합 탭에서)
+- 구체적인 직업 추천 → "이 에너지가 직업에서 어떻게 발휘되는지는 [직업운] 탭에서"
+- 구체적인 재물 조언 → "재물 에너지 활용법은 [재물운] 탭에서"
+- 구체적인 연애 조언 → "관계 에너지 활용법은 [관계운] 탭에서"
+- 구체적인 건강 조언 → "에너지 밸런스와 건강은 [건강운] 탭에서"
+
+### 🔗 마무리 안내 (필수)
+"이 에너지들이 **실제 삶에서 어떻게 작용하는지** 궁금하시다면, [성격], [직업운], [관계운] 탭에서 더 깊이 알아보세요."`,
+      en: `\n\n## 📋 Content Role Instructions (MUST FOLLOW)
+
+### 🏷️ This Tab's Role: "Explore Your Energy Map"
+**Purpose**: Explain WHAT Ten Gods are and HOW your energy is distributed through **exploration storytelling**
+
+### ✅ Topics to Cover (WHAT/WHY)
+- Introduction to the meaning and role of all 10 Ten Gods
+- Analysis of which Ten Gods are strong or weak in this person's chart
+- "Your abundant energies vs energies that need supplementing" discovery
+- Explanation of Ten Gods interactions and balance
+
+### ❌ DO NOT Cover (HOW/WHEN belong to comprehensive tabs)
+- Specific career recommendations → "See how this energy manifests at work in [Career] tab"
+- Specific wealth advice → "See wealth energy utilization in [Wealth] tab"
+- Specific romance advice → "See relationship energy utilization in [Relationship] tab"
+- Specific health advice → "See energy balance and health in [Health] tab"
+
+### 🔗 Closing Guide (Required)
+"Curious how these energies **work in real life**? Explore deeper in [Personality], [Career], and [Relationship] tabs."`
     },
     stars: {
-      ko: `\n\n## 🚫 콘텐츠 경계 지침 (필수 준수)
-**이 섹션은 '신살(神煞) 상세 분석'입니다.**
-✅ 다뤄야 할 주제: 주요 신살 해석, 신살의 영향력, 신살 활용법
-❌ 절대 다루지 말 것:
-- 구체적인 직업 추천 (→ 직업운에서 다룸)
-- 구체적인 투자 조언 (→ 재물운에서 다룸)
-- 구체적인 연애 조언 (→ 관계운에서 다룸)
-- 구체적인 건강 조언 (→ 건강운에서 다룸)
-신살의 의미와 영향에만 집중하세요.`,
-      en: `\n\n## 🚫 Content Boundary Instructions (MUST FOLLOW)
-**This section is for 'Special Stars Analysis' only.**
-✅ Topics to cover: Major star interpretations, influence of stars, how to utilize stars
-❌ DO NOT cover:
-- Specific job recommendations (→ covered in Career section)
-- Specific investment advice (→ covered in Wealth section)
-- Specific romance advice (→ covered in Relationship section)
-- Specific health advice (→ covered in Health section)
-Focus only on the meaning and influence of special stars.`
+      ko: `\n\n## 📋 콘텐츠 역할 지침 (필수 준수)
+
+### 🏷️ 이 탭의 역할: "나의 특수 카드 컬렉션 발견하기"
+**목적**: 신살이 무엇인지, 내가 어떤 특수 카드를 가졌는지 **게임형 스토리텔링**으로 설명
+
+### ✅ 다뤄야 할 주제 (WHAT/WHY)
+- 신살이란 무엇인가? (사주의 특수 별자리/카드)
+- 이 분이 가진 신살들의 종류와 의미
+- 🌟 길신(행운 카드) vs ⚠️ 흉신(주의 카드) vs 🔮 중성(상황 카드) 분류
+- "당신의 덱 구성"을 보여주는 카드 컬렉션 개념
+
+### ❌ 절대 다루지 말 것 (HOW/WHEN은 종합 탭에서)
+- 구체적인 직업 추천 → "이 카드가 커리어에 미치는 영향은 [직업운] 탭에서"
+- 구체적인 재물 조언 → "재물 관련 카드 활용법은 [재물운] 탭에서"
+- 구체적인 연애 조언 → "연애 관련 카드 활용법은 [관계운] 탭에서"
+- 구체적인 건강 조언 → "건강 관련 카드 활용법은 [건강운] 탭에서"
+
+### 🔗 마무리 안내 (필수)
+"이 특수 카드들이 **실제 삶에서 어떻게 발동하는지** 궁금하시다면, 각 종합 분석 탭에서 자세히 알아보세요."`,
+      en: `\n\n## 📋 Content Role Instructions (MUST FOLLOW)
+
+### 🏷️ This Tab's Role: "Discover Your Special Card Collection"
+**Purpose**: Explain WHAT Special Stars are and WHICH special cards you have through **gamified storytelling**
+
+### ✅ Topics to Cover (WHAT/WHY)
+- What are Special Stars? (Special celestial markers/cards in Saju)
+- Types and meanings of stars this person has
+- 🌟 Lucky cards vs ⚠️ Caution cards vs 🔮 Neutral cards classification
+- "Your deck composition" as a card collection concept
+
+### ❌ DO NOT Cover (HOW/WHEN belong to comprehensive tabs)
+- Specific career recommendations → "See how these cards affect career in [Career] tab"
+- Specific wealth advice → "See wealth card utilization in [Wealth] tab"
+- Specific romance advice → "See romance card utilization in [Relationship] tab"
+- Specific health advice → "See health card utilization in [Health] tab"
+
+### 🔗 Closing Guide (Required)
+"Curious how these special cards **activate in real life**? Explore each comprehensive analysis tab for details."`
     }
   };
 
@@ -314,10 +506,38 @@ export async function POST(request: NextRequest) {
       ? `다음은 ${genderText}의 사주 정보입니다:\n\n${sajuContext}\n\n${getDetailPrompt(locale, category as DetailCategory)}${dateContext}`
       : `The following is the birth chart information for a ${genderText}:\n\n${sajuContext}\n\n${getDetailPrompt(locale, category as DetailCategory)}${dateContext}`;
 
-    // 초개인화 컨텍스트 추가 (Cold Reading 스타일 필수 적용)
+    // 🆕 v1.3: 기본 분석 vs 종합 분석 구분
+    const isBasicAnalysis = isBasicCategory(category);
+
+    // 컨텍스트 추가 (기본 분석: 교육적 설명 / 종합 분석: Cold Reading 스타일)
     if (personalizedContext) {
-      if (locale === 'ko') {
-        prompt += `\n\n## 🎯 초개인화 컨텍스트 (반드시 활용할 것!)
+      if (isBasicAnalysis) {
+        // 🆕 기본 분석 카테고리: 교육적 설명 컨텍스트 (Cold Reading 아님)
+        if (locale === 'ko') {
+          prompt += `\n\n## 📚 사주 구성 설명 컨텍스트
+
+${personalizedContext}
+
+---
+위 내용을 바탕으로 **교육적으로** 이 분의 사주 구성을 설명해주세요.
+- "~이란 무엇인가", "이 분의 ~은/는..." 형식으로 설명
+- 개인화된 조언(직업, 재물, 연애 등)은 종합 분석 탭에서 다루므로 여기서는 제외
+- 순수하게 사주 구성 요소의 의미와 특성에 집중`;
+        } else {
+          prompt += `\n\n## 📚 Saju Composition Explanation Context
+
+${personalizedContext}
+
+---
+Based on the above, please provide an **educational** explanation of this person's Saju composition.
+- Use format: "What is...?", "This person's ... is/has..."
+- Personalized advice (career, wealth, romance) is covered in comprehensive tabs, so exclude here
+- Focus purely on the meaning and characteristics of the Saju components`;
+        }
+      } else {
+        // 종합 분석 카테고리: Cold Reading 스타일 유지
+        if (locale === 'ko') {
+          prompt += `\n\n## 🎯 초개인화 컨텍스트 (반드시 활용할 것!)
 
 아래 내용은 이 분의 사주를 바탕으로 추론한 삶의 경험입니다.
 **반드시** 아래 내용을 활용하여 "~하셨던 적이 있으시죠?", "~하셨을 거예요" 식으로 공감하며 답변하세요.
@@ -326,8 +546,8 @@ ${personalizedContext}
 
 ---
 위 초개인화 컨텍스트를 기반으로 콜드 리딩 스타일로 답변해주세요.`;
-      } else {
-        prompt += `\n\n## 🎯 Hyper-Personalized Context (MUST USE!)
+        } else {
+          prompt += `\n\n## 🎯 Hyper-Personalized Context (MUST USE!)
 
 The following content is inferred life experiences based on this person's birth chart.
 **You MUST** use this content to show empathy like "You've probably experienced...", "Haven't you felt...?"
@@ -336,6 +556,7 @@ ${personalizedContext}
 
 ---
 Please respond in a cold reading style based on the above personalized context.`;
+        }
       }
     }
 

@@ -7,7 +7,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { MagnifyingGlass, User, Star, Sparkle, Calendar, Lightbulb, ChartBar, Heart, Briefcase, Coins, FirstAid, Check, Warning, ArrowRight, Palette, Hash, Compass, Sun, Lightning, Lock, LockOpen } from "@phosphor-icons/react";
+import { MagnifyingGlass, User, Star, Sparkle, Calendar, Lightbulb, ChartBar, Heart, Briefcase, Coins, FirstAid, Check, Warning, ArrowRight, Palette, Hash, Compass, Sun, Lightning, Lock, LockOpen, Info } from "@phosphor-icons/react";
 import type { SajuPipelineResult } from "@/lib/saju/pipeline-types";
 import type { SajuResult, Element, TenGod, TenGodSummary, ElementAnalysis } from "@/lib/saju/types";
 import { DetailAnalysisModal, getDetailAnalysisFromStorage } from "./DetailAnalysisModal";
@@ -145,13 +145,13 @@ function getNextCategoryInSequence(currentCategory: DetailCategory): { category:
 
 // 탭 순서: 일간 → 십성 → 신살 → 운세 → 종합 → 조언
 // 사용자가 개별 분석(일간/십성/신살/운세)을 먼저 본 후 종합을 볼 수 있도록 순서 조정
-const TABS: Array<{ id: TabType; label: string; icon: React.ReactNode }> = [
-  { id: "daymaster", label: "일간", icon: <User className="w-4 h-4" weight="fill" /> },
-  { id: "tengods", label: "십성", icon: <Star className="w-4 h-4" weight="fill" /> },
-  { id: "stars", label: "신살", icon: <Sparkle className="w-4 h-4" weight="fill" /> },
-  { id: "timing", label: "운세", icon: <Calendar className="w-4 h-4" weight="fill" /> },
-  { id: "overview", label: "종합", icon: <ChartBar className="w-4 h-4" weight="fill" /> },
-  { id: "advice", label: "조언", icon: <Lightbulb className="w-4 h-4" weight="fill" /> },
+const TABS: Array<{ id: TabType; label: string; icon: React.ReactNode; tooltip: string }> = [
+  { id: "daymaster", label: "일간", icon: <User className="w-4 h-4" weight="fill" />, tooltip: "타고난 기질과 성격의 핵심" },
+  { id: "tengods", label: "십성", icon: <Star className="w-4 h-4" weight="fill" />, tooltip: "주변과의 관계와 사회적 역할" },
+  { id: "stars", label: "신살", icon: <Sparkle className="w-4 h-4" weight="fill" />, tooltip: "특별한 별의 길흉 영향" },
+  { id: "timing", label: "운세", icon: <Calendar className="w-4 h-4" weight="fill" />, tooltip: "대운·세운으로 보는 시간의 흐름" },
+  { id: "overview", label: "종합", icon: <ChartBar className="w-4 h-4" weight="fill" />, tooltip: "영역별 종합 점수와 인사이트" },
+  { id: "advice", label: "조언", icon: <Lightbulb className="w-4 h-4" weight="fill" />, tooltip: "실천 가능한 맞춤 조언" },
 ];
 
 // 종합탭 상세보기 잠금 해제를 위한 필수 상세분석 카테고리
@@ -174,6 +174,20 @@ function DetailButton({ onClick, label }: { onClick: () => void; label: string }
 export default function PipelineResult({ result, gender = "male", birthInfo, onTabChange }: PipelineResultProps) {
   // 기본 탭을 "daymaster"로 설정 (일간부터 시작하여 순차적으로 진행)
   const [activeTab, setActiveTab] = useState<TabType>("daymaster");
+  // 타이틀 옆 info 버튼 툴팁 표시 상태 (표시할 탭 ID, null이면 숨김)
+  const [showInfoTooltip, setShowInfoTooltip] = useState<TabType | null>(null);
+
+  // 인포 툴팁 표시 함수 (1.5초 후 자동 숨김)
+  const handleInfoClick = (tabId: TabType) => {
+    setShowInfoTooltip(tabId);
+    setTimeout(() => setShowInfoTooltip(null), 1500);
+  };
+
+  // 탭 ID로 툴팁 텍스트 가져오기
+  const getTooltipText = (tabId: TabType): string => {
+    const tab = TABS.find(t => t.id === tabId);
+    return tab?.tooltip || "";
+  };
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     category: DetailCategory;
@@ -399,7 +413,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
         </div>
 
         {/* 탭과 콘텐츠 사이 간격 */}
-        <div className="h-3 sm:h-4" />
+        <div className="h-2 sm:h-4" />
 
         {/* 탭 컨텐츠 */}
         <div className="bg-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/10">
@@ -408,9 +422,21 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
             <div className="space-y-4 sm:space-y-6">
               {/* 오늘의 운세 상세 */}
               <div className="bg-gradient-to-br from-[#a855f7]/20 to-[#9333ea]/10 rounded-xl p-4 sm:p-5 border border-[#a855f7]/30">
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-3 relative">
                   <Sparkle className="w-5 h-5 text-[#a855f7]" weight="fill" />
                   <h3 className="text-base sm:text-lg font-semibold text-white">오늘의 운세</h3>
+                  <button
+                    onClick={() => handleInfoClick("overview")}
+                    className="w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                    aria-label="종합 분석 설명"
+                  >
+                    <Info className="w-3 h-3 text-white/60" />
+                  </button>
+                  {showInfoTooltip === "overview" && (
+                    <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                      {getTooltipText("overview")}
+                    </div>
+                  )}
                   <span className="text-xs text-white/50">{new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" })}</span>
                 </div>
                 <p className="text-sm sm:text-base text-white/90 leading-relaxed mb-4">{step6.summary}</p>
@@ -571,7 +597,21 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
           {/* 일간 탭 */}
           {activeTab === "daymaster" && (
             <div className="space-y-4 sm:space-y-6">
-              <h3 className="text-base sm:text-lg font-semibold text-white">일간 분석</h3>
+              <div className="flex items-center gap-2 relative">
+                <h3 className="text-base sm:text-lg font-semibold text-white">일간 분석</h3>
+                <button
+                  onClick={() => handleInfoClick("daymaster")}
+                  className="w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  aria-label="일간 분석 설명"
+                >
+                  <Info className="w-3 h-3 text-white/60" />
+                </button>
+                {showInfoTooltip === "daymaster" && (
+                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                    {getTooltipText("daymaster")}
+                  </div>
+                )}
+              </div>
 
               <div className="text-center p-4 sm:p-6 bg-[#a855f7]/10 rounded-lg sm:rounded-xl border border-[#a855f7]/30">
                 <p className="text-3xl sm:text-5xl mb-1 sm:mb-2">{step2.dayMaster}</p>
@@ -632,7 +672,21 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
           {/* 십성 탭 */}
           {activeTab === "tengods" && (
             <div className="space-y-4 sm:space-y-6">
-              <h3 className="text-base sm:text-lg font-semibold text-white">십성 분석</h3>
+              <div className="flex items-center gap-2 relative">
+                <h3 className="text-base sm:text-lg font-semibold text-white">십성 분석</h3>
+                <button
+                  onClick={() => handleInfoClick("tengods")}
+                  className="w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  aria-label="십성 분석 설명"
+                >
+                  <Info className="w-3 h-3 text-white/60" />
+                </button>
+                {showInfoTooltip === "tengods" && (
+                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                    {getTooltipText("tengods")}
+                  </div>
+                )}
+              </div>
 
               <div className="text-center p-3 sm:p-4 bg-[#a855f7]/10 rounded-lg sm:rounded-xl border border-[#a855f7]/30">
                 <p className="text-xs sm:text-sm text-white/60">격국</p>
@@ -710,7 +764,21 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
           {/* 신살 탭 */}
           {activeTab === "stars" && (
             <div className="space-y-4 sm:space-y-6">
-              <h3 className="text-base sm:text-lg font-semibold text-white">신살 분석</h3>
+              <div className="flex items-center gap-2 relative">
+                <h3 className="text-base sm:text-lg font-semibold text-white">신살 분석</h3>
+                <button
+                  onClick={() => handleInfoClick("stars")}
+                  className="w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  aria-label="신살 분석 설명"
+                >
+                  <Info className="w-3 h-3 text-white/60" />
+                </button>
+                {showInfoTooltip === "stars" && (
+                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                    {getTooltipText("stars")}
+                  </div>
+                )}
+              </div>
 
               <p className="text-xs sm:text-sm text-white/60">{step4.overallStarInfluence}</p>
 
@@ -772,7 +840,21 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
           {/* 운세 탭 */}
           {activeTab === "timing" && (
             <div className="space-y-4 sm:space-y-6">
-              <h3 className="text-base sm:text-lg font-semibold text-white">대운/세운 분석</h3>
+              <div className="flex items-center gap-2 relative">
+                <h3 className="text-base sm:text-lg font-semibold text-white">대운/세운 분석</h3>
+                <button
+                  onClick={() => handleInfoClick("timing")}
+                  className="w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  aria-label="운세 분석 설명"
+                >
+                  <Info className="w-3 h-3 text-white/60" />
+                </button>
+                {showInfoTooltip === "timing" && (
+                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                    {getTooltipText("timing")}
+                  </div>
+                )}
+              </div>
 
               {/* 현재 대운 */}
               <div className="p-3 sm:p-4 bg-[#3b82f6]/10 rounded-lg sm:rounded-xl border border-[#3b82f6]/30">
@@ -841,6 +923,22 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
           {/* 조언 탭 */}
           {activeTab === "advice" && (
             <div className="space-y-4 sm:space-y-6">
+              <div className="flex items-center gap-2 relative">
+                <h3 className="text-base sm:text-lg font-semibold text-white">맞춤 조언</h3>
+                <button
+                  onClick={() => handleInfoClick("advice")}
+                  className="w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  aria-label="조언 설명"
+                >
+                  <Info className="w-3 h-3 text-white/60" />
+                </button>
+                {showInfoTooltip === "advice" && (
+                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                    {getTooltipText("advice")}
+                  </div>
+                )}
+              </div>
+
               {/* 즉시 실천 */}
               <div className="p-3 sm:p-4 bg-[#a855f7]/10 rounded-lg sm:rounded-xl border border-[#a855f7]/30">
                 <h4 className="font-medium text-sm sm:text-base text-[#a855f7] mb-2 sm:mb-3 flex items-center gap-2">

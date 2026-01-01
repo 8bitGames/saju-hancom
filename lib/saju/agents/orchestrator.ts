@@ -122,9 +122,29 @@ function generateLifeExperienceInferences(
   if (locale === "ko") {
     // 🆕 카테고리별 분기 - 각 카테고리는 해당 주제에 맞는 경험만 생성
     switch (category) {
-      case "personality":
       case "dayMaster":
-        // 성격/일간 분석: 성격 형성에 영향을 준 경험들
+        // 일간 분석: 일간 오행의 본질적 기운에서 비롯된 경험들
+        const dayMasterElement = chart.dayMaster.element;
+        if (dayMasterElement === "water") {
+          inferences.push("어릴 때부터 생각이 깊고 눈치가 빠르셨을 겁니다. 남들이 모르는 것도 먼저 알아채셨던 적이 많으시죠.");
+          inferences.push("유연하게 상황에 적응하시면서도, 마음속에는 흔들리지 않는 신념이 있으셨을 겁니다.");
+        } else if (dayMasterElement === "wood") {
+          inferences.push("어릴 때부터 성장하고 발전하려는 욕구가 강하셨을 겁니다. 새로운 것을 배우고 시작하는 것을 좋아하셨죠.");
+          inferences.push("곧은 성격 때문에 가끔 주변과 충돌하셨던 적이 있으셨을 겁니다. 하지만 그게 당신의 장점이기도 해요.");
+        } else if (dayMasterElement === "fire") {
+          inferences.push("어릴 때부터 밝고 열정적이셨을 겁니다. 주변 사람들에게 에너지를 주는 존재셨죠.");
+          inferences.push("급한 성격 때문에 때로는 후회하셨던 적도 있으셨을 겁니다. 하지만 그 열정이 많은 것을 이루게 해드렸어요.");
+        } else if (dayMasterElement === "earth") {
+          inferences.push("어릴 때부터 신뢰감을 주는 분이셨을 겁니다. 주변에서 믿고 의지했던 경험이 많으시죠.");
+          inferences.push("변화보다는 안정을 추구하시면서, 묵묵히 자신의 자리를 지켜오셨을 겁니다.");
+        } else if (dayMasterElement === "metal") {
+          inferences.push("어릴 때부터 결단력이 있고 원칙을 중요시하셨을 겁니다. '이건 아니다' 싶으면 타협하지 않으셨죠.");
+          inferences.push("정의감이 강해서 불의를 보면 참지 못하셨던 적이 있으셨을 겁니다.");
+        }
+        break;
+
+      case "personality":
+        // 성격/적성 분석: 십성과 신살에서 비롯된 성격 특성 경험들
         if (starNames.some(n => n.includes("화개"))) {
           inferences.push("어릴 때부터 혼자만의 시간을 중요하게 여기셨을 겁니다. 사람들과 어울리면서도 마음 한켠에는 '나만의 세계'가 따로 있으셨죠.");
         }
@@ -133,6 +153,9 @@ function generateLifeExperienceInferences(
         }
         if (dominantTenGods.includes("siksin") || dominantTenGods.includes("sanggwan")) {
           inferences.push("어릴 때부터 표현력이 남달랐거나, 뭔가 만들고 창작하는 것을 좋아하셨을 겁니다.");
+        }
+        if (dominantTenGods.includes("bijian") || dominantTenGods.includes("gebjae")) {
+          inferences.push("어릴 때부터 독립심이 강하고 주관이 뚜렷하셨을 겁니다. 남에게 지기 싫어하셨던 기억이 있으시죠.");
         }
         break;
 
@@ -281,14 +304,40 @@ function generatePastEventInferences(
   if (locale === "ko") {
     // 🆕 카테고리별 분기 - 각 카테고리에 맞는 과거 사건만 생성
     switch (category) {
-      case "personality":
       case "dayMaster":
-        // 성격/일간: 성격 형성에 영향을 준 과거 사건
+        // 일간: 일간 오행 기운으로 인한 과거 사건
+        const dayMasterElement = chart.dayMaster.element;
+        if (dayMasterElement === "water") {
+          events.push("생각이 너무 많아서 결정을 미루다 기회를 놓치셨던 적이 있으셨을 겁니다.");
+          events.push("상황을 너무 잘 파악해서 오히려 걱정이 많으셨던 시기가 있으셨죠.");
+        } else if (dayMasterElement === "wood") {
+          events.push("너무 앞서 나가다가 주변과 마찰이 있으셨던 적이 있으셨을 겁니다.");
+          events.push("성장을 위해 도전했다가 실패를 경험하셨던 적이 있으셨죠. 하지만 그 경험이 지금의 자산이 됐어요.");
+        } else if (dayMasterElement === "fire") {
+          events.push("감정적으로 대응했다가 후회하셨던 적이 있으셨을 겁니다.");
+          events.push("열정이 앞서서 무리하셨던 시기가 있으셨죠.");
+        } else if (dayMasterElement === "earth") {
+          events.push("변화를 거부하다가 기회를 놓치셨던 적이 있으셨을 겁니다.");
+          events.push("남들 챙기느라 정작 본인은 뒷전이었던 시기가 있으셨죠.");
+        } else if (dayMasterElement === "metal") {
+          events.push("원칙을 고수하다가 관계에서 어려움을 겪으셨던 적이 있으셨을 겁니다.");
+          events.push("결단을 내렸지만 그 결단이 무거웠던 시기가 있으셨죠.");
+        }
+        break;
+
+      case "personality":
+        // 성격/적성: 성격 형성에 영향을 준 과거 사건
         if (starNames.some(n => n.includes("화개"))) {
           events.push("깊이 고민하고 방황했던 시기가 있으셨을 겁니다. '나는 왜 이렇게 다른가' 하는 생각을 하셨던 적이 있으시죠.");
         }
         if (dominantTenGods.includes("jeonggwan") || dominantTenGods.includes("pyeongwan")) {
           events.push("책임감 때문에 하고 싶은 것을 포기하셨던 적이 있으셨을 겁니다.");
+        }
+        if (dominantTenGods.includes("siksin") || dominantTenGods.includes("sanggwan")) {
+          events.push("하고 싶은 말을 참다가 터졌던 적이 있으셨을 겁니다. 그때 주변에서 놀랐을 수도 있어요.");
+        }
+        if (dominantTenGods.includes("bijian") || dominantTenGods.includes("gebjae")) {
+          events.push("경쟁에서 이기려다 무리했던 적이 있으셨을 겁니다. 승부욕이 강하신 분이시니까요.");
         }
         break;
 
@@ -436,9 +485,29 @@ function generateFutureDirectionAdvice(
   if (locale === "ko") {
     // 🆕 카테고리별 분기 - 각 카테고리에 맞는 미래 방향만 생성
     switch (category) {
-      case "personality":
       case "dayMaster":
-        // 성격/일간: 성격 발전 조언만
+        // 🆕 일간: 일간 오행 기반 발전 방향 조언
+        const dayMasterElement = chart.dayMaster.element;
+        if (dayMasterElement === "water") {
+          advice.push("물의 유연함을 살려 다양한 분야에서 기회를 모색하세요. 한 곳에 고정되기보다 흐름에 맡기시면 좋은 방향으로 흘러가실 겁니다.");
+          advice.push("지혜로운 판단력을 살려 조언자나 상담가 역할에서 빛을 발하실 수 있습니다.");
+        } else if (dayMasterElement === "wood") {
+          advice.push("성장을 향한 에너지를 긍정적으로 발휘하세요. 새로운 것을 시작하는 데 두려움 없이 나아가시면 됩니다.");
+          advice.push("앞으로 나아가되, 뿌리를 단단히 하는 것도 잊지 마세요. 기반이 튼튼해야 큰 나무로 성장합니다.");
+        } else if (dayMasterElement === "fire") {
+          advice.push("열정을 분산시키지 말고 하나에 집중하세요. 불꽃처럼 강렬하되, 지속가능한 방향으로 태우셔야 합니다.");
+          advice.push("밝은 에너지로 주변을 이끄는 역할이 맞으시니, 리더십을 발휘할 기회를 찾아보세요.");
+        } else if (dayMasterElement === "earth") {
+          advice.push("신뢰를 바탕으로 한 관계에서 기회가 올 겁니다. 조급해하지 마시고 차근차근 쌓아가세요.");
+          advice.push("중심을 잡는 역할에서 빛을 발하실 분이니, 조정자나 중재자 역할을 해보세요.");
+        } else if (dayMasterElement === "metal") {
+          advice.push("결단력을 발휘할 때입니다. 깔끔하게 정리하고 새롭게 시작하는 것이 도움이 될 겁니다.");
+          advice.push("원칙을 세우되 유연함도 갖추세요. 금이 너무 단단하면 부러지듯, 적당한 유연함이 필요합니다.");
+        }
+        break;
+
+      case "personality":
+        // 🆕 성격/적성: 십성과 신살 기반 성격 발전 조언
         if (dominantTenGods.includes("jeonggwan") || dominantTenGods.includes("pyeongwan")) {
           advice.push("책임감이 강하신 분이니, 이제는 자신을 위한 시간도 챙기세요. 남을 위해 희생만 하다 보면 지치실 수 있습니다.");
         }
@@ -447,6 +516,12 @@ function generateFutureDirectionAdvice(
         }
         if (dominantTenGods.includes("jeongin") || dominantTenGods.includes("pyeonin")) {
           advice.push("학습과 자기계발을 꾸준히 하시면 좋겠습니다. 전문성을 쌓아가시면 나중에 큰 자산이 될 거예요.");
+        }
+        if (dominantTenGods.includes("siksin") || dominantTenGods.includes("sanggwan")) {
+          advice.push("표현력을 적극 활용하세요. 생각을 글이나 말로 풀어내는 데 재능이 있으시니 블로그나 강연을 시도해보세요.");
+        }
+        if (dominantTenGods.includes("bijian") || dominantTenGods.includes("gebjae")) {
+          advice.push("독립심을 살려 자신만의 영역을 만들어가세요. 혼자서 해내는 성취감이 큰 동기가 될 겁니다.");
         }
         break;
 
@@ -765,13 +840,20 @@ function generateSystemPromptAddition(
   lifeExperiences: string[],
   pastEvents: string[],
   futureDirection: string[],
-  locale: "ko" | "en"
+  locale: "ko" | "en",
+  category?: DetailCategory
 ): string {
+  // 🆕 카테고리별 섹션 포함 여부 결정
+  const includeHealthAdvice = !category || category === "health";
+  const includeCareerWealthAdvice = !category || category === "career" || category === "wealth";
+  const includeFullFlowGuide = !category; // 카테고리 지정 시 플로우 가이드 간소화
+  const includeTimingAdvice = !category || ["fortune", "career", "wealth", "health"].includes(category);
+
   if (locale === "ko") {
     // 2단계: 삶의 경험 섹션 생성
     const lifeExperienceSection = lifeExperiences.length > 0
       ? `
-### 🔮 과거 삶의 경험 (2단계: 이렇게 살아오셨을 겁니다)
+### 🔮 과거 삶의 경험
 ${lifeExperiences.map(exp => `- "${exp}"`).join("\n")}
 `
       : "";
@@ -779,7 +861,7 @@ ${lifeExperiences.map(exp => `- "${exp}"`).join("\n")}
     // 3단계: 과거 사건 섹션 생성
     const pastEventSection = pastEvents.length > 0
       ? `
-### 📖 과거 사건/고난 (3단계: 이런 일들이 있으셨을 겁니다)
+### 📖 과거 사건/고난
 ${pastEvents.map(event => `- "${event}"`).join("\n")}
 `
       : "";
@@ -787,119 +869,136 @@ ${pastEvents.map(event => `- "${event}"`).join("\n")}
     // 4단계: 미래 방향 섹션 생성
     const futureDirectionSection = futureDirection.length > 0
       ? `
-### 🌟 미래 방향 (4단계: 앞으로 이렇게 나아가세요)
+### 🌟 미래 방향
 ${futureDirection.map(advice => `- "${advice}"`).join("\n")}
 `
       : "";
 
-    return `
-## 초개인화 컨텍스트
-
-### 현재 시점
-${temporal.temporalContext}
-
-### 이 분의 프로필 (1단계: 사주 특성)
-${age.ageContext}
-
-${chart.chartContext}
-${lifeExperienceSection}${pastEventSection}${futureDirectionSection}
-### 이번 상담에서 다룰 주제
-- 추천: ${recommendedTopics.slice(0, 5).join(", ")}
-- 피해야 할 것: ${avoidTopics.slice(0, 3).join(", ")}
-
+    // 🆕 카테고리별 건강 조언 섹션
+    const healthAdviceSection = includeHealthAdvice && chart.healthFlags.recommendations.length > 0
+      ? `
 ### 건강 관련 조언
 ${chart.healthFlags.recommendations.slice(0, 2).join("\n")}
+`
+      : "";
 
+    // 🆕 카테고리별 시기 조언 섹션
+    const timingAdviceSection = includeTimingAdvice && temporal.timingAdvice.length > 0
+      ? `
 ### 시기별 조언
-${temporal.timingAdvice.join("\n")}
+${temporal.timingAdvice.slice(0, 2).join("\n")}
+`
+      : "";
 
-### 🎯 대화 플로우 가이드 (매우 중요!)
-**상담 시 아래 흐름을 자연스럽게 따라가세요:**
-1. **사주 특성 설명** → "당신의 사주를 보니..."
-2. **과거 경험 공감** → "그래서 이렇게 살아오셨을 거예요... 맞으시죠?"
-3. **과거 사건 추론** → "이런 일들이 있으셨을 겁니다..."
-4. **미래 방향 제시** → "그러니까 앞으로는..."
+    // 🆕 카테고리별 직업/재물 조언 섹션
+    const careerWealthSection = includeCareerWealthAdvice
+      ? generateCareerWealthAdviceSection(chart, locale)
+      : "";
 
-**활용 팁**:
-- 위 내용을 그대로 읽지 말고, 대화 중 자연스럽게 풀어서 말하세요
-- "~하셨던 적 있으시죠?", "~하셨을 거예요" 형태의 열린 표현 사용
-- 너무 구체적인 숫자나 시점은 피하고, 공감을 이끌어내세요
-- 마치 40년 경력의 역술가처럼 이 분의 상황을 꿰뚫어 보는 듯이 조언하세요
+    // 🆕 카테고리별 대화 플로우 가이드
+    const flowGuideSection = includeFullFlowGuide
+      ? `
+### 🎯 대화 플로우 가이드
+**상담 흐름**: 사주 특성 설명 → 과거 경험 공감 → 과거 사건 추론 → 미래 방향 제시
+**팁**: "~하셨을 거예요" 형태의 열린 표현 사용, 공감을 이끌어내세요
+`
+      : "";
 
-### 중요 지침
-- 현재가 ${temporal.yearlyPillar.description}의 해임을 기억하세요
-- ${age.ageGroup}의 관심사와 고민을 고려하세요
-- 다음 주제는 피하세요: ${avoidTopics.slice(0, 3).join(", ")}
+    // 🆕 카테고리별 컨텍스트 헤더
+    const categoryHeader = category
+      ? getCategoryHeader(category, locale)
+      : "초개인화 컨텍스트";
 
-${generateCareerWealthAdviceSection(chart, locale)}
-`;
+    return `
+## ${categoryHeader}
+
+### 현재 시점
+${temporal.yearlyPillar.description}의 해, ${temporal.season}
+
+### 이 분의 프로필
+${age.ageGroup}, ${chart.dayMaster.description}
+${lifeExperienceSection}${pastEventSection}${futureDirectionSection}${healthAdviceSection}${timingAdviceSection}${flowGuideSection}${careerWealthSection}`;
   } else {
-    // 2단계: Life experience section in English
+    // English version with category filtering
     const lifeExperienceSection = lifeExperiences.length > 0
       ? `
-### 🔮 Past Life Experiences (Step 2: How You've Lived)
+### 🔮 Past Life Experiences
 ${lifeExperiences.map(exp => `- "${exp}"`).join("\n")}
 `
       : "";
 
-    // 3단계: Past events section
     const pastEventSection = pastEvents.length > 0
       ? `
-### 📖 Past Events/Challenges (Step 3: What You've Been Through)
+### 📖 Past Events/Challenges
 ${pastEvents.map(event => `- "${event}"`).join("\n")}
 `
       : "";
 
-    // 4단계: Future direction section
     const futureDirectionSection = futureDirection.length > 0
       ? `
-### 🌟 Future Direction (Step 4: How to Move Forward)
+### 🌟 Future Direction
 ${futureDirection.map(advice => `- "${advice}"`).join("\n")}
 `
       : "";
 
-    return `
-## Hyper-Personalization Context
-
-### Current Moment
-${temporal.temporalContext}
-
-### This Person's Profile (Step 1: Saju Characteristics)
-${age.ageContext}
-
-${chart.chartContext}
-${lifeExperienceSection}${pastEventSection}${futureDirectionSection}
-### Topics for This Session
-- Recommended: ${recommendedTopics.slice(0, 5).join(", ")}
-- Avoid: ${avoidTopics.slice(0, 3).join(", ")}
-
+    const healthAdviceSection = includeHealthAdvice && chart.healthFlags.recommendations.length > 0
+      ? `
 ### Health Advice
 ${chart.healthFlags.recommendations.slice(0, 2).join("\n")}
+`
+      : "";
 
+    const timingAdviceSection = includeTimingAdvice && temporal.timingAdvice.length > 0
+      ? `
 ### Timely Advice
-${temporal.timingAdvice.join("\n")}
+${temporal.timingAdvice.slice(0, 2).join("\n")}
+`
+      : "";
 
-### 🎯 Conversation Flow Guide (Very Important!)
-**Follow this natural flow during consultation:**
-1. **Explain Saju characteristics** → "Looking at your saju..."
-2. **Empathize with past experiences** → "So you've probably lived like this... right?"
-3. **Infer past events** → "You've probably been through things like..."
-4. **Present future direction** → "So going forward..."
+    const careerWealthSection = includeCareerWealthAdvice
+      ? generateCareerWealthAdviceSection(chart, locale)
+      : "";
 
-**Tips**:
-- Don't read these directly - weave them naturally into conversation
-- Use open expressions like "You've probably...", "Haven't you?"
-- Avoid specific numbers or dates, focus on creating empathy
-- Advise as if you're a fortune teller with 40 years of experience
+    const flowGuideSection = includeFullFlowGuide
+      ? `
+### 🎯 Conversation Flow Guide
+**Flow**: Explain characteristics → Empathize with past → Infer events → Present direction
+**Tips**: Use open expressions like "You've probably...", focus on creating empathy
+`
+      : "";
 
-### Important Guidelines
-- Remember this is the year of ${temporal.yearlyPillar.description}
-- Consider the interests and concerns of ${age.ageGroup}
-- Avoid these topics: ${avoidTopics.slice(0, 3).join(", ")}
+    const categoryHeader = category
+      ? getCategoryHeader(category, locale)
+      : "Hyper-Personalization Context";
 
-${generateCareerWealthAdviceSection(chart, locale)}
-`;
+    return `
+## ${categoryHeader}
+
+### Current Moment
+Year of ${temporal.yearlyPillar.description}, ${temporal.season}
+
+### This Person's Profile
+${age.ageGroup}, ${chart.dayMaster.description}
+${lifeExperienceSection}${pastEventSection}${futureDirectionSection}${healthAdviceSection}${timingAdviceSection}${flowGuideSection}${careerWealthSection}`;
   }
+}
+
+/**
+ * 🆕 카테고리별 헤더 생성
+ */
+function getCategoryHeader(category: DetailCategory, locale: "ko" | "en"): string {
+  const headers: Record<DetailCategory, { ko: string; en: string }> = {
+    dayMaster: { ko: "일간(日干) 분석 컨텍스트", en: "Day Master Analysis Context" },
+    personality: { ko: "성격/적성 분석 컨텍스트", en: "Personality Analysis Context" },
+    career: { ko: "직업/적성 분석 컨텍스트", en: "Career Analysis Context" },
+    wealth: { ko: "재물운 분석 컨텍스트", en: "Wealth Analysis Context" },
+    relationship: { ko: "대인관계 분석 컨텍스트", en: "Relationship Analysis Context" },
+    health: { ko: "건강운 분석 컨텍스트", en: "Health Analysis Context" },
+    fortune: { ko: "운세 분석 컨텍스트", en: "Fortune Analysis Context" },
+    tenGods: { ko: "십성(十星) 분석 컨텍스트", en: "Ten Gods Analysis Context" },
+    stars: { ko: "신살(神殺) 분석 컨텍스트", en: "Stars Analysis Context" },
+  };
+  return headers[category]?.[locale] || (locale === "ko" ? "분석 컨텍스트" : "Analysis Context");
 }
 
 /**
@@ -982,7 +1081,7 @@ export async function runOrchestrator(input: OrchestratorInput): Promise<Orchest
   // 🆕 4단계: 미래 방향 제시 생성 - 카테고리별 필터링
   const futureDirection = generateFutureDirectionAdvice(temporal, age, chart, locale, category);
 
-  // 시스템 프롬프트 추가 문구
+  // 시스템 프롬프트 추가 문구 - 🆕 카테고리 파라미터 추가
   const systemPromptAddition = generateSystemPromptAddition(
     temporal,
     age,
@@ -992,7 +1091,8 @@ export async function runOrchestrator(input: OrchestratorInput): Promise<Orchest
     lifeExperiences,
     pastEvents,
     futureDirection,
-    locale
+    locale,
+    category
   );
 
   // 검색 쿼리 제안

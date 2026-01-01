@@ -220,6 +220,12 @@ export type DetailCategory =
   | "wealth"
   | "personality";
 
+/** 기본 분석 카테고리 (교육적 설명 중심) */
+export type BasicCategory = "dayMaster" | "tenGods" | "stars" | "fortune";
+
+/** 종합 분석 카테고리 (개인화 해석 중심) */
+export type ComprehensiveCategory = "personality" | "career" | "wealth" | "relationship" | "health";
+
 export interface OrchestratorInput {
   temporal: TemporalAgentOutput;
   age: AgeAgentOutput;
