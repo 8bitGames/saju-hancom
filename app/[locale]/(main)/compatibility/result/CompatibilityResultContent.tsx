@@ -1,46 +1,122 @@
 "use client";
 
 import { Link } from "@/lib/i18n/navigation";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, type Variants } from "framer-motion";
 import { useRef, useEffect, useState, useMemo, useCallback } from "react";
-import { UsersThree, ArrowCounterClockwise, ChatCircle, Handshake, Heart, ChartBar, Sparkle, User, ArrowRight, Check, Warning, FilePdf, Brain, CircleNotch } from "@phosphor-icons/react";
+import { UsersThree, ArrowCounterClockwise, ChatCircle, Handshake, Heart, ChartBar, Sparkle, User, ArrowRight, Check, Warning, FilePdf, Brain, CircleNotch, Lightning, Clock, Lightbulb } from "@phosphor-icons/react";
 import { downloadCompatibilityPDF } from "@/lib/pdf/generator";
 import { ELEMENT_KOREAN } from "@/lib/saju";
 import { calculatePersonCompatibility } from "@/lib/compatibility/calculator";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
 import { checkAuthStatus, autoSaveCompatibilityResult } from "@/lib/actions/saju";
-import type { Gender } from "@/lib/saju/types";
-import type { CompatibilityGrade, RelationType } from "@/lib/compatibility/types";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
+import type { Gender, Element } from "@/lib/saju/types";
+import type { RelationType } from "@/lib/compatibility/types";
+
+// 스트리밍 카테고리 타입
+type StreamingCategory = "summary" | "communication" | "synergy" | "challenges" | "advice" | "timing";
 
 interface AIInterpretation {
   summary: string;
   communication: string;
-  chemistry: string;
+  synergy: string;
   challenges: string;
   advice: string;
+  timing: string;
 }
 
+// 카테고리 메타데이터
+const CATEGORY_META: Record<StreamingCategory, {
+  icon: typeof Brain;
+  color: string;
+  label: string;
+  bgColor: string;
+}> = {
+  summary: { icon: Brain, color: "text-blue-400", label: "종합 궁합", bgColor: "bg-blue-500/10" },
+  communication: { icon: ChatCircle, color: "text-green-400", label: "소통과 협업", bgColor: "bg-green-500/10" },
+  synergy: { icon: Lightning, color: "text-purple-400", label: "시너지 분석", bgColor: "bg-purple-500/10" },
+  challenges: { icon: Warning, color: "text-orange-400", label: "주의할 점", bgColor: "bg-orange-500/10" },
+  advice: { icon: Lightbulb, color: "text-pink-400", label: "관계 발전 조언", bgColor: "bg-pink-500/10" },
+  timing: { icon: Clock, color: "text-cyan-400", label: "좋은 시기", bgColor: "bg-cyan-500/10" },
+};
+
 // AI Loading Animation Component
-function AIAnalyzingAnimation() {
+function AIAnalyzingAnimation({ message = "궁합을 분석하고 있어요..." }: { message?: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-8 space-y-4">
+    <div className="flex flex-col items-center justify-center py-6 space-y-3">
       <motion.div
-        className="relative w-16 h-16"
+        className="relative w-12 h-12"
         animate={{ rotate: 360 }}
         transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
       >
-        <CircleNotch className="w-16 h-16 text-blue-400" weight="bold" />
+        <CircleNotch className="w-12 h-12 text-blue-400" weight="bold" />
       </motion.div>
       <motion.div
         className="flex items-center gap-2 text-blue-300"
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
-        <Brain className="w-5 h-5" weight="fill" />
-        <span className="text-base font-medium">궁합을 분석하고 있어요...</span>
+        <Brain className="w-4 h-4" weight="fill" />
+        <span className="text-sm font-medium">{message}</span>
       </motion.div>
     </div>
+  );
+}
+
+// 스트리밍 섹션 컴포넌트
+function StreamingSection({
+  category,
+  content,
+  isStreaming,
+  isComplete,
+}: {
+  category: StreamingCategory;
+  content: string;
+  isStreaming: boolean;
+  isComplete: boolean;
+}) {
+  const meta = CATEGORY_META[category];
+  const Icon = meta.icon;
+
+  if (!content && !isStreaming) return null;
+
+  return (
+    <motion.div
+      className={`p-4 rounded-xl ${meta.bgColor} border border-white/10`}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <Icon className={`w-5 h-5 ${meta.color}`} weight="fill" />
+        <span className={`text-sm font-medium ${meta.color}`}>{meta.label}</span>
+        {isStreaming && (
+          <motion.div
+            className="w-2 h-2 rounded-full bg-blue-400"
+            animate={{ opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 1, repeat: Infinity }}
+          />
+        )}
+        {isComplete && (
+          <Check className="w-4 h-4 text-green-400" weight="bold" />
+        )}
+      </div>
+      {content ? (
+        <div className="text-white/80 text-sm leading-relaxed">
+          <MarkdownRenderer content={content} />
+        </div>
+      ) : isStreaming ? (
+        <div className="flex items-center gap-2 text-white/40 text-sm">
+          <motion.span
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1.2, repeat: Infinity }}
+          >
+            분석 중...
+          </motion.span>
+        </div>
+      ) : null}
+    </motion.div>
   );
 }
 
@@ -114,7 +190,7 @@ function GlowingCard({
   children: React.ReactNode;
   className?: string;
   glowColor?: string;
-  variants?: any;
+  variants?: Variants;
 }) {
   return (
     <motion.div className={`relative ${className}`} variants={variants}>
@@ -136,15 +212,6 @@ function GlowingCard({
   );
 }
 
-function getGradeText(grade: CompatibilityGrade): string {
-  switch (grade) {
-    case "excellent": return "최고";
-    case "good": return "좋음";
-    case "normal": return "보통";
-    case "caution": return "주의";
-    case "challenging": return "도전";
-  }
-}
 
 function getScoreColor(score: number): string {
   if (score >= 80) return "text-green-400";
@@ -312,23 +379,154 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
   const result = calculatePersonCompatibility(person1, person2, relationType);
 
   const [isDownloading, setIsDownloading] = useState(false);
-  const [aiInterpretation, setAiInterpretation] = useState<AIInterpretation | null>(null);
-  const [isAiLoading, setIsAiLoading] = useState(true);
+  const [aiInterpretation, setAiInterpretation] = useState<AIInterpretation>({
+    summary: "",
+    communication: "",
+    synergy: "",
+    challenges: "",
+    advice: "",
+    timing: "",
+  });
+  const [streamingCategory, setStreamingCategory] = useState<StreamingCategory | null>(null);
+  const [completedCategories, setCompletedCategories] = useState<Set<StreamingCategory>>(new Set());
+  const [isAllComplete, setIsAllComplete] = useState(false);
   const hasFetched = useRef(false);
   const [showLoginCTA, setShowLoginCTA] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const hasCheckedAuth = useRef(false);
   const hasSaved = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Create cache key from person data
   const cacheKey = useMemo(() =>
-    `compatibility_ai_${person1.year}_${person1.month}_${person1.day}_${person1.hour}_${person1.gender}_${person2.year}_${person2.month}_${person2.day}_${person2.hour}_${person2.gender}_${relationType || 'colleague'}`,
+    `compatibility_stream_v2_${person1.year}_${person1.month}_${person1.day}_${person1.hour}_${person1.gender}_${person2.year}_${person2.month}_${person2.day}_${person2.hour}_${person2.gender}_${relationType || 'colleague'}`,
     [person1.year, person1.month, person1.day, person1.hour, person1.gender, person2.year, person2.month, person2.day, person2.hour, person2.gender, relationType]
   );
 
-  // Fetch AI interpretation with caching
+  // Helper functions
+  const pillarsStr = useCallback((pillars: { year: { gan: string; zhi: string }; month: { gan: string; zhi: string }; day: { gan: string; zhi: string }; time: { gan: string; zhi: string } }) =>
+    `${pillars.year.gan}${pillars.year.zhi} ${pillars.month.gan}${pillars.month.zhi} ${pillars.day.gan}${pillars.day.zhi} ${pillars.time.gan}${pillars.time.zhi}`, []);
+
+  const elementsStr = useCallback((balance: Record<string, number>) =>
+    Object.entries(balance).map(([k, v]) => `${ELEMENT_KOREAN[k as keyof typeof ELEMENT_KOREAN]}:${v}`).join(', '), []);
+
+  // 일간 오행 가져오기
+  const getDayMasterElement = useCallback((gan: string): Element => {
+    const ganElements: Record<string, Element> = {
+      "甲": "wood", "乙": "wood",
+      "丙": "fire", "丁": "fire",
+      "戊": "earth", "己": "earth",
+      "庚": "metal", "辛": "metal",
+      "壬": "water", "癸": "water",
+    };
+    return ganElements[gan] || "wood";
+  }, []);
+
+  // 스트리밍 fetch 함수
+  const fetchStreamingCategory = useCallback(async (category: StreamingCategory): Promise<string> => {
+    const p1DayMaster = result.person1Pillars.day.gan;
+    const p2DayMaster = result.person2Pillars.day.gan;
+
+    const response = await fetch('/api/compatibility/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        category,
+        person1: {
+          name: person1.name,
+          pillars: pillarsStr(result.person1Pillars),
+          dayMaster: p1DayMaster,
+          dayMasterElement: getDayMasterElement(p1DayMaster),
+          elements: elementsStr(result.elementBalance.person1),
+        },
+        person2: {
+          name: person2.name,
+          pillars: pillarsStr(result.person2Pillars),
+          dayMaster: p2DayMaster,
+          dayMasterElement: getDayMasterElement(p2DayMaster),
+          elements: elementsStr(result.elementBalance.person2),
+        },
+        compatibilityData: {
+          score: result.score,
+          gradeText: result.gradeText,
+          person1Pillars: result.person1Pillars,
+          person2Pillars: result.person2Pillars,
+        },
+        relationType: relationType || 'colleague',
+        locale: 'ko',
+      }),
+      signal: abortControllerRef.current?.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error('스트리밍 응답 오류');
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) throw new Error('리더 없음');
+
+    const decoder = new TextDecoder();
+    let fullContent = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n');
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(line.slice(6));
+            if (data.type === 'text') {
+              fullContent += data.content;
+              setAiInterpretation(prev => ({
+                ...prev,
+                [category]: prev[category] + data.content,
+              }));
+            } else if (data.type === 'done') {
+              // 완료
+            }
+          } catch {
+            // 파싱 오류 무시
+          }
+        }
+      }
+    }
+
+    return fullContent;
+  }, [person1, person2, result, relationType, pillarsStr, elementsStr, getDayMasterElement]);
+
+  // 카테고리 순차 스트리밍
+  const streamAllCategories = useCallback(async () => {
+    const categories: StreamingCategory[] = ['summary', 'communication', 'synergy', 'challenges', 'advice', 'timing'];
+
+    abortControllerRef.current = new AbortController();
+
+    for (const category of categories) {
+      if (abortControllerRef.current?.signal.aborted) break;
+
+      setStreamingCategory(category);
+
+      try {
+        await fetchStreamingCategory(category);
+        setCompletedCategories(prev => new Set([...prev, category]));
+      } catch (error) {
+        if ((error as Error).name === 'AbortError') break;
+        console.error(`카테고리 ${category} 스트리밍 오류:`, error);
+      }
+
+      // 다음 카테고리 전 짧은 딜레이
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+
+    setStreamingCategory(null);
+    setIsAllComplete(true);
+  }, [fetchStreamingCategory]);
+
+  // Fetch AI interpretation with streaming
   useEffect(() => {
-    // Prevent double fetch in React Strict Mode
     if (hasFetched.current) return;
     hasFetched.current = true;
 
@@ -338,58 +536,28 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
       try {
         const parsed = JSON.parse(cached);
         setAiInterpretation(parsed);
-        setIsAiLoading(false);
+        setCompletedCategories(new Set(['summary', 'communication', 'synergy', 'challenges', 'advice', 'timing']));
+        setIsAllComplete(true);
         return;
       } catch {
         localStorage.removeItem(cacheKey);
       }
     }
 
-    const fetchAiInterpretation = async () => {
-      try {
-        const pillarsStr = (pillars: { year: { gan: string; zhi: string }; month: { gan: string; zhi: string }; day: { gan: string; zhi: string }; time: { gan: string; zhi: string } }) =>
-          `${pillars.year.gan}${pillars.year.zhi} ${pillars.month.gan}${pillars.month.zhi} ${pillars.day.gan}${pillars.day.zhi} ${pillars.time.gan}${pillars.time.zhi}`;
+    // 스트리밍 시작
+    streamAllCategories();
 
-        const elementsStr = (balance: Record<string, number>) =>
-          Object.entries(balance).map(([k, v]) => `${ELEMENT_KOREAN[k as keyof typeof ELEMENT_KOREAN]}:${v}`).join(', ');
-
-        const response = await fetch('/api/compatibility/interpret', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            person1: {
-              name: person1.name,
-              pillars: pillarsStr(result.person1Pillars),
-              dayMaster: result.person1Pillars.day.gan,
-              elements: elementsStr(result.elementBalance.person1),
-            },
-            person2: {
-              name: person2.name,
-              pillars: pillarsStr(result.person2Pillars),
-              dayMaster: result.person2Pillars.day.gan,
-              elements: elementsStr(result.elementBalance.person2),
-            },
-            score: result.score,
-            type: 'work',
-            relationType: getRelationTypeKorean(relationType),
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setAiInterpretation(data);
-          // Save to cache
-          localStorage.setItem(cacheKey, JSON.stringify(data));
-        }
-      } catch (error) {
-        console.error('AI interpretation error:', error);
-      } finally {
-        setIsAiLoading(false);
-      }
+    return () => {
+      abortControllerRef.current?.abort();
     };
+  }, [cacheKey, streamAllCategories]);
 
-    fetchAiInterpretation();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // 완료 시 캐시 저장
+  useEffect(() => {
+    if (isAllComplete && aiInterpretation.summary) {
+      localStorage.setItem(cacheKey, JSON.stringify(aiInterpretation));
+    }
+  }, [isAllComplete, aiInterpretation, cacheKey]);
 
   // Check auth status and auto-save or show login CTA
   useEffect(() => {
@@ -400,35 +568,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
       const { isAuthenticated: authStatus } = await checkAuthStatus();
       setIsAuthenticated(authStatus);
 
-      if (authStatus && !hasSaved.current) {
-        hasSaved.current = true;
-        // Auto-save for authenticated users
-        await autoSaveCompatibilityResult({
-          person1: {
-            name: person1.name,
-            year: person1.year,
-            month: person1.month,
-            day: person1.day,
-            hour: person1.hour,
-            minute: person1.minute,
-            gender: person1.gender,
-            isLunar: person1.isLunar,
-          },
-          person2: {
-            name: person2.name,
-            year: person2.year,
-            month: person2.month,
-            day: person2.day,
-            hour: person2.hour,
-            minute: person2.minute,
-            gender: person2.gender,
-            isLunar: person2.isLunar,
-          },
-          relationType: relationType || "colleague",
-          resultData: result,
-          interpretation: aiInterpretation,
-        });
-      } else if (!authStatus) {
+      if (!authStatus) {
         // Show login CTA after a short delay for non-authenticated users
         setTimeout(() => {
           setShowLoginCTA(true);
@@ -437,7 +577,40 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
     };
 
     checkAndSave();
-  }, [person1, person2, relationType, result, aiInterpretation]);
+  }, []);
+
+  // Auto-save when all streaming is complete
+  useEffect(() => {
+    if (!isAllComplete || !isAuthenticated || hasSaved.current) return;
+    if (!aiInterpretation.summary) return;
+
+    hasSaved.current = true;
+    autoSaveCompatibilityResult({
+      person1: {
+        name: person1.name,
+        year: person1.year,
+        month: person1.month,
+        day: person1.day,
+        hour: person1.hour,
+        minute: person1.minute,
+        gender: person1.gender,
+        isLunar: person1.isLunar,
+      },
+      person2: {
+        name: person2.name,
+        year: person2.year,
+        month: person2.month,
+        day: person2.day,
+        hour: person2.hour,
+        minute: person2.minute,
+        gender: person2.gender,
+        isLunar: person2.isLunar,
+      },
+      relationType: relationType || "colleague",
+      resultData: result,
+      interpretation: aiInterpretation,
+    });
+  }, [isAllComplete, isAuthenticated, aiInterpretation, person1, person2, relationType, result]);
 
   const handlePDFDownload = async () => {
     if (isDownloading) return;
@@ -623,73 +796,52 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
         </div>
       </GlowingCard>
 
-      {/* AI Interpretation */}
+      {/* AI Interpretation - 스트리밍 */}
       <GlowingCard glowColor="rgba(59, 130, 246, 0.4)" variants={itemVariants}>
         <div className="p-5 space-y-4">
-          <div className="flex items-center gap-2">
-            <Brain className="w-5 h-5 text-blue-400" weight="fill" />
-            <h2 className="text-lg font-semibold text-white">맞춤 궁합 해석</h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-blue-400" weight="fill" />
+              <h2 className="text-lg font-semibold text-white">맞춤 궁합 해석</h2>
+            </div>
+            {!isAllComplete && streamingCategory && (
+              <motion.div
+                className="flex items-center gap-2 text-xs text-blue-300"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <CircleNotch className="w-4 h-4 animate-spin" weight="bold" />
+                <span>{completedCategories.size + 1}/6 분석 중</span>
+              </motion.div>
+            )}
+            {isAllComplete && (
+              <motion.div
+                className="flex items-center gap-1 text-xs text-green-400"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+              >
+                <Check className="w-4 h-4" weight="bold" />
+                <span>분석 완료</span>
+              </motion.div>
+            )}
           </div>
 
-          {isAiLoading ? (
-            <AIAnalyzingAnimation />
-          ) : aiInterpretation ? (
-            <motion.div
-              className="space-y-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              {/* Summary */}
-              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                <p className="text-white/90 text-base leading-relaxed">{aiInterpretation.summary}</p>
-              </div>
+          {/* 스트리밍 섹션들 */}
+          <div className="space-y-3">
+            {(['summary', 'communication', 'synergy', 'challenges', 'advice', 'timing'] as StreamingCategory[]).map((cat) => (
+              <StreamingSection
+                key={cat}
+                category={cat}
+                content={aiInterpretation[cat]}
+                isStreaming={streamingCategory === cat}
+                isComplete={completedCategories.has(cat)}
+              />
+            ))}
+          </div>
 
-              {/* Details */}
-              <div className="space-y-3">
-                {aiInterpretation.communication && (
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <ChatCircle className="w-4 h-4 text-green-400" weight="fill" />
-                      <span className="text-sm font-medium text-green-400">소통과 협업</span>
-                    </div>
-                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.communication}</p>
-                  </div>
-                )}
-
-                {aiInterpretation.chemistry && (
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Sparkle className="w-4 h-4 text-purple-400" weight="fill" />
-                      <span className="text-sm font-medium text-purple-400">업무 시너지</span>
-                    </div>
-                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.chemistry}</p>
-                  </div>
-                )}
-
-                {aiInterpretation.challenges && (
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Warning className="w-4 h-4 text-orange-400" weight="fill" />
-                      <span className="text-sm font-medium text-orange-400">주의할 점</span>
-                    </div>
-                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.challenges}</p>
-                  </div>
-                )}
-
-                {aiInterpretation.advice && (
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Heart className="w-4 h-4 text-pink-400" weight="fill" />
-                      <span className="text-sm font-medium text-pink-400">조언</span>
-                    </div>
-                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.advice}</p>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          ) : (
-            <p className="text-white/50 text-sm text-center py-4">해석을 불러올 수 없습니다.</p>
+          {/* 첫 스트리밍 시작 전 로딩 */}
+          {!streamingCategory && !isAllComplete && completedCategories.size === 0 && (
+            <AIAnalyzingAnimation message="AI 분석을 시작합니다..." />
           )}
         </div>
       </GlowingCard>
