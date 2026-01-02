@@ -22,6 +22,7 @@ import {
 import type { SajuAnalysisInput } from "./pipeline-types";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
 import type { Locale } from "@/lib/i18n/config";
+import { getYearlyFortuneDescription } from "./constants";
 
 // ============================================================================
 // 공통 유틸리티
@@ -717,10 +718,7 @@ export async function analyzeStep5_FortuneTiming(
 - 남자 양년생, 여자 음년생: 순행
 - 남자 음년생, 여자 양년생: 역행
 
-## 세운(歲運) 분석 - ${currentYear}년 (을사년)
-- 올해 세운: 乙巳 (을사)
-- 을(乙): 음목, 유연함, 적응
-- 사(巳): 화(火), 열정, 변화
+${getYearlyFortuneDescription(currentYear, 'ko')}
 
 ## 합충 분석
 ### 원국과 대운의 관계
@@ -746,10 +744,7 @@ Analyze the Major Fortune (大運) and Annual Fortune (歲運) to understand cur
 - Male born in Yang year, Female born in Yin year: Forward
 - Male born in Yin year, Female born in Yang year: Backward
 
-## Annual Fortune (歲運) Analysis - ${currentYear} (Yi Si year)
-- This year's fortune: 乙巳 (Yi Si)
-- Yi (乙): Yin Wood, flexibility, adaptation
-- Si (巳): Fire, passion, change
+${getYearlyFortuneDescription(currentYear, 'en')}
 
 ## Harmony and Clash Analysis
 ### Relationship between Natal Chart and Major Fortune

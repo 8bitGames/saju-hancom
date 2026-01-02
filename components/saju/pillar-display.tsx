@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import type { Pillar, Element } from "@/lib/saju/types";
 import {
@@ -13,6 +14,15 @@ import {
   ELEMENT_KOREAN,
 } from "@/lib/saju/constants";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
+// Radix Popover hydration mismatch 방지용 훅
+function useIsMounted() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  return mounted;
+}
 
 interface PillarDisplayProps {
   pillar: Pillar;
@@ -41,11 +51,40 @@ export function PillarDisplay({
   label,
   isDayMaster = false,
 }: PillarDisplayProps) {
+  const mounted = useIsMounted();
   const stemElement = STEM_ELEMENTS[pillar.gan];
   const branchElement = BRANCH_ELEMENTS[pillar.zhi];
   const stemKorean = STEM_KOREAN[pillar.gan];
   const branchKorean = BRANCH_KOREAN[pillar.zhi];
   const animal = BRANCH_ANIMALS[pillar.zhi];
+
+  // Stem 버튼 UI (Popover 내외부에서 공용)
+  const stemButton = (
+    <button type="button" className="flex flex-col items-center focus:outline-none active:scale-95 transition-transform">
+      <div
+        className={cn(
+          "w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold",
+          elementColorMap[stemElement],
+          stemElement === "metal" || stemElement === "earth"
+            ? "text-[#0f172a]"
+            : "text-white"
+        )}
+      >
+        {pillar.gan}
+      </div>
+      <span className="text-xs text-white/60 mt-1">
+        {stemKorean}
+      </span>
+      <span
+        className={cn(
+          "text-[10px] font-medium",
+          elementTextColorMap[stemElement]
+        )}
+      >
+        {ELEMENT_KOREAN[stemElement]}
+      </span>
+    </button>
+  );
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -70,60 +109,41 @@ export function PillarDisplay({
       >
 
         {/* Stem (Heavenly) - 탭하면 설명 표시 */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <button type="button" className="flex flex-col items-center focus:outline-none active:scale-95 transition-transform">
-              <div
-                className={cn(
-                  "w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold",
-                  elementColorMap[stemElement],
-                  stemElement === "metal" || stemElement === "earth"
-                    ? "text-[#0f172a]"
-                    : "text-white"
-                )}
-              >
-                {pillar.gan}
+        {mounted ? (
+          <Popover>
+            <PopoverTrigger asChild>
+              {stemButton}
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+              sideOffset={8}
+            >
+              <div className="flex items-start gap-2">
+                <div
+                  className={cn(
+                    "w-6 h-6 rounded flex-shrink-0 flex items-center justify-center text-sm font-bold",
+                    elementColorMap[stemElement],
+                    stemElement === "metal" || stemElement === "earth"
+                      ? "text-[#0f172a]"
+                      : "text-white"
+                  )}
+                >
+                  {pillar.gan}
+                </div>
+                <p className="text-sm leading-relaxed">{STEM_DESCRIPTIONS[pillar.gan]}</p>
               </div>
-              <span className="text-xs text-white/60 mt-1">
-                {stemKorean}
-              </span>
-              <span
-                className={cn(
-                  "text-[10px] font-medium",
-                  elementTextColorMap[stemElement]
-                )}
-              >
-                {ELEMENT_KOREAN[stemElement]}
-              </span>
-            </button>
-          </PopoverTrigger>
-          <PopoverContent
-            className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
-            sideOffset={8}
-          >
-            <div className="flex items-start gap-2">
-              <div
-                className={cn(
-                  "w-6 h-6 rounded flex-shrink-0 flex items-center justify-center text-sm font-bold",
-                  elementColorMap[stemElement],
-                  stemElement === "metal" || stemElement === "earth"
-                    ? "text-[#0f172a]"
-                    : "text-white"
-                )}
-              >
-                {pillar.gan}
-              </div>
-              <p className="text-sm leading-relaxed">{STEM_DESCRIPTIONS[pillar.gan]}</p>
-            </div>
-          </PopoverContent>
-        </Popover>
+            </PopoverContent>
+          </Popover>
+        ) : (
+          stemButton
+        )}
 
         {/* Divider */}
         <div className="w-full h-px bg-white/10 my-1" />
 
         {/* Branch (Earthly) - 탭하면 설명 표시 */}
-        <Popover>
-          <PopoverTrigger asChild>
+        {(() => {
+          const branchButton = (
             <button type="button" className="flex flex-col items-center focus:outline-none active:scale-95 transition-transform">
               <div
                 className={cn(
@@ -148,27 +168,37 @@ export function PillarDisplay({
                 {animal}
               </span>
             </button>
-          </PopoverTrigger>
-          <PopoverContent
-            className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
-            sideOffset={8}
-          >
-            <div className="flex items-start gap-2">
-              <div
-                className={cn(
-                  "w-6 h-6 rounded flex-shrink-0 flex items-center justify-center text-sm font-bold",
-                  elementColorMap[branchElement],
-                  branchElement === "metal" || branchElement === "earth"
-                    ? "text-[#0f172a]"
-                    : "text-white"
-                )}
+          );
+
+          return mounted ? (
+            <Popover>
+              <PopoverTrigger asChild>
+                {branchButton}
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+                sideOffset={8}
               >
-                {pillar.zhi}
-              </div>
-              <p className="text-sm leading-relaxed">{BRANCH_DESCRIPTIONS[pillar.zhi]}</p>
-            </div>
-          </PopoverContent>
-        </Popover>
+                <div className="flex items-start gap-2">
+                  <div
+                    className={cn(
+                      "w-6 h-6 rounded flex-shrink-0 flex items-center justify-center text-sm font-bold",
+                      elementColorMap[branchElement],
+                      branchElement === "metal" || branchElement === "earth"
+                        ? "text-[#0f172a]"
+                        : "text-white"
+                    )}
+                  >
+                    {pillar.zhi}
+                  </div>
+                  <p className="text-sm leading-relaxed">{BRANCH_DESCRIPTIONS[pillar.zhi]}</p>
+                </div>
+              </PopoverContent>
+            </Popover>
+          ) : (
+            branchButton
+          );
+        })()}
       </div>
     </div>
   );

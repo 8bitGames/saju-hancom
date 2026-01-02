@@ -465,58 +465,6 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
           {/* 종합 탭 */}
           {activeTab === "overview" && (
             <div className="space-y-4 sm:space-y-6">
-              {/* 오늘의 운세 상세 */}
-              <div className="bg-gradient-to-br from-[#a855f7]/20 to-[#9333ea]/10 rounded-xl p-4 sm:p-5 border border-[#a855f7]/30">
-                <div className="flex items-center gap-2 mb-3 relative">
-                  <Sparkle className="w-5 h-5 text-[#a855f7]" weight="fill" />
-                  <h3 className="text-base sm:text-lg font-semibold text-white">오늘의 운세</h3>
-                  <button
-                    onClick={() => handleInfoClick("overview")}
-                    className="w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
-                    aria-label="종합 분석 설명"
-                  >
-                    <Info className="w-3 h-3 text-white/60" />
-                  </button>
-                  {showInfoTooltip === "overview" && (
-                    <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
-                      {getTooltipText("overview")}
-                    </div>
-                  )}
-                  <span className="text-xs text-white/50">{new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" })}</span>
-                </div>
-                <p className="text-sm sm:text-base text-white/90 leading-relaxed mb-4">{step6.summary}</p>
-
-                {/* 핵심 메시지 */}
-                <div className="bg-white/10 rounded-lg p-3 sm:p-4 mb-4">
-                  <p className="text-xs text-white/60 mb-1">✨ 오늘의 핵심 메시지</p>
-                  <p className="text-sm sm:text-base font-medium text-white italic">&ldquo;{step6.oneLineMessage}&rdquo;</p>
-                </div>
-
-                {/* 행운 요소 */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                  <div className="bg-white/10 rounded-lg p-2.5 sm:p-3 text-center">
-                    <Palette className="w-4 h-4 mx-auto text-[#a855f7] mb-1" />
-                    <p className="text-[10px] sm:text-xs text-white/50">행운 색상</p>
-                    <p className="text-xs sm:text-sm font-medium text-white">{step6.luckyElements.colors.join(", ")}</p>
-                  </div>
-                  <div className="bg-white/10 rounded-lg p-2.5 sm:p-3 text-center">
-                    <Hash className="w-4 h-4 mx-auto text-[#a855f7] mb-1" />
-                    <p className="text-[10px] sm:text-xs text-white/50">행운 숫자</p>
-                    <p className="text-xs sm:text-sm font-medium text-white">{step6.luckyElements.numbers.join(", ")}</p>
-                  </div>
-                  <div className="bg-white/10 rounded-lg p-2.5 sm:p-3 text-center">
-                    <Compass className="w-4 h-4 mx-auto text-[#a855f7] mb-1" />
-                    <p className="text-[10px] sm:text-xs text-white/50">행운 방향</p>
-                    <p className="text-xs sm:text-sm font-medium text-white">{step6.luckyElements.directions.join(", ")}</p>
-                  </div>
-                  <div className="bg-white/10 rounded-lg p-2.5 sm:p-3 text-center">
-                    <Sun className="w-4 h-4 mx-auto text-[#a855f7] mb-1" />
-                    <p className="text-[10px] sm:text-xs text-white/50">행운 계절</p>
-                    <p className="text-xs sm:text-sm font-medium text-white">{step6.luckyElements.seasons.join(", ")}</p>
-                  </div>
-                </div>
-              </div>
-
               {/* 영역별 점수 */}
               <div>
                 <div className="flex items-center justify-between mb-3 sm:mb-4">
@@ -658,6 +606,46 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                 )}
               </div>
 
+              {/* 오늘의 운세 */}
+              <div className="bg-gradient-to-br from-[#a855f7]/20 to-[#9333ea]/10 rounded-xl p-4 sm:p-5 border border-[#a855f7]/30">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkle className="w-5 h-5 text-[#a855f7]" weight="fill" />
+                  <h3 className="text-base sm:text-lg font-semibold text-white">오늘의 운세</h3>
+                  <span className="text-xs text-white/50">{new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" })}</span>
+                </div>
+                <p className="text-sm sm:text-base text-white/90 leading-relaxed mb-4">{step6.summary}</p>
+
+                {/* 핵심 메시지 */}
+                <div className="bg-white/10 rounded-lg p-3 sm:p-4 mb-4">
+                  <p className="text-xs text-white/60 mb-1">✨ 오늘의 핵심 메시지</p>
+                  <p className="text-sm sm:text-base font-medium text-white italic">&ldquo;{step6.oneLineMessage}&rdquo;</p>
+                </div>
+
+                {/* 행운 요소 */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                  <div className="bg-white/10 rounded-lg p-2.5 sm:p-3 text-center">
+                    <Palette className="w-4 h-4 mx-auto text-[#a855f7] mb-1" />
+                    <p className="text-[10px] sm:text-xs text-white/50">행운 색상</p>
+                    <p className="text-xs sm:text-sm font-medium text-white">{step6.luckyElements.colors.join(", ")}</p>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-2.5 sm:p-3 text-center">
+                    <Hash className="w-4 h-4 mx-auto text-[#a855f7] mb-1" />
+                    <p className="text-[10px] sm:text-xs text-white/50">행운 숫자</p>
+                    <p className="text-xs sm:text-sm font-medium text-white">{step6.luckyElements.numbers.join(", ")}</p>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-2.5 sm:p-3 text-center">
+                    <Compass className="w-4 h-4 mx-auto text-[#a855f7] mb-1" />
+                    <p className="text-[10px] sm:text-xs text-white/50">행운 방향</p>
+                    <p className="text-xs sm:text-sm font-medium text-white">{step6.luckyElements.directions.join(", ")}</p>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-2.5 sm:p-3 text-center">
+                    <Sun className="w-4 h-4 mx-auto text-[#a855f7] mb-1" />
+                    <p className="text-[10px] sm:text-xs text-white/50">행운 계절</p>
+                    <p className="text-xs sm:text-sm font-medium text-white">{step6.luckyElements.seasons.join(", ")}</p>
+                  </div>
+                </div>
+              </div>
+
               <div className="text-center p-4 sm:p-6 bg-[#a855f7]/10 rounded-lg sm:rounded-xl border border-[#a855f7]/30">
                 <p className="text-3xl sm:text-5xl mb-1 sm:mb-2">{step2.dayMaster}</p>
                 <h3 className="text-lg sm:text-xl font-bold text-white">{step2.dayMasterKorean}</h3>
@@ -763,15 +751,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                   </div>
                 </div>
                 <div className="p-3 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl border border-white/10">
-                  <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-                    <h4 className="font-medium text-sm sm:text-base text-white">적합 직업</h4>
-                    <button
-                      onClick={() => openDetailModal("career", "직업운")}
-                      className="text-[10px] sm:text-xs text-[#a855f7] hover:underline flex items-center gap-1"
-                    >
-                      상세보기 <ArrowRight className="w-3 h-3" />
-                    </button>
-                  </div>
+                  <h4 className="font-medium text-sm sm:text-base text-white mb-1.5 sm:mb-2">적합 직업</h4>
                   <ul className="space-y-0.5 sm:space-y-1">
                     {step3.careerAptitude.suitableFields.map((f, i) => (
                       <li key={i} className="text-xs sm:text-sm text-white/60">• {f}</li>
@@ -781,18 +761,10 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
               </div>
 
               <div className="p-3 sm:p-4 bg-[#ec4899]/10 rounded-lg sm:rounded-xl border border-[#ec4899]/30">
-                <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-                  <h4 className="font-medium text-sm sm:text-base text-[#ec4899] flex items-center gap-2">
-                    <Heart className="w-4 h-4" weight="fill" />
-                    연애/관계 스타일
-                  </h4>
-                  <button
-                    onClick={() => openDetailModal("relationship", "대인관계")}
-                    className="text-[10px] sm:text-xs text-[#a855f7] hover:underline flex items-center gap-1"
-                  >
-                    상세보기 <ArrowRight className="w-3 h-3" />
-                  </button>
-                </div>
+                <h4 className="font-medium text-sm sm:text-base text-[#ec4899] mb-1.5 sm:mb-2 flex items-center gap-2">
+                  <Heart className="w-4 h-4" weight="fill" />
+                  연애/관계 스타일
+                </h4>
                 <p className="text-xs sm:text-sm text-white/60">{step3.relationshipStyle.loveStyle}</p>
                 <p className="text-xs sm:text-sm text-white/60 mt-1.5 sm:mt-2">
                   <strong className="text-white">이상적 파트너:</strong> {step3.relationshipStyle.idealPartnerTraits.join(", ")}

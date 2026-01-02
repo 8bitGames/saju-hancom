@@ -405,3 +405,138 @@ export const CITY_LONGITUDES: Record<string, number> = {
 
 /** 기본 경도 (서울 기준) */
 export const DEFAULT_LONGITUDE = 127.0;
+
+// ============================================================================
+// 세운 (연간 운세) 계산 유틸리티
+// ============================================================================
+
+/**
+ * 특정 연도의 세운 간지를 계산
+ * @param year - 연도 (예: 2025, 2026)
+ * @returns 세운 정보 객체
+ */
+export function getYearlyFortune(year: number): {
+  stem: Gan;
+  branch: Zhi;
+  ganZhi: string;
+  stemKorean: string;
+  branchKorean: string;
+  koreanReading: string;
+  stemElement: Element;
+  branchElement: Element;
+  stemDescription: string;
+  branchDescription: string;
+} {
+  // 60갑자 주기 계산 (甲子년 = 4년)
+  const stemIndex = (year - 4) % 10;
+  const branchIndex = (year - 4) % 12;
+
+  const stem = HEAVENLY_STEMS[stemIndex];
+  const branch = EARTHLY_BRANCHES[branchIndex];
+
+  return {
+    stem,
+    branch,
+    ganZhi: `${stem}${branch}`,
+    stemKorean: STEM_KOREAN[stem],
+    branchKorean: BRANCH_KOREAN[branch],
+    koreanReading: `${STEM_KOREAN[stem]}${BRANCH_KOREAN[branch]}`,
+    stemElement: STEM_ELEMENTS[stem],
+    branchElement: BRANCH_ELEMENTS[branch],
+    stemDescription: STEM_DESCRIPTIONS[stem],
+    branchDescription: BRANCH_DESCRIPTIONS[branch],
+  };
+}
+
+/**
+ * 세운 간지의 특성 설명 생성
+ * @param year - 연도
+ * @param locale - 언어 ('ko' | 'en')
+ */
+export function getYearlyFortuneDescription(year: number, locale: 'ko' | 'en' = 'ko'): string {
+  const fortune = getYearlyFortune(year);
+
+  const elementKorean: Record<Element, string> = {
+    wood: '목(木)',
+    fire: '화(火)',
+    earth: '토(土)',
+    metal: '금(金)',
+    water: '수(水)',
+  };
+
+  const elementEnglish: Record<Element, string> = {
+    wood: 'Wood',
+    fire: 'Fire',
+    earth: 'Earth',
+    metal: 'Metal',
+    water: 'Water',
+  };
+
+  const stemTraitsKo: Record<Gan, string> = {
+    '甲': '양목, 성장과 도전',
+    '乙': '음목, 유연함과 적응',
+    '丙': '양화, 열정과 활력',
+    '丁': '음화, 따뜻함과 섬세함',
+    '戊': '양토, 안정과 중심',
+    '己': '음토, 포용력과 현실감',
+    '庚': '양금, 결단력과 추진력',
+    '辛': '음금, 예리함과 완벽주의',
+    '壬': '양수, 지혜와 포용',
+    '癸': '음수, 직관과 창의성',
+  };
+
+  const stemTraitsEn: Record<Gan, string> = {
+    '甲': 'Yang Wood, growth and challenge',
+    '乙': 'Yin Wood, flexibility and adaptation',
+    '丙': 'Yang Fire, passion and vitality',
+    '丁': 'Yin Fire, warmth and delicacy',
+    '戊': 'Yang Earth, stability and centeredness',
+    '己': 'Yin Earth, embracing and practical',
+    '庚': 'Yang Metal, decisiveness and drive',
+    '辛': 'Yin Metal, sharp and perfectionist',
+    '壬': 'Yang Water, wisdom and embracing',
+    '癸': 'Yin Water, intuition and creativity',
+  };
+
+  const branchTraitsKo: Record<Zhi, string> = {
+    '子': '수(水), 지혜와 새로운 시작',
+    '丑': '토(土), 성실과 축적',
+    '寅': '목(木), 용맹과 진취',
+    '卯': '목(木), 성장과 발전',
+    '辰': '토(土), 변화와 전환',
+    '巳': '화(火), 열정과 변화',
+    '午': '화(火), 절정과 성취',
+    '未': '토(土), 성숙과 결실',
+    '申': '금(金), 실행과 추진',
+    '酉': '금(金), 수확과 완성',
+    '戌': '토(土), 정리와 마무리',
+    '亥': '수(水), 지혜와 준비',
+  };
+
+  const branchTraitsEn: Record<Zhi, string> = {
+    '子': 'Water, wisdom and new beginnings',
+    '丑': 'Earth, diligence and accumulation',
+    '寅': 'Wood, courage and progress',
+    '卯': 'Wood, growth and development',
+    '辰': 'Earth, change and transition',
+    '巳': 'Fire, passion and transformation',
+    '午': 'Fire, peak and achievement',
+    '未': 'Earth, maturity and fruition',
+    '申': 'Metal, execution and drive',
+    '酉': 'Metal, harvest and completion',
+    '戌': 'Earth, organization and closure',
+    '亥': 'Water, wisdom and preparation',
+  };
+
+  if (locale === 'ko') {
+    return `## 세운(歲運) 분석 - ${year}년 (${fortune.koreanReading}년)
+- 올해 세운: ${fortune.ganZhi} (${fortune.koreanReading})
+- ${fortune.stemKorean}(${fortune.stem}): ${stemTraitsKo[fortune.stem]}
+- ${fortune.branchKorean}(${fortune.branch}): ${branchTraitsKo[fortune.branch]}`;
+  } else {
+    return `## Annual Fortune (歲運) Analysis - ${year} (${fortune.koreanReading} year)
+- This year's fortune: ${fortune.ganZhi} (${fortune.stemKorean} ${fortune.branchKorean})
+- ${fortune.stem} (${fortune.stemKorean}): ${stemTraitsEn[fortune.stem]}
+- ${fortune.branch} (${fortune.branchKorean}): ${branchTraitsEn[fortune.branch]}`;
+  }
+}

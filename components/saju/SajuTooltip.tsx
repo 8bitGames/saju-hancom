@@ -1,7 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
+// Radix Popover hydration mismatch 방지용 훅
+function useIsMounted() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  return mounted;
+}
 import {
   STEM_DESCRIPTIONS,
   BRANCH_DESCRIPTIONS,
@@ -41,6 +50,7 @@ export function SajuTooltip({
   customDescription,
   className = "",
 }: SajuTooltipProps) {
+  const mounted = useIsMounted();
   const [open, setOpen] = useState(false);
 
   // 설명 텍스트 가져오기
@@ -106,25 +116,33 @@ export function SajuTooltip({
   const elementColor = getElementColor();
   const description = getDescription();
 
+  const buttonEl = (
+    <button
+      type="button"
+      className={`
+        inline-flex items-center justify-center
+        px-1 py-0.5 rounded
+        underline decoration-dotted decoration-white/30 underline-offset-2
+        hover:bg-white/10 active:bg-white/20
+        transition-colors cursor-pointer
+        focus:outline-none focus:ring-2 focus:ring-purple-500/50
+        ${className}
+      `}
+      style={elementColor ? { color: elementColor } : undefined}
+      onClick={() => setOpen(!open)}
+    >
+      {text}
+    </button>
+  );
+
+  if (!mounted) {
+    return buttonEl;
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
-          type="button"
-          className={`
-            inline-flex items-center justify-center
-            px-1 py-0.5 rounded
-            underline decoration-dotted decoration-white/30 underline-offset-2
-            hover:bg-white/10 active:bg-white/20
-            transition-colors cursor-pointer
-            focus:outline-none focus:ring-2 focus:ring-purple-500/50
-            ${className}
-          `}
-          style={elementColor ? { color: elementColor } : undefined}
-          onClick={() => setOpen(!open)}
-        >
-          {text}
-        </button>
+        {buttonEl}
       </PopoverTrigger>
       <PopoverContent
         className="w-auto max-w-[280px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"

@@ -1,9 +1,19 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import type { TenGodSummary, TenGod } from "@/lib/saju/types";
 import { TEN_GOD_INFO } from "@/lib/saju/constants";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
+// Radix Popover hydration mismatch 방지용 훅
+function useIsMounted() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  return mounted;
+}
 
 interface TenGodDisplayProps {
   summary: TenGodSummary;
@@ -18,6 +28,7 @@ const tenGodCategories: { label: string; gods: TenGod[] }[] = [
 ];
 
 export function TenGodDisplay({ summary }: TenGodDisplayProps) {
+  const mounted = useIsMounted();
   const counts = summary.counts;
 
   return (
@@ -77,31 +88,39 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
                   주요 십성
                 </p>
                 <div className="flex flex-wrap gap-1">
-                  {summary.dominant.map((god) => (
-                    <Popover key={god}>
-                      <PopoverTrigger asChild>
-                        <button
-                          type="button"
-                          className="px-2 py-0.5 rounded-full bg-[#22c55e]/20 text-[#22c55e] text-xs hover:bg-[#22c55e]/30 active:bg-[#22c55e]/40 transition-colors"
-                        >
-                          {TEN_GOD_INFO[god].korean}
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
-                        sideOffset={8}
+                  {summary.dominant.map((god) => {
+                    const buttonEl = (
+                      <button
+                        type="button"
+                        className="px-2 py-0.5 rounded-full bg-[#22c55e]/20 text-[#22c55e] text-xs hover:bg-[#22c55e]/30 active:bg-[#22c55e]/40 transition-colors"
                       >
-                        <div className="space-y-1">
-                          <p className="font-medium text-sm">
-                            {TEN_GOD_INFO[god].korean} ({TEN_GOD_INFO[god].hanja})
-                          </p>
-                          <p className="text-xs text-white/70">
-                            {TEN_GOD_INFO[god].description}
-                          </p>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  ))}
+                        {TEN_GOD_INFO[god].korean}
+                      </button>
+                    );
+
+                    return mounted ? (
+                      <Popover key={god}>
+                        <PopoverTrigger asChild>
+                          {buttonEl}
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+                          sideOffset={8}
+                        >
+                          <div className="space-y-1">
+                            <p className="font-medium text-sm">
+                              {TEN_GOD_INFO[god].korean} ({TEN_GOD_INFO[god].hanja})
+                            </p>
+                            <p className="text-xs text-white/70">
+                              {TEN_GOD_INFO[god].description}
+                            </p>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    ) : (
+                      <span key={god}>{buttonEl}</span>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -111,31 +130,39 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
                   부재 십성
                 </p>
                 <div className="flex flex-wrap gap-1">
-                  {summary.lacking.map((god) => (
-                    <Popover key={god}>
-                      <PopoverTrigger asChild>
-                        <button
-                          type="button"
-                          className="px-2 py-0.5 rounded-full bg-[#f97316]/20 text-[#f97316] text-xs hover:bg-[#f97316]/30 active:bg-[#f97316]/40 transition-colors"
-                        >
-                          {TEN_GOD_INFO[god].korean}
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
-                        sideOffset={8}
+                  {summary.lacking.map((god) => {
+                    const buttonEl = (
+                      <button
+                        type="button"
+                        className="px-2 py-0.5 rounded-full bg-[#f97316]/20 text-[#f97316] text-xs hover:bg-[#f97316]/30 active:bg-[#f97316]/40 transition-colors"
                       >
-                        <div className="space-y-1">
-                          <p className="font-medium text-sm">
-                            {TEN_GOD_INFO[god].korean} ({TEN_GOD_INFO[god].hanja})
-                          </p>
-                          <p className="text-xs text-white/70">
-                            {TEN_GOD_INFO[god].description}
-                          </p>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  ))}
+                        {TEN_GOD_INFO[god].korean}
+                      </button>
+                    );
+
+                    return mounted ? (
+                      <Popover key={god}>
+                        <PopoverTrigger asChild>
+                          {buttonEl}
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+                          sideOffset={8}
+                        >
+                          <div className="space-y-1">
+                            <p className="font-medium text-sm">
+                              {TEN_GOD_INFO[god].korean} ({TEN_GOD_INFO[god].hanja})
+                            </p>
+                            <p className="text-xs text-white/70">
+                              {TEN_GOD_INFO[god].description}
+                            </p>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    ) : (
+                      <span key={god}>{buttonEl}</span>
+                    );
+                  })}
                 </div>
               </div>
             )}
