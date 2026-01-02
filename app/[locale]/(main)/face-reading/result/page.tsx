@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useRouter } from "@/lib/i18n/navigation";
 import {
   Camera,
@@ -17,10 +17,13 @@ import {
   Lightbulb,
   Clover,
   User,
+  Brain,
+  MagicWand,
 } from "@phosphor-icons/react";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
 import { checkAuthStatus, autoSaveFaceReadingResult } from "@/lib/actions/saju";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 
 interface FaceReadingResult {
   overallScore: number;
@@ -49,6 +52,101 @@ interface FaceReadingResult {
   strengths: string[];
   advice: string[];
   luckyElements: string[];
+}
+
+// 스트리밍 카테고리 타입
+type StreamingCategory = "summary" | "personality" | "fortune" | "relationship" | "career" | "advice";
+
+const STREAMING_CATEGORIES: { key: StreamingCategory; label: string; icon: React.ElementType }[] = [
+  { key: "summary", label: "종합 해석", icon: Brain },
+  { key: "personality", label: "성격/기질", icon: User },
+  { key: "fortune", label: "운세/길흉", icon: Star },
+  { key: "relationship", label: "대인관계", icon: Users },
+  { key: "career", label: "직업/재물운", icon: Briefcase },
+  { key: "advice", label: "조언/개운법", icon: Lightbulb },
+];
+
+// 스트리밍 섹션 컴포넌트
+function StreamingSection({
+  category,
+  content,
+  isStreaming,
+  isComplete,
+}: {
+  category: StreamingCategory;
+  content: string;
+  isStreaming: boolean;
+  isComplete: boolean;
+}) {
+  const categoryInfo = STREAMING_CATEGORIES.find((c) => c.key === category);
+  if (!categoryInfo) return null;
+
+  const Icon = categoryInfo.icon;
+
+  return (
+    <div className="border border-white/10 rounded-xl overflow-hidden bg-white/5">
+      <div className="flex items-center gap-2 p-3 sm:p-4 border-b border-white/10 bg-white/5">
+        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#ef4444]" weight="fill" />
+        <span className="text-sm sm:text-base font-semibold text-white">
+          {categoryInfo.label}
+        </span>
+        {isStreaming && (
+          <span className="ml-auto flex items-center gap-1.5 text-[10px] sm:text-xs text-[#ef4444]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#ef4444] animate-pulse" />
+            분석 중...
+          </span>
+        )}
+        {isComplete && !isStreaming && (
+          <Check className="ml-auto w-4 h-4 text-green-400" weight="bold" />
+        )}
+      </div>
+      <div className="p-3 sm:p-4">
+        {content ? (
+          <MarkdownRenderer content={content} />
+        ) : isStreaming ? (
+          <div className="flex items-center gap-2 text-white/40 text-sm">
+            <div className="w-4 h-4 border-2 border-[#ef4444]/30 border-t-[#ef4444] rounded-full animate-spin" />
+            해석 생성 중...
+          </div>
+        ) : (
+          <div className="text-white/30 text-sm">대기 중...</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// AI 분석 중 애니메이션
+function AIAnalyzingAnimation() {
+  const messages = [
+    "관상을 깊이 살펴보고 있습니다...",
+    "얼굴형에서 타고난 성향을 분석합니다...",
+    "오관(五官)에서 운세를 읽어냅니다...",
+    "삼정(三停)에서 인생 흐름을 봅니다...",
+    "AI가 관상학 지혜를 종합하고 있습니다...",
+  ];
+  const [messageIndex, setMessageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMessageIndex((prev) => (prev + 1) % messages.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center justify-center py-8 sm:py-12 space-y-4">
+      <div className="relative">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-[#ef4444] to-pink-500 flex items-center justify-center">
+          <MagicWand className="w-8 h-8 sm:w-10 sm:h-10 text-white" weight="fill" />
+        </div>
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#ef4444] to-pink-500 animate-ping opacity-30" />
+      </div>
+      <p className="text-sm sm:text-base text-white/70 text-center animate-pulse">
+        {messages[messageIndex]}
+      </p>
+    </div>
+  );
 }
 
 function getScoreColor(score: number): string {
@@ -87,6 +185,21 @@ export default function FaceReadingResultPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const hasCheckedAuth = useRef(false);
   const hasSaved = useRef(false);
+
+  // 스트리밍 상태
+  const [streamingContents, setStreamingContents] = useState<Record<StreamingCategory, string>>({
+    summary: "",
+    personality: "",
+    fortune: "",
+    relationship: "",
+    career: "",
+    advice: "",
+  });
+  const [streamingCategory, setStreamingCategory] = useState<StreamingCategory | null>(null);
+  const [completedCategories, setCompletedCategories] = useState<Set<StreamingCategory>>(new Set());
+  const [isStreamingStarted, setIsStreamingStarted] = useState(false);
+  const [allStreamingComplete, setAllStreamingComplete] = useState(false);
+  const hasStartedStreaming = useRef(false);
 
   useEffect(() => {
     const storedResult = sessionStorage.getItem("faceReadingResult");
@@ -138,6 +251,119 @@ export default function FaceReadingResultPage() {
 
     checkAndSave();
   }, [result, imageBase64, gender]);
+
+  // 스트리밍 카테고리 가져오기
+  const fetchStreamingCategory = useCallback(async (category: StreamingCategory, faceData: FaceReadingResult, genderValue: string) => {
+    try {
+      const response = await fetch("/api/face-reading/stream", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          category,
+          faceData,
+          gender: genderValue,
+          locale: "ko",
+        }),
+      });
+
+      if (!response.ok) {
+        console.error(`Failed to fetch category ${category}`);
+        return;
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) return;
+
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              if (data.type === "text") {
+                setStreamingContents((prev) => ({
+                  ...prev,
+                  [category]: prev[category] + data.content,
+                }));
+              } else if (data.type === "done") {
+                // 카테고리 완료
+                setCompletedCategories((prev) => new Set([...prev, category]));
+              }
+            } catch {
+              // 파싱 오류 무시
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`Error streaming category ${category}:`, error);
+    }
+  }, []);
+
+  // 모든 카테고리 순차 스트리밍
+  const streamAllCategories = useCallback(async () => {
+    if (!result || hasStartedStreaming.current) return;
+    hasStartedStreaming.current = true;
+
+    // 캐시 확인
+    const cacheKey = `face_streaming_${JSON.stringify(result).slice(0, 100)}`;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+      try {
+        const cachedData = JSON.parse(cached);
+        setStreamingContents(cachedData);
+        setCompletedCategories(new Set(STREAMING_CATEGORIES.map((c) => c.key)));
+        setAllStreamingComplete(true);
+        return;
+      } catch {
+        localStorage.removeItem(cacheKey);
+      }
+    }
+
+    setIsStreamingStarted(true);
+
+    const categories: StreamingCategory[] = ["summary", "personality", "fortune", "relationship", "career", "advice"];
+
+    for (const category of categories) {
+      setStreamingCategory(category);
+      await fetchStreamingCategory(category, result, gender);
+      // 카테고리 간 짧은 딜레이
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
+    setStreamingCategory(null);
+    setAllStreamingComplete(true);
+
+    // 캐시 저장
+    setTimeout(() => {
+      setStreamingContents((current) => {
+        localStorage.setItem(cacheKey, JSON.stringify(current));
+        return current;
+      });
+    }, 100);
+  }, [result, gender, fetchStreamingCategory]);
+
+  // 스트리밍 시작
+  useEffect(() => {
+    if (result && !hasStartedStreaming.current) {
+      // 약간의 딜레이 후 스트리밍 시작 (UI 렌더링 후)
+      const timer = setTimeout(() => {
+        streamAllCategories();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [result, streamAllCategories]);
 
   if (isLoading) {
     return (
@@ -349,6 +575,65 @@ export default function FaceReadingResultPage() {
             </span>
           ))}
         </div>
+      </section>
+
+      {/* AI 스트리밍 해석 섹션 */}
+      <section className="bg-gradient-to-br from-[#ef4444]/10 to-pink-500/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4 border border-[#ef4444]/30">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-[#ef4444] to-pink-500 flex items-center justify-center">
+            <MagicWand className="w-4 h-4 sm:w-5 sm:h-5 text-white" weight="fill" />
+          </div>
+          <div>
+            <h2 className="text-sm sm:text-base md:text-lg font-bold text-white">
+              AI 관상 해석
+            </h2>
+            <p className="text-[10px] sm:text-xs text-white/60">
+              40년 경력 관상가의 깊이 있는 해석
+            </p>
+          </div>
+          {allStreamingComplete && (
+            <div className="ml-auto flex items-center gap-1.5 text-green-400 text-xs">
+              <Check className="w-4 h-4" weight="bold" />
+              완료
+            </div>
+          )}
+        </div>
+
+        {/* 스트리밍 진행 상태 */}
+        {!isStreamingStarted && !allStreamingComplete && (
+          <AIAnalyzingAnimation />
+        )}
+
+        {/* 스트리밍 콘텐츠 */}
+        {(isStreamingStarted || allStreamingComplete) && (
+          <div className="space-y-3 sm:space-y-4">
+            {STREAMING_CATEGORIES.map(({ key }) => (
+              <StreamingSection
+                key={key}
+                category={key}
+                content={streamingContents[key]}
+                isStreaming={streamingCategory === key}
+                isComplete={completedCategories.has(key)}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* 진행률 표시 */}
+        {isStreamingStarted && !allStreamingComplete && (
+          <div className="pt-2">
+            <div className="flex items-center justify-between text-xs text-white/60 mb-1.5">
+              <span>분석 진행률</span>
+              <span>{completedCategories.size} / {STREAMING_CATEGORIES.length}</span>
+            </div>
+            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-[#ef4444] to-pink-500 rounded-full transition-all duration-500"
+                style={{ width: `${(completedCategories.size / STREAMING_CATEGORIES.length) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Action Buttons */}

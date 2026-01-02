@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Link, useRouter } from "@/lib/i18n/navigation";
 import {
   Camera,
@@ -32,11 +32,13 @@ import {
   Mountains,
   Leaf,
   Coin,
+  MagicWand,
 } from "@phosphor-icons/react";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import { FlipWords } from "@/components/aceternity/flip-words";
 import { SparklesCore } from "@/components/aceternity/sparkles";
 import { motion } from "framer-motion";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 
 interface DetailedFaceReadingResult {
   overallScore: number;
@@ -311,6 +313,13 @@ export default function DetailedFaceReadingResultPage() {
   const [result, setResult] = useState<DetailedFaceReadingResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [gender, setGender] = useState<string>("male");
+
+  // AI 해석 스트리밍 상태
+  const [aiInterpretation, setAiInterpretation] = useState("");
+  const [isStreamingAI, setIsStreamingAI] = useState(false);
+  const [isAIComplete, setIsAIComplete] = useState(false);
+  const hasStartedStreaming = useRef(false);
 
   useEffect(() => {
     const fetchDetailedFaceReading = async () => {
@@ -321,6 +330,8 @@ export default function DetailedFaceReadingResultPage() {
         router.push("/face-reading");
         return;
       }
+
+      setGender(storedGender || "male");
 
       try {
         const response = await fetch("/api/face-reading/detail", {
@@ -351,6 +362,91 @@ export default function DetailedFaceReadingResultPage() {
 
     fetchDetailedFaceReading();
   }, [router]);
+
+  // AI 해석 스트리밍 fetch
+  const fetchAIInterpretation = useCallback(async (faceData: DetailedFaceReadingResult, genderValue: string) => {
+    // 캐시 확인
+    const cacheKey = `face_detail_ai_${JSON.stringify(faceData).slice(0, 100)}`;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+      setAiInterpretation(cached);
+      setIsAIComplete(true);
+      return;
+    }
+
+    setIsStreamingAI(true);
+
+    try {
+      const response = await fetch("/api/face-reading/stream", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          category: "summary",
+          faceData,
+          gender: genderValue,
+          locale: "ko",
+        }),
+      });
+
+      if (!response.ok) {
+        console.error("Failed to fetch AI interpretation");
+        setIsStreamingAI(false);
+        return;
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) return;
+
+      const decoder = new TextDecoder();
+      let fullText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              if (data.type === "text") {
+                fullText += data.content;
+                setAiInterpretation(fullText);
+              } else if (data.type === "done") {
+                setIsAIComplete(true);
+                // 캐시 저장
+                localStorage.setItem(cacheKey, fullText);
+              }
+            } catch {
+              // 파싱 오류 무시
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error streaming AI interpretation:", error);
+    } finally {
+      setIsStreamingAI(false);
+    }
+  }, []);
+
+  // AI 해석 시작
+  useEffect(() => {
+    if (result && !hasStartedStreaming.current) {
+      hasStartedStreaming.current = true;
+      // 약간의 딜레이 후 시작 (UI 렌더링 후)
+      const timer = setTimeout(() => {
+        fetchAIInterpretation(result, gender);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [result, gender, fetchAIInterpretation]);
 
   if (isLoading) {
     const loadingSteps = [
@@ -1078,6 +1174,41 @@ export default function DetailedFaceReadingResultPage() {
               {element}
             </span>
           ))}
+        </div>
+      </section>
+
+      {/* AI 종합 해석 */}
+      <section className="bg-gradient-to-br from-[#ef4444]/10 to-purple-500/10 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-[#ef4444]/30">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#ef4444] to-purple-500 flex items-center justify-center">
+            <MagicWand className="w-5 h-5 text-white" weight="fill" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-white">AI 종합 해석</h2>
+            <p className="text-xs text-white/60">40년 경력 관상가의 종합 분석</p>
+          </div>
+          {isAIComplete && (
+            <div className="ml-auto flex items-center gap-1.5 text-green-400 text-xs">
+              <Check className="w-4 h-4" weight="bold" />
+              완료
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-xl bg-white/5 p-4">
+          {aiInterpretation ? (
+            <MarkdownRenderer content={aiInterpretation} />
+          ) : isStreamingAI ? (
+            <div className="flex items-center gap-3 text-white/60">
+              <div className="w-5 h-5 border-2 border-[#ef4444]/30 border-t-[#ef4444] rounded-full animate-spin" />
+              <span className="text-sm animate-pulse">관상을 종합 분석하고 있습니다...</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 text-white/40">
+              <div className="w-5 h-5 border-2 border-white/20 border-t-white/40 rounded-full animate-spin" />
+              <span className="text-sm">AI 해석 준비 중...</span>
+            </div>
+          )}
         </div>
       </section>
 
