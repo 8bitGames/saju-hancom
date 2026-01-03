@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/lib/i18n/navigation";
-import { Calendar, Clock, MapPin, User, Sparkle, ArrowRight } from "@phosphor-icons/react";
+import { Calendar, Clock, MapPin, User, Sparkle, ArrowRight, Warning } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 // Haptic feedback utility for touch devices
 const triggerHaptic = (style: "light" | "medium" | "heavy" = "light") => {
@@ -78,6 +79,8 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
   const [errors, setErrors] = useState<Partial<Record<keyof BirthData, string>>>(
     {}
   );
+  const [isShaking, setIsShaking] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -125,6 +128,12 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
     e.preventDefault();
 
     if (!validateForm()) {
+      triggerHaptic("heavy");
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 500);
+      toast.error("입력 정보를 확인해주세요", {
+        description: "생년월일을 다시 확인해주세요",
+      });
       return;
     }
 
@@ -145,15 +154,43 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
     }
   };
 
+  const hasErrors = Object.keys(errors).length > 0;
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit}
+      className={cn(
+        "space-y-6",
+        isShaking && "animate-shake"
+      )}
+    >
+      {/* Error Summary */}
+      {hasErrors && (
+        <div
+          role="alert"
+          aria-live="polite"
+          className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20"
+        >
+          <Warning className="w-5 h-5 text-red-400 shrink-0 mt-0.5" weight="fill" />
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-red-400">입력 정보를 확인해주세요</p>
+            <ul className="text-sm text-red-300/80 space-y-0.5">
+              {Object.entries(errors).map(([field, message]) => (
+                <li key={field}>• {message}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
       {/* Gender Selection */}
       <div className="space-y-3">
         <label className="flex items-center gap-2 text-sm font-medium text-white">
           <User className="w-4 h-4 text-white/60" />
           {t("gender.label")}
         </label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label={t("gender.label")}>
           {(["male", "female"] as const).map((g) => (
             <button
               key={g}
@@ -165,9 +202,11 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
               className={cn(
                 "h-12 rounded-xl font-medium text-base transition-all duration-200",
                 formData.gender === g
-                  ? "bg-[#a855f7] text-white"
+                  ? "bg-accent-primary text-white"
                   : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
               )}
+              role="radio"
+              aria-checked={formData.gender === g}
             >
               {t(`gender.${g}`)}
             </button>
@@ -181,7 +220,7 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
           <Calendar className="w-4 h-4 text-white/60" />
           {t("calendar.label")}
         </label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label={t("calendar.label")}>
           {(["solar", "lunar"] as const).map((type) => (
             <button
               key={type}
@@ -193,9 +232,11 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
               className={cn(
                 "h-12 rounded-xl font-medium text-base transition-all duration-200",
                 (type === "lunar") === formData.isLunar
-                  ? "bg-[#a855f7] text-white"
+                  ? "bg-accent-primary text-white"
                   : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
               )}
+              role="radio"
+              aria-checked={(type === "lunar") === formData.isLunar}
             >
               {t(`calendar.${type}`)}
             </button>
@@ -214,10 +255,11 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
             <select
               value={formData.year}
               onChange={(e) => handleChange("year", parseInt(e.target.value))}
-              className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
+              className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-primary"
+              aria-label={t("birthDate.year")}
             >
               {years.map((y) => (
-                <option key={y} value={y} className="bg-[#1a1033] text-white">
+                <option key={y} value={y} className="bg-background-dark text-white">
                   {y}{t("birthDate.year")}
                 </option>
               ))}
@@ -229,10 +271,11 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
           <select
             value={formData.month}
             onChange={(e) => handleChange("month", parseInt(e.target.value))}
-            className="h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
+            className="h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-primary"
+            aria-label={t("birthDate.month")}
           >
             {months.map((m) => (
-              <option key={m} value={m} className="bg-[#1a1033] text-white">
+              <option key={m} value={m} className="bg-background-dark text-white">
                 {m}{t("birthDate.month")}
               </option>
             ))}
@@ -241,10 +284,11 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
             <select
               value={formData.day}
               onChange={(e) => handleChange("day", parseInt(e.target.value))}
-              className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
+              className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-primary"
+              aria-label={t("birthDate.day")}
             >
               {days.map((d) => (
-                <option key={d} value={d} className="bg-[#1a1033] text-white">
+                <option key={d} value={d} className="bg-background-dark text-white">
                   {d}{t("birthDate.day")}
                 </option>
               ))}
@@ -266,10 +310,11 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
           <select
             value={formData.hour}
             onChange={(e) => handleChange("hour", parseInt(e.target.value))}
-            className="h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
+            className="h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-primary"
+            aria-label={t("birthTime.hour")}
           >
             {HOURS.map((h) => (
-              <option key={h.value} value={h.value} className="bg-[#1a1033] text-white">
+              <option key={h.value} value={h.value} className="bg-background-dark text-white">
                 {h.label}
               </option>
             ))}
@@ -277,10 +322,11 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
           <select
             value={formData.minute}
             onChange={(e) => handleChange("minute", parseInt(e.target.value))}
-            className="h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
+            className="h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-primary"
+            aria-label={t("birthTime.minute")}
           >
             {MINUTES.map((m) => (
-              <option key={m.value} value={m.value} className="bg-[#1a1033] text-white">
+              <option key={m.value} value={m.value} className="bg-background-dark text-white">
                 {m.label}
               </option>
             ))}
@@ -300,10 +346,11 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
         <select
           value={formData.city}
           onChange={(e) => handleChange("city", e.target.value)}
-          className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
+          className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-primary"
+          aria-label={t("birthPlace.label")}
         >
           {CITIES.map((city) => (
-            <option key={city.key} value={city.key} className="bg-[#1a1033] text-white">
+            <option key={city.key} value={city.key} className="bg-background-dark text-white">
               {tCities(city.key)}
             </option>
           ))}
@@ -317,7 +364,7 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
       <button
         type="submit"
         onClick={() => triggerHaptic("medium")}
-        className="w-full h-14 flex items-center justify-center gap-2 bg-[#a855f7] text-white font-bold text-lg rounded-xl hover:bg-[#9333ea] active:scale-[0.98] transition-all"
+        className="w-full h-14 flex items-center justify-center gap-2 bg-accent-primary text-white font-bold text-lg rounded-xl hover:bg-accent-primary-hover active:scale-[0.98] transition-all"
       >
         {t("submit")}
         <ArrowRight className="w-5 h-5" weight="bold" />

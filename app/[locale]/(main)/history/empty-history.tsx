@@ -25,21 +25,21 @@ export function EmptyHistory() {
           <div className="grid grid-cols-1 gap-3">
             <Link
               href="/saju"
-              className="flex items-center justify-center gap-2 p-4 rounded-xl bg-[#a855f7] text-white font-medium hover:opacity-90 transition-opacity"
+              className="flex items-center justify-center gap-2 p-4 rounded-xl bg-accent-primary text-white font-medium hover:opacity-90 transition-opacity"
             >
               <Sparkle className="w-5 h-5" weight="fill" />
               {tNav("saju")}
             </Link>
             <Link
               href="/compatibility"
-              className="flex items-center justify-center gap-2 p-4 rounded-xl bg-[#3b82f6] text-white font-medium hover:opacity-90 transition-opacity"
+              className="flex items-center justify-center gap-2 p-4 rounded-xl bg-info text-white font-medium hover:opacity-90 transition-opacity"
             >
               <UsersThree className="w-5 h-5" weight="fill" />
               {tNav("compatibility")}
             </Link>
             <Link
               href="/face-reading"
-              className="flex items-center justify-center gap-2 p-4 rounded-xl bg-[#ef4444] text-white font-medium hover:opacity-90 transition-opacity"
+              className="flex items-center justify-center gap-2 p-4 rounded-xl bg-error text-white font-medium hover:opacity-90 transition-opacity"
             >
               <Eye className="w-5 h-5" weight="fill" />
               {tNav("faceReading")}

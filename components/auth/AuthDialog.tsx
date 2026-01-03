@@ -87,7 +87,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-zinc-900 border-white/10 max-h-[90vh] overflow-y-auto">
         {/* 모드 선택 탭 - 상단에 고정 */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-4" role="tablist" aria-label="로그인 방법 선택">
           <button
             type="button"
             onClick={() => setMode("login")}
@@ -96,6 +96,9 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
                 ? "bg-purple-600 text-white"
                 : "bg-white/5 text-white/60 hover:bg-white/10"
             }`}
+            role="tab"
+            aria-selected={mode === "login"}
+            aria-controls="auth-form"
           >
             <SignIn className="w-5 h-5" weight={mode === "login" ? "fill" : "regular"} />
             로그인
@@ -108,6 +111,9 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
                 ? "bg-emerald-600 text-white"
                 : "bg-white/5 text-white/60 hover:bg-white/10"
             }`}
+            role="tab"
+            aria-selected={mode === "register"}
+            aria-controls="auth-form"
           >
             <UserPlus className="w-5 h-5" weight={mode === "register" ? "fill" : "regular"} />
             회원가입
@@ -137,7 +143,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" id="auth-form" role="tabpanel">
           <div className="space-y-2">
             <Label htmlFor="email" className="text-white/80">
               이메일

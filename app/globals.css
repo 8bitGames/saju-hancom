@@ -36,9 +36,17 @@
   --accent: #8b5cf6;
   --accent-foreground: #ffffff;
 
+  /* Brand Accent Colors */
+  --accent-primary: #a855f7;
+  --accent-primary-hover: #9333ea;
+  --accent-gold: #fbbf24;
+  --background-dark: #1a1033;
+  --background-darkest: #0f0a1a;
+
   /* Status Colors */
   --success: #22c55e;
-  --warning: #eab308;
+  --warning: #f97316;
+  --caution: #eab308;
   --error: #ef4444;
   --info: #3b82f6;
 
@@ -72,6 +80,18 @@
 
   /* Accent */
   --color-accent: var(--accent);
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-primary-hover: var(--accent-primary-hover);
+  --color-accent-gold: var(--accent-gold);
+  --color-background-dark: var(--background-dark);
+  --color-background-darkest: var(--background-darkest);
+
+  /* Status Colors */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-caution: var(--caution);
+  --color-error: var(--error);
+  --color-info: var(--info);
 
   /* Fonts */
   --font-sans: var(--font-geist-sans);
@@ -410,6 +430,17 @@ p, span, label {
 
 .animate-slide-down {
   animation: slide-down 0.2s ease-out;
+}
+
+/* Shake animation for form validation errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
 }
 
 /* Bounce animation for attention */

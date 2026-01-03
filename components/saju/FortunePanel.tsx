@@ -838,7 +838,7 @@ export function FortunePanel({
   return (
     <div className="space-y-4">
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/10">
+      <div className="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/10" role="tablist" aria-label="운세 탭">
         {tabs.map((tab) => (
           <button
             key={tab.key}
@@ -848,6 +848,9 @@ export function FortunePanel({
                 ? "bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-lg"
                 : "text-white/60 hover:text-white hover:bg-white/5"
             }`}
+            role="tab"
+            aria-selected={activeTab === tab.key}
+            aria-controls={`tabpanel-${tab.key}`}
           >
             {tab.icon}
             <span className="whitespace-nowrap">{tab.label}</span>
@@ -867,6 +870,9 @@ export function FortunePanel({
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.2 }}
           className="p-4 bg-white/5 rounded-xl border border-white/10"
+          role="tabpanel"
+          id={`tabpanel-${activeTab}`}
+          aria-labelledby={activeTab}
         >
           {activeTab === "daily" && (
             <DailyFortuneSection data={dailyData} />

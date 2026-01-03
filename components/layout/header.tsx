@@ -78,28 +78,28 @@ export function Header() {
           <nav className="max-w-4xl mx-auto px-4 py-4 flex flex-col gap-2">
             <Link
               href="/saju"
-              className="py-2 px-4 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-card)] transition-colors"
+              className="py-3 px-4 min-h-[44px] rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-card)] transition-colors flex items-center"
               onClick={() => setIsMenuOpen(false)}
             >
               {t("nav.saju")}
             </Link>
             <Link
               href="/compatibility"
-              className="py-2 px-4 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-card)] transition-colors"
+              className="py-3 px-4 min-h-[44px] rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-card)] transition-colors flex items-center"
               onClick={() => setIsMenuOpen(false)}
             >
               {t("nav.compatibility")}
             </Link>
             <Link
               href="/face-reading"
-              className="py-2 px-4 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-card)] transition-colors"
+              className="py-3 px-4 min-h-[44px] rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-card)] transition-colors flex items-center"
               onClick={() => setIsMenuOpen(false)}
             >
               {t("nav.faceReading")}
             </Link>
             <Link
               href="/history"
-              className="py-2 px-4 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-card)] transition-colors"
+              className="py-3 px-4 min-h-[44px] rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-card)] transition-colors flex items-center"
               onClick={() => setIsMenuOpen(false)}
             >
               {t("nav.history")}

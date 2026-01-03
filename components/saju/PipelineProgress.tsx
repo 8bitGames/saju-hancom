@@ -58,7 +58,7 @@ export default function PipelineProgress({ state }: PipelineProgressProps) {
             className="text-center mb-6"
           >
             <motion.div
-              className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-[#22c55e] flex items-center justify-center mb-4"
+              className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-success flex items-center justify-center mb-4"
               animate={{
                 boxShadow: [
                   "0 0 20px #22c55e",
@@ -114,19 +114,19 @@ export default function PipelineProgress({ state }: PipelineProgressProps) {
                 animate={{ opacity: [1, 0.5, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
-                <Sparkle className="w-4 h-4 text-[#a855f7]" weight="fill" />
+                <Sparkle className="w-4 h-4 text-accent-primary" weight="fill" />
               </motion.span>
               <span>
                 {completedSteps.length} / 6 단계 완료 ({Math.round((completedSteps.length / 6) * 100)}%)
               </span>
             </div>
           ) : status === "completed" ? (
-            <div className="flex items-center justify-center gap-2 text-sm sm:text-base text-[#22c55e]">
+            <div className="flex items-center justify-center gap-2 text-sm sm:text-base text-success">
               <Check className="w-4 h-4" weight="bold" />
               모든 분석이 완료되었습니다!
             </div>
           ) : (
-            <p className="text-center text-sm sm:text-base text-[#ef4444]">
+            <p className="text-center text-sm sm:text-base text-error">
               분석 중 오류가 발생했습니다. 다시 시도해주세요.
             </p>
           )}

@@ -204,6 +204,7 @@ export function VoiceChatButton({
         <button
           onClick={handleDisconnect}
           className="p-1 rounded-full hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
+          aria-label="음성 채팅 닫기"
         >
           <X weight="bold" size={18} />
         </button>
@@ -274,6 +275,8 @@ export function VoiceChatButton({
             !isConnected && "opacity-50 cursor-not-allowed"
           )}
           title={isMuted ? "Unmute" : "Mute"}
+          aria-label={isMuted ? "음소거 해제" : "음소거"}
+          aria-pressed={isMuted}
         >
           {isMuted ? (
             <MicrophoneSlash weight="fill" size={20} />
@@ -293,6 +296,7 @@ export function VoiceChatButton({
             "text-white"
           )}
           title={state === "speaking" ? "Tap to interrupt" : stateConfig.label}
+          aria-label={state === "speaking" ? "AI 응답 중단" : "음성 통화 시작"}
         >
           {state === "speaking" ? (
             <Stop weight="fill" size={24} />
@@ -306,6 +310,7 @@ export function VoiceChatButton({
           onClick={handleDisconnect}
           className="p-3 rounded-full bg-red-600 hover:bg-red-700 text-white transition-all duration-200"
           title="End call"
+          aria-label="통화 종료"
         >
           <PhoneDisconnect weight="fill" size={20} />
         </button>

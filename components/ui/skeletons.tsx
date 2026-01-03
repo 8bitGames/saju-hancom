@@ -135,7 +135,7 @@ export function LoaderSkeleton({ className }: SkeletonProps) {
     <div className={cn("flex flex-col items-center justify-center gap-4", className)}>
       <div className="relative w-40 h-40 sm:w-48 sm:h-48">
         <Skeleton className="absolute inset-0 rounded-full" />
-        <div className="absolute inset-6 rounded-full bg-[#a855f7]/20 animate-pulse" />
+        <div className="absolute inset-6 rounded-full bg-accent-primary/20 animate-pulse" />
       </div>
       <Skeleton className="h-6 w-32" />
       <Skeleton className="h-4 w-24" />

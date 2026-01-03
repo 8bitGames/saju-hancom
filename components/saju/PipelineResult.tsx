@@ -163,7 +163,7 @@ function DetailButton({ onClick, label }: { onClick: () => void; label: string }
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#a855f7] hover:text-white hover:bg-[#a855f7] rounded-lg transition-all border border-[#a855f7]"
+      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-accent-primary hover:text-white hover:bg-accent-primary rounded-lg transition-all border border-accent-primary"
     >
       <MagnifyingGlass className="w-4 h-4" />
       {label}
@@ -396,15 +396,15 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
   const getGradeColor = (grade: string) => {
     switch (grade) {
       case "excellent":
-        return "text-[#a855f7] bg-[#a855f7]/20";
+        return "text-accent-primary bg-accent-primary/20";
       case "good":
-        return "text-[#22c55e] bg-[#22c55e]/20";
+        return "text-success bg-success/20";
       case "normal":
-        return "text-[#3b82f6] bg-[#3b82f6]/20";
+        return "text-info bg-info/20";
       case "caution":
-        return "text-[#f97316] bg-[#f97316]/20";
+        return "text-warning bg-warning/20";
       case "challenging":
-        return "text-[#ef4444] bg-[#ef4444]/20";
+        return "text-error bg-error/20";
       default:
         return "text-white/60 bg-white/10";
     }
@@ -426,8 +426,8 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
           <div className="bg-white/5 rounded-xl p-3 sm:p-4 mb-4 border border-white/10">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#a855f7]/20 flex items-center justify-center">
-                  <User className="w-5 h-5 text-[#a855f7]" weight="fill" />
+                <div className="w-10 h-10 rounded-full bg-accent-primary/20 flex items-center justify-center">
+                  <User className="w-5 h-5 text-accent-primary" weight="fill" />
                 </div>
                 <div>
                   <p className="text-xs sm:text-sm text-white/40">분석 대상</p>
@@ -442,7 +442,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
               </div>
               <div className="text-left sm:text-right pl-13 sm:pl-0">
                 <p className="text-xs text-white/40">사주 원국</p>
-                <p className="text-sm sm:text-base font-bold text-[#a855f7]">
+                <p className="text-sm sm:text-base font-bold text-accent-primary">
                   {step1.pillars.year.stem}{step1.pillars.year.branch}{" "}
                   {step1.pillars.month.stem}{step1.pillars.month.branch}{" "}
                   {step1.pillars.day.stem}{step1.pillars.day.branch}{" "}
@@ -454,7 +454,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
         )}
 
         {/* 미니 요약 헤더 - 점수와 등급만 표시 */}
-        <div className="bg-gradient-to-r from-[#a855f7] to-[#9333ea] rounded-xl p-3 sm:p-4 text-white mb-3 sm:mb-4">
+        <div className="bg-gradient-to-r from-accent-primary to-accent-primary-hover rounded-xl p-3 sm:p-4 text-white mb-3 sm:mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white/20 flex items-center justify-center">
@@ -485,7 +485,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                 {step6.tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1 text-xs sm:text-sm font-medium text-[#a855f7] bg-[#a855f7]/10 rounded-full border border-[#a855f7]/30"
+                    className="px-3 py-1 text-xs sm:text-sm font-medium text-accent-primary bg-accent-primary/10 rounded-full border border-accent-primary/30"
                   >
                     #{tag}
                   </span>
@@ -496,7 +496,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
         )}
 
         {/* 탭 네비게이션 - Sticky */}
-        <div className="sticky top-[60px] sm:top-[76px] z-40 -mx-4 px-4 py-2.5 sm:py-3 bg-[#1a1033] border-y border-[#a855f7]/30 shadow-lg shadow-black/30">
+        <div className="sticky top-[60px] sm:top-[76px] z-40 -mx-4 px-4 py-2.5 sm:py-3 bg-[#1a1033] border-y border-accent-primary/30 shadow-lg shadow-black/30">
           <div className="flex gap-1.5 sm:gap-2">
             {TABS.map((tab) => (
               <button
@@ -519,7 +519,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                 }}
                 className={`flex-1 flex items-center justify-center px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all text-sm sm:text-base font-semibold ${
                   activeTab === tab.id
-                    ? "bg-[#a855f7] text-white shadow-lg shadow-[#a855f7]/40"
+                    ? "bg-accent-primary text-white shadow-lg shadow-accent-primary/40"
                     : "bg-white/5 text-white/60 border border-white/20 hover:bg-white/10 hover:text-white hover:border-white/30"
                 }`}
               >
@@ -549,7 +549,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                     </div>
                   )}
                   {isOverviewDetailUnlocked && (
-                    <div className="flex items-center gap-2 text-xs text-[#22c55e]">
+                    <div className="flex items-center gap-2 text-xs text-success">
                       <LockOpen className="w-4 h-4" />
                       <span>잠금 해제됨</span>
                     </div>
@@ -584,13 +584,13 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                       >
                         <div className="flex justify-center mb-2 relative">
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                            isLocked ? "bg-white/10 text-white/40" : "bg-[#a855f7]/20 text-[#a855f7]"
+                            isLocked ? "bg-white/10 text-white/40" : "bg-accent-primary/20 text-accent-primary"
                           }`}>
                             {isLocked ? <Lock className="w-4 h-4" weight="fill" /> : areaIcons[key]}
                           </div>
                         </div>
                         <p className={`text-xl sm:text-3xl font-bold ${
-                          isLocked ? "text-white/40" : "text-[#a855f7]"
+                          isLocked ? "text-white/40" : "text-accent-primary"
                         }`}>{isLocked ? "??" : area.score}</p>
                         <p className={`text-xs sm:text-sm mt-0.5 sm:mt-1 ${
                           isLocked ? "text-white/40" : "text-white/60"
@@ -610,7 +610,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                           </span>
                         )}
                         <p className={`text-[10px] sm:text-xs mt-1.5 sm:mt-2 ${
-                          isLocked ? "text-white/30" : "text-[#a855f7]"
+                          isLocked ? "text-white/30" : "text-accent-primary"
                         }`}>{isLocked ? "🔒 상세보기" : "상세보기"}</p>
                       </div>
                     );
@@ -624,7 +624,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                 <ul className="space-y-1.5 sm:space-y-2">
                   {step6.keyInsights.map((insight, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm sm:text-base text-white/80">
-                      <Lightbulb className="w-4 h-4 text-[#a855f7] flex-shrink-0 mt-0.5" weight="fill" />
+                      <Lightbulb className="w-4 h-4 text-accent-primary flex-shrink-0 mt-0.5" weight="fill" />
                       <span>{insight}</span>
                     </li>
                   ))}
@@ -633,25 +633,25 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
 
               {/* 강점 & 주의점 */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="p-3 sm:p-4 bg-[#22c55e]/10 rounded-lg sm:rounded-xl border border-[#22c55e]/30">
-                  <h4 className="font-medium text-sm sm:text-base text-[#22c55e] mb-1.5 sm:mb-2 flex items-center gap-2">
+                <div className="p-3 sm:p-4 bg-success/10 rounded-lg sm:rounded-xl border border-success/30">
+                  <h4 className="font-medium text-sm sm:text-base text-success mb-1.5 sm:mb-2 flex items-center gap-2">
                     <Check className="w-4 h-4" weight="bold" />
                     강점
                   </h4>
                   <ul className="space-y-0.5 sm:space-y-1">
                     {step6.topStrengths.map((s, i) => (
-                      <li key={i} className="text-xs sm:text-sm text-[#22c55e]/80">• {s}</li>
+                      <li key={i} className="text-xs sm:text-sm text-success/80">• {s}</li>
                     ))}
                   </ul>
                 </div>
-                <div className="p-3 sm:p-4 bg-[#f97316]/10 rounded-lg sm:rounded-xl border border-[#f97316]/30">
-                  <h4 className="font-medium text-sm sm:text-base text-[#f97316] mb-1.5 sm:mb-2 flex items-center gap-2">
+                <div className="p-3 sm:p-4 bg-warning/10 rounded-lg sm:rounded-xl border border-warning/30">
+                  <h4 className="font-medium text-sm sm:text-base text-warning mb-1.5 sm:mb-2 flex items-center gap-2">
                     <Warning className="w-4 h-4" weight="fill" />
                     주의점
                   </h4>
                   <ul className="space-y-0.5 sm:space-y-1">
                     {step6.areasToWatch.map((s, i) => (
-                      <li key={i} className="text-xs sm:text-sm text-[#f97316]/80">• {s}</li>
+                      <li key={i} className="text-xs sm:text-sm text-warning/80">• {s}</li>
                     ))}
                   </ul>
                 </div>
@@ -672,16 +672,16 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                   <Info className="w-3 h-3 text-white/60" />
                 </button>
                 {showInfoTooltip === "daymaster" && (
-                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-accent-primary/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
                     {getTooltipText("daymaster")}
                   </div>
                 )}
               </div>
 
               {/* 오늘의 운세 */}
-              <div className="bg-gradient-to-br from-[#a855f7]/20 to-[#9333ea]/10 rounded-xl p-4 sm:p-5 border border-[#a855f7]/30">
+              <div className="bg-gradient-to-br from-accent-primary/20 to-accent-primary-hover/10 rounded-xl p-4 sm:p-5 border border-accent-primary/30">
                 <div className="flex items-center gap-2 mb-3">
-                  <Sparkle className="w-5 h-5 text-[#a855f7]" weight="fill" />
+                  <Sparkle className="w-5 h-5 text-accent-primary" weight="fill" />
                   <h3 className="text-base sm:text-lg font-semibold text-white">오늘의 운세</h3>
                   <span className="text-xs text-white/50">{new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" })}</span>
                 </div>
@@ -696,29 +696,29 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                 {/* 행운 요소 */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                   <div className="bg-white/10 rounded-lg p-2.5 sm:p-3 text-center">
-                    <Palette className="w-4 h-4 mx-auto text-[#a855f7] mb-1" />
+                    <Palette className="w-4 h-4 mx-auto text-accent-primary mb-1" />
                     <p className="text-[10px] sm:text-xs text-white/50">행운 색상</p>
                     <p className="text-xs sm:text-sm font-medium text-white">{step6.luckyElements.colors.join(", ")}</p>
                   </div>
                   <div className="bg-white/10 rounded-lg p-2.5 sm:p-3 text-center">
-                    <Hash className="w-4 h-4 mx-auto text-[#a855f7] mb-1" />
+                    <Hash className="w-4 h-4 mx-auto text-accent-primary mb-1" />
                     <p className="text-[10px] sm:text-xs text-white/50">행운 숫자</p>
                     <p className="text-xs sm:text-sm font-medium text-white">{step6.luckyElements.numbers.join(", ")}</p>
                   </div>
                   <div className="bg-white/10 rounded-lg p-2.5 sm:p-3 text-center">
-                    <Compass className="w-4 h-4 mx-auto text-[#a855f7] mb-1" />
+                    <Compass className="w-4 h-4 mx-auto text-accent-primary mb-1" />
                     <p className="text-[10px] sm:text-xs text-white/50">행운 방향</p>
                     <p className="text-xs sm:text-sm font-medium text-white">{step6.luckyElements.directions.join(", ")}</p>
                   </div>
                   <div className="bg-white/10 rounded-lg p-2.5 sm:p-3 text-center">
-                    <Sun className="w-4 h-4 mx-auto text-[#a855f7] mb-1" />
+                    <Sun className="w-4 h-4 mx-auto text-accent-primary mb-1" />
                     <p className="text-[10px] sm:text-xs text-white/50">행운 계절</p>
                     <p className="text-xs sm:text-sm font-medium text-white">{step6.luckyElements.seasons.join(", ")}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="text-center p-4 sm:p-6 bg-[#a855f7]/10 rounded-lg sm:rounded-xl border border-[#a855f7]/30">
+              <div className="text-center p-4 sm:p-6 bg-accent-primary/10 rounded-lg sm:rounded-xl border border-accent-primary/30">
                 <p className="text-3xl sm:text-5xl mb-1 sm:mb-2">{step2.dayMaster}</p>
                 <h3 className="text-lg sm:text-xl font-bold text-white">{step2.dayMasterKorean}</h3>
                 <p className="text-sm text-white/60 mt-1">{step2.dayMasterElement} 오행</p>
@@ -727,12 +727,12 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="p-3 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl border border-white/10">
                   <h4 className="font-medium text-sm sm:text-base mb-1.5 sm:mb-2 text-white/60">신강/신약</h4>
-                  <p className="text-xl sm:text-2xl font-bold text-[#a855f7]">{step2.bodyStrength}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-accent-primary">{step2.bodyStrength}</p>
                   <p className="text-xs sm:text-sm text-white/60 mt-1.5 sm:mt-2">{step2.bodyStrengthReason}</p>
                 </div>
                 <div className="p-3 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl border border-white/10">
                   <h4 className="font-medium text-sm sm:text-base mb-1.5 sm:mb-2 text-white/60">월령</h4>
-                  <p className="text-xl sm:text-2xl font-bold text-[#a855f7]">{step2.monthlyInfluence}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-accent-primary">{step2.monthlyInfluence}</p>
                   <p className="text-xs sm:text-sm text-white/60 mt-1.5 sm:mt-2">{step2.monthlyInfluenceReason}</p>
                 </div>
               </div>
@@ -741,27 +741,27 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                 <h4 className="font-medium text-sm sm:text-base mb-2 sm:mb-3 text-white">일간 특성</h4>
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {step2.characteristics.map((c, i) => (
-                    <span key={i} className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[#a855f7]/20 text-[#a855f7] rounded-full text-xs sm:text-sm">
+                    <span key={i} className="px-2 sm:px-3 py-0.5 sm:py-1 bg-accent-primary/20 text-accent-primary rounded-full text-xs sm:text-sm">
                       {c}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="p-3 sm:p-4 bg-[#3b82f6]/10 rounded-lg sm:rounded-xl border border-[#3b82f6]/30">
-                <h4 className="font-medium text-sm sm:text-base text-[#3b82f6] mb-2 sm:mb-3">용신 체계</h4>
+              <div className="p-3 sm:p-4 bg-info/10 rounded-lg sm:rounded-xl border border-info/30">
+                <h4 className="font-medium text-sm sm:text-base text-info mb-2 sm:mb-3">용신 체계</h4>
                 <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
                   <div>
                     <p className="text-xs sm:text-sm text-white/60">용신</p>
-                    <p className="text-base sm:text-lg font-bold text-[#3b82f6]">{step2.usefulGod.primary}</p>
+                    <p className="text-base sm:text-lg font-bold text-info">{step2.usefulGod.primary}</p>
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm text-white/60">희신</p>
-                    <p className="text-base sm:text-lg font-bold text-[#22c55e]">{step2.usefulGod.supporting}</p>
+                    <p className="text-base sm:text-lg font-bold text-success">{step2.usefulGod.supporting}</p>
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm text-white/60">기신</p>
-                    <p className="text-base sm:text-lg font-bold text-[#ef4444]">{step2.usefulGod.avoiding}</p>
+                    <p className="text-base sm:text-lg font-bold text-error">{step2.usefulGod.avoiding}</p>
                   </div>
                 </div>
                 <p className="text-xs sm:text-sm text-white/60 mt-2 sm:mt-3">{step2.usefulGod.reasoning}</p>
@@ -787,15 +787,15 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                   <Info className="w-3 h-3 text-white/60" />
                 </button>
                 {showInfoTooltip === "tengods" && (
-                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-accent-primary/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
                     {getTooltipText("tengods")}
                   </div>
                 )}
               </div>
 
-              <div className="text-center p-3 sm:p-4 bg-[#a855f7]/10 rounded-lg sm:rounded-xl border border-[#a855f7]/30">
+              <div className="text-center p-3 sm:p-4 bg-accent-primary/10 rounded-lg sm:rounded-xl border border-accent-primary/30">
                 <p className="text-xs sm:text-sm text-white/60">격국</p>
-                <h3 className="text-xl sm:text-2xl font-bold text-[#a855f7]">{step3.structure}</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-accent-primary">{step3.structure}</h3>
                 <p className="text-xs sm:text-sm text-white/60 mt-1.5 sm:mt-2">{step3.structureDescription}</p>
               </div>
 
@@ -803,7 +803,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                 <h4 className="font-medium text-sm sm:text-base mb-2 sm:mb-3 text-white">주요 십성</h4>
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {step3.dominantGods.map((g, i) => (
-                    <span key={i} className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[#eab308]/20 text-[#eab308] rounded-full text-xs sm:text-sm flex items-center gap-1">
+                    <span key={i} className="px-2 sm:px-3 py-0.5 sm:py-1 bg-accent-gold/20 text-accent-gold rounded-full text-xs sm:text-sm flex items-center gap-1">
                       <Star className="w-3 h-3" weight="fill" /> {g}
                     </span>
                   ))}
@@ -863,7 +863,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                   <Info className="w-3 h-3 text-white/60" />
                 </button>
                 {showInfoTooltip === "stars" && (
-                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-accent-primary/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
                     {getTooltipText("stars")}
                   </div>
                 )}
@@ -872,19 +872,19 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
               <p className="text-xs sm:text-sm text-white/60">{step4.overallStarInfluence}</p>
 
               <div>
-                <h4 className="font-medium text-sm sm:text-base text-[#22c55e] mb-2 sm:mb-3 flex items-center gap-2">
+                <h4 className="font-medium text-sm sm:text-base text-success mb-2 sm:mb-3 flex items-center gap-2">
                   <Sparkle className="w-4 h-4" weight="fill" />
                   길신 (행운의 별)
                 </h4>
                 <div className="space-y-2 sm:space-y-3">
                   {step4.auspiciousStars.map((star, i) => (
-                    <div key={i} className="p-3 sm:p-4 bg-[#22c55e]/10 rounded-lg sm:rounded-xl border border-[#22c55e]/30">
+                    <div key={i} className="p-3 sm:p-4 bg-success/10 rounded-lg sm:rounded-xl border border-success/30">
                       <div className="flex items-center justify-between">
-                        <h5 className="font-medium text-sm sm:text-base text-[#22c55e]">{star.koreanName}</h5>
+                        <h5 className="font-medium text-sm sm:text-base text-success">{star.koreanName}</h5>
                         <span className="text-[10px] sm:text-xs text-white/60">{star.position}</span>
                       </div>
                       <p className="text-xs sm:text-sm text-white/60 mt-1">{star.meaning}</p>
-                      <p className="text-xs sm:text-sm text-[#22c55e] mt-1.5 sm:mt-2 flex items-start gap-1">
+                      <p className="text-xs sm:text-sm text-success mt-1.5 sm:mt-2 flex items-start gap-1">
                         <Lightbulb className="w-3 h-3 mt-0.5 flex-shrink-0" weight="fill" />
                         활용법: {star.howToUse}
                       </p>
@@ -894,23 +894,23 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
               </div>
 
               <div>
-                <h4 className="font-medium text-sm sm:text-base text-[#f97316] mb-2 sm:mb-3 flex items-center gap-2">
+                <h4 className="font-medium text-sm sm:text-base text-warning mb-2 sm:mb-3 flex items-center gap-2">
                   <Warning className="w-4 h-4" weight="fill" />
                   흉신 (주의할 별)
                 </h4>
                 <div className="space-y-2 sm:space-y-3">
                   {step4.inauspiciousStars.map((star, i) => (
-                    <div key={i} className="p-3 sm:p-4 bg-[#f97316]/10 rounded-lg sm:rounded-xl border border-[#f97316]/30">
+                    <div key={i} className="p-3 sm:p-4 bg-warning/10 rounded-lg sm:rounded-xl border border-warning/30">
                       <div className="flex items-center justify-between">
-                        <h5 className="font-medium text-sm sm:text-base text-[#f97316]">{star.koreanName}</h5>
+                        <h5 className="font-medium text-sm sm:text-base text-warning">{star.koreanName}</h5>
                         <span className="text-[10px] sm:text-xs text-white/60">{star.position}</span>
                       </div>
                       <p className="text-xs sm:text-sm text-white/60 mt-1">{star.meaning}</p>
-                      <p className="text-xs sm:text-sm text-[#ef4444] mt-1.5 sm:mt-2 flex items-start gap-1">
+                      <p className="text-xs sm:text-sm text-error mt-1.5 sm:mt-2 flex items-start gap-1">
                         <Warning className="w-3 h-3 mt-0.5 flex-shrink-0" weight="fill" />
                         주의: {star.caution}
                       </p>
-                      <p className="text-xs sm:text-sm text-[#22c55e] mt-1 flex items-start gap-1">
+                      <p className="text-xs sm:text-sm text-success mt-1 flex items-start gap-1">
                         <Check className="w-3 h-3 mt-0.5 flex-shrink-0" weight="bold" />
                         긍정 활용: {star.positiveUse}
                       </p>
@@ -941,16 +941,16 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                     <Info className="w-3 h-3 text-white/60" />
                   </button>
                   {showInfoTooltip === "timing" && (
-                    <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                    <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-accent-primary/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
                       {getTooltipText("timing")}
                     </div>
                   )}
                 </div>
 
                 {/* 현재 대운 */}
-                <div className="p-3 sm:p-4 bg-[#3b82f6]/10 rounded-lg sm:rounded-xl border border-[#3b82f6]/30">
+                <div className="p-3 sm:p-4 bg-info/10 rounded-lg sm:rounded-xl border border-info/30">
                   <h4 className="font-medium text-sm sm:text-base mb-1.5 sm:mb-2 text-white">현재 대운 ({step5.currentMajorFortune.period})</h4>
-                  <p className="text-xl sm:text-2xl font-bold text-[#a855f7]">{step5.currentMajorFortune.theme}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-accent-primary">{step5.currentMajorFortune.theme}</p>
                   <p className="text-xs sm:text-sm text-white/60 mt-1.5 sm:mt-2">{step5.currentMajorFortune.influence}</p>
                 </div>
 
@@ -958,25 +958,25 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                 <div className="p-3 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl border border-white/10">
                   <div className="flex items-center justify-between mb-2 sm:mb-3">
                     <h4 className="font-medium text-sm sm:text-base text-white">{step5.yearlyFortune.year}년 운세</h4>
-                    <span className="text-xl sm:text-2xl font-bold text-[#a855f7]">{step5.yearlyFortune.score}점</span>
+                    <span className="text-xl sm:text-2xl font-bold text-accent-primary">{step5.yearlyFortune.score}점</span>
                   </div>
                   <p className="text-base sm:text-lg font-medium text-white">{step5.yearlyFortune.theme}</p>
                   <p className="text-xs sm:text-sm text-white/60 mt-1.5 sm:mt-2">{step5.yearlyFortune.advice}</p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4">
-                    <div className="p-3 sm:p-4 bg-[#22c55e]/10 rounded-xl border border-[#22c55e]/30">
-                      <p className="text-base sm:text-lg font-bold text-[#22c55e] mb-2">✨ 기회</p>
+                    <div className="p-3 sm:p-4 bg-success/10 rounded-xl border border-success/30">
+                      <p className="text-base sm:text-lg font-bold text-success mb-2">✨ 기회</p>
                       <ul className="space-y-1.5 sm:space-y-2">
                         {step5.yearlyFortune.opportunities.map((o, i) => (
-                          <li key={i} className="text-sm sm:text-base text-[#22c55e]/90 leading-relaxed">• {o}</li>
+                          <li key={i} className="text-sm sm:text-base text-success/90 leading-relaxed">• {o}</li>
                         ))}
                       </ul>
                     </div>
-                    <div className="p-3 sm:p-4 bg-[#f97316]/10 rounded-xl border border-[#f97316]/30">
-                      <p className="text-base sm:text-lg font-bold text-[#f97316] mb-2">⚡ 도전</p>
+                    <div className="p-3 sm:p-4 bg-warning/10 rounded-xl border border-warning/30">
+                      <p className="text-base sm:text-lg font-bold text-warning mb-2">⚡ 도전</p>
                       <ul className="space-y-1.5 sm:space-y-2">
                         {step5.yearlyFortune.challenges.map((c, i) => (
-                          <li key={i} className="text-sm sm:text-base text-[#f97316]/90 leading-relaxed">• {c}</li>
+                          <li key={i} className="text-sm sm:text-base text-warning/90 leading-relaxed">• {c}</li>
                         ))}
                       </ul>
                     </div>
@@ -999,9 +999,9 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                     <div
                       key={m.month}
                       className={`p-3 sm:p-4 rounded-xl border ${
-                        m.rating === "excellent" ? "bg-[#a855f7]/10 border-[#a855f7]/30" :
-                        m.rating === "good" ? "bg-[#22c55e]/10 border-[#22c55e]/30" :
-                        m.rating === "caution" ? "bg-[#f97316]/10 border-[#f97316]/30" :
+                        m.rating === "excellent" ? "bg-accent-primary/10 border-accent-primary/30" :
+                        m.rating === "good" ? "bg-success/10 border-success/30" :
+                        m.rating === "caution" ? "bg-warning/10 border-warning/30" :
                         "bg-white/5 border-white/10"
                       }`}
                     >
@@ -1037,22 +1037,22 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                   <Info className="w-3 h-3 text-white/60" />
                 </button>
                 {showInfoTooltip === "advice" && (
-                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-accent-primary/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
                     {getTooltipText("advice")}
                   </div>
                 )}
               </div>
 
               {/* 즉시 실천 */}
-              <div className="p-3 sm:p-4 bg-[#a855f7]/10 rounded-lg sm:rounded-xl border border-[#a855f7]/30">
-                <h4 className="font-medium text-sm sm:text-base text-[#a855f7] mb-2 sm:mb-3 flex items-center gap-2">
+              <div className="p-3 sm:p-4 bg-accent-primary/10 rounded-lg sm:rounded-xl border border-accent-primary/30">
+                <h4 className="font-medium text-sm sm:text-base text-accent-primary mb-2 sm:mb-3 flex items-center gap-2">
                   <ArrowRight className="w-4 h-4" weight="bold" />
                   즉시 실천
                 </h4>
                 <ul className="space-y-1.5 sm:space-y-2">
                   {step6.advice.immediate.map((a, i) => (
                     <li key={i} className="flex items-start gap-2 text-xs sm:text-sm text-white/80">
-                      <ArrowRight className="w-3 h-3 text-[#a855f7] flex-shrink-0 mt-0.5" weight="bold" />
+                      <ArrowRight className="w-3 h-3 text-accent-primary flex-shrink-0 mt-0.5" weight="bold" />
                       <span>{a}</span>
                     </li>
                   ))}
@@ -1060,15 +1060,15 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
               </div>
 
               {/* 단기 조언 */}
-              <div className="p-3 sm:p-4 bg-[#3b82f6]/10 rounded-lg sm:rounded-xl border border-[#3b82f6]/30">
-                <h4 className="font-medium text-sm sm:text-base text-[#3b82f6] mb-2 sm:mb-3 flex items-center gap-2">
+              <div className="p-3 sm:p-4 bg-info/10 rounded-lg sm:rounded-xl border border-info/30">
+                <h4 className="font-medium text-sm sm:text-base text-info mb-2 sm:mb-3 flex items-center gap-2">
                   <Calendar className="w-4 h-4" weight="fill" />
                   1-3개월 내
                 </h4>
                 <ul className="space-y-1.5 sm:space-y-2">
                   {step6.advice.shortTerm.map((a, i) => (
                     <li key={i} className="flex items-start gap-2 text-xs sm:text-sm text-white/80">
-                      <ArrowRight className="w-3 h-3 text-[#3b82f6] flex-shrink-0 mt-0.5" weight="bold" />
+                      <ArrowRight className="w-3 h-3 text-info flex-shrink-0 mt-0.5" weight="bold" />
                       <span>{a}</span>
                     </li>
                   ))}
@@ -1076,15 +1076,15 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
               </div>
 
               {/* 장기 조언 */}
-              <div className="p-3 sm:p-4 bg-[#22c55e]/10 rounded-lg sm:rounded-xl border border-[#22c55e]/30">
-                <h4 className="font-medium text-sm sm:text-base text-[#22c55e] mb-2 sm:mb-3 flex items-center gap-2">
+              <div className="p-3 sm:p-4 bg-success/10 rounded-lg sm:rounded-xl border border-success/30">
+                <h4 className="font-medium text-sm sm:text-base text-success mb-2 sm:mb-3 flex items-center gap-2">
                   <Sun className="w-4 h-4" weight="fill" />
                   장기 발전
                 </h4>
                 <ul className="space-y-1.5 sm:space-y-2">
                   {step6.advice.longTerm.map((a, i) => (
                     <li key={i} className="flex items-start gap-2 text-xs sm:text-sm text-white/80">
-                      <ArrowRight className="w-3 h-3 text-[#22c55e] flex-shrink-0 mt-0.5" weight="bold" />
+                      <ArrowRight className="w-3 h-3 text-success flex-shrink-0 mt-0.5" weight="bold" />
                       <span>{a}</span>
                     </li>
                   ))}
@@ -1092,8 +1092,8 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
               </div>
 
               {/* 행운 요소 */}
-              <div className="p-3 sm:p-4 bg-[#eab308]/10 rounded-lg sm:rounded-xl border border-[#eab308]/30">
-                <h4 className="font-medium text-sm sm:text-base text-[#eab308] mb-2 sm:mb-3 flex items-center gap-2">
+              <div className="p-3 sm:p-4 bg-accent-gold/10 rounded-lg sm:rounded-xl border border-accent-gold/30">
+                <h4 className="font-medium text-sm sm:text-base text-accent-gold mb-2 sm:mb-3 flex items-center gap-2">
                   <Star className="w-4 h-4" weight="fill" />
                   행운의 요소
                 </h4>

@@ -132,6 +132,7 @@ export function SajuChatPanel({ sajuContext, sajuResult, gender, locale = "ko" }
       <button
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--element-fire)] text-white shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center"
+        aria-label="사주 AI 상담 열기"
       >
         <ChatCircleDots className="w-8 h-8" weight="fill" />
       </button>
@@ -173,6 +174,8 @@ export function SajuChatPanel({ sajuContext, sajuResult, gender, locale = "ko" }
                 setIsMinimized(!isMinimized);
               }}
               className="hidden md:block p-1.5 rounded-full hover:bg-white/20 transition-colors"
+              aria-label={isMinimized ? "채팅창 확장" : "채팅창 최소화"}
+              aria-expanded={!isMinimized}
             >
               <CaretDown
                 className={`w-4 h-4 transition-transform ${
@@ -186,6 +189,7 @@ export function SajuChatPanel({ sajuContext, sajuResult, gender, locale = "ko" }
                 setIsOpen(false);
               }}
               className="p-2 rounded-full hover:bg-white/20 transition-colors"
+              aria-label="채팅창 닫기"
             >
               <X className="w-5 h-5" />
             </button>
@@ -257,6 +261,7 @@ export function SajuChatPanel({ sajuContext, sajuResult, gender, locale = "ko" }
                       <button
                         onClick={() => setShowAnalysisWarning(false)}
                         className="text-amber-400 hover:text-amber-600 p-0.5"
+                        aria-label="알림 닫기"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -387,6 +392,7 @@ export function SajuChatPanel({ sajuContext, sajuResult, gender, locale = "ko" }
                 type="submit"
                 disabled={isLoading || !input.trim()}
                 className="p-3 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--element-fire)] text-white disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
+                aria-label="메시지 보내기"
               >
                 <PaperPlaneTilt className="w-5 h-5" weight="fill" />
               </button>

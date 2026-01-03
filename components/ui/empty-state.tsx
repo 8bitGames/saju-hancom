@@ -112,7 +112,7 @@ export function EmptyState({
                 "px-5 py-2.5 rounded-xl font-medium transition-colors",
                 action.variant === "secondary"
                   ? "bg-white/10 text-white hover:bg-white/20"
-                  : "bg-purple-500 text-white hover:bg-purple-600"
+                  : "bg-accent-primary text-white hover:bg-accent-primary-hover"
               )}
             >
               {action.label}
