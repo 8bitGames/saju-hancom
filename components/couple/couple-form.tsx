@@ -54,9 +54,9 @@ const HOURS = Array.from({ length: 24 }, (_, i) => ({
   label: `${i.toString().padStart(2, "0")}시`,
 }));
 
-const MINUTES = [0, 15, 30, 45].map((m) => ({
-  value: m,
-  label: `${m.toString().padStart(2, "0")}분`,
+const MINUTES = Array.from({ length: 60 }, (_, i) => ({
+  value: i,
+  label: `${i.toString().padStart(2, "0")}분`,
 }));
 
 const RELATION_TYPES: { value: CoupleRelationType; label: string; labelEn: string }[] = [

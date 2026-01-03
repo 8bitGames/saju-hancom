@@ -90,11 +90,11 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
       : `${i.toString().padStart(2, "0")}:00`,
   }));
 
-  const MINUTES = [0, 15, 30, 45].map((m) => ({
-    value: m,
+  const MINUTES = Array.from({ length: 60 }, (_, i) => ({
+    value: i,
     label: locale === 'ko'
-      ? `${m.toString().padStart(2, "0")}분`
-      : `:${m.toString().padStart(2, "0")}`,
+      ? `${i.toString().padStart(2, "0")}분`
+      : `:${i.toString().padStart(2, "0")}`,
   }));
 
   const handleChange = <K extends keyof BirthData>(
