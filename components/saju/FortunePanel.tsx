@@ -31,17 +31,18 @@ interface FortuneGrade {
 interface HourlyFortune {
   timeRange: string;
   periodName: string;
-  pillar: {
+  pillar?: {
     stem: string;
     branch: string;
     stemKorean: string;
     branchKorean: string;
   };
+  pillarKorean?: string;
   score: number;
   grade: string;
-  description: string;
-  goodFor: string[];
-  avoidFor: string[];
+  description?: string;
+  goodFor?: string[];
+  avoidFor?: string[];
 }
 
 interface DailyFortuneData {
@@ -67,7 +68,7 @@ interface DailyFortuneData {
   activitiesToAvoid: string[];
 }
 
-interface MajorFortunePillar {
+export interface MajorFortunePillar {
   order: number;
   startAge: number;
   endAge: number;
@@ -79,20 +80,20 @@ interface MajorFortunePillar {
     stemKorean: string;
     branchKorean: string;
   };
-  analysis: {
+  analysis?: {
     score: number;
     grade: string;
-    theme: string;
-    description: string;
+    theme?: string;
+    description?: string;
   };
-  keywords: string[];
+  keywords?: string[];
 }
 
-interface MajorFortuneData {
+export interface MajorFortuneData {
   startAge: number;
   direction: "forward" | "backward";
   currentIndex: number;
-  fortunes: MajorFortunePillar[];
+  fortunes?: MajorFortunePillar[];
 }
 
 interface FortunePanelProps {
@@ -141,6 +142,209 @@ function GradeBadge({ grade, score }: { grade: string; score: number }) {
   );
 }
 
+// 운세 로딩 애니메이션 - 점술사가 운세를 보는 느낌
+function FortuneLoadingAnimation() {
+  // 오행 심볼
+  const elements = ["木", "火", "土", "金", "水"];
+  // 천간 심볼
+  const stems = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+  const [stemIndex, setStemIndex] = useState(0);
+
+  // 별 위치 고정 (SSR 호환)
+  const starPositions = [
+    { left: 10, top: 15 }, { left: 85, top: 20 }, { left: 25, top: 80 },
+    { left: 70, top: 10 }, { left: 45, top: 90 }, { left: 90, top: 60 },
+    { left: 5, top: 50 }, { left: 60, top: 75 }, { left: 35, top: 25 },
+    { left: 80, top: 85 }, { left: 15, top: 70 }, { left: 55, top: 5 },
+    { left: 95, top: 40 }, { left: 40, top: 55 }, { left: 20, top: 35 },
+    { left: 75, top: 45 }, { left: 30, top: 60 }, { left: 65, top: 30 },
+    { left: 50, top: 15 }, { left: 12, top: 88 },
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStemIndex((prev) => (prev + 1) % stems.length);
+    }, 500);
+    return () => clearInterval(interval);
+  }, [stems.length]);
+
+  return (
+    <div className="relative flex flex-col items-center justify-center py-12 overflow-hidden">
+      {/* 배경 별 효과 */}
+      <div className="absolute inset-0">
+        {starPositions.map((pos, i) => (
+          <motion.div
+            key={`star-${i}`}
+            className="absolute w-1 h-1 bg-white rounded-full"
+            style={{
+              left: `${pos.left}%`,
+              top: `${pos.top}%`,
+            }}
+            animate={{
+              opacity: [0.2, 1, 0.2],
+              scale: [0.5, 1, 0.5],
+            }}
+            transition={{
+              duration: 2 + (i % 3),
+              repeat: Infinity,
+              delay: i * 0.1,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* 중앙 수정구 */}
+      <div className="relative w-32 h-32">
+        {/* 외곽 회전 링 */}
+        <motion.div
+          className="absolute inset-0 rounded-full border-2 border-purple-500/30"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div
+          className="absolute inset-2 rounded-full border border-violet-400/40"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+        />
+
+        {/* 에너지 펄스 링 */}
+        {[...Array(3)].map((_, i) => (
+          <motion.div
+            key={`pulse-${i}`}
+            className="absolute inset-0 rounded-full border border-purple-400/30"
+            animate={{
+              scale: [1, 2],
+              opacity: [0.5, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              delay: i * 0.6,
+              ease: "easeOut",
+            }}
+          />
+        ))}
+
+        {/* 궤도를 도는 오행 심볼 */}
+        {elements.map((el, i) => {
+          const angle = (i * 72 * Math.PI) / 180;
+          return (
+            <motion.div
+              key={`element-${i}`}
+              className="absolute text-sm font-bold"
+              style={{
+                left: "50%",
+                top: "50%",
+              }}
+              animate={{
+                x: [
+                  Math.cos(angle) * 50 - 8,
+                  Math.cos(angle + Math.PI) * 50 - 8,
+                  Math.cos(angle + Math.PI * 2) * 50 - 8,
+                ],
+                y: [
+                  Math.sin(angle) * 50 - 8,
+                  Math.sin(angle + Math.PI) * 50 - 8,
+                  Math.sin(angle + Math.PI * 2) * 50 - 8,
+                ],
+                opacity: [0.3, 1, 0.3],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                delay: i * 0.3,
+                ease: "easeInOut",
+              }}
+            >
+              <span className={`
+                ${i === 0 ? "text-green-400" : ""}
+                ${i === 1 ? "text-red-400" : ""}
+                ${i === 2 ? "text-yellow-400" : ""}
+                ${i === 3 ? "text-white" : ""}
+                ${i === 4 ? "text-blue-400" : ""}
+              `}>
+                {el}
+              </span>
+            </motion.div>
+          );
+        })}
+
+        {/* 중앙 빛나는 구슬 */}
+        <div className="absolute inset-4 rounded-full bg-gradient-to-br from-purple-600/80 via-violet-500/60 to-indigo-600/80 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+          {/* 내부 빛 효과 */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/30"
+            animate={{
+              opacity: [0.3, 0.6, 0.3],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+
+          {/* 중앙 천간 글자 변화 */}
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={stemIndex}
+              className="text-2xl font-bold text-white/90 z-10"
+              initial={{ opacity: 0, scale: 0.5, rotateY: -90 }}
+              animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+              exit={{ opacity: 0, scale: 0.5, rotateY: 90 }}
+              transition={{ duration: 0.3 }}
+            >
+              {stems[stemIndex]}
+            </motion.span>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* 로딩 텍스트 */}
+      <motion.div
+        className="mt-6 text-center"
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        <p className="text-white/80 font-medium flex items-center justify-center gap-2">
+          <Sparkle className="w-4 h-4 text-purple-400" weight="fill" />
+          오늘의 운세를 살피는 중
+          <motion.span
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            ...
+          </motion.span>
+        </p>
+        <p className="text-white/40 text-sm mt-1">
+          천기를 읽고 있습니다
+        </p>
+      </motion.div>
+
+      {/* 하단 장식 - 팔괘 심볼 */}
+      <div className="flex gap-3 mt-4">
+        {["☰", "☱", "☲", "☳", "☴", "☵", "☶", "☷"].map((trigram, i) => (
+          <motion.span
+            key={i}
+            className="text-white/30 text-xs"
+            animate={{
+              opacity: [0.2, 0.6, 0.2],
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              delay: i * 0.15,
+            }}
+          >
+            {trigram}
+          </motion.span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// 간단한 로딩 스피너 (폴백용)
 function LoadingSpinner() {
   return (
     <div className="flex items-center justify-center py-12">
@@ -194,7 +398,7 @@ function PremiumLock({ onUpgradeClick }: { onUpgradeClick?: () => void }) {
 
 function DailyFortuneSection({ data }: { data: DailyFortuneData | null }) {
   if (!data) {
-    return <LoadingSpinner />;
+    return <FortuneLoadingAnimation />;
   }
 
   const today = new Date();
@@ -375,14 +579,14 @@ function HourlyFortuneSection({
             지금 시간대 ({data[currentPeriodIndex].periodName})
           </h4>
           <p className="text-sm text-white/70 mb-3">
-            {data[currentPeriodIndex].description}
+            {data[currentPeriodIndex].description || `${data[currentPeriodIndex].periodName} 시간대입니다.`}
           </p>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
               <p className="text-xs text-green-400 mb-1">좋은 활동</p>
               <ul className="space-y-0.5">
-                {data[currentPeriodIndex].goodFor.map((item, idx) => (
+                {(data[currentPeriodIndex].goodFor ?? []).map((item, idx) => (
                   <li key={idx} className="text-xs text-white/60">• {item}</li>
                 ))}
               </ul>
@@ -390,7 +594,7 @@ function HourlyFortuneSection({
             <div>
               <p className="text-xs text-orange-400 mb-1">피할 활동</p>
               <ul className="space-y-0.5">
-                {data[currentPeriodIndex].avoidFor.map((item, idx) => (
+                {(data[currentPeriodIndex].avoidFor ?? []).map((item, idx) => (
                   <li key={idx} className="text-xs text-white/60">• {item}</li>
                 ))}
               </ul>
@@ -403,10 +607,10 @@ function HourlyFortuneSection({
 }
 
 // ============================================================================
-// Major Fortune Section
+// Major Fortune Section (Exported for use in result page)
 // ============================================================================
 
-function MajorFortuneSection({
+export function MajorFortuneSection({
   data,
   birthYear,
   isPremium,
@@ -422,6 +626,11 @@ function MajorFortuneSection({
   }
 
   if (!data) {
+    return <LoadingSpinner />;
+  }
+
+  // fortunes 배열이 없으면 로딩 표시
+  if (!data.fortunes || data.fortunes.length === 0) {
     return <LoadingSpinner />;
   }
 
@@ -445,7 +654,7 @@ function MajorFortuneSection({
         <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-white/10" />
 
         <div className="space-y-3">
-          {data.fortunes.map((fortune, idx) => {
+          {(data.fortunes ?? []).map((fortune, idx) => {
             const isCurrent = idx === data.currentIndex;
             const isPast = idx < data.currentIndex;
 
@@ -489,7 +698,7 @@ function MajorFortuneSection({
                         </span>
                       )}
                     </div>
-                    <GradeBadge grade={fortune.analysis.grade} score={fortune.analysis.score} />
+                    <GradeBadge grade={fortune.analysis?.grade || "normal"} score={fortune.analysis?.score || 50} />
                   </div>
 
                   <p className="text-xs text-white/40 mb-2">
@@ -497,15 +706,15 @@ function MajorFortuneSection({
                   </p>
 
                   <p className="text-sm font-medium text-white mb-1">
-                    {fortune.analysis.theme}
+                    {fortune.analysis?.theme || "대운 분석"}
                   </p>
                   <p className="text-sm text-white/60 leading-relaxed">
-                    {fortune.analysis.description}
+                    {fortune.analysis?.description || "대운 기간입니다."}
                   </p>
 
-                  {fortune.keywords.length > 0 && (
+                  {(fortune.keywords?.length ?? 0) > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-3">
-                      {fortune.keywords.map((keyword, kidx) => (
+                      {(fortune.keywords ?? []).map((keyword, kidx) => (
                         <span
                           key={kidx}
                           className="px-2 py-0.5 rounded-full bg-white/10 text-white/60 text-xs"
@@ -529,7 +738,7 @@ function MajorFortuneSection({
 // Main Component
 // ============================================================================
 
-type FortuneTab = "daily" | "hourly" | "major";
+type FortuneTab = "daily" | "hourly";
 
 export function FortunePanel({
   shareId,
@@ -604,19 +813,15 @@ export function FortunePanel({
   const tabs: { key: FortuneTab; label: string; icon: React.ReactNode; premium?: boolean }[] = [
     { key: "daily", label: "오늘의 운", icon: <Sun className="w-4 h-4" weight="fill" /> },
     { key: "hourly", label: "시운", icon: <Clock className="w-4 h-4" weight="fill" />, premium: true },
-    { key: "major", label: "대운", icon: <CalendarBlank className="w-4 h-4" weight="fill" />, premium: true },
   ];
 
   if (!shareId) {
     return (
-      <div className="p-8 text-center space-y-4">
+      <div className="p-4 text-center">
         {isLoadingShareId ? (
-          <>
-            <LoadingSpinner />
-            <p className="text-white/60 text-sm">운세 데이터를 준비하고 있습니다...</p>
-          </>
+          <FortuneLoadingAnimation />
         ) : (
-          <>
+          <div className="space-y-4 py-8">
             <div className="w-16 h-16 mx-auto rounded-full bg-amber-500/10 flex items-center justify-center mb-4">
               <Sun className="w-8 h-8 text-amber-400" weight="fill" />
             </div>
@@ -624,7 +829,7 @@ export function FortunePanel({
             <p className="text-white/50 text-sm">
               사주 분석이 저장되면 오늘의 운세를 확인할 수 있습니다
             </p>
-          </>
+          </div>
         )}
       </div>
     );
@@ -669,14 +874,6 @@ export function FortunePanel({
           {activeTab === "hourly" && (
             <HourlyFortuneSection
               data={hourlyData}
-              isPremium={isPremium}
-              onUpgradeClick={onUpgradeClick}
-            />
-          )}
-          {activeTab === "major" && (
-            <MajorFortuneSection
-              data={majorData}
-              birthYear={birthYear}
               isPremium={isPremium}
               onUpgradeClick={onUpgradeClick}
             />

@@ -610,3 +610,120 @@ export async function getSajuResultById(resultId: string) {
     },
   };
 }
+
+// ============================================================================
+// Daily Fortune (오늘의 운세) 캐싱
+// ============================================================================
+
+/**
+ * 저장된 일운(오늘의 운세) 조회
+ * 같은 날짜의 같은 사주 결과에 대해 캐싱된 운세가 있으면 반환
+ */
+export async function getDailyFortune(
+  userId: string,
+  sajuResultId: string,
+  date: string // YYYY-MM-DD format
+): Promise<{
+  success: boolean;
+  data?: unknown;
+  error?: string;
+}> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('saju_daily_fortunes')
+    .select('fortune_data')
+    .eq('user_id', userId)
+    .eq('saju_result_id', sajuResultId)
+    .eq('fortune_date', date)
+    .single();
+
+  if (error) {
+    // PGRST116 = no rows found, which is not an error for cache miss
+    if (error.code === 'PGRST116') {
+      return { success: true, data: undefined };
+    }
+    console.error('[getDailyFortune] Error:', error.message);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, data: data?.fortune_data };
+}
+
+/**
+ * 일운(오늘의 운세) 저장 (upsert)
+ * 같은 날짜의 같은 사주 결과에 대해 운세를 저장하거나 업데이트
+ */
+export async function saveDailyFortune(
+  userId: string,
+  sajuResultId: string,
+  date: string, // YYYY-MM-DD format
+  fortuneData: unknown
+): Promise<{
+  success: boolean;
+  error?: string;
+}> {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from('saju_daily_fortunes')
+    .upsert(
+      {
+        user_id: userId,
+        saju_result_id: sajuResultId,
+        fortune_date: date,
+        fortune_data: fortuneData,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: 'user_id,saju_result_id,fortune_date',
+        ignoreDuplicates: false,
+      }
+    );
+
+  if (error) {
+    console.error('[saveDailyFortune] Error:', error.message);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+}
+
+/**
+ * 사용자의 최근 일운 목록 조회
+ */
+export async function getRecentDailyFortunes(
+  userId: string,
+  limit: number = 7
+): Promise<{
+  success: boolean;
+  fortunes?: Array<{
+    date: string;
+    sajuResultId: string;
+    fortuneData: unknown;
+  }>;
+  error?: string;
+}> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('saju_daily_fortunes')
+    .select('fortune_date, saju_result_id, fortune_data')
+    .eq('user_id', userId)
+    .order('fortune_date', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('[getRecentDailyFortunes] Error:', error.message);
+    return { success: false, error: error.message };
+  }
+
+  return {
+    success: true,
+    fortunes: (data || []).map((row) => ({
+      date: row.fortune_date,
+      sajuResultId: row.saju_result_id,
+      fortuneData: row.fortune_data,
+    })),
+  };
+}

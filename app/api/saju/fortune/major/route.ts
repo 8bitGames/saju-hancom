@@ -62,15 +62,15 @@ export async function GET(request: NextRequest) {
     const result = sajuResult.result;
     const saju = result.resultData || result;
 
-    // 생년월일 추출
-    const birthYear = saju?.birthInfo?.year || saju?.step1?.birthInfo?.year || 1990;
-    const birthMonth = saju?.birthInfo?.month || saju?.step1?.birthInfo?.month || 1;
-    const birthDay = saju?.birthInfo?.day || saju?.step1?.birthInfo?.day || 1;
+    // 생년월일 추출 (birthData는 result에 직접 있음)
+    const birthYear = result.birthData?.year || saju?.birthInfo?.year || saju?.step1?.birthInfo?.year || 1990;
+    const birthMonth = result.birthData?.month || saju?.birthInfo?.month || saju?.step1?.birthInfo?.month || 1;
+    const birthDay = result.birthData?.day || saju?.birthInfo?.day || saju?.step1?.birthInfo?.day || 1;
     const birthDate = new Date(birthYear, birthMonth - 1, birthDay);
 
-    // 성별 추출
+    // 성별 추출 (birthData는 result에 직접 있음)
     const gender: "male" | "female" =
-      saju?.birthInfo?.gender || saju?.step1?.birthInfo?.gender || "male";
+      result.birthData?.gender || saju?.birthInfo?.gender || saju?.step1?.birthInfo?.gender || "male";
 
     // 원국 간지 추출
     const yearStem =
@@ -161,6 +161,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // 현재 대운 인덱스 찾기
+    const currentIndex = majorFortuneList.fortunes.findIndex(
+      (f: MajorFortunePillar) => f.order === currentAnalysis.current?.order
+    );
+
     // 응답 구성
     return NextResponse.json({
       success: true,
@@ -168,9 +173,10 @@ export async function GET(request: NextRequest) {
         // 기본 정보
         birthDate: `${birthYear}-${String(birthMonth).padStart(2, "0")}-${String(birthDay).padStart(2, "0")}`,
         gender: gender === "male" ? "남성" : "여성",
-        direction: majorFortuneList.direction === "forward" ? "순행" : "역행",
+        direction: majorFortuneList.direction, // "forward" | "backward"
         startAge: majorFortuneList.startAge,
         calculationBasis: majorFortuneList.calculationBasis,
+        currentIndex: currentIndex >= 0 ? currentIndex : 0,
 
         // 현재 대운
         currentFortune: currentAnalysis.current
@@ -194,7 +200,29 @@ export async function GET(request: NextRequest) {
         remainingYears: currentAnalysis.yearsRemaining,
         progressPercent: currentAnalysis.progress,
 
-        // 전체 대운 목록
+        // 전체 대운 목록 (클라이언트 호환 형식)
+        fortunes: majorFortuneList.fortunes.map((f: MajorFortunePillar) => ({
+          order: f.order,
+          startAge: f.startAge,
+          endAge: f.endAge,
+          startYear: f.startYear,
+          endYear: f.endYear,
+          pillar: {
+            stem: f.pillar.stem,
+            branch: f.pillar.branch,
+            stemKorean: f.pillar.stemKorean,
+            branchKorean: f.pillar.branchKorean,
+          },
+          analysis: {
+            score: f.analysis.score,
+            grade: f.analysis.grade,
+            theme: interpretation?.currentFortuneTheme || getDefaultTheme(f),
+            description: interpretation?.currentFortuneDescription || getDefaultDescription(f),
+          },
+          keywords: f.keywords || [],
+        })),
+
+        // 전체 대운 목록 (기존 형식 호환)
         allFortunes: majorFortuneList.fortunes.map((f: MajorFortunePillar) => ({
           order: f.order,
           ageRange: `${f.startAge}세 ~ ${f.endAge}세`,
@@ -273,6 +301,37 @@ export async function POST(request: NextRequest) {
 // ============================================================================
 // Helper Functions
 // ============================================================================
+
+/**
+ * 기본 테마 생성
+ */
+function getDefaultTheme(f: MajorFortunePillar): string {
+  const elementThemes: Record<string, string> = {
+    wood: "성장과 발전의 시기",
+    fire: "열정과 도약의 시기",
+    earth: "안정과 축적의 시기",
+    metal: "결단과 실행의 시기",
+    water: "지혜와 유연성의 시기",
+  };
+  return elementThemes[f.pillar.element] || "변화의 시기";
+}
+
+/**
+ * 기본 설명 생성
+ */
+function getDefaultDescription(f: MajorFortunePillar): string {
+  const grade = f.analysis.grade;
+  const element = f.pillar.elementKorean;
+
+  if (grade === "excellent") {
+    return `${element} 에너지가 강하게 작용하여 큰 발전이 기대되는 대운입니다.`;
+  } else if (grade === "good") {
+    return `${element} 기운이 긍정적으로 작용하는 좋은 대운입니다.`;
+  } else if (grade === "caution") {
+    return `${element} 기운에 주의가 필요한 대운입니다. 신중한 행동이 중요합니다.`;
+  }
+  return `${element} 에너지가 흐르는 대운입니다.`;
+}
 
 /**
  * AI를 사용한 대운 해석 생성

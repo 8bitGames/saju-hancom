@@ -73,3 +73,14 @@ export {
   getCurrentMinorFortune,
   getMinorFortuneSummary,
 } from "./minor-fortune";
+
+// Yearly Fortune (세운)
+export {
+  calculateYearlyPillar,
+  getZodiacAnimal,
+  analyzeYearlyFortune,
+  analyzeYearlyFortuneRange,
+  getYearlyFortuneSummary,
+} from "./yearly-fortune";
+
+export type { YearlyFortune, YearlyFortuneList } from "./yearly-fortune";

@@ -9,7 +9,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { z } from "zod";
-import { getSajuResultById } from "@/lib/supabase/usage";
+import { getSajuResultById, getDailyFortune, saveDailyFortune } from "@/lib/supabase/usage";
+import { createClient } from "@/lib/supabase/server";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
 import {
   analyzeDailyFortune,
@@ -87,8 +88,28 @@ export async function GET(request: NextRequest) {
     const days = Math.min(Math.max(parseInt(daysStr || "1", 10), 1), 7);
     const shouldInterpret = interpretStr !== "false";
 
+    // 현재 사용자 확인 (캐싱을 위해)
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // 날짜 문자열 (YYYY-MM-DD) 생성
+    const dateForCache = targetDate.toISOString().split('T')[0];
+
     // 일운 계산
     if (days === 1) {
+      // 캐시된 운세 확인 (로그인한 사용자만)
+      if (user) {
+        const cachedFortune = await getDailyFortune(user.id, shareId, dateForCache);
+        if (cachedFortune.success && cachedFortune.data) {
+          console.log('[Daily Fortune] Cache hit for', dateForCache);
+          return NextResponse.json({
+            success: true,
+            data: cachedFortune.data,
+            cached: true,
+          });
+        }
+      }
+
       // 단일 날짜
       const dailyResult = analyzeDailyFortune(
         targetDate,
@@ -110,32 +131,46 @@ export async function GET(request: NextRequest) {
         }
       }
 
+      const responseData = {
+        ...dailyResult,
+        analysis: interpretation
+          ? {
+              score: dailyResult.baseAnalysis.score,
+              grade: dailyResult.baseAnalysis.grade,
+              theme: interpretation.theme,
+              description: interpretation.description,
+              opportunities: interpretation.opportunities,
+              challenges: interpretation.challenges,
+              advice: interpretation.advice,
+            }
+          : {
+              score: dailyResult.baseAnalysis.score,
+              grade: dailyResult.baseAnalysis.grade,
+              theme: getDefaultTheme(dailyResult.baseAnalysis.grade),
+              description: dailyResult.baseAnalysis.usefulGodReason,
+              opportunities: [],
+              challenges: [],
+              advice: "",
+            },
+        recommendedActivities: interpretation?.recommendedActivities || [],
+        activitiesToAvoid: interpretation?.activitiesToAvoid || [],
+      };
+
+      // 로그인한 사용자의 경우 캐시에 저장
+      if (user && interpretation) {
+        saveDailyFortune(user.id, shareId, dateForCache, responseData)
+          .then((result) => {
+            if (result.success) {
+              console.log('[Daily Fortune] Saved to cache for', dateForCache);
+            }
+          })
+          .catch(console.error);
+      }
+
       return NextResponse.json({
         success: true,
-        data: {
-          ...dailyResult,
-          analysis: interpretation
-            ? {
-                score: dailyResult.baseAnalysis.score,
-                grade: dailyResult.baseAnalysis.grade,
-                theme: interpretation.theme,
-                description: interpretation.description,
-                opportunities: interpretation.opportunities,
-                challenges: interpretation.challenges,
-                advice: interpretation.advice,
-              }
-            : {
-                score: dailyResult.baseAnalysis.score,
-                grade: dailyResult.baseAnalysis.grade,
-                theme: getDefaultTheme(dailyResult.baseAnalysis.grade),
-                description: dailyResult.baseAnalysis.usefulGodReason,
-                opportunities: [],
-                challenges: [],
-                advice: "",
-              },
-          recommendedActivities: interpretation?.recommendedActivities || [],
-          activitiesToAvoid: interpretation?.activitiesToAvoid || [],
-        },
+        data: responseData,
+        cached: false,
       });
     } else {
       // 다중 날짜 (간략 버전)

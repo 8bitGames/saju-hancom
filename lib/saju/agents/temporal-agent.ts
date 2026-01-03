@@ -2,12 +2,17 @@
  * Temporal Agent (시간 축 에이전트)
  *
  * 역할: 현재 시점의 시간적 맥락을 분석
- * - 세운(歲運) 계산: 올해의 천간지지
- * - 월운 계산: 이번 달의 천간지지
+ * - 세운(歲運) 계산: 올해의 천간지지 (입춘 기준)
+ * - 월운 계산: 이번 달의 천간지지 (절기 기준)
  * - Google Grounding으로 월별/시즌별 관심사 검색
  * - 시기 적절한 조언 포인트 도출
+ *
+ * 사주에서 년/월 계산 기준:
+ * - 년주: 입춘(立春, 보통 2월 3-5일)을 기준으로 변경
+ * - 월주: 각 월의 절기(입춘, 경칩 등)를 기준으로 변경
  */
 
+import { Solar } from "lunar-javascript";
 import type { TemporalAgentInput, TemporalAgentOutput, Season } from "./types";
 import type { Element } from "../types";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
@@ -40,19 +45,34 @@ const ELEMENT_KOREAN: Record<Element, string> = {
 };
 
 /**
- * 연도의 천간지지 계산
+ * 연도의 천간지지 계산 (입춘 기준)
+ *
+ * lunar-javascript 라이브러리를 사용하여 정확한 입춘 기준 연주 계산
+ * - 1월 1일 ~ 입춘 전: 전년도 간지
+ * - 입춘 이후: 해당 년도 간지
+ *
+ * @param year - 연도
+ * @param month - 월 (1-12)
+ * @param day - 일 (1-31)
  */
-function calculateYearlyPillar(year: number): { gan: string; zhi: string; ganKorean: string; zhiKorean: string; animal: string } {
-  // 1984년은 갑자년 (甲子年)
-  const baseYear = 1984;
-  const diff = year - baseYear;
+function calculateYearlyPillar(
+  year: number,
+  month: number = 7,
+  day: number = 1
+): { gan: string; zhi: string; ganKorean: string; zhiKorean: string; animal: string } {
+  // lunar-javascript를 사용하여 입춘 기준 연주 계산
+  const solar = Solar.fromYmd(year, month, day);
+  const lunar = solar.getLunar();
+  const yearGanZhi = lunar.getYearInGanZhi();
 
-  const ganIndex = ((diff % 10) + 10) % 10;
-  const zhiIndex = ((diff % 12) + 12) % 12;
+  const gan = yearGanZhi[0];
+  const zhi = yearGanZhi[1];
+  const ganIndex = HEAVENLY_STEMS.indexOf(gan);
+  const zhiIndex = EARTHLY_BRANCHES.indexOf(zhi);
 
   return {
-    gan: HEAVENLY_STEMS[ganIndex],
-    zhi: EARTHLY_BRANCHES[zhiIndex],
+    gan,
+    zhi,
     ganKorean: STEMS_KOREAN[ganIndex],
     zhiKorean: BRANCHES_KOREAN[zhiIndex],
     animal: BRANCHES_ANIMALS[zhiIndex]
@@ -60,25 +80,36 @@ function calculateYearlyPillar(year: number): { gan: string; zhi: string; ganKor
 }
 
 /**
- * 월의 천간지지 계산 (간략 버전)
- * 실제로는 절기 기준으로 계산해야 하지만, 간략화하여 사용
+ * 월의 천간지지 계산 (절기 기준)
+ *
+ * lunar-javascript 라이브러리를 사용하여 정확한 절기 기준 월주 계산
+ * - 각 월의 절기(입춘, 경칩 등)를 기준으로 월이 변경됨
+ * - 예: 2026년 1월 (입춘 전) = 기축월(己丑月)
+ *
+ * @param year - 연도
+ * @param month - 월 (1-12)
+ * @param day - 일 (1-31)
  */
-function calculateMonthlyPillar(year: number, month: number): { gan: string; zhi: string } {
-  // 월지는 인월(寅月)이 1월 (입춘 기준)
-  // 절기 고려하지 않은 간략 버전
-  const monthBranches = ["寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥", "子", "丑"];
-  const zhiIndex = (month - 1) % 12;
-  const zhi = monthBranches[zhiIndex];
+function calculateMonthlyPillar(
+  year: number,
+  month: number,
+  day: number = 15
+): { gan: string; zhi: string; ganKorean: string; zhiKorean: string } {
+  // lunar-javascript를 사용하여 절기 기준 월주 계산
+  const solar = Solar.fromYmd(year, month, day);
+  const lunar = solar.getLunar();
+  const monthGanZhi = lunar.getMonthInGanZhi();
 
-  // 월간은 연간에 따라 결정 (오호둔월법)
-  const yearPillar = calculateYearlyPillar(year);
-  const yearGanIndex = HEAVENLY_STEMS.indexOf(yearPillar.gan);
-  const monthGanBase = (yearGanIndex % 5) * 2;
-  const ganIndex = (monthGanBase + (month - 1)) % 10;
+  const gan = monthGanZhi[0];
+  const zhi = monthGanZhi[1];
+  const ganIndex = HEAVENLY_STEMS.indexOf(gan);
+  const zhiIndex = EARTHLY_BRANCHES.indexOf(zhi);
 
   return {
-    gan: HEAVENLY_STEMS[ganIndex],
-    zhi
+    gan,
+    zhi,
+    ganKorean: STEMS_KOREAN[ganIndex],
+    zhiKorean: BRANCHES_KOREAN[zhiIndex]
   };
 }
 
@@ -284,12 +315,20 @@ function generateTimingAdvice(
  * Temporal Agent 메인 함수
  */
 export async function runTemporalAgent(input: TemporalAgentInput): Promise<TemporalAgentOutput> {
-  // 세운 계산
-  const yearPillar = calculateYearlyPillar(input.currentYear);
+  // 세운 계산 (입춘 기준 - 현재 날짜 기준으로 정확한 연주 계산)
+  const yearPillar = calculateYearlyPillar(
+    input.currentYear,
+    input.currentMonth,
+    input.currentDay
+  );
   const yearElement = STEM_ELEMENTS[yearPillar.gan];
 
-  // 월운 계산
-  const monthPillar = calculateMonthlyPillar(input.currentYear, input.currentMonth);
+  // 월운 계산 (절기 기준 - 현재 날짜 기준으로 정확한 월주 계산)
+  const monthPillar = calculateMonthlyPillar(
+    input.currentYear,
+    input.currentMonth,
+    input.currentDay
+  );
   const monthElement = STEM_ELEMENTS[monthPillar.gan];
 
   // 계절

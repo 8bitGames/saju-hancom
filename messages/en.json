@@ -42,6 +42,10 @@
     "footer1": "AI Fortune Master combines traditional Eastern astrology",
     "footer2": "with AI technology to provide entertaining fortune insights.",
     "cards": {
+      "fortune": {
+        "title": "Today's Fortune",
+        "description": "Preview the energy flowing through your day."
+      },
       "saju": {
         "title": "Birth Chart Analysis",
         "description": "Let me show you how this year's energy meets your birth chart in this very moment."

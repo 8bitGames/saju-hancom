@@ -3,7 +3,7 @@
 import { Link, useRouter } from "@/lib/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useMemo, useRef } from "react";
-import { ArrowCounterClockwise, ArrowRight, Sparkle, Star, Atom, YinYang, ChatCircle, Lightning, Heart, Lightbulb, Brain, CheckCircle, ChatCircleDots, RocketLaunch, Chats, Sun, Crown } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, ArrowRight, Sparkle, Star, Atom, YinYang, ChatCircle, Lightning, Heart, Lightbulb, Brain, CheckCircle, ChatCircleDots, RocketLaunch, Chats, Crown, CalendarBlank } from "@phosphor-icons/react";
 import { calculateSaju, STEM_KOREAN, ELEMENT_KOREAN } from "@/lib/saju";
 import { getLongitudeByCity } from "@/lib/saju/solar-time";
 import { FourPillarsDisplay } from "@/components/saju/pillar-display";
@@ -16,12 +16,12 @@ import { ShareButton } from "@/components/auth/ShareButton";
 import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
 import { autoSaveSajuResult } from "@/lib/actions/saju";
 import { InlineSajuChat } from "@/components/saju/InlineSajuChat";
-import { FortunePanel } from "@/components/saju/FortunePanel";
+import { MajorFortuneSection, MajorFortuneData } from "@/components/saju/FortunePanel";
 import { createClient } from "@/lib/supabase/client";
 import type { Gender } from "@/lib/saju/types";
 
 // Tab types for content switching
-type ContentTab = "analysis" | "fortune" | "chat";
+type ContentTab = "analysis" | "chat";
 
 interface SearchParams {
   year?: string;
@@ -252,6 +252,7 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
   const [showLoginCTA, setShowLoginCTA] = useState(false);
   const [savedResultId, setSavedResultId] = useState<string | undefined>(undefined);
   const [isPremium, setIsPremium] = useState(false);
+  const [majorData, setMajorData] = useState<MajorFortuneData | null>(null);
   const hasFetched = useRef(false);
   const hasSaved = useRef(false);
   const router = useRouter();
@@ -280,6 +281,25 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
 
     checkPremium();
   }, []);
+
+  // Fetch major fortune when savedResultId is available
+  useEffect(() => {
+    if (!savedResultId || !isPremium) return;
+
+    const fetchMajorFortune = async () => {
+      try {
+        const res = await fetch(`/api/saju/fortune/major?shareId=${savedResultId}`);
+        const json = await res.json();
+        if (json.success) {
+          setMajorData(json.data);
+        }
+      } catch (err) {
+        console.error("Major fortune error:", err);
+      }
+    };
+
+    fetchMajorFortune();
+  }, [savedResultId, isPremium]);
 
   // Create cache key from saju input
   const cacheKey = useMemo(() =>
@@ -476,20 +496,6 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
           <span className="whitespace-nowrap">분석</span>
         </button>
         <button
-          onClick={() => setActiveTab("fortune")}
-          className={`flex-1 py-2.5 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
-            activeTab === "fortune"
-              ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg"
-              : "text-white/60 hover:text-white hover:bg-white/5"
-          }`}
-        >
-          <Sun className="w-4 h-4 flex-shrink-0" weight="fill" />
-          <span className="whitespace-nowrap">오늘의 운</span>
-          {!isPremium && (
-            <Crown className="w-3 h-3 text-yellow-400 flex-shrink-0" weight="fill" />
-          )}
-        </button>
-        <button
           onClick={() => setActiveTab("chat")}
           className={`flex-1 py-2.5 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
             activeTab === "chat"
@@ -513,22 +519,6 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
             transition={{ duration: 0.2 }}
           >
             <InlineSajuChat sajuResult={result} gender={gender} interpretation={interpretation ?? undefined} />
-          </motion.div>
-        ) : activeTab === "fortune" ? (
-          <motion.div
-            key="fortune"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2 }}
-          >
-            <FortunePanel
-              shareId={savedResultId}
-              birthYear={year}
-              isPremium={isPremium}
-              onUpgradeClick={() => router.push('/premium')}
-              isLoadingShareId={saveStatus === 'saving' || isLoading}
-            />
           </motion.div>
         ) : (
           <motion.div
@@ -726,6 +716,36 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         </div>
       </GlowingCard>
 
+      {/* Major Fortune (대운) */}
+      <GlowingCard glowColor="rgba(99, 102, 241, 0.3)" variants={itemVariants}>
+        <div className="p-5 space-y-4">
+          <motion.div
+            className="flex items-center gap-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.75 }}
+          >
+            <CalendarBlank className="w-5 h-5 text-indigo-400" weight="fill" />
+            <h2 className="font-semibold text-white text-lg">대운</h2>
+            {!isPremium && (
+              <Crown className="w-4 h-4 text-yellow-400 ml-1" weight="fill" />
+            )}
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+          >
+            <MajorFortuneSection
+              data={majorData}
+              birthYear={year}
+              isPremium={isPremium}
+              onUpgradeClick={() => router.push('/premium')}
+            />
+          </motion.div>
+        </div>
+      </GlowingCard>
+
       {/* AI Interpretation - At the bottom, after user reads basic info */}
       <div>
         <GlowingCard glowColor="rgba(236, 72, 153, 0.4)" variants={itemVariants}>
@@ -734,7 +754,7 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
               className="flex items-center gap-2"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 }}
+              transition={{ delay: 0.85 }}
             >
               <ChatCircle className="w-5 h-5 text-pink-400" weight="fill" />
               <h2 className="font-semibold text-white text-lg">사주 풀이</h2>

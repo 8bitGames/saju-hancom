@@ -412,10 +412,22 @@ export const DEFAULT_LONGITUDE = 127.0;
 
 /**
  * 특정 연도의 세운 간지를 계산
+ *
+ * 입춘 기준 계산 방식:
+ * - month와 day가 제공되면 입춘 기준으로 정확한 연주 계산
+ * - month와 day가 없으면 단순 연도 기반 계산 (역년 기준)
+ *
+ * 예시 (2026년):
+ * - getYearlyFortune(2026) → 병오년 (역년 2026 기준)
+ * - getYearlyFortune(2026, 1, 15) → 을사년 (입춘 전이므로 전년도 간지)
+ * - getYearlyFortune(2026, 2, 10) → 병오년 (입춘 후이므로 해당년도 간지)
+ *
  * @param year - 연도 (예: 2025, 2026)
+ * @param month - 월 (1-12, 선택) - 입춘 기준 계산시 필요
+ * @param day - 일 (1-31, 선택) - 입춘 기준 계산시 필요
  * @returns 세운 정보 객체
  */
-export function getYearlyFortune(year: number): {
+export function getYearlyFortune(year: number, month?: number, day?: number): {
   stem: Gan;
   branch: Zhi;
   ganZhi: string;
@@ -427,12 +439,28 @@ export function getYearlyFortune(year: number): {
   stemDescription: string;
   branchDescription: string;
 } {
-  // 60갑자 주기 계산 (甲子년 = 4년)
-  const stemIndex = (year - 4) % 10;
-  const branchIndex = (year - 4) % 12;
+  let stem: Gan;
+  let branch: Zhi;
 
-  const stem = HEAVENLY_STEMS[stemIndex];
-  const branch = EARTHLY_BRANCHES[branchIndex];
+  // 입춘 기준 계산 (month와 day가 제공된 경우)
+  if (month !== undefined && day !== undefined) {
+    // lunar-javascript 동적 import를 피하기 위해 간단한 입춘 추정 사용
+    // 입춘은 대략 2월 3-5일 사이
+    // 1월이거나 2월 4일 이전이면 전년도 간지 사용
+    const isBeforeLichun = month < 2 || (month === 2 && day < 4);
+    const effectiveYear = isBeforeLichun ? year - 1 : year;
+
+    const stemIndex = (effectiveYear - 4) % 10;
+    const branchIndex = (effectiveYear - 4) % 12;
+    stem = HEAVENLY_STEMS[stemIndex];
+    branch = EARTHLY_BRANCHES[branchIndex];
+  } else {
+    // 기존 방식: 단순 연도 기반 계산 (역년 기준)
+    const stemIndex = (year - 4) % 10;
+    const branchIndex = (year - 4) % 12;
+    stem = HEAVENLY_STEMS[stemIndex];
+    branch = EARTHLY_BRANCHES[branchIndex];
+  }
 
   return {
     stem,
@@ -450,11 +478,19 @@ export function getYearlyFortune(year: number): {
 
 /**
  * 세운 간지의 특성 설명 생성
+ *
  * @param year - 연도
  * @param locale - 언어 ('ko' | 'en')
+ * @param month - 월 (1-12, 선택) - 입춘 기준 계산시 필요
+ * @param day - 일 (1-31, 선택) - 입춘 기준 계산시 필요
  */
-export function getYearlyFortuneDescription(year: number, locale: 'ko' | 'en' = 'ko'): string {
-  const fortune = getYearlyFortune(year);
+export function getYearlyFortuneDescription(
+  year: number,
+  locale: 'ko' | 'en' = 'ko',
+  month?: number,
+  day?: number
+): string {
+  const fortune = getYearlyFortune(year, month, day);
 
   const elementKorean: Record<Element, string> = {
     wood: '목(木)',
@@ -539,4 +575,126 @@ export function getYearlyFortuneDescription(year: number, locale: 'ko' | 'en' = 
 - ${fortune.stem} (${fortune.stemKorean}): ${stemTraitsEn[fortune.stem]}
 - ${fortune.branch} (${fortune.branchKorean}): ${branchTraitsEn[fortune.branch]}`;
   }
+}
+
+/**
+ * 현재 연도의 간지 이름 반환 (랜딩 페이지용 - 역년 기준)
+ * 랜딩 페이지에서는 일반 사용자를 위해 역년(달력 연도) 기준으로 표시
+ * 예: 2026년 → "병오년"
+ */
+export function getCurrentYearPillarName(): string {
+  const currentYear = new Date().getFullYear();
+  const stemIndex = (currentYear - 4) % 10;
+  const branchIndex = (currentYear - 4) % 12;
+
+  const stem = HEAVENLY_STEMS[stemIndex];
+  const branch = EARTHLY_BRANCHES[branchIndex];
+
+  return `${STEM_KOREAN[stem]}${BRANCH_KOREAN[branch]}년`;
+}
+
+/**
+ * 절기 시작일 (월별 경계)
+ * 각 월의 시작 절기 날짜 (대략적인 양력 날짜)
+ * - 인월(寅月, 1월): 입춘 ~2/4
+ * - 묘월(卯月, 2월): 경칩 ~3/6
+ * - 진월(辰月, 3월): 청명 ~4/5
+ * - 사월(巳月, 4월): 입하 ~5/6
+ * - 오월(午月, 5월): 망종 ~6/6
+ * - 미월(未月, 6월): 소서 ~7/7
+ * - 신월(申月, 7월): 입추 ~8/8
+ * - 유월(酉月, 8월): 백로 ~9/8
+ * - 술월(戌月, 9월): 한로 ~10/8
+ * - 해월(亥月, 10월): 입동 ~11/7
+ * - 자월(子月, 11월): 대설 ~12/7
+ * - 축월(丑月, 12월): 소한 ~1/6
+ */
+const SOLAR_TERM_BOUNDARIES: Array<{ month: number; day: number; zhiIndex: number }> = [
+  { month: 1, day: 6, zhiIndex: 1 },   // 소한 → 축월(丑)
+  { month: 2, day: 4, zhiIndex: 2 },   // 입춘 → 인월(寅)
+  { month: 3, day: 6, zhiIndex: 3 },   // 경칩 → 묘월(卯)
+  { month: 4, day: 5, zhiIndex: 4 },   // 청명 → 진월(辰)
+  { month: 5, day: 6, zhiIndex: 5 },   // 입하 → 사월(巳)
+  { month: 6, day: 6, zhiIndex: 6 },   // 망종 → 오월(午)
+  { month: 7, day: 7, zhiIndex: 7 },   // 소서 → 미월(未)
+  { month: 8, day: 8, zhiIndex: 8 },   // 입추 → 신월(申)
+  { month: 9, day: 8, zhiIndex: 9 },   // 백로 → 유월(酉)
+  { month: 10, day: 8, zhiIndex: 10 }, // 한로 → 술월(戌)
+  { month: 11, day: 7, zhiIndex: 11 }, // 입동 → 해월(亥)
+  { month: 12, day: 7, zhiIndex: 0 },  // 대설 → 자월(子)
+];
+
+/**
+ * 현재 월의 간지 이름 반환 (절기 기준)
+ * 예: 2026년 1월 3일 → "무자월" (대설 이후, 소한 이전 = 을사년 자월)
+ *     2026년 1월 6일 → "기축월" (소한 이후, 입춘 이전 = 을사년 축월)
+ *     2026년 2월 5일 → "경인월" (입춘 이후 = 병오년 인월)
+ */
+export function getCurrentMonthPillarName(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1; // 1-12
+  const day = now.getDate();
+
+  // 현재 날짜가 어느 월에 속하는지 절기 기준으로 계산
+  let zhiIndex = 1; // 기본값: 축월(丑)
+
+  // 절기 경계를 역순으로 검사하여 현재 월 찾기
+  for (let i = SOLAR_TERM_BOUNDARIES.length - 1; i >= 0; i--) {
+    const boundary = SOLAR_TERM_BOUNDARIES[i];
+    if (month > boundary.month || (month === boundary.month && day >= boundary.day)) {
+      zhiIndex = boundary.zhiIndex;
+      break;
+    }
+  }
+
+  // 1월 초 (소한 이전)는 자월(子月)
+  if (month === 1 && day < 6) {
+    zhiIndex = 0; // 자월
+  }
+
+  // 연간 계산: 입춘 전 (자월, 축월)은 전년도 사주 연도 사용
+  // 입춘은 약 2월 4일이므로, 그 전까지는 전년도 연간 사용
+  const isBeforeLichun = month < 2 || (month === 2 && day < 4);
+  const effectiveYear = isBeforeLichun ? year - 1 : year;
+
+  // 월간(月干) 계산: 연간(年干)에 따라 결정
+  // 연간이 甲/己면 월간 시작이 丙, 乙/庚이면 戊, 丙/辛이면 庚, 丁/壬이면 壬, 戊/癸이면 甲
+  const yearStemIndex = (effectiveYear - 4) % 10;
+  const yearStem = HEAVENLY_STEMS[yearStemIndex];
+
+  // 월간 시작 인덱스 (인월 기준)
+  let monthStemStart: number;
+  switch (yearStem) {
+    case "甲":
+    case "己":
+      monthStemStart = 2; // 丙
+      break;
+    case "乙":
+    case "庚":
+      monthStemStart = 4; // 戊
+      break;
+    case "丙":
+    case "辛":
+      monthStemStart = 6; // 庚
+      break;
+    case "丁":
+    case "壬":
+      monthStemStart = 8; // 壬
+      break;
+    case "戊":
+    case "癸":
+    default:
+      monthStemStart = 0; // 甲
+      break;
+  }
+
+  // 인월(寅月, index 2)부터 시작하여 현재 월까지의 오프셋 계산
+  const monthOffset = (zhiIndex - 2 + 12) % 12;
+  const stemIndex = (monthStemStart + monthOffset) % 10;
+
+  const stem = HEAVENLY_STEMS[stemIndex];
+  const branch = EARTHLY_BRANCHES[zhiIndex];
+
+  return `${STEM_KOREAN[stem]}${BRANCH_KOREAN[branch]}월`;
 }

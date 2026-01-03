@@ -30,7 +30,11 @@ import { getYearlyFortuneDescription } from "./constants";
 
 const getModel = () => google(GEMINI_MODEL);
 
-const currentYear = new Date().getFullYear();
+// 현재 날짜 정보 (입춘 기준 계산을 위해 필요)
+const now = new Date();
+const currentYear = now.getFullYear();
+const currentMonth = now.getMonth() + 1; // 1-12
+const currentDay = now.getDate(); // 1-31
 
 // Helper function to get locale from input
 const getLocale = (input: SajuAnalysisInput): Locale =>
@@ -718,7 +722,7 @@ export async function analyzeStep5_FortuneTiming(
 - 남자 양년생, 여자 음년생: 순행
 - 남자 음년생, 여자 양년생: 역행
 
-${getYearlyFortuneDescription(currentYear, 'ko')}
+${getYearlyFortuneDescription(currentYear, 'ko', currentMonth, currentDay)}
 
 ## 합충 분석
 ### 원국과 대운의 관계
@@ -744,7 +748,7 @@ Analyze the Major Fortune (大運) and Annual Fortune (歲運) to understand cur
 - Male born in Yang year, Female born in Yin year: Forward
 - Male born in Yin year, Female born in Yang year: Backward
 
-${getYearlyFortuneDescription(currentYear, 'en')}
+${getYearlyFortuneDescription(currentYear, 'en', currentMonth, currentDay)}
 
 ## Harmony and Clash Analysis
 ### Relationship between Natal Chart and Major Fortune

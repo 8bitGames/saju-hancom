@@ -42,9 +42,13 @@
     "footer1": "AI 운세 마스터는 전통 명리학과 AI 기술을 결합하여",
     "footer2": "재미있는 운세 정보를 제공합니다.",
     "cards": {
+      "fortune": {
+        "title": "오늘의 운세",
+        "description": "오늘 하루의 기운을 미리 살펴보세요."
+      },
       "saju": {
         "title": "사주 분석",
-        "description": "올해 을사년, 이달의 기운이 당신 사주와 어떻게 만나는지 봐드리겠습니다."
+        "description": "올해 {yearName}, 이달의 기운이 당신 사주와 어떻게 만나는지 봐드리겠습니다."
       },
       "compatibility": {
         "title": "직장 동료 궁합",

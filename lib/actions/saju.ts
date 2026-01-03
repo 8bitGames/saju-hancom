@@ -421,3 +421,69 @@ export async function getAllDetailAnalyses(fingerprint: string): Promise<{
     };
   }
 }
+
+// 필수 상세보기 카테고리 (PipelineResult.tsx와 동일)
+const PREREQUISITE_CATEGORIES = ['dayMaster', 'tenGods', 'stars', 'fortune'] as const;
+
+/**
+ * Check if user is eligible to view fortune (has completed all prerequisite detail analyses)
+ * Returns eligibility status and the most recent saju result ID (shareId)
+ */
+export async function checkFortuneEligibility(): Promise<{
+  eligible: boolean;
+  shareId?: string;
+}> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { eligible: false };
+    }
+
+    // Get most recent saju result for shareId
+    const { data: results, error: resultError } = await supabase
+      .from('saju_results')
+      .select('id')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (resultError || !results?.length) {
+      return { eligible: false };
+    }
+
+    const shareId = results[0].id;
+
+    // Get all detail analyses for this user
+    const { data: analyses, error: analysesError } = await supabase
+      .from('saju_detail_analyses')
+      .select('fingerprint, category')
+      .eq('user_id', user.id);
+
+    if (analysesError || !analyses?.length) {
+      return { eligible: false };
+    }
+
+    // Group by fingerprint
+    const byFingerprint: Record<string, Set<string>> = {};
+    for (const row of analyses) {
+      if (!byFingerprint[row.fingerprint]) {
+        byFingerprint[row.fingerprint] = new Set();
+      }
+      byFingerprint[row.fingerprint].add(row.category);
+    }
+
+    // Check if any fingerprint has all prerequisites completed
+    for (const categories of Object.values(byFingerprint)) {
+      if (PREREQUISITE_CATEGORIES.every(cat => categories.has(cat))) {
+        return { eligible: true, shareId };
+      }
+    }
+
+    return { eligible: false };
+  } catch (error) {
+    console.error('[checkFortuneEligibility] Error:', error);
+    return { eligible: false };
+  }
+}

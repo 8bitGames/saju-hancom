@@ -167,12 +167,21 @@ export async function GET(request: NextRequest) {
         hourlyFortunes: hourlyFortunes.hourlyFortunes.map((h) => ({
           timeRange: h.timeRange,
           periodName: h.periodName,
+          pillar: {
+            stem: h.pillar.stem,
+            branch: h.pillar.branch,
+            stemKorean: h.pillar.stemKorean,
+            branchKorean: h.pillar.branchKorean,
+          },
           pillarKorean: `${h.pillar.stemKorean}${h.pillar.branchKorean}`,
           element: h.pillar.element,
           elementKorean: h.pillar.elementKorean,
           score: h.score,
           grade: h.grade,
           gradeKorean: h.gradeKorean,
+          description: getHourlyDescription(h),
+          goodFor: getGoodForActivities(h),
+          avoidFor: getAvoidForActivities(h),
           usefulGodRelation: h.usefulGodRelation,
           hasHarmony: h.hasHarmony,
           hasClash: h.hasClash,
@@ -241,6 +250,114 @@ export async function POST(request: NextRequest) {
 // ============================================================================
 // Helper Functions
 // ============================================================================
+
+/**
+ * 시간대별 설명 생성
+ */
+function getHourlyDescription(h: {
+  periodName: string;
+  score: number;
+  grade: string;
+  gradeKorean: string;
+  hasHarmony: boolean;
+  hasClash: boolean;
+  usefulGodRelation: string;
+  pillar: { elementKorean: string };
+}): string {
+  const parts: string[] = [];
+
+  if (h.hasHarmony) {
+    parts.push("원국과 조화로운 기운");
+  }
+  if (h.hasClash) {
+    parts.push("충돌 기운 주의");
+  }
+  if (h.usefulGodRelation === "support") {
+    parts.push("용신을 돕는 시간");
+  } else if (h.usefulGodRelation === "against") {
+    parts.push("용신에 불리한 시간");
+  }
+
+  if (parts.length === 0) {
+    parts.push(`${h.pillar.elementKorean} 기운이 흐르는 시간`);
+  }
+
+  return parts.join(". ") + ".";
+}
+
+/**
+ * 좋은 활동 목록 생성
+ */
+function getGoodForActivities(h: {
+  grade: string;
+  hasHarmony: boolean;
+  usefulGodRelation: string;
+  pillar: { element: string };
+}): string[] {
+  const activities: string[] = [];
+
+  if (h.grade === "excellent" || h.grade === "good") {
+    activities.push("중요한 의사결정");
+    activities.push("새로운 시작");
+  }
+
+  if (h.hasHarmony) {
+    activities.push("대인관계");
+    activities.push("협상/계약");
+  }
+
+  if (h.usefulGodRelation === "support") {
+    activities.push("핵심 업무");
+  }
+
+  // 오행별 추천 활동
+  switch (h.pillar.element) {
+    case "wood":
+      activities.push("창의적 작업");
+      break;
+    case "fire":
+      activities.push("발표/프레젠테이션");
+      break;
+    case "earth":
+      activities.push("안정적 업무");
+      break;
+    case "metal":
+      activities.push("분석/정리");
+      break;
+    case "water":
+      activities.push("학습/연구");
+      break;
+  }
+
+  return activities.slice(0, 3);
+}
+
+/**
+ * 피해야 할 활동 목록 생성
+ */
+function getAvoidForActivities(h: {
+  grade: string;
+  hasClash: boolean;
+  usefulGodRelation: string;
+}): string[] {
+  const activities: string[] = [];
+
+  if (h.hasClash) {
+    activities.push("중요한 결정");
+    activities.push("갈등 상황");
+  }
+
+  if (h.grade === "caution") {
+    activities.push("새로운 계약");
+    activities.push("위험한 투자");
+  }
+
+  if (h.usefulGodRelation === "against") {
+    activities.push("과도한 업무");
+  }
+
+  return activities.slice(0, 2);
+}
 
 /**
  * AI를 사용한 시운 해석 생성
