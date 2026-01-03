@@ -1,9 +1,9 @@
 "use client";
 
-import { Link } from "@/lib/i18n/navigation";
+import { Link, useRouter } from "@/lib/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useMemo, useRef } from "react";
-import { ArrowCounterClockwise, ArrowRight, Sparkle, Star, Atom, YinYang, ChatCircle, Lightning, Heart, Lightbulb, Brain, CheckCircle, ChatCircleDots, RocketLaunch, Chats } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, ArrowRight, Sparkle, Star, Atom, YinYang, ChatCircle, Lightning, Heart, Lightbulb, Brain, CheckCircle, ChatCircleDots, RocketLaunch, Chats, Sun, Crown } from "@phosphor-icons/react";
 import { calculateSaju, STEM_KOREAN, ELEMENT_KOREAN } from "@/lib/saju";
 import { getLongitudeByCity } from "@/lib/saju/solar-time";
 import { FourPillarsDisplay } from "@/components/saju/pillar-display";
@@ -16,10 +16,12 @@ import { ShareButton } from "@/components/auth/ShareButton";
 import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
 import { autoSaveSajuResult } from "@/lib/actions/saju";
 import { InlineSajuChat } from "@/components/saju/InlineSajuChat";
+import { FortunePanel } from "@/components/saju/FortunePanel";
+import { createClient } from "@/lib/supabase/client";
 import type { Gender } from "@/lib/saju/types";
 
 // Tab types for content switching
-type ContentTab = "analysis" | "chat";
+type ContentTab = "analysis" | "fortune" | "chat";
 
 interface SearchParams {
   year?: string;
@@ -249,8 +251,35 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [showLoginCTA, setShowLoginCTA] = useState(false);
   const [savedResultId, setSavedResultId] = useState<string | undefined>(undefined);
+  const [isPremium, setIsPremium] = useState(false);
   const hasFetched = useRef(false);
   const hasSaved = useRef(false);
+  const router = useRouter();
+
+  // Check premium status on mount
+  useEffect(() => {
+    const checkPremium = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('subscription_tier, subscription_expires_at')
+          .eq('id', user.id)
+          .single();
+
+        const isPremiumActive =
+          profile?.subscription_tier === 'premium' &&
+          profile.subscription_expires_at &&
+          new Date(profile.subscription_expires_at) > new Date();
+
+        setIsPremium(isPremiumActive || false);
+      }
+    };
+
+    checkPremium();
+  }, []);
 
   // Create cache key from saju input
   const cacheKey = useMemo(() =>
@@ -432,23 +461,37 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
 
       {/* Tab Navigation */}
       <motion.div
-        className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/10"
+        className="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/10"
         variants={itemVariants}
       >
         <button
           onClick={() => setActiveTab("analysis")}
-          className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
+          className={`flex-1 py-2.5 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
             activeTab === "analysis"
               ? "bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-lg"
               : "text-white/60 hover:text-white hover:bg-white/5"
           }`}
         >
           <Sparkle className="w-4 h-4 flex-shrink-0" weight="fill" />
-          <span className="whitespace-nowrap">분석 결과</span>
+          <span className="whitespace-nowrap">분석</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("fortune")}
+          className={`flex-1 py-2.5 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
+            activeTab === "fortune"
+              ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg"
+              : "text-white/60 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <Sun className="w-4 h-4 flex-shrink-0" weight="fill" />
+          <span className="whitespace-nowrap">오늘의 운</span>
+          {!isPremium && (
+            <Crown className="w-3 h-3 text-yellow-400 flex-shrink-0" weight="fill" />
+          )}
         </button>
         <button
           onClick={() => setActiveTab("chat")}
-          className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
+          className={`flex-1 py-2.5 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
             activeTab === "chat"
               ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg"
               : "text-white/60 hover:text-white hover:bg-white/5"
@@ -470,6 +513,22 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
             transition={{ duration: 0.2 }}
           >
             <InlineSajuChat sajuResult={result} gender={gender} interpretation={interpretation ?? undefined} />
+          </motion.div>
+        ) : activeTab === "fortune" ? (
+          <motion.div
+            key="fortune"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            <FortunePanel
+              shareId={savedResultId}
+              birthYear={year}
+              isPremium={isPremium}
+              onUpgradeClick={() => router.push('/premium')}
+              isLoadingShareId={saveStatus === 'saving' || isLoading}
+            />
           </motion.div>
         ) : (
           <motion.div
