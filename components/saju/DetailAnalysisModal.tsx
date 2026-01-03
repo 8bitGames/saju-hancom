@@ -92,6 +92,26 @@ const CATEGORY_LOADING_CONFIG: Record<string, {
       "시간의 기운을 탐색하고 있습니다..."
     ]
   },
+  majorYearly: {
+    icon: <Calendar className="w-8 h-8 text-white" weight="fill" />,
+    color: "#6366f1",
+    bgColor: "bg-[#6366f1]",
+    messages: [
+      "대운의 큰 흐름을 분석하고 있습니다...",
+      "세운과 원국의 관계를 살펴보는 중...",
+      "향후 5년 전망을 탐색하고 있습니다..."
+    ]
+  },
+  monthlyFortune: {
+    icon: <Calendar className="w-8 h-8 text-white" weight="fill" />,
+    color: "#14b8a6",
+    bgColor: "bg-[#14b8a6]",
+    messages: [
+      "월별 운세를 분석하고 있습니다...",
+      "12개월의 흐름을 살펴보는 중...",
+      "월운의 기회와 주의점을 탐색하고 있습니다..."
+    ]
+  },
   // 종합탭 성격 분석 전용 (dayMaster와 분리)
   personality: {
     icon: <User className="w-8 h-8 text-white" weight="fill" />,

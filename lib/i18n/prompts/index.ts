@@ -460,7 +460,7 @@ Please include analysis of personality, career fortune, wealth fortune, relation
 // ==========================================
 // Detail Analysis Prompts
 // ==========================================
-type DetailCategory = 'dayMaster' | 'tenGods' | 'stars' | 'fortune' | 'career' | 'relationship' | 'health' | 'wealth' | 'personality';
+type DetailCategory = 'dayMaster' | 'tenGods' | 'stars' | 'fortune' | 'career' | 'relationship' | 'health' | 'wealth' | 'personality' | 'majorYearly' | 'monthlyFortune';
 
 const detailPrompts: Record<Locale, Record<DetailCategory, string>> = {
   ko: {
@@ -760,6 +760,70 @@ const detailPrompts: Record<Locale, Record<DetailCategory, string>> = {
 - 대인관계 스타일은 간략히만 언급 (관계 분석에서 상세히 다룸)
 
 전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.`,
+
+    majorYearly: `대운(大運)과 세운(歲運)에 대해 종합적으로 깊이 분석해주세요.
+
+다음 내용을 상세히 설명해주세요:
+
+1. **대운의 전체 흐름**:
+   - 현재까지 지나온 대운과 경험했을 인생의 큰 흐름
+   - 현재 대운의 천간지지와 원국과의 상호작용
+   - 앞으로 다가올 대운들의 특성과 전망
+
+2. **현재 대운 심층 분석**:
+   - 현재 대운이 원국의 용신과 어떻게 작용하는지
+   - 이 대운 기간 동안 강화되거나 약화되는 오행
+   - 대운과 원국 사이의 합, 충, 형, 파, 해 관계
+
+3. **올해 세운 분석**:
+   - 올해 천간지지가 사주에 미치는 구체적 영향
+   - 세운과 대운이 만나서 만들어내는 복합 작용
+   - 올해 특히 주목해야 할 시기와 기회
+
+4. **향후 5년 세운 전망**:
+   - 각 해의 특성과 원국과의 관계
+   - 어떤 해가 특히 좋은지, 주의해야 하는지
+   - 5년간의 큰 흐름과 방향성
+
+5. **대운/세운 활용 전략**:
+   - 현재 운세를 최대한 활용하는 방법
+   - 주의해야 할 시기의 대처법
+   - 다가올 좋은 시기를 준비하는 방법
+
+전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.`,
+
+    monthlyFortune: `월운(月運)에 대해 깊이 있게 분석해주세요.
+
+다음 내용을 상세히 설명해주세요:
+
+1. **월운의 원리**:
+   - 월운이 어떻게 계산되고 작용하는지
+   - 월주(月柱)와 각 월의 관계
+   - 절기(節氣)에 따른 월의 전환점
+
+2. **올해 12개월 월운 분석**:
+   - 각 월의 천간지지와 원국과의 상호작용
+   - 월별로 강화되는 오행과 에너지
+   - 각 월의 합, 충, 형, 파, 해 관계
+
+3. **월별 운세 등급**:
+   - 특히 좋은 달 (대길월) - 무엇이 좋은지
+   - 괜찮은 달 (길월) - 어떤 기회가 있는지
+   - 평범한 달 (평월) - 유지해야 할 것
+   - 주의할 달 (주의월) - 무엇을 조심할지
+
+4. **월운 활용 전략**:
+   - 중요한 일정을 잡기 좋은 달
+   - 새로운 시작에 유리한 달
+   - 휴식과 충전이 필요한 달
+   - 대인관계에 주의할 달
+
+5. **월운과 다른 운의 관계**:
+   - 세운과 월운이 조화를 이루는 달
+   - 대운 흐름과의 연계성
+   - 월운을 일운까지 연결하는 관점
+
+전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.`,
   },
 
   en: {
@@ -920,6 +984,72 @@ Please explain the following in detail:
 - Do NOT cover career recommendations, wealth fortune, or health issues (separate analysis areas)
 - Focus ONLY on personality, temperament, thinking patterns, and behavioral patterns
 - Mention interpersonal style only briefly (covered in detail in relationship analysis)
+
+Use professional astrological terms while explaining clearly for general understanding.
+IMPORTANT: Respond entirely in English.`,
+
+    majorYearly: `Please provide a comprehensive deep analysis of Major Fortune (大運) and Annual Fortune (歲運).
+
+Please explain the following in detail:
+
+1. **Overall Flow of Major Fortune**:
+   - Major fortune periods experienced so far and major life flows
+   - Current major fortune's Heavenly Stem and Earthly Branch interaction with natal chart
+   - Characteristics and outlook of upcoming major fortune periods
+
+2. **Deep Analysis of Current Major Fortune**:
+   - How current major fortune interacts with the chart's Useful God
+   - Elements strengthened or weakened during this period
+   - Combinations, clashes, punishments between major fortune and natal chart
+
+3. **This Year's Annual Fortune Analysis**:
+   - Specific influence of this year's Heavenly Stem and Earthly Branch on the chart
+   - Combined effects of annual fortune meeting major fortune
+   - Key timing and opportunities to watch this year
+
+4. **5-Year Annual Fortune Outlook**:
+   - Each year's characteristics and relationship with natal chart
+   - Which years are particularly favorable or require caution
+   - Overall direction and flow for the next 5 years
+
+5. **Major/Annual Fortune Utilization Strategy**:
+   - How to maximize current fortune
+   - How to handle cautionary periods
+   - How to prepare for upcoming favorable periods
+
+Use professional astrological terms while explaining clearly for general understanding.
+IMPORTANT: Respond entirely in English.`,
+
+    monthlyFortune: `Please provide a deep analysis of Monthly Fortune (月運).
+
+Please explain the following in detail:
+
+1. **Principles of Monthly Fortune**:
+   - How monthly fortune is calculated and operates
+   - Relationship between Month Pillar and each month
+   - Transition points according to Solar Terms (節氣)
+
+2. **12-Month Monthly Fortune Analysis for This Year**:
+   - Each month's Heavenly Stem and Earthly Branch interaction with natal chart
+   - Elements and energy strengthened each month
+   - Combinations, clashes, punishments for each month
+
+3. **Monthly Fortune Ratings**:
+   - Especially favorable months (Great Fortune) - what makes them good
+   - Good months (Fortune) - what opportunities exist
+   - Average months (Neutral) - what to maintain
+   - Cautionary months (Caution) - what to be careful of
+
+4. **Monthly Fortune Utilization Strategy**:
+   - Best months for scheduling important events
+   - Favorable months for new beginnings
+   - Months needing rest and recharging
+   - Months requiring careful interpersonal relations
+
+5. **Monthly Fortune in Relation to Other Fortunes**:
+   - Months where annual and monthly fortune harmonize
+   - Connection with major fortune flow
+   - Perspective connecting monthly to daily fortune
 
 Use professional astrological terms while explaining clearly for general understanding.
 IMPORTANT: Respond entirely in English.`,

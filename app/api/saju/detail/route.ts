@@ -40,12 +40,16 @@ type DetailCategory =
   | "relationship"
   | "health"
   | "wealth"
-  | "personality";  // 종합탭 성격 분석 전용 (dayMaster와 분리)
+  | "personality"  // 종합탭 성격 분석 전용 (dayMaster와 분리)
+  | "majorYearly"  // 대운/세운 상세 분석
+  | "monthlyFortune";  // 월운 상세 분석
 
 const validCategories: DetailCategory[] = [
   "dayMaster", "tenGods", "stars", "fortune",
   "career", "relationship", "health", "wealth",
-  "personality"  // 종합탭 성격 분석
+  "personality",  // 종합탭 성격 분석
+  "majorYearly",  // 대운/세운 상세 분석
+  "monthlyFortune"  // 월운 상세 분석
 ];
 
 // Google Grounding이 필요한 카테고리
@@ -388,6 +392,82 @@ Explain Special Stars through **gamified storytelling**
 
 ### 🔗 Closing
 Hopeful encouragement: "These special energies will shine at the right moments."`
+    },
+    majorYearly: {
+      ko: `\n\n## 📋 콘텐츠 역할 지침
+
+### 🏷️ "삶의 큰 물결 읽기 - 대운과 세운"
+대운(10년 주기)과 세운(연간)의 흐름을 **서사적으로** 설명
+
+### ✅ 다룰 주제
+- 대운의 의미와 현재 대운 분석
+- 세운의 흐름과 올해의 위치
+- 향후 5년 세운 전망
+- 대운-세운의 상호작용
+- 중요한 시기와 활용 전략
+
+### ❌ 다루지 않기
+- 월운/일운 등 세부 단위 분석 (별도 분석)
+- 구체적 날짜 예측이나 로또 번호
+
+### 🔗 마무리
+희망적 메시지: "큰 흐름을 이해하면 작은 파도에 흔들리지 않아요"`,
+      en: `\n\n## 📋 Content Role Instructions
+
+### 🏷️ "Reading Life's Big Waves - Major & Annual Luck"
+Explain Major Luck (10-year cycles) and Annual Luck through **narrative storytelling**
+
+### ✅ Topics
+- Meaning and analysis of current Major Luck period
+- Annual Luck flow and this year's position
+- 5-year Annual Luck forecast
+- Major-Annual Luck interactions
+- Important timing and utilization strategies
+
+### ❌ DO NOT Cover
+- Monthly/daily luck details (separate analysis)
+- Specific date predictions or lottery numbers
+
+### 🔗 Closing
+Hopeful message: "Understanding the big waves helps you stay steady through small ripples."`
+    },
+    monthlyFortune: {
+      ko: `\n\n## 📋 콘텐츠 역할 지침
+
+### 🏷️ "12개월의 리듬 - 월운 가이드"
+월별 운세의 흐름을 **실용적 가이드** 형식으로 설명
+
+### ✅ 다룰 주제
+- 월운의 원리와 계산 방식
+- 12개월 각각의 운세 특성
+- 월별 등급 (대길/길/보통/주의)
+- 중요 결정에 좋은 달 vs 휴식이 필요한 달
+- 월운 활용 전략
+
+### ❌ 다루지 않기
+- 대운/세운 분석 (별도 분석)
+- 일진이나 특정 날짜 분석
+
+### 🔗 마무리
+격려 메시지: "매달의 흐름을 알면 지혜롭게 계획할 수 있어요"`,
+      en: `\n\n## 📋 Content Role Instructions
+
+### 🏷️ "The 12-Month Rhythm - Monthly Fortune Guide"
+Explain monthly fortune flow as a **practical guide**
+
+### ✅ Topics
+- Principles of monthly fortune calculation
+- Characteristics of each of the 12 months
+- Monthly grades (Excellent/Good/Average/Caution)
+- Best months for decisions vs rest periods
+- Monthly fortune utilization strategies
+
+### ❌ DO NOT Cover
+- Major/Annual Luck analysis (separate analysis)
+- Daily fortune or specific date analysis
+
+### 🔗 Closing
+Encouraging message: "Knowing monthly rhythms helps you plan wisely."`
     }
   };
 

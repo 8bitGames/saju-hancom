@@ -122,7 +122,7 @@ interface PipelineResultProps {
 
 export type TabType = "overview" | "daymaster" | "tengods" | "stars" | "timing" | "advice";
 
-type DetailCategory = "dayMaster" | "tenGods" | "stars" | "fortune" | "career" | "relationship" | "health" | "wealth" | "personality";
+type DetailCategory = "dayMaster" | "tenGods" | "stars" | "fortune" | "career" | "relationship" | "health" | "wealth" | "personality" | "majorYearly" | "monthlyFortune";
 
 // 종합 탭에서 상세보기 순서 정의 (성격 → 직업 → 재물 → 관계 → 건강)
 // personality 프롬프트 사용 (dayMaster와 분리)
@@ -207,6 +207,33 @@ export default function PipelineResult({ result, gender = "male", birthInfo, onT
     isOverviewSequence: false,
   });
   const [detailAnalyses, setDetailAnalyses] = useState<Record<string, string>>({});
+
+  // 운세 탭 상세보기 확장 상태
+  const [majorYearlyExpanded, setMajorYearlyExpanded] = useState(false);
+  const [monthlyExpanded, setMonthlyExpanded] = useState(false);
+
+  // 세운 5년 전망 데이터
+  const [yearlyFortuneData, setYearlyFortuneData] = useState<{
+    loading: boolean;
+    data: null | {
+      currentYear: number;
+      startYear: number;
+      yearsCount: number;
+      bestYears: number[];
+      cautionYears: number[];
+      fortunes: Array<{
+        year: number;
+        pillar: { stem: string; branch: string; stemKorean: string; branchKorean: string; fullName: string };
+        element: string;
+        elementKorean: string;
+        zodiacAnimal: string;
+        analysis: { score: number; grade: string; gradeKorean: string; theme: string; description: string; opportunities: string[]; challenges: string[]; advice: string };
+        keywords: string[];
+        natalInteraction: { harmonies: string[]; clashes: string[]; punishments: string[] };
+        usefulGodRelation: string;
+      }>;
+    };
+  }>({ loading: false, data: null });
 
   // 종합탭 상세보기 잠금 해제 상태 계산
   // 필수 카테고리(일간/십성/신살/운세)를 모두 완료했는지 확인
@@ -319,6 +346,51 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
         isOverviewSequence: true,
       });
     }
+  };
+
+  // 세운 5년 전망 데이터 로드
+  const fetchYearlyFortuneData = async () => {
+    if (yearlyFortuneData.loading || yearlyFortuneData.data) return;
+
+    setYearlyFortuneData({ loading: true, data: null });
+    try {
+      // URL에서 shareId 추출
+      const urlParams = new URLSearchParams(window.location.search);
+      const shareId = urlParams.get("shareId") || window.location.pathname.split("/").pop();
+
+      if (!shareId) {
+        console.error("shareId not found");
+        setYearlyFortuneData({ loading: false, data: null });
+        return;
+      }
+
+      const response = await fetch(`/api/saju/fortune/yearly?shareId=${shareId}&years=5`);
+      const result = await response.json();
+
+      if (result.success) {
+        setYearlyFortuneData({ loading: false, data: result.data });
+      } else {
+        console.error("Failed to fetch yearly fortune:", result.error);
+        setYearlyFortuneData({ loading: false, data: null });
+      }
+    } catch (error) {
+      console.error("Error fetching yearly fortune:", error);
+      setYearlyFortuneData({ loading: false, data: null });
+    }
+  };
+
+  // 대운/세운 상세보기 토글
+  const toggleMajorYearlyExpanded = () => {
+    const newExpanded = !majorYearlyExpanded;
+    setMajorYearlyExpanded(newExpanded);
+    if (newExpanded && !yearlyFortuneData.data) {
+      fetchYearlyFortuneData();
+    }
+  };
+
+  // 월운 상세보기 토글
+  const toggleMonthlyExpanded = () => {
+    setMonthlyExpanded(!monthlyExpanded);
   };
 
   const getGradeColor = (grade: string) => {
@@ -857,61 +929,71 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
           {/* 운세 탭 */}
           {activeTab === "timing" && (
             <div className="space-y-4 sm:space-y-6">
-              <div className="flex items-center gap-2 relative">
-                <h3 className="text-base sm:text-lg font-semibold text-white">대운/세운 분석</h3>
-                <button
-                  onClick={() => handleInfoClick("timing")}
-                  className="w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
-                  aria-label="운세 분석 설명"
-                >
-                  <Info className="w-3 h-3 text-white/60" />
-                </button>
-                {showInfoTooltip === "timing" && (
-                  <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
-                    {getTooltipText("timing")}
-                  </div>
-                )}
-              </div>
-
-              {/* 현재 대운 */}
-              <div className="p-3 sm:p-4 bg-[#3b82f6]/10 rounded-lg sm:rounded-xl border border-[#3b82f6]/30">
-                <h4 className="font-medium text-sm sm:text-base mb-1.5 sm:mb-2 text-white">현재 대운 ({step5.currentMajorFortune.period})</h4>
-                <p className="text-xl sm:text-2xl font-bold text-[#a855f7]">{step5.currentMajorFortune.theme}</p>
-                <p className="text-xs sm:text-sm text-white/60 mt-1.5 sm:mt-2">{step5.currentMajorFortune.influence}</p>
-              </div>
-
-              {/* 올해 세운 */}
-              <div className="p-3 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl border border-white/10">
-                <div className="flex items-center justify-between mb-2 sm:mb-3">
-                  <h4 className="font-medium text-sm sm:text-base text-white">{step5.yearlyFortune.year}년 운세</h4>
-                  <span className="text-xl sm:text-2xl font-bold text-[#a855f7]">{step5.yearlyFortune.score}점</span>
+              {/* 대운/세운 섹션 */}
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-2 relative">
+                  <h3 className="text-base sm:text-lg font-semibold text-white">대운/세운 분석</h3>
+                  <button
+                    onClick={() => handleInfoClick("timing")}
+                    className="w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                    aria-label="운세 분석 설명"
+                  >
+                    <Info className="w-3 h-3 text-white/60" />
+                  </button>
+                  {showInfoTooltip === "timing" && (
+                    <div className="absolute left-0 top-full mt-1 px-3 py-2 bg-[#2a1f4e] rounded-lg text-xs text-white/80 border border-[#a855f7]/30 shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                      {getTooltipText("timing")}
+                    </div>
+                  )}
                 </div>
-                <p className="text-base sm:text-lg font-medium text-white">{step5.yearlyFortune.theme}</p>
-                <p className="text-xs sm:text-sm text-white/60 mt-1.5 sm:mt-2">{step5.yearlyFortune.advice}</p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4">
-                  <div className="p-3 sm:p-4 bg-[#22c55e]/10 rounded-xl border border-[#22c55e]/30">
-                    <p className="text-base sm:text-lg font-bold text-[#22c55e] mb-2">✨ 기회</p>
-                    <ul className="space-y-1.5 sm:space-y-2">
-                      {step5.yearlyFortune.opportunities.map((o, i) => (
-                        <li key={i} className="text-sm sm:text-base text-[#22c55e]/90 leading-relaxed">• {o}</li>
-                      ))}
-                    </ul>
+                {/* 현재 대운 */}
+                <div className="p-3 sm:p-4 bg-[#3b82f6]/10 rounded-lg sm:rounded-xl border border-[#3b82f6]/30">
+                  <h4 className="font-medium text-sm sm:text-base mb-1.5 sm:mb-2 text-white">현재 대운 ({step5.currentMajorFortune.period})</h4>
+                  <p className="text-xl sm:text-2xl font-bold text-[#a855f7]">{step5.currentMajorFortune.theme}</p>
+                  <p className="text-xs sm:text-sm text-white/60 mt-1.5 sm:mt-2">{step5.currentMajorFortune.influence}</p>
+                </div>
+
+                {/* 올해 세운 */}
+                <div className="p-3 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl border border-white/10">
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <h4 className="font-medium text-sm sm:text-base text-white">{step5.yearlyFortune.year}년 운세</h4>
+                    <span className="text-xl sm:text-2xl font-bold text-[#a855f7]">{step5.yearlyFortune.score}점</span>
                   </div>
-                  <div className="p-3 sm:p-4 bg-[#f97316]/10 rounded-xl border border-[#f97316]/30">
-                    <p className="text-base sm:text-lg font-bold text-[#f97316] mb-2">⚡ 도전</p>
-                    <ul className="space-y-1.5 sm:space-y-2">
-                      {step5.yearlyFortune.challenges.map((c, i) => (
-                        <li key={i} className="text-sm sm:text-base text-[#f97316]/90 leading-relaxed">• {c}</li>
-                      ))}
-                    </ul>
+                  <p className="text-base sm:text-lg font-medium text-white">{step5.yearlyFortune.theme}</p>
+                  <p className="text-xs sm:text-sm text-white/60 mt-1.5 sm:mt-2">{step5.yearlyFortune.advice}</p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4">
+                    <div className="p-3 sm:p-4 bg-[#22c55e]/10 rounded-xl border border-[#22c55e]/30">
+                      <p className="text-base sm:text-lg font-bold text-[#22c55e] mb-2">✨ 기회</p>
+                      <ul className="space-y-1.5 sm:space-y-2">
+                        {step5.yearlyFortune.opportunities.map((o, i) => (
+                          <li key={i} className="text-sm sm:text-base text-[#22c55e]/90 leading-relaxed">• {o}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="p-3 sm:p-4 bg-[#f97316]/10 rounded-xl border border-[#f97316]/30">
+                      <p className="text-base sm:text-lg font-bold text-[#f97316] mb-2">⚡ 도전</p>
+                      <ul className="space-y-1.5 sm:space-y-2">
+                        {step5.yearlyFortune.challenges.map((c, i) => (
+                          <li key={i} className="text-sm sm:text-base text-[#f97316]/90 leading-relaxed">• {c}</li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
+                </div>
+
+                {/* 대운/세운 상세보기 버튼 */}
+                <div className="flex justify-center">
+                  <DetailButton onClick={() => openDetailModal("majorYearly", "대운/세운")} label="대운/세운 상세 분석 보기" />
                 </div>
               </div>
 
-              {/* 월별 하이라이트 */}
-              <div>
-                <h4 className="font-medium text-base sm:text-lg mb-3 sm:mb-4 text-white">월별 운세 포인트</h4>
+              {/* 월운 섹션 */}
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="text-base sm:text-lg font-semibold text-white">월운</h3>
+
+                {/* 월별 하이라이트 그리드 */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
                   {step5.monthlyHighlights.map((m) => (
                     <div
@@ -928,11 +1010,16 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                     </div>
                   ))}
                 </div>
+
+                {/* 월운 상세보기 버튼 */}
+                <div className="flex justify-center">
+                  <DetailButton onClick={() => openDetailModal("monthlyFortune", "월운")} label="월운 상세 분석 보기" />
+                </div>
               </div>
 
-              {/* 상세 분석 버튼 */}
+              {/* 종합 운세 상세 분석 버튼 */}
               <div className="flex justify-center pt-2">
-                <DetailButton onClick={() => openDetailModal("fortune", "운세")} label="운세 상세 분석 보기" />
+                <DetailButton onClick={() => openDetailModal("fortune", "운세")} label="운세 종합 상세 분석 보기" />
               </div>
             </div>
           )}

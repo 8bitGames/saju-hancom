@@ -218,7 +218,9 @@ export type DetailCategory =
   | "relationship"
   | "health"
   | "wealth"
-  | "personality";
+  | "personality"
+  | "majorYearly"    // 대운/세운 상세 분석
+  | "monthlyFortune"; // 월운 상세 분석
 
 /** 기본 분석 카테고리 (교육적 설명 중심) */
 export type BasicCategory = "dayMaster" | "tenGods" | "stars" | "fortune";

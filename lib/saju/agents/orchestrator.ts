@@ -997,6 +997,8 @@ function getCategoryHeader(category: DetailCategory, locale: "ko" | "en"): strin
     fortune: { ko: "운세 분석 컨텍스트", en: "Fortune Analysis Context" },
     tenGods: { ko: "십성(十星) 분석 컨텍스트", en: "Ten Gods Analysis Context" },
     stars: { ko: "신살(神殺) 분석 컨텍스트", en: "Stars Analysis Context" },
+    majorYearly: { ko: "대운/세운 분석 컨텍스트", en: "Major & Annual Luck Analysis Context" },
+    monthlyFortune: { ko: "월운 분석 컨텍스트", en: "Monthly Fortune Analysis Context" },
   };
   return headers[category]?.[locale] || (locale === "ko" ? "분석 컨텍스트" : "Analysis Context");
 }
