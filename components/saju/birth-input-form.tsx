@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/lib/i18n/navigation";
-import { Calendar, Clock, MapPin, User, Sparkle, ArrowRight, Warning } from "@phosphor-icons/react";
+import { Calendar, Clock, MapPin, User, ArrowRight, Warning } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { getSavedAnalysisData } from "@/lib/hooks/useSajuPipelineStream";
 
 // Haptic feedback utility for touch devices
 const triggerHaptic = (style: "light" | "medium" | "heavy" = "light") => {
@@ -80,7 +81,33 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
     {}
   );
   const [isShaking, setIsShaking] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(true);
   const formRef = useRef<HTMLFormElement>(null);
+
+  // 저장된 데이터가 있으면 바로 fortune 페이지로 리다이렉트
+  useEffect(() => {
+    const data = getSavedAnalysisData();
+    if (data) {
+      const { input } = data;
+      const [year, month, day] = input.birthDate.split('-').map(Number);
+      const [hour, minute] = input.birthTime.split(':').map(Number);
+
+      const params = new URLSearchParams({
+        year: year.toString(),
+        month: month.toString(),
+        day: day.toString(),
+        hour: hour.toString(),
+        minute: minute.toString(),
+        gender: input.gender,
+        isLunar: (input.isLunar || false).toString(),
+        city: "seoul",
+      });
+      // window.location을 사용하여 깔끔하게 리다이렉트
+      window.location.replace(`/saju/fortune?${params.toString()}`);
+    } else {
+      setIsRedirecting(false);
+    }
+  }, []);
 
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -155,6 +182,11 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
   };
 
   const hasErrors = Object.keys(errors).length > 0;
+
+  // 리다이렉트 확인 중일 때는 아무것도 표시하지 않음
+  if (isRedirecting) {
+    return null;
+  }
 
   return (
     <form
