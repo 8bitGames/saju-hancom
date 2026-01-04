@@ -13,8 +13,11 @@ import { downloadPipelinePDF } from "@/lib/pdf/generator";
 import { getDetailAnalysisFromStorage } from "@/components/saju/DetailAnalysisModal";
 import type { Gender } from "@/lib/saju/types";
 
-// 총 상세 분석 영역 수 (personality 카테고리 추가로 8→9)
-const TOTAL_DETAIL_AREAS = 9;
+// 총 상세 분석 영역 수
+// 사주 탭: dayMaster, tenGods, stars (3개)
+// 운세 탭: majorFortune, yearlyFortune, monthlyFortune, fortune (4개)
+// 종합 탭: personality, career, wealth, relationship, health (5개)
+const TOTAL_DETAIL_AREAS = 12;
 
 function SajuFortuneContent() {
   const router = useRouter();
