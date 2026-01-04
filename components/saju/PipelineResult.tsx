@@ -122,7 +122,7 @@ interface PipelineResultProps {
 
 export type TabType = "overview" | "daymaster" | "tengods" | "stars" | "timing" | "advice";
 
-type DetailCategory = "dayMaster" | "tenGods" | "stars" | "fortune" | "career" | "relationship" | "health" | "wealth" | "personality" | "majorYearly" | "monthlyFortune";
+type DetailCategory = "dayMaster" | "tenGods" | "stars" | "fortune" | "career" | "relationship" | "health" | "wealth" | "personality" | "majorYearly" | "monthlyFortune" | "majorFortune" | "yearlyFortune";
 
 // 종합 탭에서 상세보기 순서 정의 (성격 → 직업 → 재물 → 관계 → 건강)
 // personality 프롬프트 사용 (dayMaster와 분리)
@@ -954,6 +954,11 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                   <p className="text-xs sm:text-sm text-white/60 mt-1.5 sm:mt-2">{step5.currentMajorFortune.influence}</p>
                 </div>
 
+                {/* 대운 상세보기 버튼 */}
+                <div className="flex justify-center">
+                  <DetailButton onClick={() => openDetailModal("majorFortune", "대운")} label="대운 상세 분석 보기" />
+                </div>
+
                 {/* 올해 세운 */}
                 <div className="p-3 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl border border-white/10">
                   <div className="flex items-center justify-between mb-2 sm:mb-3">
@@ -983,9 +988,9 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                   </div>
                 </div>
 
-                {/* 대운/세운 상세보기 버튼 */}
+                {/* 세운 상세보기 버튼 */}
                 <div className="flex justify-center">
-                  <DetailButton onClick={() => openDetailModal("majorYearly", "대운/세운")} label="대운/세운 상세 분석 보기" />
+                  <DetailButton onClick={() => openDetailModal("yearlyFortune", "세운")} label="세운 상세 분석 보기" />
                 </div>
               </div>
 

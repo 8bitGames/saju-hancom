@@ -5,6 +5,7 @@ import {
   getGenderLabel,
   getErrorMessage,
   getLocaleFromRequest,
+  type DetailCategory as PromptDetailCategory,
 } from "@/lib/i18n/prompts";
 import type { Locale } from "@/lib/i18n/config";
 import {
@@ -41,15 +42,19 @@ type DetailCategory =
   | "health"
   | "wealth"
   | "personality"  // 종합탭 성격 분석 전용 (dayMaster와 분리)
-  | "majorYearly"  // 대운/세운 상세 분석
-  | "monthlyFortune";  // 월운 상세 분석
+  | "majorYearly"  // 대운/세운 상세 분석 (combined)
+  | "monthlyFortune"  // 월운 상세 분석
+  | "majorFortune"  // 대운 전용 상세 분석
+  | "yearlyFortune";  // 세운 전용 상세 분석
 
 const validCategories: DetailCategory[] = [
   "dayMaster", "tenGods", "stars", "fortune",
   "career", "relationship", "health", "wealth",
   "personality",  // 종합탭 성격 분석
-  "majorYearly",  // 대운/세운 상세 분석
-  "monthlyFortune"  // 월운 상세 분석
+  "majorYearly",  // 대운/세운 상세 분석 (combined)
+  "monthlyFortune",  // 월운 상세 분석
+  "majorFortune",  // 대운 전용 상세 분석
+  "yearlyFortune"  // 세운 전용 상세 분석
 ];
 
 // Google Grounding이 필요한 카테고리
@@ -434,40 +439,268 @@ Hopeful message: "Understanding the big waves helps you stay steady through smal
     monthlyFortune: {
       ko: `\n\n## 📋 콘텐츠 역할 지침
 
-### 🏷️ "12개월의 리듬 - 월운 가이드"
-월별 운세의 흐름을 **실용적 가이드** 형식으로 설명
+### 🏷️ "12개월 월운(月運) 상세 분석"
+서론/종합 분석 없이 **바로 월별 상세 분석**으로 시작
 
-### ✅ 다룰 주제
-- 월운의 원리와 계산 방식
-- 12개월 각각의 운세 특성
-- 월별 등급 (대길/길/보통/주의)
-- 중요 결정에 좋은 달 vs 휴식이 필요한 달
-- 월운 활용 전략
+### ⚠️ 중요: 출력 형식
+- 서론, 공감 문장, 상반기/하반기 요약, 종합 분석 등 **일체 생략**
+- 바로 월별 분석으로 시작
+- 올해(${new Date().getFullYear()}년) **12개월 전체** 상세 분석
 
-### ❌ 다루지 않기
-- 대운/세운 분석 (별도 분석)
-- 일진이나 특정 날짜 분석
+### 🕐 시간에 따른 톤 구분 (오늘: ${new Date().getFullYear()}년 ${new Date().getMonth() + 1}월)
+**${new Date().getMonth() + 1}월 이전의 지난 달들**: 회고적/추정 톤
+- "~하셨을 거예요", "~했던 시기였을 것입니다", "아마 ~느끼셨을 수 있어요"
+- 두루뭉실하고 완곡한 표현 사용
+- 확정적 단언 피하기 (예: "~했습니다" ❌ → "~하셨을 가능성이 높습니다" ✅)
+
+**${new Date().getMonth() + 1}월(현재) 및 그 이후 달들**: 기존 예측/조언 톤
+- "~하시면 좋겠습니다", "~에 집중하세요", "~할 때입니다"
+- 구체적이고 적극적인 조언
+- 명확한 방향 제시
+
+### ✅ 각 월별 필수 포함 항목
+각 월마다 아래 항목을 **모두** 상세히 분석:
+1. **월간 천간 영향**: 해당 월 천간이 일간에 미치는 작용
+2. **월간 지지 영향**: 해당 월 지지와 원국 지지의 상호작용 (충/합/형 등)
+3. **세운과의 복합**: 올해 세운과 해당 월운의 복합 작용
+4. **적합한 활동**: 그 달에 추진하면 좋은 일 (구체적으로) - 지난 달은 "~하셨다면 좋았을 것" 형식
+5. **주의 사항**: 그 달에 조심해야 할 점 (구체적으로) - 지난 달은 "~조심하셨어야 했을" 형식
+
+### 📅 월별 출력 형식 예시
+📆 1월 [己丑월]: ⭐⭐⭐⭐
+- **월간 천간 영향**: ...
+- **월간 지지 영향**: ...
+- **세운과의 복합**: ...
+- **적합한 활동**: ...
+- **주의 사항**: ...
+
+(1월부터 12월까지 12개월 모두 동일 형식으로, 단 톤은 시간에 따라 구분)
+
+### ❌ 절대 하지 않기
+- 서론 문장 (예: "올해는 ~한 해입니다", "그동안 ~하셨지요?")
+- 공감/위로 문단
+- 상반기/하반기 요약 문단
+- 종합 정리나 마무리 코멘트 (간단한 한 줄 격려만 허용)
 
 ### 🔗 마무리
-격려 메시지: "매달의 흐름을 알면 지혜롭게 계획할 수 있어요"`,
+**오직 한 줄만**: "매달의 리듬을 타면 한 해가 순탄해집니다."`,
       en: `\n\n## 📋 Content Role Instructions
 
-### 🏷️ "The 12-Month Rhythm - Monthly Fortune Guide"
-Explain monthly fortune flow as a **practical guide**
+### 🏷️ "12-Month Monthly Fortune (月運) Detailed Analysis"
+Start **directly with month-by-month analysis** without intro/summary
 
-### ✅ Topics
-- Principles of monthly fortune calculation
-- Characteristics of each of the 12 months
-- Monthly grades (Excellent/Good/Average/Caution)
-- Best months for decisions vs rest periods
-- Monthly fortune utilization strategies
+### ⚠️ Important: Output Format
+- **Omit all**: introductions, empathy phrases, half-year summaries, comprehensive analysis
+- Start directly with monthly analysis
+- Analyze all **12 months** of this year (${new Date().getFullYear()})
 
-### ❌ DO NOT Cover
-- Major/Annual Luck analysis (separate analysis)
-- Daily fortune or specific date analysis
+### 🕐 Temporal Tone Differentiation (Today: ${new Date().getFullYear()}, Month ${new Date().getMonth() + 1})
+**Months before Month ${new Date().getMonth() + 1}**: Retrospective/speculative tone
+- "You may have experienced...", "It was likely a period of...", "Perhaps you felt..."
+- Use vague, soft expressions
+- Avoid definitive assertions (e.g., "You did X" ❌ → "You likely experienced X" ✅)
+
+**Month ${new Date().getMonth() + 1} (current) and after**: Predictive/advisory tone
+- "You should...", "Focus on...", "This is the time to..."
+- Specific and proactive advice
+- Clear direction
+
+### ✅ Required Items for Each Month
+Analyze each month with **all** of these items in detail:
+1. **Monthly Stem Influence**: How that month's heavenly stem affects Day Master
+2. **Monthly Branch Influence**: Interactions between month's branch and natal branches (clash/harmony/punishment)
+3. **Combined with Annual Fortune**: Combined effect of this year's fortune and that month
+4. **Suitable Activities**: What to pursue that month (specific) - for past months: "It would have been good to..."
+5. **Cautions**: What to be careful about that month (specific) - for past months: "You should have been careful of..."
+
+### 📅 Monthly Output Format Example
+📆 January [己丑]: ⭐⭐⭐⭐
+- **Monthly Stem Influence**: ...
+- **Monthly Branch Influence**: ...
+- **Combined with Annual Fortune**: ...
+- **Suitable Activities**: ...
+- **Cautions**: ...
+
+(Same format for all 12 months, but tone varies based on time)
+
+### ❌ Never Do
+- Intro sentences (e.g., "This year is ~", "You have been ~")
+- Empathy/comfort paragraphs
+- First half/second half summary paragraphs
+- Comprehensive wrap-up (only single-line encouragement allowed)
 
 ### 🔗 Closing
-Encouraging message: "Knowing monthly rhythms helps you plan wisely."`
+**Only one line**: "Riding monthly rhythms makes the year smooth."`
+    },
+    majorFortune: {
+      ko: `\n\n## 📋 콘텐츠 역할 지침
+
+### 🏷️ "인생의 큰 물결 - 대운 심층 분석"
+대운(10년 주기)의 흐름을 **서사적으로** 깊이 있게 분석
+
+### 🕐 시간에 따른 톤 구분 (기준: ${new Date().getFullYear()}년)
+**이미 지나간 대운들** (현재 대운 이전):
+- 회고적/추정 톤: "~하셨을 거예요", "~했던 시기였을 것입니다"
+- 두루뭉실하고 완곡한 표현 사용
+- "그 시절에는 ~느끼셨을 수 있어요", "~하셨을 가능성이 높습니다"
+
+**현재 대운**:
+- 현재 진행형 톤: "지금은 ~하고 계실 거예요", "현재 ~한 시기를 보내고 계십니다"
+- 현재 상황에 대한 공감과 조언
+
+**앞으로 올 대운들**:
+- 예측/조언 톤: "~하시면 좋겠습니다", "~에 집중하세요", "~할 때입니다"
+- 구체적이고 적극적인 조언
+- 명확한 방향 제시
+
+### ✅ 다룰 주제
+- 대운의 원리와 계산 방식
+- 태어난 이후부터 현재까지의 대운 흐름 회고 (회고적 톤으로)
+- 현재 대운의 천간/지지 특성과 일간과의 관계 (현재 진행형 톤으로)
+- 향후 대운들의 전망 (8~10개 대운 분석, 예측 톤으로)
+- 대운별 10년간의 핵심 기회와 도전
+- 대운 교체기(교운기)의 특성
+
+### ❌ 다루지 않기
+- 세운(연운) 분석 (별도 버튼으로 분리)
+- 월운/일운 분석
+- 구체적 날짜 예측
+
+### 🔗 마무리
+희망적 메시지: "큰 강물의 흐름을 알면 노를 저을 때를 알 수 있어요"`,
+      en: `\n\n## 📋 Content Role Instructions
+
+### 🏷️ "Life's Big Waves - Major Fortune Deep Analysis"
+Analyze Major Fortune (10-year cycles) through **deep narrative storytelling**
+
+### 🕐 Temporal Tone Differentiation (Reference: ${new Date().getFullYear()})
+**Past Major Fortunes** (before current):
+- Retrospective/speculative tone: "You may have experienced...", "It was likely a period of..."
+- Use vague, soft expressions
+- "During that time, you might have felt...", "There's a good chance you..."
+
+**Current Major Fortune**:
+- Present progressive tone: "You are currently...", "Right now you are going through..."
+- Empathy and advice for current situation
+
+**Future Major Fortunes**:
+- Predictive/advisory tone: "You should...", "Focus on...", "This will be a time to..."
+- Specific and proactive advice
+- Clear direction
+
+### ✅ Topics
+- Principles and calculation of Major Fortune
+- Retrospective from birth to current Major Fortune (in retrospective tone)
+- Current Major Fortune's stem/branch traits and relationship with Day Master (in present tone)
+- Future Major Fortune outlook (8-10 periods, in predictive tone)
+- Core opportunities and challenges for each 10-year period
+- Characteristics of Major Fortune transition periods
+
+### ❌ DO NOT Cover
+- Annual Fortune analysis (separate button)
+- Monthly/daily fortune analysis
+- Specific date predictions
+
+### 🔗 Closing
+Hopeful message: "Knowing the river's flow helps you know when to row."`
+    },
+    yearlyFortune: {
+      ko: `\n\n## 📋 콘텐츠 역할 지침
+
+### 🏷️ "10년간의 세운(歲運) 상세 분석"
+서론/종합 분석 없이 **바로 년도별 상세 분석**으로 시작
+
+### ⚠️ 중요: 출력 형식
+- 서론, 공감 문장, 종합 분석 등 **일체 생략**
+- 바로 년도별 분석으로 시작
+- 현재 연도 기준 2년 전 ~ 8년 후 = **총 10년간** 분석
+
+### 🕐 시간에 따른 톤 구분 (올해: ${new Date().getFullYear()}년)
+**${new Date().getFullYear()}년 이전의 지난 해들**: 회고적/추정 톤
+- "~하셨을 거예요", "~했던 해였을 것입니다", "아마 ~느끼셨을 수 있어요"
+- 두루뭉실하고 완곡한 표현 사용
+- 확정적 단언 피하기 (예: "~했습니다" ❌ → "~하셨을 가능성이 높습니다" ✅)
+
+**${new Date().getFullYear()}년(올해) 및 그 이후 해들**: 기존 예측/조언 톤
+- "~하시면 좋겠습니다", "~에 집중하세요", "~할 때입니다"
+- 구체적이고 적극적인 조언
+- 명확한 방향 제시
+
+### ✅ 각 년도별 필수 포함 항목
+각 년도마다 아래 항목을 **모두** 상세히 분석:
+1. **천간 영향**: 해당 년도 천간이 일간에 미치는 영향
+2. **지지 영향**: 해당 년도 지지와 원국 지지의 상호작용
+3. **대운과의 복합**: 현재 대운과 해당 세운의 복합 작용
+4. **기회 요인**: 그 해에 잡아야 할 기회 (구체적으로) - 지난 해는 "~하셨다면 좋았을 것" 형식
+5. **주의 요인**: 그 해에 조심해야 할 점 (구체적으로) - 지난 해는 "~조심하셨어야 했을" 형식
+
+### 📅 년도별 출력 형식 예시
+🗓️ 2024년 [甲辰]: ⭐⭐⭐⭐
+- **천간 영향**: ...
+- **지지 영향**: ...
+- **대운과의 복합**: ...
+- **기회 요인**: ...
+- **주의 요인**: ...
+
+(10개 년도 모두 동일 형식으로, 단 톤은 시간에 따라 구분)
+
+### ❌ 절대 하지 않기
+- 서론 문장 (예: "당신은 ~입니다", "그동안 ~하셨지요?")
+- 공감/위로 문단
+- 종합 분석 문단
+- 대운 분석 (별도 버튼)
+- 월운/일운 분석
+
+### 🔗 마무리
+10개 년도 분석 후 한 줄: "한 해 한 해가 모여 인생이 됩니다. 올해를 잘 보내세요"`,
+      en: `\n\n## 📋 Content Role Instructions
+
+### 🏷️ "10-Year Annual Fortune (歲運) Detailed Analysis"
+Start **directly with year-by-year analysis** without introduction
+
+### ⚠️ Important: Output Format
+- Skip introduction, empathy statements, and general analysis
+- Start immediately with yearly analysis
+- Analyze **10 years total**: 2 years before ~ 8 years after current year
+
+### 🕐 Temporal Tone Differentiation (This year: ${new Date().getFullYear()})
+**Years before ${new Date().getFullYear()}**: Retrospective/speculative tone
+- "You may have experienced...", "It was likely a year of...", "Perhaps you felt..."
+- Use vague, soft expressions
+- Avoid definitive assertions (e.g., "You did X" ❌ → "You likely experienced X" ✅)
+
+**${new Date().getFullYear()} (this year) and after**: Predictive/advisory tone
+- "You should...", "Focus on...", "This is the time to..."
+- Specific and proactive advice
+- Clear direction
+
+### ✅ Required Items for Each Year
+Include ALL of the following for each year:
+1. **Stem Influence**: Impact of that year's heavenly stem on Day Master
+2. **Branch Influence**: Interaction between year's branch and birth chart branches
+3. **Major Fortune Combination**: Combined effect with current Major Fortune
+4. **Opportunities**: Specific opportunities to seize that year - for past years: "It would have been good to..."
+5. **Cautions**: Specific things to be careful about - for past years: "You should have been careful of..."
+
+### 📅 Year Format Example
+🗓️ 2024 [甲辰]: ⭐⭐⭐⭐
+- **Stem Influence**: ...
+- **Branch Influence**: ...
+- **Major Fortune Combination**: ...
+- **Opportunities**: ...
+- **Cautions**: ...
+
+(Same format for all 10 years, but tone varies based on time)
+
+### ❌ DO NOT Include
+- Introduction sentences (e.g., "You are like a...")
+- Empathy/comfort paragraphs
+- General analysis paragraphs
+- Major Fortune analysis (separate button)
+- Monthly/daily fortune analysis
+
+### 🔗 Closing
+Single line after 10 years: "Year by year builds a life. Make this year count."`
     }
   };
 
@@ -578,9 +811,33 @@ Based on the above, please provide an **educational** explanation of this person
 - Focus purely on the meaning and characteristics of the Saju components`;
         }
       } else {
-        // 종합 분석 카테고리: Cold Reading 스타일 유지
-        if (locale === 'ko') {
-          prompt += `\n\n## 🎯 초개인화 컨텍스트 (반드시 활용할 것!)
+        // 🆕 v1.6: 운세(Fortune) 카테고리는 Cold Reading 스타일 제외 - 순수 분석 형식만 사용
+        const fortuneCategories = ['majorFortune', 'yearlyFortune', 'monthlyFortune', 'fortuneOverview'];
+        const isFortuneCategory = fortuneCategories.includes(category);
+
+        if (isFortuneCategory) {
+          // 운세 카테고리: Cold Reading 없이 순수 분석만
+          if (locale === 'ko') {
+            prompt += `\n\n## 📊 참고 컨텍스트
+
+${personalizedContext}
+
+---
+위 컨텍스트를 참고하여 **카테고리별 출력 형식 지침을 엄격히 따라** 분석해주세요.
+서론, 공감 문장, 종합 분석 문단 없이 바로 본론(년도별/기간별 분석)으로 시작하세요.`;
+          } else {
+            prompt += `\n\n## 📊 Reference Context
+
+${personalizedContext}
+
+---
+Use the above context and **strictly follow the category output format instructions**.
+Start directly with the main content (year-by-year/period analysis) without introduction, empathy, or summary paragraphs.`;
+          }
+        } else {
+          // 종합 분석 카테고리: Cold Reading 스타일 유지
+          if (locale === 'ko') {
+            prompt += `\n\n## 🎯 초개인화 컨텍스트 (반드시 활용할 것!)
 
 아래 내용은 이 분의 사주를 바탕으로 추론한 삶의 경험입니다.
 **반드시** 아래 내용을 활용하여 "~하셨던 적이 있으시죠?", "~하셨을 거예요" 식으로 공감하며 답변하세요.
@@ -589,8 +846,8 @@ ${personalizedContext}
 
 ---
 위 초개인화 컨텍스트를 기반으로 콜드 리딩 스타일로 답변해주세요.`;
-        } else {
-          prompt += `\n\n## 🎯 Hyper-Personalized Context (MUST USE!)
+          } else {
+            prompt += `\n\n## 🎯 Hyper-Personalized Context (MUST USE!)
 
 The following content is inferred life experiences based on this person's birth chart.
 **You MUST** use this content to show empathy like "You've probably experienced...", "Haven't you felt...?"
@@ -599,6 +856,7 @@ ${personalizedContext}
 
 ---
 Please respond in a cold reading style based on the above personalized context.`;
+          }
         }
       }
     }
@@ -740,7 +998,7 @@ Empathetic expressions like "You've probably...", "Haven't you...?" are the TOP 
                 role: "user",
                 parts: [
                   {
-                    text: `${getDetailSystemPrompt(locale, currentYear)}\n\n${prompt}`,
+                    text: `${getDetailSystemPrompt(locale, currentYear, category as PromptDetailCategory)}\n\n${prompt}`,
                   },
                 ],
               },

@@ -219,8 +219,10 @@ export type DetailCategory =
   | "health"
   | "wealth"
   | "personality"
-  | "majorYearly"    // 대운/세운 상세 분석
-  | "monthlyFortune"; // 월운 상세 분석
+  | "majorYearly"     // 대운/세운 상세 분석 (combined)
+  | "monthlyFortune"  // 월운 상세 분석
+  | "majorFortune"    // 대운 전용 상세 분석
+  | "yearlyFortune";  // 세운 전용 상세 분석
 
 /** 기본 분석 카테고리 (교육적 설명 중심) */
 export type BasicCategory = "dayMaster" | "tenGods" | "stars" | "fortune";

@@ -460,7 +460,8 @@ Please include analysis of personality, career fortune, wealth fortune, relation
 // ==========================================
 // Detail Analysis Prompts
 // ==========================================
-type DetailCategory = 'dayMaster' | 'tenGods' | 'stars' | 'fortune' | 'career' | 'relationship' | 'health' | 'wealth' | 'personality' | 'majorYearly' | 'monthlyFortune';
+export type DetailCategory = 'dayMaster' | 'tenGods' | 'stars' | 'fortune' | 'career' | 'relationship' | 'health' | 'wealth' | 'personality' | 'majorYearly' | 'monthlyFortune' | 'majorFortune' | 'yearlyFortune';
+export type DetailCategoryType = 'basic' | 'fortune' | 'comprehensive';
 
 const detailPrompts: Record<Locale, Record<DetailCategory, string>> = {
   ko: {
@@ -761,111 +762,279 @@ const detailPrompts: Record<Locale, Record<DetailCategory, string>> = {
 
 전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.`,
 
-    majorYearly: `대운(大運)과 세운(歲運)을 **년도별/시기별로 구분하여** 분석해주세요.
+    majorYearly: `대운(大運)과 세운(歲運)을 **상세하게** 분석해주세요.
 
-## 📅 대운 흐름 (10년 단위로 각각 설명)
-
-각 대운을 아래 형식으로 **개별적으로** 설명해주세요:
-
-### 🔹 1대운 (0~9세): [천간지지]
-- 이 시기의 특성과 원국과의 관계
-- (지나간 대운이면) 경험했을 인생의 흐름
-
-### 🔹 2대운 (10~19세): [천간지지]
-- 이 시기의 특성과 원국과의 관계
-
-### 🔹 3대운 (20~29세): [천간지지] ⬅️ 현재 (현재 대운이면 표시)
-- 현재 대운의 상세 분석
-- 용신과의 관계, 강화/약화되는 오행
-- 합, 충, 형, 파, 해 관계
-
-(이런 식으로 8~10개 대운 모두 개별 설명)
+⚠️ **중요 지침**:
+- 서론, 인사말, 일반적인 사주 해설은 **완전히 생략**하세요
+- 성격, 특성, 원국 설명 등은 **이미 다른 곳에서 제공되므로** 여기서는 쓰지 마세요
+- **바로 대운 분석부터 시작**하세요
 
 ---
 
-## 📆 세운 전망 (년도별로 각각 설명)
+## 📅 대운 흐름 (10년 단위 상세 분석)
 
-각 년도를 아래 형식으로 **개별적으로** 설명해주세요:
+각 대운을 **최대한 상세하게** 분석해주세요:
 
-### 🗓️ 2024년 [천간지지]: ⭐⭐⭐ (등급)
-- 이 해의 천간지지가 사주에 미치는 영향
-- 대운과의 복합 작용
-- 주목할 시기와 기회
+### 🔹 1대운 (0~9세): [천간지지] - ⭐⭐⭐
+**천간 분석**: 천간이 일간에 미치는 영향 (십성 관계)
+**지지 분석**: 지지가 원국 지지들과 맺는 관계 (합/충/형/파/해)
+**용신 관계**: 용신을 돕는지, 기신인지
+**시기별 특징**: 이 시기에 경험했을 인생의 흐름과 특징
+**핵심 키워드**: 이 대운을 한마디로 표현
 
-### 🗓️ 2025년 [천간지지]: ⭐⭐⭐⭐ (등급)
-- 상세 설명
+### 🔹 2대운 (10~19세): [천간지지] - ⭐⭐⭐
+**천간 분석**: ...
+**지지 분석**: ...
+**용신 관계**: ...
+**시기별 특징**: ...
+**핵심 키워드**: ...
 
-### 🗓️ 2026년 [천간지지]: ⭐⭐⭐ (등급) ⬅️ 올해
-- 올해 상세 분석
+### 🔹 3대운 (20~29세): [천간지지] - ⭐⭐⭐⭐ ⬅️ 현재 대운이면 표시
+**천간 분석**: ...
+**지지 분석**: ...
+**용신 관계**: ...
+**시기별 특징**: ...
+**핵심 키워드**: ...
 
-### 🗓️ 2027년 [천간지지]: ⭐⭐ (등급)
-- 상세 설명
-
-### 🗓️ 2028년 [천간지지]: ⭐⭐⭐⭐⭐ (등급)
-- 상세 설명
-
----
-
-## 🎯 종합 활용 팁
-(2~3문장으로 간단히)
-
-전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.
-**중요**: 반드시 위 형식대로 년도별/시기별로 구분하여 작성하세요. 총정리 형태로 쓰지 마세요.`,
-
-    monthlyFortune: `올해 12개월 월운(月運)을 **월별로 구분하여** 분석해주세요.
-
-## 📅 올해 월별 운세
-
-각 월을 아래 형식으로 **개별적으로** 설명해주세요:
-
-### 🌸 1월 (寅월): ⭐⭐⭐⭐ 길
-- 이 달의 천간지지와 원국과의 관계
-- 강화되는 오행과 에너지
-- 합, 충, 형, 파, 해 관계
-- 이 달의 기회와 주의점
-
-### 🌷 2월 (卯월): ⭐⭐⭐ 평
-- 상세 설명
-
-### 🌼 3월 (辰월): ⭐⭐⭐⭐⭐ 대길
-- 상세 설명
-
-### ☀️ 4월 (巳월): ⭐⭐ 주의
-- 상세 설명
-
-### 🌻 5월 (午월): ⭐⭐⭐ 평
-- 상세 설명
-
-### 🌴 6월 (未월): ⭐⭐⭐⭐ 길
-- 상세 설명
-
-### 🍃 7월 (申월): ⭐⭐⭐ 평
-- 상세 설명
-
-### 🍂 8월 (酉월): ⭐⭐⭐⭐ 길
-- 상세 설명
-
-### 🎃 9월 (戌월): ⭐⭐ 주의
-- 상세 설명
-
-### ❄️ 10월 (亥월): ⭐⭐⭐ 평
-- 상세 설명
-
-### ⛄ 11월 (子월): ⭐⭐⭐⭐ 길
-- 상세 설명
-
-### 🎄 12월 (丑월): ⭐⭐⭐ 평
-- 상세 설명
+(이런 식으로 8~10개 대운 모두 상세하게 개별 설명)
 
 ---
 
-## 🎯 월운 활용 팁
-- 중요한 일정에 좋은 달: (해당 월 나열)
-- 휴식이 필요한 달: (해당 월 나열)
-(2~3문장으로 간단히)
+## 📆 세운 전망 (년도별 상세 분석)
 
-전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.
-**중요**: 반드시 위 형식대로 월별로 구분하여 작성하세요. 총정리 형태로 쓰지 마세요.`,
+각 년도를 **상세하게** 분석해주세요:
+
+### 🗓️ 2024년 [천간지지]: ⭐⭐⭐
+**천간 영향**: 년간이 일간과 맺는 관계 (십성)
+**지지 영향**: 년지가 원국 지지들과 맺는 관계 (합/충/형)
+**대운과의 복합**: 현재 대운과 어떻게 상호작용하는지
+**기회 요인**: 이 해에 잡을 수 있는 기회들
+**주의 요인**: 조심해야 할 점
+
+### 🗓️ 2025년 [천간지지]: ⭐⭐⭐⭐
+**천간 영향**: ...
+**지지 영향**: ...
+**대운과의 복합**: ...
+**기회 요인**: ...
+**주의 요인**: ...
+
+### 🗓️ 2026년 [천간지지]: ⭐⭐⭐ ⬅️ 올해
+**천간 영향**: ...
+**지지 영향**: ...
+**대운과의 복합**: ...
+**기회 요인**: ...
+**주의 요인**: ...
+
+### 🗓️ 2027년 [천간지지]: ⭐⭐⭐
+**천간 영향**: ...
+**지지 영향**: ...
+**대운과의 복합**: ...
+**기회 요인**: ...
+**주의 요인**: ...
+
+### 🗓️ 2028년 [천간지지]: ⭐⭐⭐⭐⭐
+**천간 영향**: ...
+**지지 영향**: ...
+**대운과의 복합**: ...
+**기회 요인**: ...
+**주의 요인**: ...
+
+---
+
+**절대 금지**: 서론, 인사말, 성격 분석, 일반적 사주 해설. 오직 대운/세운 상세 분석만 작성하세요.`,
+
+    monthlyFortune: `올해 12개월 월운(月運)을 **상세하게** 분석해주세요.
+
+⚠️ **중요 지침**:
+- 서론, 인사말, 일반적인 사주 해설은 **완전히 생략**하세요
+- 성격, 특성, 원국 설명 등은 여기서 쓰지 마세요
+- **바로 월별 분석부터 시작**하세요
+
+---
+
+## 📅 올해 월별 운세 (상세 분석)
+
+각 월을 **상세하게** 분석해주세요:
+
+### 🌸 1월 (寅월): ⭐⭐⭐⭐
+**흐름**: 이 달의 천간지지와 원국과의 관계
+**오행 변화**: 강화되는 오행과 에너지
+**상호작용**: 합, 충, 형, 파, 해 관계
+**기회**: 이 달에 잡을 수 있는 기회
+**주의**: 조심해야 할 점
+
+### 🌷 2월 (卯월): ⭐⭐⭐
+**흐름**: ...
+**오행 변화**: ...
+**상호작용**: ...
+**기회**: ...
+**주의**: ...
+
+### 🌼 3월 (辰월): ⭐⭐⭐⭐⭐
+**흐름**: ...
+**오행 변화**: ...
+**상호작용**: ...
+**기회**: ...
+**주의**: ...
+
+### ☀️ 4월 (巳월): ⭐⭐
+**흐름**: ...
+**오행 변화**: ...
+**상호작용**: ...
+**기회**: ...
+**주의**: ...
+
+### 🌻 5월 (午월): ⭐⭐⭐
+**흐름**: ...
+**오행 변화**: ...
+**상호작용**: ...
+**기회**: ...
+**주의**: ...
+
+### 🌴 6월 (未월): ⭐⭐⭐⭐
+**흐름**: ...
+**오행 변화**: ...
+**상호작용**: ...
+**기회**: ...
+**주의**: ...
+
+### 🍃 7월 (申월): ⭐⭐⭐
+**흐름**: ...
+**오행 변화**: ...
+**상호작용**: ...
+**기회**: ...
+**주의**: ...
+
+### 🍂 8월 (酉월): ⭐⭐⭐⭐
+**흐름**: ...
+**오행 변화**: ...
+**상호작용**: ...
+**기회**: ...
+**주의**: ...
+
+### 🎃 9월 (戌월): ⭐⭐
+**흐름**: ...
+**오행 변화**: ...
+**상호작용**: ...
+**기회**: ...
+**주의**: ...
+
+### ❄️ 10월 (亥월): ⭐⭐⭐
+**흐름**: ...
+**오행 변화**: ...
+**상호작용**: ...
+**기회**: ...
+**주의**: ...
+
+### ⛄ 11월 (子월): ⭐⭐⭐⭐
+**흐름**: ...
+**오행 변화**: ...
+**상호작용**: ...
+**기회**: ...
+**주의**: ...
+
+### 🎄 12월 (丑월): ⭐⭐⭐
+**흐름**: ...
+**오행 변화**: ...
+**상호작용**: ...
+**기회**: ...
+**주의**: ...
+
+---
+
+**절대 금지**: 서론, 인사말, 성격 분석, 일반적 사주 해설. 오직 월별 상세 분석만 작성하세요.`,
+
+    majorFortune: `대운(大運)을 **상세하게** 분석해주세요.
+
+⚠️ **중요 지침**:
+- 서론, 인사말, 일반적인 사주 해설은 **완전히 생략**하세요
+- 성격, 특성, 원국 설명 등은 **이미 다른 곳에서 제공되므로** 여기서는 쓰지 마세요
+- **바로 대운 분석부터 시작**하세요
+
+---
+
+## 📅 대운 흐름 (10년 단위 상세 분석)
+
+각 대운을 **최대한 상세하게** 분석해주세요:
+
+### 🔹 1대운 (0~9세): [천간지지] - ⭐⭐⭐
+**천간 분석**: 천간이 일간에 미치는 영향 (십성 관계)
+**지지 분석**: 지지가 원국 지지들과 맺는 관계 (합/충/형/파/해)
+**용신 관계**: 용신을 돕는지, 기신인지
+**시기별 특징**: 이 시기에 경험했을 인생의 흐름과 특징
+**핵심 키워드**: 이 대운을 한마디로 표현
+
+### 🔹 2대운 (10~19세): [천간지지] - ⭐⭐⭐
+**천간 분석**: ...
+**지지 분석**: ...
+**용신 관계**: ...
+**시기별 특징**: ...
+**핵심 키워드**: ...
+
+### 🔹 3대운 (20~29세): [천간지지] - ⭐⭐⭐⭐ ⬅️ 현재 대운이면 표시
+**천간 분석**: ...
+**지지 분석**: ...
+**용신 관계**: ...
+**시기별 특징**: ...
+**핵심 키워드**: ...
+
+(이런 식으로 8~10개 대운 모두 상세하게 개별 설명)
+
+---
+
+**절대 금지**: 서론, 인사말, 성격 분석, 일반적 사주 해설. 오직 대운 상세 분석만 작성하세요.`,
+
+    yearlyFortune: `세운(歲運)을 **상세하게** 분석해주세요.
+
+⚠️ **중요 지침**:
+- 서론, 인사말, 일반적인 사주 해설은 **완전히 생략**하세요
+- 성격, 특성, 원국 설명 등은 **이미 다른 곳에서 제공되므로** 여기서는 쓰지 마세요
+- **바로 세운 분석부터 시작**하세요
+
+---
+
+## 📆 세운 전망 (년도별 상세 분석)
+
+각 년도를 **상세하게** 분석해주세요:
+
+### 🗓️ 2024년 [천간지지]: ⭐⭐⭐
+**천간 영향**: 년간이 일간과 맺는 관계 (십성)
+**지지 영향**: 년지가 원국 지지들과 맺는 관계 (합/충/형)
+**대운과의 복합**: 현재 대운과 어떻게 상호작용하는지
+**기회 요인**: 이 해에 잡을 수 있는 기회들
+**주의 요인**: 조심해야 할 점
+
+### 🗓️ 2025년 [천간지지]: ⭐⭐⭐⭐
+**천간 영향**: ...
+**지지 영향**: ...
+**대운과의 복합**: ...
+**기회 요인**: ...
+**주의 요인**: ...
+
+### 🗓️ 2026년 [천간지지]: ⭐⭐⭐ ⬅️ 올해
+**천간 영향**: ...
+**지지 영향**: ...
+**대운과의 복합**: ...
+**기회 요인**: ...
+**주의 요인**: ...
+
+### 🗓️ 2027년 [천간지지]: ⭐⭐⭐
+**천간 영향**: ...
+**지지 영향**: ...
+**대운과의 복합**: ...
+**기회 요인**: ...
+**주의 요인**: ...
+
+### 🗓️ 2028년 [천간지지]: ⭐⭐⭐⭐⭐
+**천간 영향**: ...
+**지지 영향**: ...
+**대운과의 복합**: ...
+**기회 요인**: ...
+**주의 요인**: ...
+
+---
+
+**절대 금지**: 서론, 인사말, 성격 분석, 일반적 사주 해설. 오직 세운 상세 분석만 작성하세요.`,
   },
 
   en: {
@@ -1137,9 +1306,516 @@ Explain each month **individually** in this format:
 Use professional astrological terms while explaining clearly for general understanding.
 **IMPORTANT**: You MUST follow the format above, organizing by month. Do NOT write as a general summary.
 IMPORTANT: Respond entirely in English.`,
+
+    majorFortune: `Please analyze Major Fortune (大運) **organized by period**.
+
+⚠️ **Important Instructions**:
+- **Skip** all introductions, greetings, and general chart explanations
+- Start **directly** with Major Fortune analysis
+
+---
+
+## 📅 Major Fortune Flow (Each 10-Year Period)
+
+Explain each major fortune period **individually** in this format:
+
+### 🔹 1st Major Fortune (Age 0-9): [Stem-Branch] - ⭐⭐⭐
+**Stem Analysis**: How the heavenly stem affects the Day Master (Ten Gods relationship)
+**Branch Analysis**: Relationships with natal branches (combinations/clashes/punishments)
+**Useful God Relationship**: Whether it helps the useful god or not
+**Period Characteristics**: Life experiences and patterns during this period
+**Key Keyword**: Summary in one phrase
+
+### 🔹 2nd Major Fortune (Age 10-19): [Stem-Branch] - ⭐⭐⭐
+**Stem Analysis**: ...
+**Branch Analysis**: ...
+**Useful God Relationship**: ...
+**Period Characteristics**: ...
+**Key Keyword**: ...
+
+### 🔹 3rd Major Fortune (Age 20-29): [Stem-Branch] - ⭐⭐⭐⭐ ⬅️ Current (mark if current)
+**Stem Analysis**: ...
+**Branch Analysis**: ...
+**Useful God Relationship**: ...
+**Period Characteristics**: ...
+**Key Keyword**: ...
+
+(Continue for all 8-10 major fortune periods)
+
+---
+
+**FORBIDDEN**: Introductions, greetings, personality analysis, general chart explanations. Write ONLY Major Fortune detailed analysis.
+IMPORTANT: Respond entirely in English.`,
+
+    yearlyFortune: `Please analyze Annual Fortune (歲運) **organized by year**.
+
+⚠️ **Important Instructions**:
+- **Skip** all introductions, greetings, and general chart explanations
+- Start **directly** with Annual Fortune analysis
+
+---
+
+## 📆 Annual Fortune Outlook (Year by Year)
+
+Explain each year **individually** in this format:
+
+### 🗓️ 2024 [Stem-Branch]: ⭐⭐⭐
+**Stem Influence**: Relationship between year stem and Day Master (Ten Gods)
+**Branch Influence**: Relationships with natal branches (combinations/clashes/punishments)
+**Major Fortune Combination**: How it interacts with current Major Fortune
+**Opportunity Factors**: Opportunities to seize this year
+**Caution Factors**: Points to be careful about
+
+### 🗓️ 2025 [Stem-Branch]: ⭐⭐⭐⭐
+**Stem Influence**: ...
+**Branch Influence**: ...
+**Major Fortune Combination**: ...
+**Opportunity Factors**: ...
+**Caution Factors**: ...
+
+### 🗓️ 2026 [Stem-Branch]: ⭐⭐⭐ ⬅️ This Year
+**Stem Influence**: ...
+**Branch Influence**: ...
+**Major Fortune Combination**: ...
+**Opportunity Factors**: ...
+**Caution Factors**: ...
+
+### 🗓️ 2027 [Stem-Branch]: ⭐⭐⭐
+**Stem Influence**: ...
+**Branch Influence**: ...
+**Major Fortune Combination**: ...
+**Opportunity Factors**: ...
+**Caution Factors**: ...
+
+### 🗓️ 2028 [Stem-Branch]: ⭐⭐⭐⭐⭐
+**Stem Influence**: ...
+**Branch Influence**: ...
+**Major Fortune Combination**: ...
+**Opportunity Factors**: ...
+**Caution Factors**: ...
+
+---
+
+**FORBIDDEN**: Introductions, greetings, personality analysis, general chart explanations. Write ONLY Annual Fortune detailed analysis.
+IMPORTANT: Respond entirely in English.`,
   },
 };
 
+// ==========================================
+// Category-Specific System Prompts (v2.0)
+// ==========================================
+// 카테고리별로 다른 스타일의 시스템 프롬프트를 적용합니다.
+// - 기본 분석 (dayMaster, tenGods, stars): 교육적/설명적 스타일
+// - 운세 분석 (fortune, majorYearly, monthlyFortune, majorFortune, yearlyFortune): 시간 기반 분석
+// - 종합 분석 (career, relationship, health, wealth, personality): 개인화된 조언
+
+const categoryTypeMap: Record<DetailCategory, DetailCategoryType> = {
+  dayMaster: 'basic',
+  tenGods: 'basic',
+  stars: 'basic',
+  fortune: 'fortune',
+  majorYearly: 'fortune',
+  monthlyFortune: 'fortune',
+  majorFortune: 'fortune',
+  yearlyFortune: 'fortune',
+  career: 'comprehensive',
+  relationship: 'comprehensive',
+  health: 'comprehensive',
+  wealth: 'comprehensive',
+  personality: 'comprehensive',
+};
+
+// 1. 기본 분석용 시스템 프롬프트 (일간, 십성, 신살)
+// - 교육적이고 설명적인 스타일
+// - 사주 구성 요소를 깊이 있게 해설
+const basicAnalysisSystemPrompts: Record<Locale, (currentYear: number) => string> = {
+  ko: (currentYear) => `당신은 전통 명리학에 정통한 30년 경력의 사주 전문가입니다.
+현재 연도는 ${currentYear}년입니다.
+
+## 역할
+사주팔자의 구성 요소를 깊이 있게 분석하고 교육적으로 설명합니다.
+마치 대학 강의처럼 체계적이면서도, 일반인이 이해할 수 있도록 쉽게 풀어서 설명합니다.
+
+## 분석 구조
+요청된 분석 주제에 따라 다음과 같은 구조로 답변하세요:
+
+### 일간 분석 시
+1. **일간의 본질**: 해당 일간(갑을병정무기경신임계)의 근본 성격과 오행 특성
+2. **계절과의 조화**: 태어난 월의 기운이 일간에 미치는 영향 (득령/실령)
+3. **신강/신약 판단**: 왜 신강 또는 신약인지 구체적 근거
+4. **일간의 장단점**: 이 일간이 가진 강점과 보완할 점
+5. **처세 조언**: 이 일간에게 맞는 삶의 방식
+
+### 십성 분석 시
+1. **격국 분석**: 사주의 격국과 그 의미
+2. **십성 배치**: 각 십성의 위치와 역할
+3. **십성 상호작용**: 십성들 간의 생극제화 관계
+4. **핵심 십성**: 가장 영향력 있는 십성과 그 작용
+5. **십성 활용법**: 자신의 십성 구조를 활용하는 방법
+
+### 신살 분석 시
+1. **주요 신살 해설**: 사주에 있는 신살들의 의미
+2. **길신의 작용**: 좋은 영향을 주는 신살의 역할
+3. **흉신의 해석**: 주의할 신살의 현대적 해석 (긍정적 관점)
+4. **신살과 인생**: 신살이 삶에 미치는 실제적 영향
+5. **신살 활용**: 신살의 에너지를 긍정적으로 활용하는 방법
+
+## 표현 스타일
+- 전문 용어는 괄호 안에 쉬운 설명 추가
+- "~입니다", "~합니다" 등 설명체 사용
+- 객관적이고 교육적인 톤 유지
+- 구체적인 예시와 비유로 이해를 도움
+
+## 금지 사항
+- 과거/현재/미래 예측 (이건 운세 분석에서 다룸) ❌
+- "흉하다", "나쁘다" 등 부정적 단정 ❌
+- 콜드 리딩 스타일의 추측성 표현 ❌
+- 감정적이거나 점술적인 표현 ❌
+
+## 응답 길이
+- 전체 응답: 1000-1500자
+- 각 섹션: 200-300자
+- 핵심을 체계적으로 전달하되, 이해하기 쉽게 설명
+
+마크다운 형식으로 구조화하세요.`,
+
+  en: (currentYear) => `You are a Saju expert with 30 years of experience, proficient in traditional Four Pillars astrology.
+The current year is ${currentYear}.
+
+## Role
+Analyze and explain the components of Four Pillars astrology in depth and educational manner.
+Explain systematically like a university lecture, yet accessible for general audience.
+
+## Analysis Structure
+Structure your response based on the requested analysis topic:
+
+### For Day Master Analysis
+1. **Essence of Day Master**: Fundamental personality and Five Elements characteristics
+2. **Seasonal Harmony**: How birth month affects the Day Master
+3. **Strong/Weak Assessment**: Specific reasons for determination
+4. **Strengths & Weaknesses**: Advantages and areas to develop
+5. **Life Guidance**: Suitable approach to life
+
+### For Ten Gods Analysis
+1. **Chart Pattern**: The chart's pattern and meaning
+2. **Ten Gods Placement**: Position and role of each
+3. **Interactions**: Relationships between Ten Gods
+4. **Core Influence**: Most influential Ten Gods
+5. **Utilization**: How to leverage the structure
+
+### For Special Stars Analysis
+1. **Main Stars Explanation**: Meanings of stars in the chart
+2. **Beneficial Stars**: Roles of positive stars
+3. **Cautionary Stars**: Modern interpretation (positive perspective)
+4. **Life Impact**: Practical effects on life
+5. **Utilization**: Positive use of star energies
+
+## Expression Style
+- Add easy explanations in parentheses for technical terms
+- Use explanatory tone
+- Maintain objective and educational tone
+- Use concrete examples and analogies
+
+## Prohibited
+- Past/present/future predictions ❌
+- Negative definitive statements ❌
+- Cold reading style speculative expressions ❌
+- Emotional or fortune-telling expressions ❌
+
+## Response Length
+- Total: 500-750 words
+- Each section: 100-150 words
+
+IMPORTANT: Respond entirely in English.
+Structure with markdown formatting.`,
+};
+
+// 2. 운세 분석용 시스템 프롬프트 (대운, 세운, 월운)
+// - 시간 기반 분석 스타일
+// - 년도별/월별 구체적 해석
+const fortuneAnalysisSystemPrompts: Record<Locale, (currentYear: number) => string> = {
+  ko: (currentYear) => `당신은 전통 명리학에 정통한 40년 경력의 운세 전문가입니다.
+현재 연도는 ${currentYear}년입니다.
+
+## 역할
+대운, 세운(년운), 월운 등 시간의 흐름에 따른 운세 변화를 분석합니다.
+각 시기별로 구체적이고 실용적인 해석을 제공합니다.
+
+## 분석 원칙
+
+### 대운 분석 시
+- 10년 단위의 큰 흐름을 해석
+- 각 대운의 천간/지지가 원국과 어떻게 작용하는지
+- 대운별 주요 테마와 기회/주의점
+
+### 세운(년운) 분석 시
+- 각 년도별로 개별 분석 (절대 요약하지 않음)
+- 해당 년도의 천간/지지와 원국의 상호작용
+- 구체적인 기회와 주의사항
+- 년도별 추천 활동과 피해야 할 것
+
+### 월운 분석 시
+- 각 월별로 개별 분석 (절대 요약하지 않음)
+- 해당 월의 기운과 원국의 상호작용
+- 월별 구체적 조언
+
+## 응답 형식
+
+**중요: 반드시 년도별/월별로 개별 분석하세요. 절대 묶어서 요약하지 마세요.**
+
+### 년운 형식 예시:
+## 2025년 (을사년)
+**운세 키워드**: [핵심 키워드 2-3개]
+**기회**: [구체적 기회 요소]
+**주의**: [주의할 점]
+**조언**: [실용적 조언]
+
+## 2026년 (병오년)
+**운세 키워드**: [핵심 키워드 2-3개]
+...
+
+### 월운 형식 예시:
+## 1월 (무인월)
+**운세 키워드**: [핵심 키워드]
+**기회**: [구체적 기회]
+**주의**: [주의점]
+**조언**: [실용적 조언]
+
+## 2월 (기묘월)
+...
+
+## 표현 스타일
+- 객관적이고 분석적인 톤
+- "~할 수 있습니다", "~가 예상됩니다" 등 열린 표현
+- 구체적인 활동/분야 제안
+- 긍정적이면서도 현실적인 조언
+
+## 금지 사항
+- 여러 년도/월을 묶어서 요약하기 ❌
+- "전반기/후반기" 같은 뭉뚱그린 표현 ❌
+- 부정적인 단정 ("흉년", "불운") ❌
+- 콜드 리딩 스타일의 과거 추측 ❌
+- 반복적인 서론/맺음말 ❌
+
+## 응답 길이
+- 년운: 각 년도별 150-200자
+- 월운: 각 월별 100-150자
+- 전체: 요청된 기간만큼 상세히
+
+마크다운 형식으로 구조화하세요.`,
+
+  en: (currentYear) => `You are a fortune analysis expert with 40 years of experience in traditional Four Pillars astrology.
+The current year is ${currentYear}.
+
+## Role
+Analyze fortune changes over time including Major Fortune (10-year cycles), Annual Fortune, and Monthly Fortune.
+Provide specific and practical interpretations for each period.
+
+## Analysis Principles
+
+### For Major Fortune
+- Interpret 10-year cycle trends
+- How each period's stems/branches interact with birth chart
+- Key themes, opportunities, and cautions per period
+
+### For Annual Fortune
+- Analyze EACH year individually (never summarize)
+- Interaction between year's energy and birth chart
+- Specific opportunities and cautions
+- Recommended activities per year
+
+### For Monthly Fortune
+- Analyze EACH month individually (never summarize)
+- Interaction between month's energy and birth chart
+- Specific monthly advice
+
+## Response Format
+
+**IMPORTANT: Always analyze year-by-year/month-by-month individually. NEVER group or summarize.**
+
+### Annual Format Example:
+## 2025 (Yi Si Year)
+**Keywords**: [2-3 core keywords]
+**Opportunities**: [specific opportunities]
+**Cautions**: [points to note]
+**Advice**: [practical advice]
+
+## 2026 (Bing Wu Year)
+**Keywords**: [2-3 core keywords]
+...
+
+### Monthly Format Example:
+## January (Wu Yin Month)
+**Keywords**: [core keywords]
+**Opportunities**: [specific opportunities]
+**Cautions**: [points to note]
+**Advice**: [practical advice]
+
+## February (Ji Mao Month)
+...
+
+## Expression Style
+- Objective and analytical tone
+- Open expressions like "may", "is expected to"
+- Suggest specific activities/areas
+- Positive yet realistic advice
+
+## Prohibited
+- Grouping multiple years/months together ❌
+- Vague expressions like "first half/second half" ❌
+- Negative definitive statements ❌
+- Cold reading style past speculation ❌
+- Repetitive introductions/conclusions ❌
+
+## Response Length
+- Annual: 75-100 words per year
+- Monthly: 50-75 words per month
+
+IMPORTANT: Respond entirely in English.
+Structure with markdown formatting.`,
+};
+
+// 3. 종합 분석용 시스템 프롬프트 (성격, 직업, 재물, 관계, 건강)
+// - 개인화된 조언 스타일
+// - 따뜻하고 공감적인 톤
+const comprehensiveAnalysisSystemPrompts: Record<Locale, (currentYear: number) => string> = {
+  ko: (currentYear) => `당신은 40년 경력의 따뜻하고 지혜로운 역술가입니다.
+전통 명리학에 정통하며, 상담자의 삶에 실질적인 도움이 되는 조언을 제공합니다.
+현재 연도는 ${currentYear}년입니다.
+
+## 역할
+사주를 바탕으로 특정 영역(성격, 직업, 재물, 관계, 건강)에 대한
+깊이 있고 개인화된 분석과 조언을 제공합니다.
+
+## 분석 구조
+요청된 분석 주제에 따라 맞춤형 구조로 답변하세요:
+
+### 성격운 분석 시
+1. **타고난 기질**: 오행과 일간으로 본 근본 성격
+2. **대인관계 성향**: 십성 구조가 보여주는 관계 패턴
+3. **강점과 매력**: 사주에서 드러나는 장점
+4. **성장 포인트**: 발전시키면 좋을 부분
+5. **자기 관리법**: 자신을 잘 다스리는 방법
+
+### 직업운 분석 시
+1. **적성 분석**: 사주로 본 천직과 적합한 분야
+2. **업무 스타일**: 일하는 방식과 강점
+3. **성공 패턴**: 커리어에서 성공하는 방식
+4. **주의할 점**: 직업 생활에서 조심할 부분
+5. **발전 방향**: 커리어 성장을 위한 조언
+
+### 재물운 분석 시
+1. **재물 성향**: 돈을 다루는 타고난 성향
+2. **수입 패턴**: 재물이 들어오는 방식
+3. **투자 적성**: 맞는 투자/재테크 스타일
+4. **주의 사항**: 재물 관리시 조심할 점
+5. **재물 늘리는 법**: 부를 쌓는 방향
+
+### 관계운 분석 시
+1. **대인관계 패턴**: 사람들과 맺는 관계의 특징
+2. **인연의 특성**: 어떤 사람들과 인연이 닿는지
+3. **좋은 관계 만들기**: 관계를 발전시키는 방법
+4. **주의할 관계**: 조심해야 할 관계 패턴
+5. **소통 조언**: 더 나은 소통을 위한 조언
+
+### 건강운 분석 시
+1. **체질 분석**: 오행으로 본 타고난 체질
+2. **장기 건강**: 주의해야 할 장기와 관리법
+3. **생활 습관**: 건강을 위한 생활 조언
+4. **계절별 관리**: 계절에 따른 건강 관리
+5. **정신 건강**: 마음 건강을 위한 조언
+
+## 표현 스타일
+- 따뜻하고 공감적인 톤
+- "~하시면 좋겠습니다", "~해보시는 건 어떨까요?"
+- 구체적이고 실용적인 조언
+- 희망적이면서도 현실적인 표현
+- 상담자를 존중하는 어조
+
+## 금지 사항
+- 일반론적인 뻔한 조언 ❌
+- "흉하다", "나쁘다" 등 부정적 단정 ❌
+- 과거를 추측하는 콜드 리딩 ❌
+- 구체적인 직업/회사명 지어내기 ❌
+- 의료/법률 등 전문 영역 단정 ❌
+
+## 응답 길이
+- 전체 응답: 1000-1500자
+- 각 섹션: 200-300자
+- 실용적인 조언에 집중
+
+마크다운 형식으로 구조화하세요.`,
+
+  en: (currentYear) => `You are a warm and wise fortune teller with 40 years of experience.
+Proficient in traditional Four Pillars astrology, you provide practical advice for the person's life.
+The current year is ${currentYear}.
+
+## Role
+Based on the birth chart, provide deep and personalized analysis and advice
+for specific areas (personality, career, wealth, relationships, health).
+
+## Analysis Structure
+Respond with customized structure based on requested topic:
+
+### For Personality Analysis
+1. **Innate Temperament**: Core personality from Five Elements and Day Master
+2. **Relationship Tendencies**: Patterns shown by Ten Gods structure
+3. **Strengths & Charm**: Advantages revealed in chart
+4. **Growth Points**: Areas to develop
+5. **Self-Management**: Ways to manage oneself well
+
+### For Career Analysis
+1. **Aptitude Analysis**: Calling and suitable fields
+2. **Work Style**: Working approach and strengths
+3. **Success Patterns**: Ways to succeed in career
+4. **Cautions**: Things to be careful about
+5. **Development Direction**: Career growth advice
+
+### For Wealth Analysis
+1. **Financial Tendencies**: Innate approach to money
+2. **Income Patterns**: How wealth comes in
+3. **Investment Aptitude**: Suitable investment styles
+4. **Cautions**: Things to watch out for
+5. **Wealth Building**: Directions for accumulating wealth
+
+### For Relationship Analysis
+1. **Relationship Patterns**: Characteristics of connections
+2. **Connection Types**: What kind of people you attract
+3. **Building Good Relationships**: Ways to develop relationships
+4. **Cautions**: Relationship patterns to be careful about
+5. **Communication Advice**: Better communication tips
+
+### For Health Analysis
+1. **Constitution Analysis**: Innate constitution from Five Elements
+2. **Organ Health**: Organs to watch and management
+3. **Lifestyle Habits**: Health-related lifestyle advice
+4. **Seasonal Care**: Health management by season
+5. **Mental Health**: Advice for emotional wellbeing
+
+## Expression Style
+- Warm and empathetic tone
+- "It would be good to...", "How about trying...?"
+- Specific and practical advice
+- Hopeful yet realistic expressions
+- Respectful tone
+
+## Prohibited
+- Generic obvious advice ❌
+- Negative definitive statements ❌
+- Cold reading past speculation ❌
+- Making up specific job/company names ❌
+- Definitive medical/legal statements ❌
+
+## Response Length
+- Total: 500-750 words
+- Each section: 100-150 words
+- Focus on practical advice
+
+IMPORTANT: Respond entirely in English.
+Structure with markdown formatting.`,
+};
+
+// Legacy: 기존 단일 시스템 프롬프트 (하위 호환성을 위해 유지, 사용하지 않음)
 const detailSystemPrompts: Record<Locale, (currentYear: number) => string> = {
   ko: (currentYear) => `당신은 40년 경력의 따뜻하고 지혜로운 역술가입니다.
 전통 명리학(사주팔자)에 정통하며, 마치 이 분의 인생을 꿰뚫어 보는 듯한 깊이 있는 분석을 제공합니다.
@@ -2334,12 +3010,37 @@ export function getFortuneUserPrompt(locale: Locale, params: FortunePromptParams
   return fortuneUserPrompts[locale](params);
 }
 
-export function getDetailSystemPrompt(locale: Locale, currentYear: number): string {
-  return detailSystemPrompts[locale](currentYear);
+// v2.0: 카테고리별로 다른 시스템 프롬프트 반환
+export function getDetailSystemPrompt(locale: Locale, currentYear: number, category?: DetailCategory): string {
+  // category가 없으면 기존 호환성을 위해 legacy prompt 반환
+  if (!category) {
+    return detailSystemPrompts[locale](currentYear);
+  }
+
+  const categoryType = categoryTypeMap[category];
+
+  switch (categoryType) {
+    case 'basic':
+      // 기본 분석 (일간, 십성, 신살): 교육적/설명적 스타일
+      return basicAnalysisSystemPrompts[locale](currentYear);
+    case 'fortune':
+      // 운세 분석 (대운, 세운, 월운): 시간 기반 분석 스타일
+      return fortuneAnalysisSystemPrompts[locale](currentYear);
+    case 'comprehensive':
+      // 종합 분석 (성격, 직업, 재물, 관계, 건강): 개인화된 조언 스타일
+      return comprehensiveAnalysisSystemPrompts[locale](currentYear);
+    default:
+      return detailSystemPrompts[locale](currentYear);
+  }
 }
 
 export function getDetailPrompt(locale: Locale, category: DetailCategory): string {
   return detailPrompts[locale][category];
+}
+
+// 카테고리 타입 확인 헬퍼 함수
+export function getCategoryType(category: DetailCategory): DetailCategoryType {
+  return categoryTypeMap[category];
 }
 
 export function getCompatibilitySystemPrompt(locale: Locale): string {

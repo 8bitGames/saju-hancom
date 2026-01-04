@@ -112,6 +112,28 @@ const CATEGORY_LOADING_CONFIG: Record<string, {
       "월운의 기회와 주의점을 탐색하고 있습니다..."
     ]
   },
+  // 대운 전용 상세 분석
+  majorFortune: {
+    icon: <Calendar className="w-8 h-8 text-white" weight="fill" />,
+    color: "#6366f1",
+    bgColor: "bg-[#6366f1]",
+    messages: [
+      "대운의 큰 흐름을 분석하고 있습니다...",
+      "10년 단위 운세를 살펴보는 중...",
+      "인생의 큰 파도를 탐색하고 있습니다..."
+    ]
+  },
+  // 세운 전용 상세 분석
+  yearlyFortune: {
+    icon: <Calendar className="w-8 h-8 text-white" weight="fill" />,
+    color: "#0ea5e9",
+    bgColor: "bg-[#0ea5e9]",
+    messages: [
+      "세운의 흐름을 분석하고 있습니다...",
+      "년도별 운세를 살펴보는 중...",
+      "향후 5년 전망을 탐색하고 있습니다..."
+    ]
+  },
   // 종합탭 성격 분석 전용 (dayMaster와 분리)
   personality: {
     icon: <User className="w-8 h-8 text-white" weight="fill" />,
