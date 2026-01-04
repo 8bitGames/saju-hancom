@@ -761,69 +761,111 @@ const detailPrompts: Record<Locale, Record<DetailCategory, string>> = {
 
 전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.`,
 
-    majorYearly: `대운(大運)과 세운(歲運)에 대해 종합적으로 깊이 분석해주세요.
+    majorYearly: `대운(大運)과 세운(歲運)을 **년도별/시기별로 구분하여** 분석해주세요.
 
-다음 내용을 상세히 설명해주세요:
+## 📅 대운 흐름 (10년 단위로 각각 설명)
 
-1. **대운의 전체 흐름**:
-   - 현재까지 지나온 대운과 경험했을 인생의 큰 흐름
-   - 현재 대운의 천간지지와 원국과의 상호작용
-   - 앞으로 다가올 대운들의 특성과 전망
+각 대운을 아래 형식으로 **개별적으로** 설명해주세요:
 
-2. **현재 대운 심층 분석**:
-   - 현재 대운이 원국의 용신과 어떻게 작용하는지
-   - 이 대운 기간 동안 강화되거나 약화되는 오행
-   - 대운과 원국 사이의 합, 충, 형, 파, 해 관계
+### 🔹 1대운 (0~9세): [천간지지]
+- 이 시기의 특성과 원국과의 관계
+- (지나간 대운이면) 경험했을 인생의 흐름
 
-3. **올해 세운 분석**:
-   - 올해 천간지지가 사주에 미치는 구체적 영향
-   - 세운과 대운이 만나서 만들어내는 복합 작용
-   - 올해 특히 주목해야 할 시기와 기회
+### 🔹 2대운 (10~19세): [천간지지]
+- 이 시기의 특성과 원국과의 관계
 
-4. **향후 5년 세운 전망**:
-   - 각 해의 특성과 원국과의 관계
-   - 어떤 해가 특히 좋은지, 주의해야 하는지
-   - 5년간의 큰 흐름과 방향성
+### 🔹 3대운 (20~29세): [천간지지] ⬅️ 현재 (현재 대운이면 표시)
+- 현재 대운의 상세 분석
+- 용신과의 관계, 강화/약화되는 오행
+- 합, 충, 형, 파, 해 관계
 
-5. **대운/세운 활용 전략**:
-   - 현재 운세를 최대한 활용하는 방법
-   - 주의해야 할 시기의 대처법
-   - 다가올 좋은 시기를 준비하는 방법
+(이런 식으로 8~10개 대운 모두 개별 설명)
 
-전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.`,
+---
 
-    monthlyFortune: `월운(月運)에 대해 깊이 있게 분석해주세요.
+## 📆 세운 전망 (년도별로 각각 설명)
 
-다음 내용을 상세히 설명해주세요:
+각 년도를 아래 형식으로 **개별적으로** 설명해주세요:
 
-1. **월운의 원리**:
-   - 월운이 어떻게 계산되고 작용하는지
-   - 월주(月柱)와 각 월의 관계
-   - 절기(節氣)에 따른 월의 전환점
+### 🗓️ 2024년 [천간지지]: ⭐⭐⭐ (등급)
+- 이 해의 천간지지가 사주에 미치는 영향
+- 대운과의 복합 작용
+- 주목할 시기와 기회
 
-2. **올해 12개월 월운 분석**:
-   - 각 월의 천간지지와 원국과의 상호작용
-   - 월별로 강화되는 오행과 에너지
-   - 각 월의 합, 충, 형, 파, 해 관계
+### 🗓️ 2025년 [천간지지]: ⭐⭐⭐⭐ (등급)
+- 상세 설명
 
-3. **월별 운세 등급**:
-   - 특히 좋은 달 (대길월) - 무엇이 좋은지
-   - 괜찮은 달 (길월) - 어떤 기회가 있는지
-   - 평범한 달 (평월) - 유지해야 할 것
-   - 주의할 달 (주의월) - 무엇을 조심할지
+### 🗓️ 2026년 [천간지지]: ⭐⭐⭐ (등급) ⬅️ 올해
+- 올해 상세 분석
 
-4. **월운 활용 전략**:
-   - 중요한 일정을 잡기 좋은 달
-   - 새로운 시작에 유리한 달
-   - 휴식과 충전이 필요한 달
-   - 대인관계에 주의할 달
+### 🗓️ 2027년 [천간지지]: ⭐⭐ (등급)
+- 상세 설명
 
-5. **월운과 다른 운의 관계**:
-   - 세운과 월운이 조화를 이루는 달
-   - 대운 흐름과의 연계성
-   - 월운을 일운까지 연결하는 관점
+### 🗓️ 2028년 [천간지지]: ⭐⭐⭐⭐⭐ (등급)
+- 상세 설명
 
-전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.`,
+---
+
+## 🎯 종합 활용 팁
+(2~3문장으로 간단히)
+
+전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.
+**중요**: 반드시 위 형식대로 년도별/시기별로 구분하여 작성하세요. 총정리 형태로 쓰지 마세요.`,
+
+    monthlyFortune: `올해 12개월 월운(月運)을 **월별로 구분하여** 분석해주세요.
+
+## 📅 올해 월별 운세
+
+각 월을 아래 형식으로 **개별적으로** 설명해주세요:
+
+### 🌸 1월 (寅월): ⭐⭐⭐⭐ 길
+- 이 달의 천간지지와 원국과의 관계
+- 강화되는 오행과 에너지
+- 합, 충, 형, 파, 해 관계
+- 이 달의 기회와 주의점
+
+### 🌷 2월 (卯월): ⭐⭐⭐ 평
+- 상세 설명
+
+### 🌼 3월 (辰월): ⭐⭐⭐⭐⭐ 대길
+- 상세 설명
+
+### ☀️ 4월 (巳월): ⭐⭐ 주의
+- 상세 설명
+
+### 🌻 5월 (午월): ⭐⭐⭐ 평
+- 상세 설명
+
+### 🌴 6월 (未월): ⭐⭐⭐⭐ 길
+- 상세 설명
+
+### 🍃 7월 (申월): ⭐⭐⭐ 평
+- 상세 설명
+
+### 🍂 8월 (酉월): ⭐⭐⭐⭐ 길
+- 상세 설명
+
+### 🎃 9월 (戌월): ⭐⭐ 주의
+- 상세 설명
+
+### ❄️ 10월 (亥월): ⭐⭐⭐ 평
+- 상세 설명
+
+### ⛄ 11월 (子월): ⭐⭐⭐⭐ 길
+- 상세 설명
+
+### 🎄 12월 (丑월): ⭐⭐⭐ 평
+- 상세 설명
+
+---
+
+## 🎯 월운 활용 팁
+- 중요한 일정에 좋은 달: (해당 월 나열)
+- 휴식이 필요한 달: (해당 월 나열)
+(2~3문장으로 간단히)
+
+전문 명리학 용어를 사용하되, 일반인도 이해할 수 있도록 쉽게 풀어서 설명해주세요.
+**중요**: 반드시 위 형식대로 월별로 구분하여 작성하세요. 총정리 형태로 쓰지 마세요.`,
   },
 
   en: {
@@ -988,70 +1030,112 @@ Please explain the following in detail:
 Use professional astrological terms while explaining clearly for general understanding.
 IMPORTANT: Respond entirely in English.`,
 
-    majorYearly: `Please provide a comprehensive deep analysis of Major Fortune (大運) and Annual Fortune (歲運).
+    majorYearly: `Please analyze Major Fortune (大運) and Annual Fortune (歲運) **organized by year/period**.
 
-Please explain the following in detail:
+## 📅 Major Fortune Flow (Each 10-Year Period)
 
-1. **Overall Flow of Major Fortune**:
-   - Major fortune periods experienced so far and major life flows
-   - Current major fortune's Heavenly Stem and Earthly Branch interaction with natal chart
-   - Characteristics and outlook of upcoming major fortune periods
+Explain each major fortune period **individually** in this format:
 
-2. **Deep Analysis of Current Major Fortune**:
-   - How current major fortune interacts with the chart's Useful God
-   - Elements strengthened or weakened during this period
-   - Combinations, clashes, punishments between major fortune and natal chart
+### 🔹 1st Major Fortune (Age 0-9): [Stem-Branch]
+- Characteristics and relationship with natal chart
+- (If past) Life experiences during this period
 
-3. **This Year's Annual Fortune Analysis**:
-   - Specific influence of this year's Heavenly Stem and Earthly Branch on the chart
-   - Combined effects of annual fortune meeting major fortune
-   - Key timing and opportunities to watch this year
+### 🔹 2nd Major Fortune (Age 10-19): [Stem-Branch]
+- Characteristics and relationship with natal chart
 
-4. **5-Year Annual Fortune Outlook**:
-   - Each year's characteristics and relationship with natal chart
-   - Which years are particularly favorable or require caution
-   - Overall direction and flow for the next 5 years
+### 🔹 3rd Major Fortune (Age 20-29): [Stem-Branch] ⬅️ Current (mark if current)
+- Detailed analysis of current major fortune
+- Relationship with Useful God, elements strengthened/weakened
+- Combinations, clashes, punishments
 
-5. **Major/Annual Fortune Utilization Strategy**:
-   - How to maximize current fortune
-   - How to handle cautionary periods
-   - How to prepare for upcoming favorable periods
+(Continue for all 8-10 major fortune periods)
+
+---
+
+## 📆 Annual Fortune Outlook (Year by Year)
+
+Explain each year **individually** in this format:
+
+### 🗓️ 2024 [Stem-Branch]: ⭐⭐⭐ (Rating)
+- How this year's pillars affect the natal chart
+- Combined effects with major fortune
+- Key timing and opportunities
+
+### 🗓️ 2025 [Stem-Branch]: ⭐⭐⭐⭐ (Rating)
+- Detailed explanation
+
+### 🗓️ 2026 [Stem-Branch]: ⭐⭐⭐ (Rating) ⬅️ This Year
+- Detailed analysis for this year
+
+### 🗓️ 2027 [Stem-Branch]: ⭐⭐ (Rating)
+- Detailed explanation
+
+### 🗓️ 2028 [Stem-Branch]: ⭐⭐⭐⭐⭐ (Rating)
+- Detailed explanation
+
+---
+
+## 🎯 Summary Tips
+(2-3 sentences briefly)
 
 Use professional astrological terms while explaining clearly for general understanding.
+**IMPORTANT**: You MUST follow the format above, organizing by year/period. Do NOT write as a general summary.
 IMPORTANT: Respond entirely in English.`,
 
-    monthlyFortune: `Please provide a deep analysis of Monthly Fortune (月運).
+    monthlyFortune: `Please analyze this year's 12-month Monthly Fortune (月運) **organized by month**.
 
-Please explain the following in detail:
+## 📅 Monthly Fortune for This Year
 
-1. **Principles of Monthly Fortune**:
-   - How monthly fortune is calculated and operates
-   - Relationship between Month Pillar and each month
-   - Transition points according to Solar Terms (節氣)
+Explain each month **individually** in this format:
 
-2. **12-Month Monthly Fortune Analysis for This Year**:
-   - Each month's Heavenly Stem and Earthly Branch interaction with natal chart
-   - Elements and energy strengthened each month
-   - Combinations, clashes, punishments for each month
+### 🌸 January (寅 Month): ⭐⭐⭐⭐ Good
+- This month's stem-branch relationship with natal chart
+- Elements and energy strengthened
+- Combinations, clashes, punishments
+- Opportunities and cautions for this month
 
-3. **Monthly Fortune Ratings**:
-   - Especially favorable months (Great Fortune) - what makes them good
-   - Good months (Fortune) - what opportunities exist
-   - Average months (Neutral) - what to maintain
-   - Cautionary months (Caution) - what to be careful of
+### 🌷 February (卯 Month): ⭐⭐⭐ Average
+- Detailed explanation
 
-4. **Monthly Fortune Utilization Strategy**:
-   - Best months for scheduling important events
-   - Favorable months for new beginnings
-   - Months needing rest and recharging
-   - Months requiring careful interpersonal relations
+### 🌼 March (辰 Month): ⭐⭐⭐⭐⭐ Excellent
+- Detailed explanation
 
-5. **Monthly Fortune in Relation to Other Fortunes**:
-   - Months where annual and monthly fortune harmonize
-   - Connection with major fortune flow
-   - Perspective connecting monthly to daily fortune
+### ☀️ April (巳 Month): ⭐⭐ Caution
+- Detailed explanation
+
+### 🌻 May (午 Month): ⭐⭐⭐ Average
+- Detailed explanation
+
+### 🌴 June (未 Month): ⭐⭐⭐⭐ Good
+- Detailed explanation
+
+### 🍃 July (申 Month): ⭐⭐⭐ Average
+- Detailed explanation
+
+### 🍂 August (酉 Month): ⭐⭐⭐⭐ Good
+- Detailed explanation
+
+### 🎃 September (戌 Month): ⭐⭐ Caution
+- Detailed explanation
+
+### ❄️ October (亥 Month): ⭐⭐⭐ Average
+- Detailed explanation
+
+### ⛄ November (子 Month): ⭐⭐⭐⭐ Good
+- Detailed explanation
+
+### 🎄 December (丑 Month): ⭐⭐⭐ Average
+- Detailed explanation
+
+---
+
+## 🎯 Monthly Fortune Tips
+- Best months for important events: (list months)
+- Months for rest: (list months)
+(2-3 sentences briefly)
 
 Use professional astrological terms while explaining clearly for general understanding.
+**IMPORTANT**: You MUST follow the format above, organizing by month. Do NOT write as a general summary.
 IMPORTANT: Respond entirely in English.`,
   },
 };
