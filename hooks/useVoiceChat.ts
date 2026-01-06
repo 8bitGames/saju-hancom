@@ -184,8 +184,15 @@ export function useVoiceChat({
             }
             break;
 
+          case "tts_chunk":
+            // Streaming audio chunk to play immediately
+            if (message.data) {
+              playAudioChunk(message.data);
+            }
+            break;
+
           case "tts_audio":
-            // Audio chunk to play
+            // Complete audio (fallback for non-streaming clients)
             if (message.data) {
               playAudioChunk(message.data);
             }

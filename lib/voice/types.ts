@@ -224,8 +224,11 @@ export type WSMessageType =
   | "audio"
   | "transcript"
   | "response"
-  | "tts_audio"
-  | "tts_done"
+  | "tts_start"   // TTS streaming started
+  | "tts_chunk"   // Streaming audio chunk
+  | "tts_audio"   // Complete audio (fallback)
+  | "tts_done"    // TTS streaming completed
+  | "timing"      // E2E timing data
   | "processing"
   | "listening"
   | "speaking"
