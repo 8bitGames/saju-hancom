@@ -112,7 +112,7 @@ export default function HomePage() {
             subtitle: "今日運勢",
             description: t("cards.fortune.description"),
             href: `/saju/today-fortune?shareId=${fortuneData.shareId}`,
-            video: "/output-loop/saju-four-pillars-loop.mp4",
+            video: "/output-loop/today-saju-sunrise.mp4",
             poster: "/images/saju-cover.jpg",
             theme: {
               primary: "#1a0f2e",
