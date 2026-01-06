@@ -3,13 +3,13 @@
 import { Link } from "@/lib/i18n/navigation";
 import { motion, useInView, type Variants } from "framer-motion";
 import { useRef, useEffect, useState, useMemo, useCallback } from "react";
-import { UsersThree, ArrowCounterClockwise, ChatCircle, Handshake, Heart, ChartBar, Sparkle, User, ArrowRight, Check, Warning, FilePdf, Brain, CircleNotch, Lightning, Clock, Lightbulb } from "@phosphor-icons/react";
-import { downloadCompatibilityPDF } from "@/lib/pdf/generator";
+import { UsersThree, ArrowCounterClockwise, ChatCircle, Handshake, Heart, ChartBar, Sparkle, User, ArrowRight, Check, Warning, Brain, CircleNotch, Lightning, Clock, Lightbulb } from "@phosphor-icons/react";
 import { ELEMENT_KOREAN } from "@/lib/saju";
 import { calculatePersonCompatibility } from "@/lib/compatibility/calculator";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
 import { checkAuthStatus, autoSaveCompatibilityResult } from "@/lib/actions/saju";
+import { saveLocalCompatibilityResult } from "@/lib/local-history";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import type { Gender, Element } from "@/lib/saju/types";
 import type { RelationType } from "@/lib/compatibility/types";
@@ -380,7 +380,6 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
   const relationType = searchParams.relationType as RelationType | undefined;
   const result = calculatePersonCompatibility(person1, person2, relationType);
 
-  const [isDownloading, setIsDownloading] = useState(false);
   const [aiInterpretation, setAiInterpretation] = useState<AIInterpretation>({
     summary: "",
     communication: "",
@@ -392,6 +391,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
   const [streamingCategory, setStreamingCategory] = useState<StreamingCategory | null>(null);
   const [completedCategories, setCompletedCategories] = useState<Set<StreamingCategory>>(new Set());
   const [isAllComplete, setIsAllComplete] = useState(false);
+  const [streamingError, setStreamingError] = useState<string | null>(null);
   const hasFetched = useRef(false);
   const [showLoginCTA, setShowLoginCTA] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -429,6 +429,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
     const p1DayMaster = result.person1Pillars.day.gan;
     const p2DayMaster = result.person2Pillars.day.gan;
 
+    console.log(`[AI 스트리밍] ${category} API 호출 중...`);
     const response = await fetch('/api/compatibility/stream', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -460,8 +461,17 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
       signal: abortControllerRef.current?.signal,
     });
 
+    console.log(`[AI 스트리밍] ${category} 응답 상태: ${response.status}`);
     if (!response.ok) {
-      throw new Error('스트리밍 응답 오류');
+      let errorMessage = `API 오류 (${response.status})`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+      } catch {
+        // JSON 파싱 실패 시 기본 에러 메시지 사용
+      }
+      console.error(`[AI 스트리밍] ${category} API 오류:`, errorMessage);
+      throw new Error(errorMessage);
     }
 
     const reader = response.body?.getReader();
@@ -489,9 +499,17 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
               }));
             } else if (data.type === 'done') {
               // 완료
+            } else if (data.type === 'error') {
+              // 스트리밍 중 에러
+              throw new Error(data.message || 'AI 응답 생성 오류');
             }
-          } catch {
-            // 파싱 오류 무시
+          } catch (parseError) {
+            // JSON 파싱 오류가 아닌 경우 재throw
+            if (parseError instanceof SyntaxError) {
+              // 파싱 오류 무시
+            } else {
+              throw parseError;
+            }
           }
         }
       }
@@ -504,7 +522,11 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
   const streamAllCategories = useCallback(async () => {
     const categories: StreamingCategory[] = ['summary', 'communication', 'synergy', 'challenges', 'advice', 'timing'];
 
+    console.log('[AI 스트리밍] 시작');
     abortControllerRef.current = new AbortController();
+    setStreamingError(null);
+    let hasAnySuccess = false;
+    let lastError: string | null = null;
 
     for (const category of categories) {
       if (abortControllerRef.current?.signal.aborted) break;
@@ -512,11 +534,17 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
       setStreamingCategory(category);
 
       try {
-        await fetchStreamingCategory(category);
+        console.log(`[AI 스트리밍] ${category} 요청 시작`);
+        const content = await fetchStreamingCategory(category);
+        console.log(`[AI 스트리밍] ${category} 완료, 길이: ${content?.length || 0}`);
+        if (content && content.trim().length > 0) {
+          hasAnySuccess = true;
+        }
         setCompletedCategories(prev => new Set([...prev, category]));
       } catch (error) {
         if ((error as Error).name === 'AbortError') break;
-        console.error(`카테고리 ${category} 스트리밍 오류:`, error);
+        console.error(`[AI 스트리밍] ${category} 오류:`, error);
+        lastError = error instanceof Error ? error.message : '스트리밍 오류';
       }
 
       // 다음 카테고리 전 짧은 딜레이
@@ -525,28 +553,45 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
 
     setStreamingCategory(null);
     setIsAllComplete(true);
+
+    // 모든 카테고리 실패 시 에러 메시지 표시
+    if (!hasAnySuccess) {
+      setStreamingError(lastError || 'AI 분석 응답을 받지 못했습니다. 네트워크 연결을 확인해주세요.');
+    }
   }, [fetchStreamingCategory]);
 
   // Fetch AI interpretation with streaming
   useEffect(() => {
+    console.log('[AI 스트리밍] useEffect 실행, hasFetched:', hasFetched.current);
     if (hasFetched.current) return;
     hasFetched.current = true;
 
     // Check cache first
     const cached = localStorage.getItem(cacheKey);
+    console.log('[AI 스트리밍] 캐시 확인:', cached ? '있음' : '없음');
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
-        setAiInterpretation(parsed);
-        setCompletedCategories(new Set(['summary', 'communication', 'synergy', 'challenges', 'advice', 'timing']));
-        setIsAllComplete(true);
-        return;
+        // 캐시 데이터가 유효한지 확인 (최소한 summary가 있어야 함)
+        if (parsed && parsed.summary && parsed.summary.trim().length > 0) {
+          console.log('[AI 스트리밍] 유효한 캐시 사용');
+          setAiInterpretation(parsed);
+          setCompletedCategories(new Set(['summary', 'communication', 'synergy', 'challenges', 'advice', 'timing']));
+          setIsAllComplete(true);
+          return;
+        } else {
+          // 빈 캐시 데이터는 삭제
+          console.log('[AI 스트리밍] 빈 캐시 삭제');
+          localStorage.removeItem(cacheKey);
+        }
       } catch {
+        console.log('[AI 스트리밍] 캐시 파싱 오류, 삭제');
         localStorage.removeItem(cacheKey);
       }
     }
 
     // 스트리밍 시작
+    console.log('[AI 스트리밍] 스트리밍 호출');
     streamAllCategories();
 
     return () => {
@@ -583,11 +628,12 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
 
   // Auto-save when all streaming is complete
   useEffect(() => {
-    if (!isAllComplete || !isAuthenticated || hasSaved.current) return;
+    if (!isAllComplete || hasSaved.current) return;
     if (!aiInterpretation.summary) return;
 
     hasSaved.current = true;
-    autoSaveCompatibilityResult({
+
+    const saveData = {
       person1: {
         name: person1.name,
         year: person1.year,
@@ -611,26 +657,22 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
       relationType: relationType || "colleague",
       resultData: result,
       interpretation: aiInterpretation,
-    });
-  }, [isAllComplete, isAuthenticated, aiInterpretation, person1, person2, relationType, result]);
+    };
 
-  const handlePDFDownload = async () => {
-    if (isDownloading) return;
-    setIsDownloading(true);
-    try {
-      await downloadCompatibilityPDF({
-        person1,
-        person2,
-        result,
-        relationType,
-      });
-    } catch (error) {
-      console.error('PDF download error:', error);
-      alert('PDF 생성 중 오류가 발생했습니다. 팝업 차단을 해제해주세요.');
-    } finally {
-      setIsDownloading(false);
+    if (isAuthenticated) {
+      // 로그인 사용자: DB에 저장
+      autoSaveCompatibilityResult(saveData);
+    } else {
+      // 비로그인 사용자: localStorage에 저장
+      saveLocalCompatibilityResult(
+        saveData.person1,
+        saveData.person2,
+        saveData.relationType,
+        saveData.resultData,
+        saveData.interpretation
+      );
     }
-  };
+  }, [isAllComplete, isAuthenticated, aiInterpretation, person1, person2, relationType, result]);
 
   const queryString = new URLSearchParams({
     p1Name: person1.name,
@@ -813,10 +855,10 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
                 <CircleNotch className="w-4 h-4 animate-spin" weight="bold" />
-                <span>{completedCategories.size + 1}/6 분석 중</span>
+                <span>{CATEGORY_META[streamingCategory].label} 분석 중 ({completedCategories.size + 1}/6)</span>
               </motion.div>
             )}
-            {isAllComplete && (
+            {isAllComplete && aiInterpretation.summary && (
               <motion.div
                 className="flex items-center gap-1 text-xs text-green-400"
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -844,6 +886,44 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
           {/* 첫 스트리밍 시작 전 로딩 */}
           {!streamingCategory && !isAllComplete && completedCategories.size === 0 && (
             <AIAnalyzingAnimation message="AI 분석을 시작합니다..." />
+          )}
+
+          {/* 스트리밍 실패 시 재시도 버튼 */}
+          {isAllComplete && !aiInterpretation.summary && (
+            <div className="flex flex-col items-center gap-3 py-4">
+              <p className="text-white/60 text-sm">AI 분석을 불러오지 못했습니다.</p>
+              {streamingError && (
+                <p className="text-red-400/80 text-xs max-w-xs text-center">
+                  오류: {streamingError}
+                </p>
+              )}
+              <button
+                onClick={() => {
+                  // 상태 초기화 후 재시도
+                  setAiInterpretation({
+                    summary: "",
+                    communication: "",
+                    synergy: "",
+                    challenges: "",
+                    advice: "",
+                    timing: "",
+                  });
+                  setCompletedCategories(new Set());
+                  setIsAllComplete(false);
+                  setStreamingCategory(null);
+                  setStreamingError(null);
+                  hasFetched.current = false;
+                  // 캐시 삭제
+                  localStorage.removeItem(cacheKey);
+                  // 재시도
+                  streamAllCategories();
+                }}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
+              >
+                <ArrowCounterClockwise className="w-4 h-4" weight="bold" />
+                <span className="text-sm font-medium">다시 시도</span>
+              </button>
+            </div>
           )}
         </div>
       </GlowingCard>
@@ -990,16 +1070,6 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
             <ArrowRight className="w-5 h-5" weight="bold" />
           </motion.button>
         </Link>
-        <motion.button
-          onClick={handlePDFDownload}
-          disabled={isDownloading}
-          className="w-full h-14 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-indigo-500/30 disabled:opacity-50"
-          whileHover={{ scale: isDownloading ? 1 : 1.02 }}
-          whileTap={{ scale: isDownloading ? 1 : 0.98 }}
-        >
-          <FilePdf className="w-5 h-5" weight="fill" />
-          <span>{isDownloading ? 'PDF 생성 중...' : 'PDF로 저장하기'}</span>
-        </motion.button>
         <div className="flex gap-3">
           <Link href="/compatibility" className="flex-1">
             <motion.button

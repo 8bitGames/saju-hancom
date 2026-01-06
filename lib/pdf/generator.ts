@@ -2583,3 +2583,1414 @@ export async function downloadPipelinePDF(
     throw error;
   }
 }
+
+// ===== 상세 궁합 분석 PDF 생성 (전통 명리학) =====
+
+export interface DetailedCompatibilityPDFData {
+  person1: {
+    name?: string;
+    birthYear: number;
+    birthMonth: number;
+    birthDay: number;
+    birthHour?: number;
+    birthMinute?: number;
+    gender: string;
+    isLunar?: boolean;
+    pillars?: {
+      year: { stem: string; branch: string };
+      month: { stem: string; branch: string };
+      day: { stem: string; branch: string };
+      hour: { stem: string; branch: string };
+    };
+  };
+  person2: {
+    name?: string;
+    birthYear: number;
+    birthMonth: number;
+    birthDay: number;
+    birthHour?: number;
+    birthMinute?: number;
+    gender: string;
+    isLunar?: boolean;
+    pillars?: {
+      year: { stem: string; branch: string };
+      month: { stem: string; branch: string };
+      day: { stem: string; branch: string };
+      hour: { stem: string; branch: string };
+    };
+  };
+  result: {
+    overallScore: number;
+    grade: string;
+    gradeText: string;
+    summary: string;
+    cheonganHap?: {
+      combinations: Array<{
+        stem1: string;
+        stem2: string;
+        resultElement: string;
+        description: string;
+      }>;
+      analysis: string;
+    };
+    jijiRelation?: {
+      yukHap?: Array<{
+        branch1: string;
+        branch2: string;
+        resultElement: string;
+        description: string;
+      }>;
+      samHap?: Array<{
+        branches: string[];
+        resultElement: string;
+        description: string;
+      }>;
+      chung?: Array<{
+        branch1: string;
+        branch2: string;
+        description: string;
+      }>;
+      hyung?: Array<{
+        branches: string[];
+        description: string;
+      }>;
+      analysis: string;
+    };
+    iljuCompatibility?: {
+      person1Ilju: string;
+      person2Ilju: string;
+      compatibility: string;
+      analysis: string;
+    };
+    elementBalanceAnalysis?: {
+      person1Elements: Record<string, number>;
+      person2Elements: Record<string, number>;
+      combinedBalance: Record<string, number>;
+      analysis: string;
+    };
+    strengths?: string[];
+    challenges?: string[];
+    adviceForPerson1?: string;
+    adviceForPerson2?: string;
+    recommendedActivities?: string[];
+    luckyElements?: string[];
+    // Additional detailed analysis fields
+    relationshipAnalysis?: {
+      emotional?: { score: number; description: string };
+      physical?: { score: number; description: string };
+      intellectual?: { score: number; description: string };
+      spiritual?: { score: number; description: string };
+      financial?: { score: number; description: string };
+    };
+    timingAnalysis?: {
+      shortTerm?: { score: number; description: string };
+      midTerm?: { score: number; description: string };
+      longTerm?: { score: number; description: string };
+    };
+    romanticAnalysis?: {
+      initialAttraction?: { score: number; description: string };
+      dateCompatibility?: { score: number; description: string };
+      marriageProspect?: { score: number; description: string };
+      childrenFortune?: { score: number; description: string };
+    };
+    workplaceAnalysis?: {
+      teamwork?: { score: number; description: string };
+      projectCollaboration?: { score: number; description: string };
+      decisionMaking?: { score: number; description: string };
+      stressHandling?: { score: number; description: string };
+      careerSupport?: { score: number; description: string };
+      tenGodRelation?: {
+        person1Role: string;
+        person2Role: string;
+        relationDynamic: string;
+      };
+    };
+    conflictPoints?: Array<{
+      area: string;
+      description: string;
+      solution: string;
+    }>;
+    compatibility?: {
+      communication?: { score: number; description: string };
+      collaboration?: { score: number; description: string };
+      trust?: { score: number; description: string };
+      growth?: { score: number; description: string };
+    };
+    luckyDates?: string[];
+    luckyElementsDetailed?: {
+      colors?: string[];
+      directions?: string[];
+      numbers?: number[];
+    };
+  };
+  relationType?: string;
+}
+
+function generateDetailedCompatibilityPDFHTML(data: DetailedCompatibilityPDFData): string {
+  const { person1, person2, result } = data;
+
+  const person1Name = person1.name || '첫 번째';
+  const person2Name = person2.name || '두 번째';
+
+  const formatBirthInfo = (person: typeof person1) => {
+    const lunar = person.isLunar ? ' (음력)' : '';
+    return `${person.birthYear}년 ${person.birthMonth}월 ${person.birthDay}일${lunar}`;
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return '#22c55e';
+    if (score >= 60) return '#eab308';
+    if (score >= 40) return '#f97316';
+    return '#ef4444';
+  };
+
+  const elementColors: Record<string, string> = {
+    '목': '#22c55e',
+    '화': '#ef4444',
+    '토': '#eab308',
+    '금': '#94a3b8',
+    '수': '#3b82f6',
+    'wood': '#22c55e',
+    'fire': '#ef4444',
+    'earth': '#eab308',
+    'metal': '#94a3b8',
+    'water': '#3b82f6',
+  };
+
+  const renderPillars = (pillars: typeof person1.pillars, name: string) => {
+    if (!pillars) return '';
+    return `
+      <div class="pillars-section">
+        <h4>${name}의 사주팔자</h4>
+        <table class="pillars-table">
+          <thead>
+            <tr>
+              <th>시주</th>
+              <th>일주</th>
+              <th>월주</th>
+              <th>연주</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="stems">
+              <td>${pillars.hour.stem}</td>
+              <td>${pillars.day.stem}</td>
+              <td>${pillars.month.stem}</td>
+              <td>${pillars.year.stem}</td>
+            </tr>
+            <tr class="branches">
+              <td>${pillars.hour.branch}</td>
+              <td>${pillars.day.branch}</td>
+              <td>${pillars.month.branch}</td>
+              <td>${pillars.year.branch}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+  };
+
+  const renderCheonganHap = () => {
+    if (!result.cheonganHap) return '';
+    return `
+      <div class="analysis-section">
+        <h3>천간합 (天干合)</h3>
+        ${result.cheonganHap.combinations.length > 0 ? `
+          <div class="combinations">
+            ${result.cheonganHap.combinations.map(c => `
+              <div class="combination-item">
+                <span class="combination-formula">${c.stem1} + ${c.stem2} → ${c.resultElement}</span>
+                <p>${c.description}</p>
+              </div>
+            `).join('')}
+          </div>
+        ` : '<p class="no-data">천간합이 없습니다.</p>'}
+        <div class="analysis-text">${result.cheonganHap.analysis}</div>
+      </div>
+    `;
+  };
+
+  const renderJijiRelation = () => {
+    if (!result.jijiRelation) return '';
+    return `
+      <div class="analysis-section">
+        <h3>지지 관계 (地支關係)</h3>
+
+        ${result.jijiRelation.yukHap && result.jijiRelation.yukHap.length > 0 ? `
+          <div class="sub-section">
+            <h4>육합 (六合)</h4>
+            ${result.jijiRelation.yukHap.map(h => `
+              <div class="relation-item positive">
+                <span class="relation-formula">${h.branch1} + ${h.branch2} → ${h.resultElement}</span>
+                <p>${h.description}</p>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        ${result.jijiRelation.samHap && result.jijiRelation.samHap.length > 0 ? `
+          <div class="sub-section">
+            <h4>삼합 (三合)</h4>
+            ${result.jijiRelation.samHap.map(h => `
+              <div class="relation-item positive">
+                <span class="relation-formula">${h.branches.join(' + ')} → ${h.resultElement}</span>
+                <p>${h.description}</p>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        ${result.jijiRelation.chung && result.jijiRelation.chung.length > 0 ? `
+          <div class="sub-section">
+            <h4>충 (沖)</h4>
+            ${result.jijiRelation.chung.map(c => `
+              <div class="relation-item negative">
+                <span class="relation-formula">${c.branch1} ↔ ${c.branch2}</span>
+                <p>${c.description}</p>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        ${result.jijiRelation.hyung && result.jijiRelation.hyung.length > 0 ? `
+          <div class="sub-section">
+            <h4>형 (刑)</h4>
+            ${result.jijiRelation.hyung.map(h => `
+              <div class="relation-item warning">
+                <span class="relation-formula">${h.branches.join(' - ')}</span>
+                <p>${h.description}</p>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        <div class="analysis-text">${result.jijiRelation.analysis}</div>
+      </div>
+    `;
+  };
+
+  const renderIljuCompatibility = () => {
+    if (!result.iljuCompatibility) return '';
+    return `
+      <div class="analysis-section">
+        <h3>일주 궁합 (日柱 宮合)</h3>
+        <div class="ilju-comparison">
+          <div class="ilju-item">
+            <span class="label">${person1Name}</span>
+            <span class="value">${result.iljuCompatibility.person1Ilju}</span>
+          </div>
+          <div class="ilju-vs">VS</div>
+          <div class="ilju-item">
+            <span class="label">${person2Name}</span>
+            <span class="value">${result.iljuCompatibility.person2Ilju}</span>
+          </div>
+        </div>
+        <div class="compatibility-result">
+          <strong>궁합 결과:</strong> ${result.iljuCompatibility.compatibility}
+        </div>
+        <div class="analysis-text">${result.iljuCompatibility.analysis}</div>
+      </div>
+    `;
+  };
+
+  const renderElementBalance = () => {
+    if (!result.elementBalanceAnalysis) return '';
+    const elements = ['목', '화', '토', '금', '수'];
+    return `
+      <div class="analysis-section">
+        <h3>오행 균형 분석 (五行 均衡)</h3>
+        <div class="element-chart">
+          <table class="element-table">
+            <thead>
+              <tr>
+                <th>오행</th>
+                ${elements.map(e => `<th style="color: ${elementColors[e]}">${e}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>${person1Name}</td>
+                ${elements.map(e => `<td>${result.elementBalanceAnalysis!.person1Elements[e] || 0}</td>`).join('')}
+              </tr>
+              <tr>
+                <td>${person2Name}</td>
+                ${elements.map(e => `<td>${result.elementBalanceAnalysis!.person2Elements[e] || 0}</td>`).join('')}
+              </tr>
+              <tr class="combined">
+                <td>합산</td>
+                ${elements.map(e => `<td>${result.elementBalanceAnalysis!.combinedBalance[e] || 0}</td>`).join('')}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="analysis-text">${result.elementBalanceAnalysis.analysis}</div>
+      </div>
+    `;
+  };
+
+  const renderStrengthsChallenges = () => {
+    if (!result.strengths?.length && !result.challenges?.length) return '';
+    return `
+      <div class="analysis-section two-column">
+        ${result.strengths?.length ? `
+          <div class="column strengths">
+            <h3>강점</h3>
+            <ul>
+              ${result.strengths.map(s => `<li>${s}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+        ${result.challenges?.length ? `
+          <div class="column challenges">
+            <h3>주의점</h3>
+            <ul>
+              ${result.challenges.map(c => `<li>${c}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  };
+
+  const renderAdvice = () => {
+    if (!result.adviceForPerson1 && !result.adviceForPerson2) return '';
+    return `
+      <div class="analysis-section">
+        <h3>개인별 조언</h3>
+        ${result.adviceForPerson1 ? `
+          <div class="advice-item">
+            <h4>${person1Name}에게</h4>
+            <p>${result.adviceForPerson1}</p>
+          </div>
+        ` : ''}
+        ${result.adviceForPerson2 ? `
+          <div class="advice-item">
+            <h4>${person2Name}에게</h4>
+            <p>${result.adviceForPerson2}</p>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  };
+
+  const renderRecommendations = () => {
+    if (!result.recommendedActivities?.length && !result.luckyElements?.length) return '';
+    return `
+      <div class="analysis-section">
+        <h3>추천 사항</h3>
+        ${result.recommendedActivities?.length ? `
+          <div class="recommendation-group">
+            <h4>추천 활동</h4>
+            <ul>
+              ${result.recommendedActivities.map(a => `<li>${a}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+        ${result.luckyElements?.length ? `
+          <div class="recommendation-group">
+            <h4>행운의 오행</h4>
+            <div class="lucky-elements">
+              ${result.luckyElements.map(e => `
+                <span class="lucky-element" style="background: ${elementColors[e] || '#6b7280'}20; color: ${elementColors[e] || '#6b7280'}; border: 1px solid ${elementColors[e] || '#6b7280'}40">${e}</span>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  };
+
+  const renderRelationshipAnalysis = () => {
+    if (!result.relationshipAnalysis) return '';
+    const areas = [
+      { key: 'emotional', label: '정서적 교감', color: '#ec4899' },
+      { key: 'physical', label: '신체적 조화', color: '#f59e0b' },
+      { key: 'intellectual', label: '지적 교류', color: '#8b5cf6' },
+      { key: 'spiritual', label: '정신적 유대', color: '#06b6d4' },
+      { key: 'financial', label: '경제적 조화', color: '#22c55e' },
+    ];
+    return `
+      <div class="analysis-section">
+        <h3>관계 영역별 상세 분석</h3>
+        <div class="score-grid">
+          ${areas.map(({ key, label, color }) => {
+            const data = result.relationshipAnalysis![key as keyof typeof result.relationshipAnalysis];
+            if (!data) return '';
+            return `
+              <div class="score-item">
+                <div class="score-header">
+                  <span class="score-label">${label}</span>
+                  <span class="score-value" style="color: ${color}">${data.score}점</span>
+                </div>
+                <div class="score-bar">
+                  <div class="score-fill" style="width: ${data.score}%; background: ${color}"></div>
+                </div>
+                <p class="score-desc">${data.description}</p>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  };
+
+  const renderTimingAnalysis = () => {
+    if (!result.timingAnalysis) return '';
+    const periods = [
+      { key: 'shortTerm', label: '단기 (1-2년)' },
+      { key: 'midTerm', label: '중기 (3-5년)' },
+      { key: 'longTerm', label: '장기 (5년+)' },
+    ];
+    return `
+      <div class="analysis-section">
+        <h3>시간에 따른 궁합 변화</h3>
+        <div class="timing-grid">
+          ${periods.map(({ key, label }) => {
+            const data = result.timingAnalysis![key as keyof typeof result.timingAnalysis];
+            if (!data) return '';
+            return `
+              <div class="timing-item">
+                <div class="timing-header">
+                  <span>${label}</span>
+                  <span style="color: ${getScoreColor(data.score)}">${data.score}점</span>
+                </div>
+                <div class="score-bar">
+                  <div class="score-fill" style="width: ${data.score}%; background: ${getScoreColor(data.score)}"></div>
+                </div>
+                <p>${data.description}</p>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  };
+
+  const renderRomanticAnalysis = () => {
+    if (!result.romanticAnalysis) return '';
+    const areas = [
+      { key: 'initialAttraction', label: '첫인상/끌림', color: '#ec4899' },
+      { key: 'dateCompatibility', label: '데이트 궁합', color: '#f43f5e' },
+      { key: 'marriageProspect', label: '결혼 전망', color: '#a855f7' },
+      { key: 'childrenFortune', label: '자녀운', color: '#3b82f6' },
+    ];
+    return `
+      <div class="analysis-section romantic">
+        <h3 style="color: #ec4899">연애/결혼 특별 분석</h3>
+        <div class="score-grid">
+          ${areas.map(({ key, label, color }) => {
+            const data = result.romanticAnalysis![key as keyof typeof result.romanticAnalysis];
+            if (!data) return '';
+            return `
+              <div class="score-item">
+                <div class="score-header">
+                  <span class="score-label">${label}</span>
+                  <span class="score-value" style="color: ${color}">${data.score}점</span>
+                </div>
+                <div class="score-bar">
+                  <div class="score-fill" style="width: ${data.score}%; background: ${color}"></div>
+                </div>
+                <p class="score-desc">${data.description}</p>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  };
+
+  const renderWorkplaceAnalysis = () => {
+    if (!result.workplaceAnalysis) return '';
+    const areas = [
+      { key: 'teamwork', label: '팀워크 궁합', color: '#06b6d4' },
+      { key: 'projectCollaboration', label: '프로젝트 협업', color: '#0ea5e9' },
+      { key: 'decisionMaking', label: '의사결정 스타일 호환성', color: '#3b82f6' },
+      { key: 'stressHandling', label: '스트레스 상황 대응', color: '#6366f1' },
+      { key: 'careerSupport', label: '커리어 성장 지원', color: '#8b5cf6' },
+    ];
+    return `
+      <div class="analysis-section workplace">
+        <h3 style="color: #06b6d4">직장/업무 관계 특별 분석</h3>
+        ${result.workplaceAnalysis.tenGodRelation ? `
+          <div class="ten-god-section">
+            <h4>십성(十星) 기반 업무 역학</h4>
+            <div class="role-grid">
+              <div class="role-item">
+                <span class="role-label">${person1Name}의 역할</span>
+                <span class="role-value">${result.workplaceAnalysis.tenGodRelation.person1Role}</span>
+              </div>
+              <div class="role-item">
+                <span class="role-label">${person2Name}의 역할</span>
+                <span class="role-value">${result.workplaceAnalysis.tenGodRelation.person2Role}</span>
+              </div>
+            </div>
+            <p>${result.workplaceAnalysis.tenGodRelation.relationDynamic}</p>
+          </div>
+        ` : ''}
+        <div class="score-grid">
+          ${areas.map(({ key, label, color }) => {
+            const data = result.workplaceAnalysis![key as keyof typeof result.workplaceAnalysis];
+            if (!data || typeof data !== 'object' || !('score' in data)) return '';
+            return `
+              <div class="score-item">
+                <div class="score-header">
+                  <span class="score-label">${label}</span>
+                  <span class="score-value" style="color: ${color}">${data.score}점</span>
+                </div>
+                <div class="score-bar">
+                  <div class="score-fill" style="width: ${data.score}%; background: ${color}"></div>
+                </div>
+                <p class="score-desc">${data.description}</p>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  };
+
+  const renderConflictPoints = () => {
+    if (!result.conflictPoints?.length) return '';
+    return `
+      <div class="analysis-section">
+        <h3>갈등 포인트와 해결책</h3>
+        <div class="conflict-list">
+          ${result.conflictPoints.map(conflict => `
+            <div class="conflict-item">
+              <div class="conflict-header">
+                <span class="conflict-area">⚠️ ${conflict.area}</span>
+              </div>
+              <p class="conflict-desc">${conflict.description}</p>
+              <div class="conflict-solution">
+                <span class="solution-label">💡 해결책:</span>
+                <p>${conflict.solution}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  };
+
+  const renderBasicCompatibility = () => {
+    if (!result.compatibility) return '';
+    const areas = [
+      { key: 'communication', label: '소통', color: '#22c55e' },
+      { key: 'collaboration', label: '협업', color: '#f59e0b' },
+      { key: 'trust', label: '신뢰', color: '#3b82f6' },
+      { key: 'growth', label: '성장', color: '#a855f7' },
+    ];
+    return `
+      <div class="analysis-section">
+        <h3>기본 궁합 분석</h3>
+        <div class="score-grid">
+          ${areas.map(({ key, label, color }) => {
+            const data = result.compatibility![key as keyof typeof result.compatibility];
+            if (!data) return '';
+            return `
+              <div class="score-item">
+                <div class="score-header">
+                  <span class="score-label">${label}</span>
+                  <span class="score-value" style="color: ${color}">${data.score}점</span>
+                </div>
+                <div class="score-bar">
+                  <div class="score-fill" style="width: ${data.score}%; background: ${color}"></div>
+                </div>
+                <p class="score-desc">${data.description}</p>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  };
+
+  const renderLuckyDates = () => {
+    if (!result.luckyDates?.length) return '';
+    return `
+      <div class="analysis-section">
+        <h3>함께하기 좋은 날짜/시기</h3>
+        <ul class="lucky-dates-list">
+          ${result.luckyDates.map(date => `<li>⭐ ${date}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  };
+
+  const renderLuckyElementsDetailed = () => {
+    if (!result.luckyElementsDetailed) return '';
+    const { colors, directions, numbers } = result.luckyElementsDetailed;
+    if (!colors?.length && !directions?.length && !numbers?.length) return '';
+    return `
+      <div class="analysis-section">
+        <h3>함께할 때 행운의 요소</h3>
+        <div class="lucky-detailed">
+          ${colors?.length ? `
+            <div class="lucky-group">
+              <h4>🎨 색상</h4>
+              <div class="lucky-tags">
+                ${colors.map(c => `<span class="lucky-tag color">${c}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
+          ${directions?.length ? `
+            <div class="lucky-group">
+              <h4>🧭 방향</h4>
+              <div class="lucky-tags">
+                ${directions.map(d => `<span class="lucky-tag direction">${d}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
+          ${numbers?.length ? `
+            <div class="lucky-group">
+              <h4># 숫자</h4>
+              <div class="lucky-tags">
+                ${numbers.map(n => `<span class="lucky-tag number">${n}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  };
+
+  return `
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>전통 명리학 궁합 분석 - ${person1Name} & ${person2Name}</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 15mm;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      font-size: 11pt;
+      line-height: 1.6;
+      color: #1f2937;
+      background: white;
+    }
+
+    .container {
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 10mm;
+    }
+
+    .header {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #a855f7;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 22pt;
+      color: #7c3aed;
+      margin-bottom: 5px;
+    }
+
+    .header .subtitle {
+      font-size: 10pt;
+      color: #6b7280;
+    }
+
+    .score-section {
+      text-align: center;
+      padding: 25px;
+      background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+      border-radius: 12px;
+      margin-bottom: 25px;
+    }
+
+    .score-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, ${getScoreColor(result.overallScore)} 0%, ${getScoreColor(result.overallScore)}cc 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .score-value {
+      font-size: 28pt;
+      font-weight: bold;
+      color: white;
+    }
+
+    .grade-badge {
+      display: inline-block;
+      padding: 6px 20px;
+      background: ${getScoreColor(result.overallScore)}20;
+      color: ${getScoreColor(result.overallScore)};
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 12pt;
+      margin-bottom: 10px;
+    }
+
+    .summary {
+      font-size: 11pt;
+      color: #4b5563;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .persons-info {
+      display: flex;
+      justify-content: space-around;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .person-card {
+      flex: 1;
+      padding: 15px;
+      background: #f9fafb;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .person-card h3 {
+      color: #7c3aed;
+      margin-bottom: 8px;
+    }
+
+    .person-card .birth-info {
+      font-size: 10pt;
+      color: #6b7280;
+    }
+
+    .pillars-section {
+      margin-bottom: 15px;
+    }
+
+    .pillars-section h4 {
+      font-size: 10pt;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    .pillars-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10pt;
+    }
+
+    .pillars-table th,
+    .pillars-table td {
+      padding: 6px;
+      text-align: center;
+      border: 1px solid #e5e7eb;
+    }
+
+    .pillars-table th {
+      background: #f3f4f6;
+      font-weight: normal;
+      color: #6b7280;
+    }
+
+    .pillars-table .stems td {
+      background: #fef3c7;
+      font-weight: bold;
+      color: #92400e;
+    }
+
+    .pillars-table .branches td {
+      background: #dbeafe;
+      font-weight: bold;
+      color: #1e40af;
+    }
+
+    .analysis-section {
+      margin-bottom: 25px;
+      page-break-inside: avoid;
+    }
+
+    .analysis-section h3 {
+      font-size: 14pt;
+      color: #7c3aed;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 15px;
+    }
+
+    .sub-section {
+      margin-bottom: 15px;
+    }
+
+    .sub-section h4 {
+      font-size: 11pt;
+      color: #4b5563;
+      margin-bottom: 8px;
+    }
+
+    .combination-item,
+    .relation-item {
+      padding: 10px;
+      background: #f9fafb;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .combination-formula,
+    .relation-formula {
+      font-weight: bold;
+      color: #7c3aed;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .relation-item.positive {
+      border-left: 3px solid #22c55e;
+    }
+
+    .relation-item.negative {
+      border-left: 3px solid #ef4444;
+    }
+
+    .relation-item.warning {
+      border-left: 3px solid #f59e0b;
+    }
+
+    .analysis-text {
+      background: #faf5ff;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 10px;
+      font-size: 10.5pt;
+      line-height: 1.7;
+    }
+
+    .no-data {
+      color: #9ca3af;
+      font-style: italic;
+    }
+
+    .ilju-comparison {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin: 15px 0;
+    }
+
+    .ilju-item {
+      text-align: center;
+    }
+
+    .ilju-item .label {
+      display: block;
+      font-size: 10pt;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .ilju-item .value {
+      font-size: 16pt;
+      font-weight: bold;
+      color: #7c3aed;
+    }
+
+    .ilju-vs {
+      font-size: 12pt;
+      color: #9ca3af;
+      font-weight: bold;
+    }
+
+    .compatibility-result {
+      text-align: center;
+      padding: 10px;
+      background: #fef3c7;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .element-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+
+    .element-table th,
+    .element-table td {
+      padding: 8px;
+      text-align: center;
+      border: 1px solid #e5e7eb;
+    }
+
+    .element-table th {
+      background: #f3f4f6;
+      font-weight: bold;
+    }
+
+    .element-table .combined {
+      background: #f0fdf4;
+      font-weight: bold;
+    }
+
+    .two-column {
+      display: flex;
+      gap: 20px;
+    }
+
+    .two-column .column {
+      flex: 1;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .two-column .strengths {
+      background: #f0fdf4;
+    }
+
+    .two-column .strengths h3 {
+      color: #22c55e;
+      border-bottom-color: #22c55e;
+    }
+
+    .two-column .challenges {
+      background: #fef2f2;
+    }
+
+    .two-column .challenges h3 {
+      color: #ef4444;
+      border-bottom-color: #ef4444;
+    }
+
+    .two-column ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .two-column li {
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .two-column .strengths li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #22c55e;
+    }
+
+    .two-column .challenges li::before {
+      content: "!";
+      position: absolute;
+      left: 0;
+      color: #ef4444;
+      font-weight: bold;
+    }
+
+    .advice-item {
+      padding: 15px;
+      background: #f9fafb;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .advice-item h4 {
+      color: #7c3aed;
+      margin-bottom: 8px;
+    }
+
+    .recommendation-group {
+      margin-bottom: 15px;
+    }
+
+    .recommendation-group h4 {
+      font-size: 11pt;
+      color: #4b5563;
+      margin-bottom: 8px;
+    }
+
+    .recommendation-group ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+
+    .recommendation-group li {
+      padding: 4px 0;
+    }
+
+    .lucky-elements {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .lucky-element {
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+
+    /* Score Grid for Relationship/Romantic/Workplace Analysis */
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .score-item {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 15px;
+    }
+
+    .score-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .score-label {
+      font-weight: bold;
+      color: #374151;
+    }
+
+    .score-value {
+      font-size: 14pt;
+      font-weight: bold;
+    }
+
+    .score-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .score-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .score-desc {
+      font-size: 10pt;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    /* Timing Analysis */
+    .timing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .timing-item {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .timing-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .timing-item p {
+      font-size: 10pt;
+      color: #6b7280;
+      margin-top: 8px;
+    }
+
+    /* Romantic Section */
+    .analysis-section.romantic {
+      background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    /* Workplace Section */
+    .analysis-section.workplace {
+      background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%);
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .ten-god-section {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .ten-god-section h4 {
+      color: #0e7490;
+      margin-bottom: 10px;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .role-item {
+      background: #f0fdfa;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .role-label {
+      display: block;
+      font-size: 10pt;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .role-value {
+      font-weight: bold;
+      color: #0e7490;
+    }
+
+    /* Conflict Points */
+    .conflict-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .conflict-item {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 15px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .conflict-header {
+      margin-bottom: 8px;
+    }
+
+    .conflict-area {
+      font-weight: bold;
+      color: #dc2626;
+    }
+
+    .conflict-desc {
+      color: #7f1d1d;
+      margin-bottom: 12px;
+    }
+
+    .conflict-solution {
+      background: #f0fdf4;
+      padding: 12px;
+      border-radius: 6px;
+      border-left: 3px solid #22c55e;
+    }
+
+    .solution-label {
+      font-weight: bold;
+      color: #16a34a;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .conflict-solution p {
+      color: #166534;
+      margin: 0;
+    }
+
+    /* Lucky Dates */
+    .lucky-dates-list {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .lucky-dates-list li {
+      background: #fef3c7;
+      padding: 10px 15px;
+      border-radius: 6px;
+      color: #92400e;
+    }
+
+    /* Lucky Elements Detailed */
+    .lucky-detailed {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 15px;
+    }
+
+    .lucky-group {
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .lucky-group h4 {
+      margin-bottom: 10px;
+      color: #374151;
+    }
+
+    .lucky-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .lucky-tag {
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 10pt;
+      font-weight: 500;
+    }
+
+    .lucky-tag.color {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .lucky-tag.direction {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .lucky-tag.number {
+      background: #f3e8ff;
+      color: #7c3aed;
+    }
+
+    .footer {
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      font-size: 9pt;
+      color: #9ca3af;
+    }
+
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .analysis-section {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>전통 명리학 궁합 분석</h1>
+      <p class="subtitle">Traditional Fortune Compatibility Analysis</p>
+    </header>
+
+    <section class="score-section">
+      <div class="score-circle">
+        <span class="score-value">${result.overallScore}</span>
+      </div>
+      <div class="grade-badge">${result.grade} - ${result.gradeText}</div>
+      <p class="summary">${result.summary}</p>
+    </section>
+
+    <section class="persons-info">
+      <div class="person-card">
+        <h3>${person1Name}</h3>
+        <p class="birth-info">${formatBirthInfo(person1)}</p>
+        ${renderPillars(person1.pillars, person1Name)}
+      </div>
+      <div class="person-card">
+        <h3>${person2Name}</h3>
+        <p class="birth-info">${formatBirthInfo(person2)}</p>
+        ${renderPillars(person2.pillars, person2Name)}
+      </div>
+    </section>
+
+    ${renderCheonganHap()}
+    ${renderJijiRelation()}
+    ${renderIljuCompatibility()}
+    ${renderElementBalance()}
+    ${renderStrengthsChallenges()}
+    ${renderAdvice()}
+    ${renderRecommendations()}
+    ${renderRelationshipAnalysis()}
+    ${renderTimingAnalysis()}
+    ${renderRomanticAnalysis()}
+    ${renderWorkplaceAnalysis()}
+    ${renderConflictPoints()}
+    ${renderBasicCompatibility()}
+    ${renderLuckyDates()}
+    ${renderLuckyElementsDetailed()}
+
+    <footer class="footer">
+      <p>본 분석은 전통 명리학을 기반으로 한 참고 자료입니다.</p>
+      <p>생성일: ${new Date().toLocaleDateString('ko-KR')}</p>
+      <p>Hansa AI - AI 운세 마스터</p>
+    </footer>
+  </div>
+</body>
+</html>
+  `;
+}
+
+export function downloadDetailedCompatibilityPDF(data: DetailedCompatibilityPDFData): void {
+  console.log('[PDF] Starting detailed compatibility PDF generation');
+
+  try {
+    const htmlContent = generateDetailedCompatibilityPDFHTML(data);
+    console.log('[PDF] HTML generated, length:', htmlContent.length);
+
+    const printWindow = window.open('', '_blank');
+
+    if (!printWindow) {
+      throw new Error('팝업이 차단되었습니다. 팝업 차단을 해제해주세요.');
+    }
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+
+    printWindow.onload = () => {
+      console.log('[PDF] Content loaded, triggering print dialog');
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+        console.log('[PDF] ✅ Print dialog opened');
+      }, 250);
+    };
+
+    setTimeout(() => {
+      if (printWindow.document.readyState === 'complete') {
+        printWindow.focus();
+        printWindow.print();
+        console.log('[PDF] ✅ Print dialog opened (fallback)');
+      }
+    }, 500);
+
+  } catch (error) {
+    console.error('[PDF] ❌ Detailed compatibility PDF generation error:', error);
+    throw error;
+  }
+}

@@ -16,17 +16,16 @@ import {
   Check,
   Warning,
   Star,
-  FilePdf,
   ArrowRight,
   Brain,
   CircleNotch,
 } from "@phosphor-icons/react";
-import { downloadCoupleCompatibilityPDF } from "@/lib/pdf/generator";
 import { ELEMENT_KOREAN } from "@/lib/saju";
 import { calculateCoupleCompatibility } from "@/lib/couple/calculator";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
 import { checkAuthStatus, autoSaveCoupleResult } from "@/lib/actions/saju";
+import { saveLocalCoupleResult } from "@/lib/local-history";
 import type { Gender } from "@/lib/saju/types";
 import type { CoupleCompatibilityGrade, CoupleRelationType } from "@/lib/couple/types";
 
@@ -301,7 +300,6 @@ export function CoupleResultContent({
   searchParams: SearchParams;
 }) {
   const t = useTranslations("couple");
-  const [isDownloading, setIsDownloading] = useState(false);
 
   const person1 = {
     name: searchParams.p1Name || "본인",
@@ -446,7 +444,34 @@ export function CoupleResultContent({
           resultData: result,
           interpretation: aiInterpretation,
         });
-      } else if (!authStatus) {
+      } else if (!authStatus && !hasSaved.current) {
+        hasSaved.current = true;
+        // Save to localStorage for non-authenticated users
+        saveLocalCoupleResult(
+          {
+            name: person1.name,
+            year: person1.year,
+            month: person1.month,
+            day: person1.day,
+            hour: person1.hour,
+            minute: person1.minute,
+            gender: person1.gender,
+            isLunar: person1.isLunar,
+          },
+          {
+            name: person2.name,
+            year: person2.year,
+            month: person2.month,
+            day: person2.day,
+            hour: person2.hour,
+            minute: person2.minute,
+            gender: person2.gender,
+            isLunar: person2.isLunar,
+          },
+          relationType || "dating",
+          result,
+          aiInterpretation
+        );
         // Show login CTA after a short delay for non-authenticated users
         setTimeout(() => {
           setShowLoginCTA(true);
@@ -456,24 +481,6 @@ export function CoupleResultContent({
 
     checkAndSave();
   }, [person1, person2, relationType, result, aiInterpretation]);
-
-  const handlePDFDownload = async () => {
-    if (isDownloading) return;
-    setIsDownloading(true);
-    try {
-      await downloadCoupleCompatibilityPDF({
-        person1,
-        person2,
-        result,
-        relationType,
-      });
-    } catch (error) {
-      console.error('PDF download error:', error);
-      alert('PDF 생성 중 오류가 발생했습니다. 팝업 차단을 해제해주세요.');
-    } finally {
-      setIsDownloading(false);
-    }
-  };
 
   // 상세 분석 URL 생성
   const detailParams = new URLSearchParams({
@@ -903,40 +910,17 @@ export function CoupleResultContent({
           </motion.button>
         </Link>
 
-        {/* PDF Download Button */}
-        <motion.button
-          onClick={handlePDFDownload}
-          disabled={isDownloading}
-          className="w-full h-14 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-pink-500/30 disabled:opacity-50"
-          whileHover={{ scale: isDownloading ? 1 : 1.02 }}
-          whileTap={{ scale: isDownloading ? 1 : 0.98 }}
-        >
-          <FilePdf className="w-5 h-5" weight="fill" />
-          <span>{isDownloading ? 'PDF 생성 중...' : 'PDF로 저장하기'}</span>
-        </motion.button>
-
-        <div className="flex gap-3">
-          <Link href="/couple" className="flex-1">
-            <motion.button
-              className="w-full h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2 text-white/60 hover:text-white hover:bg-white/10 transition-colors"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <ArrowCounterClockwise className="w-5 h-5" />
-              <span className="text-base font-medium">{t("result.reAnalyze")}</span>
-            </motion.button>
-          </Link>
-          <Link href="/saju" className="flex-1">
-            <motion.button
-              className="w-full h-14 rounded-xl bg-[#ec4899] text-white flex items-center justify-center gap-2 hover:bg-[#db2777] transition-colors shadow-lg shadow-pink-500/30"
-              whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(236, 72, 153, 0.4)" }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Sparkle className="w-5 h-5" weight="fill" />
-              <span className="text-base font-medium">{t("result.sajuAnalysis")}</span>
-            </motion.button>
-          </Link>
-        </div>
+        {/* 다시 분석하기 버튼 */}
+        <Link href="/couple" className="block">
+          <motion.button
+            className="w-full h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2 text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <ArrowCounterClockwise className="w-5 h-5" />
+            <span className="text-base font-medium">{t("result.reAnalyze")}</span>
+          </motion.button>
+        </Link>
       </motion.div>
 
       {/* Disclaimer */}

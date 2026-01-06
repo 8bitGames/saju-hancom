@@ -1,11 +1,39 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { getUserSajuResults } from "@/lib/supabase/usage";
+import {
+  getUserSajuResults,
+  getUserCompatibilityResults,
+  getUserCoupleResults,
+  getUserFaceReadingResults,
+} from "@/lib/supabase/usage";
 import { HistoryList } from "./history-list";
 import { EmptyHistory } from "./empty-history";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://hansa.ai.kr';
+
+export type HistoryItemType = 'saju' | 'compatibility' | 'couple' | 'face-reading';
+
+export interface UnifiedHistoryItem {
+  id: string;
+  type: HistoryItemType;
+  createdAt: string;
+  // Saju specific
+  birthYear?: number;
+  birthMonth?: number;
+  birthDay?: number;
+  gender?: string;
+  isLunar?: boolean;
+  city?: string;
+  // Compatibility/Couple specific
+  person1Name?: string;
+  person2Name?: string;
+  relationType?: string;
+  // Face-reading specific
+  label?: string;
+  // Local storage flag
+  isLocal?: boolean;
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -35,11 +63,62 @@ export default async function HistoryPage() {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  let results: any[] = [];
+  let results: UnifiedHistoryItem[] = [];
 
   if (user) {
-    const { results: sajuResults } = await getUserSajuResults(user.id);
-    results = sajuResults;
+    // Fetch all result types in parallel
+    const [sajuData, compatibilityData, coupleData, faceReadingData] = await Promise.all([
+      getUserSajuResults(user.id),
+      getUserCompatibilityResults(user.id),
+      getUserCoupleResults(user.id),
+      getUserFaceReadingResults(user.id),
+    ]);
+
+    // Convert saju results to unified format
+    const sajuItems: UnifiedHistoryItem[] = sajuData.results.map((r: any) => ({
+      id: r.id,
+      type: 'saju' as const,
+      createdAt: r.created_at,
+      birthYear: r.birth_year,
+      birthMonth: r.birth_month,
+      birthDay: r.birth_day,
+      gender: r.gender,
+      isLunar: r.is_lunar,
+      city: r.city,
+    }));
+
+    // Convert compatibility results to unified format
+    const compatibilityItems: UnifiedHistoryItem[] = compatibilityData.results.map((r: any) => ({
+      id: r.id,
+      type: 'compatibility' as const,
+      createdAt: r.created_at,
+      person1Name: r.p1_name,
+      person2Name: r.p2_name,
+      relationType: r.relation_type,
+    }));
+
+    // Convert couple results to unified format
+    const coupleItems: UnifiedHistoryItem[] = coupleData.results.map((r: any) => ({
+      id: r.id,
+      type: 'couple' as const,
+      createdAt: r.created_at,
+      person1Name: r.p1_name,
+      person2Name: r.p2_name,
+      relationType: r.relation_type,
+    }));
+
+    // Convert face-reading results to unified format
+    const faceReadingItems: UnifiedHistoryItem[] = faceReadingData.results.map((r: any) => ({
+      id: r.id,
+      type: 'face-reading' as const,
+      createdAt: r.created_at,
+      gender: r.gender,
+      label: r.label,
+    }));
+
+    // Combine and sort by date
+    results = [...sajuItems, ...compatibilityItems, ...coupleItems, ...faceReadingItems]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
   return (
@@ -54,11 +133,7 @@ export default async function HistoryPage() {
         </h1>
       </div>
 
-      {results.length > 0 ? (
-        <HistoryList results={results} />
-      ) : (
-        <EmptyHistory />
-      )}
+      <HistoryList initialResults={results} isAuthenticated={!!user} />
     </div>
   );
 }

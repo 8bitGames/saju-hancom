@@ -23,6 +23,7 @@ import {
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
 import { checkAuthStatus, autoSaveFaceReadingResult } from "@/lib/actions/saju";
+import { saveLocalFaceReadingResult } from "@/lib/local-history";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 
 interface FaceReadingResult {
@@ -241,7 +242,10 @@ export default function FaceReadingResultPage() {
           imageBase64: imageBase64 || undefined,
           gender,
         });
-      } else if (!authStatus) {
+      } else if (!authStatus && !hasSaved.current) {
+        hasSaved.current = true;
+        // Save to localStorage for non-authenticated users
+        saveLocalFaceReadingResult(result, gender);
         // Show login CTA for non-authenticated users after a delay
         setTimeout(() => {
           setShowLoginCTA(true);

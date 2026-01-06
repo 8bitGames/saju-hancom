@@ -15,6 +15,7 @@ import { DownloadPDFButton } from "@/components/auth/DownloadPDFButton";
 import { ShareButton } from "@/components/auth/ShareButton";
 import { LoginCTAModal } from "@/components/auth/LoginCTAModal";
 import { autoSaveSajuResult } from "@/lib/actions/saju";
+import { saveLocalSajuResult } from "@/lib/local-history";
 import { InlineSajuChat } from "@/components/saju/InlineSajuChat";
 import { MajorFortuneSection, MajorFortuneData } from "@/components/saju/FortunePanel";
 import { createClient } from "@/lib/supabase/client";
@@ -419,8 +420,23 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         // Hide notification after 3 seconds
         setTimeout(() => setSaveStatus('idle'), 3000);
       } else if (response.error === 'Not authenticated') {
-        // User not logged in - show login CTA after a delay
+        // User not logged in - save to localStorage instead
+        saveLocalSajuResult(
+          {
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            gender,
+            isLunar,
+            city,
+          },
+          result,
+          interpretation
+        );
         setSaveStatus('idle');
+        // Show login CTA after a delay
         setTimeout(() => {
           setShowLoginCTA(true);
         }, 2000);

@@ -209,8 +209,8 @@ function getJsonSchemaGuide(locale: Locale, isRomantic: boolean, isWork: boolean
     "person1Gan": "<첫 번째 사람의 일간, 예: 甲, 乙>",
     "person2Gan": "<두 번째 사람의 일간>",
     "hasHap": <true 또는 false>,
-    "hapType": "<합의 종류, 예: 갑기합토, 또는 null>",
-    "hapElement": "<합으로 생성되는 오행, 또는 null>",
+    "hapType": "<합의 종류, 예: 갑기합토> 또는 null (합이 없으면 null)",
+    "hapElement": "<합으로 생성되는 오행, 예: 土> 또는 null (합이 없으면 null)",
     "description": "<천간합 분석 설명>"
   },
 
@@ -236,8 +236,8 @@ function getJsonSchemaGuide(locale: Locale, isRomantic: boolean, isWork: boolean
   "iljuCompatibility": {
     "person1Ilju": "<첫 번째 사람의 일주, 예: 甲子>",
     "person2Ilju": "<두 번째 사람의 일주>",
-    "ganRelation": "<상생|상극|비화|합 중 하나>",
-    "zhiRelation": "<합|충|형|해|중립 중 하나>",
+    "ganRelation": "<일간 관계: 상생, 상극, 비화, 합 등>",
+    "zhiRelation": "<일지 관계: 합, 충, 형, 해, 중립, 파, 원진 등>",
     "overallIljuScore": <0-100 점수>,
     "description": "<일주 궁합 설명>"
   },
@@ -325,8 +325,8 @@ function getJsonSchemaGuide(locale: Locale, isRomantic: boolean, isWork: boolean
     "person1Gan": "<first person's day stem, e.g., 甲, 乙>",
     "person2Gan": "<second person's day stem>",
     "hasHap": <true or false>,
-    "hapType": "<combination type, e.g., Jia-Ji Earth, or null>",
-    "hapElement": "<element created by combination, or null>",
+    "hapType": "<combination type, e.g., Jia-Ji Earth> or null (null if no combination)",
+    "hapElement": "<element created by combination, e.g., Earth> or null (null if no combination)",
     "description": "<heavenly stem combination analysis>"
   },
 
@@ -352,8 +352,8 @@ function getJsonSchemaGuide(locale: Locale, isRomantic: boolean, isWork: boolean
   "iljuCompatibility": {
     "person1Ilju": "<first person's day pillar, e.g., 甲子>",
     "person2Ilju": "<second person's day pillar>",
-    "ganRelation": "<one of: 상생|상극|비화|합>",
-    "zhiRelation": "<one of: 합|충|형|해|중립>",
+    "ganRelation": "<stem relation: 상생, 상극, 비화, 합, etc.>",
+    "zhiRelation": "<branch relation: 합, 충, 형, 해, 중립, 파, 원진, etc.>",
     "overallIljuScore": <0-100 score>,
     "description": "<day pillar compatibility description>"
   },
@@ -443,8 +443,8 @@ const DetailedCompatibilitySchema = z.object({
     person1Gan: z.string().describe("첫 번째 사람의 일간"),
     person2Gan: z.string().describe("두 번째 사람의 일간"),
     hasHap: z.boolean().describe("천간합 존재 여부"),
-    hapType: z.string().optional().describe("합의 종류 (갑기합토, 을경합금 등)"),
-    hapElement: z.string().optional().describe("합으로 생성되는 오행"),
+    hapType: z.string().nullish().describe("합의 종류 (갑기합토, 을경합금 등)"),
+    hapElement: z.string().nullish().describe("합으로 생성되는 오행"),
     description: z.string().describe("천간합 분석 설명"),
   }),
 
@@ -485,8 +485,8 @@ const DetailedCompatibilitySchema = z.object({
   iljuCompatibility: z.object({
     person1Ilju: z.string().describe("첫 번째 사람의 일주"),
     person2Ilju: z.string().describe("두 번째 사람의 일주"),
-    ganRelation: z.enum(["상생", "상극", "비화", "합"]).describe("일간 관계"),
-    zhiRelation: z.enum(["합", "충", "형", "해", "중립"]).describe("일지 관계"),
+    ganRelation: z.string().describe("일간 관계 (상생, 상극, 비화, 합 등)"),
+    zhiRelation: z.string().describe("일지 관계 (합, 충, 형, 해, 중립 등)"),
     overallIljuScore: z.number().min(0).max(100),
     description: z.string(),
   }),
@@ -594,7 +594,7 @@ const DetailedCompatibilitySchema = z.object({
   conflictPoints: z.array(z.object({
     area: z.string().describe("갈등 영역"),
     description: z.string().describe("갈등 설명"),
-    solution: z.string().describe("해결책"),
+    solution: z.string().optional().describe("해결책"),
   })).describe("갈등 포인트 3-5개"),
 
   // 기본 궁합 정보

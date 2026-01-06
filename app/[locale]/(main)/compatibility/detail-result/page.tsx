@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Link, useRouter } from "@/lib/i18n/navigation";
@@ -16,7 +16,7 @@ import {
   Lightbulb,
   CalendarBlank,
   Clover,
-  ArrowRight,
+  ArrowLeft,
   Handshake,
   ChatCircle,
   Lightning,
@@ -33,7 +33,10 @@ import {
   Target,
   Strategy,
   TrendUp,
+  FilePdf,
 } from "@phosphor-icons/react";
+import { downloadDetailedCompatibilityPDF, type DetailedCompatibilityPDFData } from "@/lib/pdf/generator";
+import { autoSaveDetailedCoupleResult, autoSaveDetailedCompatibilityResult } from "@/lib/actions/saju";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import { FlipWords } from "@/components/aceternity/flip-words";
 import { SparklesCore } from "@/components/aceternity/sparkles";
@@ -131,7 +134,7 @@ interface DetailedCompatibilityResult {
   conflictPoints: Array<{
     area: string;
     description: string;
-    solution: string;
+    solution?: string;
   }>;
 
   compatibility: {
@@ -209,6 +212,8 @@ function DetailedCompatibilityResultContent() {
   const [error, setError] = useState<string | null>(null);
   const [person1Name, setPerson1Name] = useState("");
   const [person2Name, setPerson2Name] = useState("");
+  const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
+  const hasSavedRef = useRef(false);
 
   useEffect(() => {
     const fetchDetailedCompatibility = async () => {
@@ -323,6 +328,238 @@ function DetailedCompatibilityResultContent() {
 
     fetchDetailedCompatibility();
   }, [searchParams, router, locale]);
+
+  // Auto-save detailed result when loaded
+  useEffect(() => {
+    if (!result || hasSavedRef.current) return;
+
+    const saveDetailedResult = async () => {
+      const p1Year = parseInt(searchParams.get("p1Year") || "0");
+      const p1Month = parseInt(searchParams.get("p1Month") || "0");
+      const p1Day = parseInt(searchParams.get("p1Day") || "0");
+      const p1Hour = parseInt(searchParams.get("p1Hour") || "12");
+      const p1Minute = parseInt(searchParams.get("p1Minute") || "0");
+      const p1Gender = searchParams.get("p1Gender") || "male";
+      const p1IsLunar = searchParams.get("p1IsLunar") === "true";
+      const p1Name = searchParams.get("p1Name") || "본인";
+
+      const p2Year = parseInt(searchParams.get("p2Year") || "0");
+      const p2Month = parseInt(searchParams.get("p2Month") || "0");
+      const p2Day = parseInt(searchParams.get("p2Day") || "0");
+      const p2Hour = parseInt(searchParams.get("p2Hour") || "12");
+      const p2Minute = parseInt(searchParams.get("p2Minute") || "0");
+      const p2Gender = searchParams.get("p2Gender") || "male";
+      const p2IsLunar = searchParams.get("p2IsLunar") === "true";
+      const p2Name = searchParams.get("p2Name") || "상대방";
+
+      const relationType = searchParams.get("relationType") || "friend";
+
+      // Determine if this is a romantic or workplace compatibility
+      const romanticRelationTypes = ["dating", "engaged", "married", "interested"];
+      const isRomantic = romanticRelationTypes.includes(relationType);
+
+      const saveInput = {
+        person1: {
+          name: p1Name,
+          year: p1Year,
+          month: p1Month,
+          day: p1Day,
+          hour: p1Hour,
+          minute: p1Minute,
+          gender: p1Gender,
+          isLunar: p1IsLunar,
+        },
+        person2: {
+          name: p2Name,
+          year: p2Year,
+          month: p2Month,
+          day: p2Day,
+          hour: p2Hour,
+          minute: p2Minute,
+          gender: p2Gender,
+          isLunar: p2IsLunar,
+        },
+        relationType,
+        detailedResultData: result,
+      };
+
+      try {
+        // Call appropriate save function based on relation type
+        const saveResult = isRomantic
+          ? await autoSaveDetailedCoupleResult(saveInput)
+          : await autoSaveDetailedCompatibilityResult(saveInput);
+
+        if (saveResult.success) {
+          console.log(`[DetailedCompatibilityResult] Auto-saved ${isRomantic ? 'couple' : 'workplace'} detailed result:`, saveResult.resultId);
+          hasSavedRef.current = true;
+        } else {
+          console.log('[DetailedCompatibilityResult] Could not auto-save:', saveResult.error);
+        }
+      } catch (err) {
+        console.error('[DetailedCompatibilityResult] Auto-save error:', err);
+      }
+    };
+
+    saveDetailedResult();
+  }, [result, searchParams]);
+
+  const handleDownloadPDF = () => {
+    if (!result) return;
+
+    setIsDownloadingPDF(true);
+    try {
+      // Get birth data from search params
+      const p1Year = parseInt(searchParams.get("p1Year") || "0");
+      const p1Month = parseInt(searchParams.get("p1Month") || "0");
+      const p1Day = parseInt(searchParams.get("p1Day") || "0");
+      const p1Hour = parseInt(searchParams.get("p1Hour") || "12");
+      const p1Minute = parseInt(searchParams.get("p1Minute") || "0");
+      const p1Gender = searchParams.get("p1Gender") || "male";
+      const p1IsLunar = searchParams.get("p1IsLunar") === "true";
+
+      const p2Year = parseInt(searchParams.get("p2Year") || "0");
+      const p2Month = parseInt(searchParams.get("p2Month") || "0");
+      const p2Day = parseInt(searchParams.get("p2Day") || "0");
+      const p2Hour = parseInt(searchParams.get("p2Hour") || "12");
+      const p2Minute = parseInt(searchParams.get("p2Minute") || "0");
+      const p2Gender = searchParams.get("p2Gender") || "male";
+      const p2IsLunar = searchParams.get("p2IsLunar") === "true";
+
+      const relationType = searchParams.get("relationType") || undefined;
+
+      const pdfData: DetailedCompatibilityPDFData = {
+        person1: {
+          name: person1Name,
+          birthYear: p1Year,
+          birthMonth: p1Month,
+          birthDay: p1Day,
+          birthHour: p1Hour,
+          birthMinute: p1Minute,
+          gender: p1Gender,
+          isLunar: p1IsLunar,
+        },
+        person2: {
+          name: person2Name,
+          birthYear: p2Year,
+          birthMonth: p2Month,
+          birthDay: p2Day,
+          birthHour: p2Hour,
+          birthMinute: p2Minute,
+          gender: p2Gender,
+          isLunar: p2IsLunar,
+        },
+        result: {
+          overallScore: result.overallScore,
+          grade: result.grade,
+          gradeText: result.gradeText,
+          summary: result.summary,
+          cheonganHap: result.cheonganHap ? {
+            combinations: result.cheonganHap.hasHap ? [{
+              stem1: result.cheonganHap.person1Gan,
+              stem2: result.cheonganHap.person2Gan,
+              resultElement: result.cheonganHap.hapElement || '',
+              description: result.cheonganHap.description,
+            }] : [],
+            analysis: result.cheonganHap.description,
+          } : undefined,
+          jijiRelation: result.jijiRelation ? {
+            yukHap: result.jijiRelation.yukHap?.pairs?.map(p => ({
+              branch1: p.zhi1,
+              branch2: p.zhi2,
+              resultElement: p.resultElement,
+              description: result.jijiRelation.yukHap.description,
+            })),
+            samHap: result.jijiRelation.samHap?.groups?.map(g => ({
+              branches: g.zhis,
+              resultElement: g.resultElement,
+              description: result.jijiRelation.samHap.description,
+            })),
+            chung: result.jijiRelation.chung?.pairs?.map(p => ({
+              branch1: p.zhi1,
+              branch2: p.zhi2,
+              description: result.jijiRelation.chung.description,
+            })),
+            hyung: result.jijiRelation.hyung?.pairs?.map(p => ({
+              branches: [p.zhi1, p.zhi2],
+              description: result.jijiRelation.hyung.description,
+            })),
+            analysis: [
+              result.jijiRelation.yukHap?.description,
+              result.jijiRelation.samHap?.description,
+              result.jijiRelation.chung?.description,
+              result.jijiRelation.hyung?.description,
+            ].filter(Boolean).join(' '),
+          } : undefined,
+          iljuCompatibility: result.iljuCompatibility ? {
+            person1Ilju: result.iljuCompatibility.person1Ilju,
+            person2Ilju: result.iljuCompatibility.person2Ilju,
+            compatibility: `${result.iljuCompatibility.overallIljuScore}점`,
+            analysis: result.iljuCompatibility.description,
+          } : undefined,
+          elementBalanceAnalysis: result.elementBalanceAnalysis ? {
+            person1Elements: { [result.elementBalanceAnalysis.person1Dominant]: 1, [result.elementBalanceAnalysis.person1Weak]: 0 },
+            person2Elements: { [result.elementBalanceAnalysis.person2Dominant]: 1, [result.elementBalanceAnalysis.person2Weak]: 0 },
+            combinedBalance: {},
+            analysis: result.elementBalanceAnalysis.description,
+          } : undefined,
+          strengths: result.strengths,
+          challenges: result.challenges,
+          adviceForPerson1: result.adviceForPerson1.join('\n'),
+          adviceForPerson2: result.adviceForPerson2.join('\n'),
+          recommendedActivities: result.recommendedActivities,
+          luckyElements: result.luckyElements?.colors,
+          // New detailed analysis fields
+          relationshipAnalysis: result.relationshipAnalysis ? {
+            emotional: result.relationshipAnalysis.emotional,
+            physical: result.relationshipAnalysis.physical,
+            intellectual: result.relationshipAnalysis.intellectual,
+            spiritual: result.relationshipAnalysis.spiritual,
+            financial: result.relationshipAnalysis.financial,
+          } : undefined,
+          timingAnalysis: result.timingAnalysis ? {
+            shortTerm: result.timingAnalysis.shortTerm,
+            midTerm: result.timingAnalysis.midTerm,
+            longTerm: result.timingAnalysis.longTerm,
+          } : undefined,
+          romanticAnalysis: result.romanticAnalysis ? {
+            initialAttraction: result.romanticAnalysis.initialAttraction,
+            dateCompatibility: result.romanticAnalysis.dateCompatibility,
+            marriageProspect: result.romanticAnalysis.marriageProspect,
+            childrenFortune: result.romanticAnalysis.childrenFortune,
+          } : undefined,
+          workplaceAnalysis: result.workplaceAnalysis ? {
+            teamwork: result.workplaceAnalysis.teamwork,
+            projectCollaboration: result.workplaceAnalysis.projectCollaboration,
+            decisionMaking: result.workplaceAnalysis.decisionMaking,
+            stressHandling: result.workplaceAnalysis.stressHandling,
+            careerSupport: result.workplaceAnalysis.careerSupport,
+            tenGodRelation: result.workplaceAnalysis.tenGodRelation,
+          } : undefined,
+          conflictPoints: result.conflictPoints,
+          compatibility: result.compatibility ? {
+            communication: result.compatibility.communication,
+            collaboration: result.compatibility.collaboration,
+            trust: result.compatibility.trust,
+            growth: result.compatibility.growth,
+          } : undefined,
+          luckyDates: result.luckyDates,
+          luckyElementsDetailed: result.luckyElements ? {
+            colors: result.luckyElements.colors,
+            directions: result.luckyElements.directions,
+            numbers: result.luckyElements.numbers,
+          } : undefined,
+        },
+        relationType,
+      };
+
+      downloadDetailedCompatibilityPDF(pdfData);
+    } catch (error) {
+      console.error('PDF download error:', error);
+      alert('PDF 다운로드 중 오류가 발생했습니다. 팝업 차단을 해제해주세요.');
+    } finally {
+      setIsDownloadingPDF(false);
+    }
+  };
 
   if (isLoading) {
     const loadingSteps = [
@@ -920,10 +1157,12 @@ function DetailedCompatibilityResultContent() {
                 <span className="text-base font-medium text-orange-400">{conflict.area}</span>
               </div>
               <p className="text-sm text-white/60">{conflict.description}</p>
-              <div className="flex items-start gap-2 p-3 rounded-xl bg-green-500/10">
-                <Lightbulb className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" weight="fill" />
-                <p className="text-sm text-green-400">{conflict.solution}</p>
-              </div>
+              {conflict.solution && (
+                <div className="flex items-start gap-2 p-3 rounded-xl bg-green-500/10">
+                  <Lightbulb className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" weight="fill" />
+                  <p className="text-sm text-green-400">{conflict.solution}</p>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -1104,11 +1343,19 @@ function DetailedCompatibilityResultContent() {
 
       {/* Action Buttons */}
       <div className="space-y-3 pt-4">
-        <Link href={`/compatibility/ai-result?${searchParams.toString()}`} className="block">
+        <button
+          onClick={handleDownloadPDF}
+          disabled={isDownloadingPDF}
+          className="w-full h-14 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#6366f1] text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+        >
+          <FilePdf className="w-5 h-5" weight="fill" />
+          {isDownloadingPDF ? 'PDF 생성 중...' : 'PDF로 저장하기'}
+        </button>
+
+        <Link href={`/compatibility/result?${searchParams.toString()}`} className="block">
           <button className="w-full h-14 rounded-xl bg-[#3b82f6] text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-[#2563eb] transition-colors">
-            <ChartBar className="w-5 h-5" weight="fill" />
-            AI 궁합 분석 보기
-            <ArrowRight className="w-5 h-5" weight="bold" />
+            <ArrowLeft className="w-5 h-5" weight="bold" />
+            메인 결과로 돌아가기
           </button>
         </Link>
 

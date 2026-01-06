@@ -537,6 +537,182 @@ export async function getUserCoupleResults(userId: string) {
 }
 
 /**
+ * Get a couple result by ID
+ */
+export async function getCoupleResultById(userId: string, resultId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('couple_results')
+    .select('*')
+    .eq('id', resultId)
+    .eq('user_id', userId)
+    .single();
+
+  if (error) {
+    return { success: false, error: error.message, result: null };
+  }
+
+  return { success: true, result: data };
+}
+
+/**
+ * Update couple result with detailed analysis data
+ * This adds the detailed Myeongrihak analysis to an existing couple result
+ */
+export async function updateCoupleDetailedResult(
+  userId: string,
+  person1Birth: {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  },
+  person2Birth: {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  },
+  relationType: string,
+  detailedResultData: any
+): Promise<{ success: boolean; error?: string; resultId?: string }> {
+  const supabase = await createClient();
+
+  // Find the existing couple result
+  const { data: existing, error: findError } = await supabase
+    .from('couple_results')
+    .select('id, result_data')
+    .eq('user_id', userId)
+    .eq('p1_birth_year', person1Birth.year)
+    .eq('p1_birth_month', person1Birth.month)
+    .eq('p1_birth_day', person1Birth.day)
+    .eq('p1_birth_hour', person1Birth.hour)
+    .eq('p1_birth_minute', person1Birth.minute)
+    .eq('p1_gender', person1Birth.gender)
+    .eq('p1_is_lunar', person1Birth.isLunar)
+    .eq('p2_birth_year', person2Birth.year)
+    .eq('p2_birth_month', person2Birth.month)
+    .eq('p2_birth_day', person2Birth.day)
+    .eq('p2_birth_hour', person2Birth.hour)
+    .eq('p2_birth_minute', person2Birth.minute)
+    .eq('p2_gender', person2Birth.gender)
+    .eq('p2_is_lunar', person2Birth.isLunar)
+    .eq('relation_type', relationType)
+    .single();
+
+  if (findError || !existing) {
+    console.error('[updateCoupleDetailedResult] Record not found:', findError?.message);
+    return { success: false, error: 'Couple result not found' };
+  }
+
+  // Update the result_data to include detailed analysis
+  const updatedResultData = {
+    ...existing.result_data,
+    detailedResult: detailedResultData,
+  };
+
+  const { error: updateError } = await supabase
+    .from('couple_results')
+    .update({
+      result_data: updatedResultData,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', existing.id);
+
+  if (updateError) {
+    console.error('[updateCoupleDetailedResult] Update error:', updateError);
+    return { success: false, error: updateError.message };
+  }
+
+  return { success: true, resultId: existing.id };
+}
+
+/**
+ * Update compatibility result with detailed analysis data
+ * This adds the detailed Myeongrihak analysis to an existing compatibility (workplace) result
+ */
+export async function updateCompatibilityDetailedResult(
+  userId: string,
+  person1Birth: {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  },
+  person2Birth: {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  },
+  relationType: string,
+  detailedResultData: any
+): Promise<{ success: boolean; error?: string; resultId?: string }> {
+  const supabase = await createClient();
+
+  // Find the existing compatibility result
+  const { data: existing, error: findError } = await supabase
+    .from('compatibility_results')
+    .select('id, result_data')
+    .eq('user_id', userId)
+    .eq('p1_birth_year', person1Birth.year)
+    .eq('p1_birth_month', person1Birth.month)
+    .eq('p1_birth_day', person1Birth.day)
+    .eq('p1_birth_hour', person1Birth.hour)
+    .eq('p1_birth_minute', person1Birth.minute)
+    .eq('p1_gender', person1Birth.gender)
+    .eq('p1_is_lunar', person1Birth.isLunar)
+    .eq('p2_birth_year', person2Birth.year)
+    .eq('p2_birth_month', person2Birth.month)
+    .eq('p2_birth_day', person2Birth.day)
+    .eq('p2_birth_hour', person2Birth.hour)
+    .eq('p2_birth_minute', person2Birth.minute)
+    .eq('p2_gender', person2Birth.gender)
+    .eq('p2_is_lunar', person2Birth.isLunar)
+    .eq('relation_type', relationType)
+    .single();
+
+  if (findError || !existing) {
+    console.error('[updateCompatibilityDetailedResult] Record not found:', findError?.message);
+    return { success: false, error: 'Compatibility result not found' };
+  }
+
+  // Update the result_data to include detailed analysis
+  const updatedResultData = {
+    ...existing.result_data,
+    detailedResult: detailedResultData,
+  };
+
+  const { error: updateError } = await supabase
+    .from('compatibility_results')
+    .update({
+      result_data: updatedResultData,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', existing.id);
+
+  if (updateError) {
+    console.error('[updateCompatibilityDetailedResult] Update error:', updateError);
+    return { success: false, error: updateError.message };
+  }
+
+  return { success: true, resultId: existing.id };
+}
+
+/**
  * Get user's face reading results
  */
 export async function getUserFaceReadingResults(userId: string) {

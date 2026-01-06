@@ -5,7 +5,9 @@ import {
   upsertSajuResult,
   upsertCompatibilityResult,
   upsertCoupleResult,
-  saveFaceReadingResult
+  saveFaceReadingResult,
+  updateCoupleDetailedResult,
+  updateCompatibilityDetailedResult
 } from '@/lib/supabase/usage';
 
 export interface SaveSajuResultInput {
@@ -267,6 +269,142 @@ export async function autoSaveFaceReadingResult(input: SaveFaceReadingResultInpu
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
       isNew: false,
+    };
+  }
+}
+
+/**
+ * Save detailed couple compatibility analysis to existing couple result
+ */
+export interface SaveDetailedCoupleResultInput {
+  person1: {
+    name: string;
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  };
+  person2: {
+    name: string;
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  };
+  relationType: string;
+  detailedResultData: any;
+}
+
+export async function autoSaveDetailedCoupleResult(input: SaveDetailedCoupleResultInput): Promise<{
+  success: boolean;
+  error?: string;
+  resultId?: string;
+  savedAt?: string;
+}> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    const result = await updateCoupleDetailedResult(
+      user.id,
+      input.person1,
+      input.person2,
+      input.relationType,
+      input.detailedResultData
+    );
+
+    if (result.success) {
+      return {
+        success: true,
+        resultId: result.resultId,
+        savedAt: new Date().toISOString(),
+      };
+    }
+
+    return { success: false, error: result.error };
+  } catch (error) {
+    console.error('[autoSaveDetailedCoupleResult] Error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Save detailed compatibility (workplace) analysis to existing compatibility result
+ */
+export interface SaveDetailedCompatibilityResultInput {
+  person1: {
+    name: string;
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  };
+  person2: {
+    name: string;
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  };
+  relationType: string;
+  detailedResultData: any;
+}
+
+export async function autoSaveDetailedCompatibilityResult(input: SaveDetailedCompatibilityResultInput): Promise<{
+  success: boolean;
+  error?: string;
+  resultId?: string;
+  savedAt?: string;
+}> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    const result = await updateCompatibilityDetailedResult(
+      user.id,
+      input.person1,
+      input.person2,
+      input.relationType,
+      input.detailedResultData
+    );
+
+    if (result.success) {
+      return {
+        success: true,
+        resultId: result.resultId,
+        savedAt: new Date().toISOString(),
+      };
+    }
+
+    return { success: false, error: result.error };
+  } catch (error) {
+    console.error('[autoSaveDetailedCompatibilityResult] Error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
