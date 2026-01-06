@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/i18n/navigation";
 import { Calendar, Clock, MapPin, User, UsersThree, Handshake, ArrowRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import type { RelationType } from "@/lib/compatibility/types";
@@ -324,10 +324,11 @@ export function CompatibilityForm() {
       ...prev,
       [personKey]: { ...prev[personKey], [field]: value },
     }));
-    setErrors((prev) => ({
-      ...prev,
-      [personKey]: { ...prev[personKey], [field]: undefined },
-    }));
+    // Clear all errors when any field changes to avoid stale error messages
+    const hasAnyErrors = Object.keys(errors.person1).length > 0 || Object.keys(errors.person2).length > 0;
+    if (hasAnyErrors) {
+      setErrors({ person1: {}, person2: {} });
+    }
   };
 
   const validateForm = (): boolean => {

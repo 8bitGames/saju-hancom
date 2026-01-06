@@ -132,7 +132,10 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
     value: BirthData[K]
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: undefined }));
+    // Clear all errors when any field changes to avoid stale error messages
+    if (Object.keys(errors).length > 0) {
+      setErrors({});
+    }
   };
 
   const validateForm = (): boolean => {
