@@ -6,7 +6,7 @@ export const TTS_MODEL = "sonic-3"; // Cartesia TTS - lowest latency model
 export const STT_MODEL = "whisper-large-v3-turbo"; // Groq STT
 export const GEMINI_MODEL = "gemini-flash-latest";
 
-// Audio Configuration - Optimized for low latency + high quality
+// Audio Configuration - Must match client expectations
 export const AUDIO_CONFIG = {
   stt: {
     sampleRate: 16000,
@@ -14,9 +14,9 @@ export const AUDIO_CONFIG = {
     channels: 1,
   },
   tts: {
-    // 44100Hz for highest quality, pcm_s16le for efficient streaming
-    sampleRate: 44100,
-    encoding: "pcm_s16le" as const,
+    // Must match client: 24000Hz + pcm_f32le (Float32)
+    sampleRate: 24000,
+    encoding: "pcm_f32le" as const,
     container: "raw" as const,
   },
 } as const;
