@@ -39,7 +39,8 @@ function generateElementBasedQueries(
   currentYear: number
 ): string[] {
   const queries: string[] = [];
-  const isRomantic = ["lover", "spouse"].includes(relationType);
+  // Note: couple form uses "dating", "engaged", "married", "interested"
+  const isRomantic = ["lover", "spouse", "dating", "engaged", "married", "interested"].includes(relationType);
   const isWork = ["colleague", "supervisor", "subordinate", "partner", "client", "mentor", "mentee"].includes(relationType);
 
   if (person1Element && person2Element) {
@@ -663,7 +664,8 @@ export async function POST(request: NextRequest) {
     const effectiveRelationType = relationType || 'default';
 
     // 연인/부부 관계인 경우 romanticAnalysis 필드 포함
-    const isRomantic = ['lover', 'spouse'].includes(effectiveRelationType);
+    // Note: couple form uses "dating", "engaged", "married", "interested"
+    const isRomantic = ['lover', 'spouse', 'dating', 'engaged', 'married', 'interested'].includes(effectiveRelationType);
     const isWork = ['colleague', 'supervisor', 'subordinate', 'partner', 'client', 'mentor', 'mentee'].includes(effectiveRelationType);
 
     // GoogleGenAI 초기화 (dynamic import to prevent build-time evaluation)

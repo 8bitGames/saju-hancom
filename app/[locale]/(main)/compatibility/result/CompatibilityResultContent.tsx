@@ -693,7 +693,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
     p2Gender: person2.gender,
     p2IsLunar: person2.isLunar.toString(),
     p2City: person2.city,
-    relationType: relationType || "",
+    relationType: relationType || "colleague",
   }).toString();
 
   return (

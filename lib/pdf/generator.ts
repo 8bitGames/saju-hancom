@@ -2708,7 +2708,7 @@ export interface DetailedCompatibilityPDFData {
     conflictPoints?: Array<{
       area: string;
       description: string;
-      solution: string;
+      solution?: string;
     }>;
     compatibility?: {
       communication?: { score: number; description: string };

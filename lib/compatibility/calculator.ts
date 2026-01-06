@@ -22,6 +22,39 @@ import {
 } from "@/lib/saju/constants";
 
 /**
+ * 시드 기반 의사 난수 생성기 (hydration mismatch 방지)
+ * 동일한 입력에 대해 항상 같은 결과를 반환
+ */
+function createSeededRandom(seed: number): () => number {
+  let state = seed;
+  return () => {
+    // Mulberry32 알고리즘 (간단하고 빠른 PRNG)
+    state |= 0;
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * 두 사람의 정보로부터 시드 생성
+ */
+function createCompatibilitySeed(person1: PersonInfo, person2: PersonInfo): number {
+  // 두 사람의 생년월일시를 조합하여 고유한 시드 생성
+  return (
+    person1.year * 1000000 +
+    person1.month * 10000 +
+    person1.day * 100 +
+    person1.hour +
+    person2.year * 100000 +
+    person2.month * 1000 +
+    person2.day * 10 +
+    person2.hour
+  );
+}
+
+/**
  * 사주에서 오행 점수 계산
  */
 function calculateElementScores(pillars: (SimplePillar | Pillar)[]): Record<Element, number> {
@@ -221,11 +254,13 @@ export function calculatePersonCompatibility(
   const finalScore = Math.max(20, Math.min(100, baseScore));
   const { grade, text: gradeText } = getGrade(finalScore);
 
-  // 세부 분석 점수 (약간의 변동 추가)
-  const communicationScore = Math.min(100, Math.max(20, baseScore + Math.floor(Math.random() * 16) - 8));
-  const collaborationScore = Math.min(100, Math.max(20, baseScore + Math.floor(Math.random() * 16) - 8));
-  const trustScore = Math.min(100, Math.max(20, baseScore + Math.floor(Math.random() * 12) - 6));
-  const growthScore = Math.min(100, Math.max(20, baseScore + Math.floor(Math.random() * 20) - 10));
+  // 세부 분석 점수 (약간의 변동 추가) - 시드 기반 난수로 hydration mismatch 방지
+  const seed = createCompatibilitySeed(person1, person2);
+  const seededRandom = createSeededRandom(seed);
+  const communicationScore = Math.min(100, Math.max(20, baseScore + Math.floor(seededRandom() * 16) - 8));
+  const collaborationScore = Math.min(100, Math.max(20, baseScore + Math.floor(seededRandom() * 16) - 8));
+  const trustScore = Math.min(100, Math.max(20, baseScore + Math.floor(seededRandom() * 12) - 6));
+  const growthScore = Math.min(100, Math.max(20, baseScore + Math.floor(seededRandom() * 20) - 10));
 
   // 관계 조언 및 주의사항 생성
   const relationshipAdvice: string[] = [];

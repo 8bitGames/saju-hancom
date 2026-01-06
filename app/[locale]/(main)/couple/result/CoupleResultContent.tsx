@@ -504,7 +504,7 @@ export function CoupleResultContent({
     p2City: person2.city,
     relationType: relationType || "dating",
   });
-  const detailUrl = `/compatibility/detail-result?${detailParams.toString()}`;
+  const detailUrl = `/couple/detail-result?${detailParams.toString()}`;
 
   return (
     <motion.div
