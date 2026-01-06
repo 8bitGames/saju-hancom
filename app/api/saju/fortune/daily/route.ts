@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { z } from "zod";
-import { getSajuResultById, getDailyFortune, saveDailyFortune } from "@/lib/supabase/usage";
+import { getSajuResultById, getDailyFortune, saveDailyFortune, getUserSubscription } from "@/lib/supabase/usage";
 import { createClient } from "@/lib/supabase/server";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
 import {
@@ -19,6 +19,7 @@ import {
   parseStringToDate,
 } from "@/lib/saju/fortune";
 import type { Element } from "@/lib/saju/types";
+import { geminiInterpretationCache } from "@/lib/utils/lru-cache";
 
 // 일운 AI 해석 스키마
 const DailyFortuneInterpretationSchema = z.object({
@@ -39,16 +40,19 @@ const DailyFortuneInterpretationSchema = z.object({
  * - date: 조회할 날짜 YYYY-MM-DD (선택, 기본값: 오늘)
  * - days: 조회할 일수 (선택, 기본값: 1, 최대: 7)
  * - interpret: AI 해석 여부 (선택, 기본값: true)
+ *
+ * 프리미엄 구독자만 접근 가능
  */
 export async function GET(request: NextRequest) {
   try {
+    // Parse query params early for validation before DB calls
     const { searchParams } = new URL(request.url);
     const shareId = searchParams.get("shareId");
     const dateStr = searchParams.get("date");
     const daysStr = searchParams.get("days");
     const interpretStr = searchParams.get("interpret");
 
-    // 필수 파라미터 검증
+    // 필수 파라미터 검증 (before any DB calls)
     if (!shareId) {
       return NextResponse.json(
         { success: false, error: "shareId가 필요합니다." },
@@ -56,8 +60,38 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 사주 결과 조회
-    const sajuResult = await getSajuResultById(shareId);
+    // 인증 확인
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "로그인이 필요합니다.",
+          code: "AUTH_REQUIRED"
+        },
+        { status: 401 }
+      );
+    }
+
+    // 프리미엄 구독과 사주 결과를 병렬로 조회
+    const [subscription, sajuResult] = await Promise.all([
+      getUserSubscription(user.id),
+      getSajuResultById(shareId),
+    ]);
+
+    if (!subscription.isPremium) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "프리미엄 구독이 필요합니다.",
+          code: "PREMIUM_REQUIRED"
+        },
+        { status: 403 }
+      );
+    }
+
     if (!sajuResult.success || !sajuResult.result) {
       return NextResponse.json(
         { success: false, error: "사주 분석 결과를 찾을 수 없습니다." },
@@ -88,10 +122,6 @@ export async function GET(request: NextRequest) {
     const days = Math.min(Math.max(parseInt(daysStr || "1", 10), 1), 7);
     const shouldInterpret = interpretStr !== "false";
 
-    // 현재 사용자 확인 (캐싱을 위해)
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
     // 날짜 문자열 (YYYY-MM-DD) 생성
     const dateForCache = targetDate.toISOString().split('T')[0];
 
@@ -106,6 +136,10 @@ export async function GET(request: NextRequest) {
             success: true,
             data: cachedFortune.data,
             cached: true,
+          }, {
+            headers: {
+              'Cache-Control': 'private, max-age=3600', // 1 hour cache
+            },
           });
         }
       }
@@ -171,6 +205,10 @@ export async function GET(request: NextRequest) {
         success: true,
         data: responseData,
         cached: false,
+      }, {
+        headers: {
+          'Cache-Control': 'private, max-age=1800', // 30 min cache for fresh data
+        },
       });
     } else {
       // 다중 날짜 (간략 버전)
@@ -202,6 +240,10 @@ export async function GET(request: NextRequest) {
           startDate: dailyPillars[0].date,
           endDate: dailyPillars[dailyPillars.length - 1].date,
           days: results,
+        },
+      }, {
+        headers: {
+          'Cache-Control': 'private, max-age=3600', // 1 hour cache for multi-day
         },
       });
     }
@@ -257,13 +299,23 @@ export async function POST(request: NextRequest) {
 // ============================================================================
 
 /**
- * AI를 사용한 일운 해석 생성
+ * AI를 사용한 일운 해석 생성 (with in-memory cache)
  */
 async function generateDailyInterpretation(
   dailyResult: ReturnType<typeof analyzeDailyFortune>,
   saju: Record<string, unknown>,
   usefulGodElement: Element
 ): Promise<z.infer<typeof DailyFortuneInterpretationSchema>> {
+  // Create cache key based on unique combination of date, pillar, and useful god
+  const cacheKey = `daily-interp:${dailyResult.date}:${dailyResult.pillar.stem}${dailyResult.pillar.branch}:${usefulGodElement}:${dailyResult.baseAnalysis.grade}`;
+
+  // Check cache first
+  const cached = geminiInterpretationCache.get(cacheKey) as z.infer<typeof DailyFortuneInterpretationSchema> | undefined;
+  if (cached) {
+    console.log('[Daily Fortune] Gemini cache hit for', cacheKey);
+    return cached;
+  }
+
   const prompt = buildInterpretationPrompt(dailyResult, saju, usefulGodElement);
 
   const result = await generateObject({
@@ -284,6 +336,10 @@ async function generateDailyInterpretation(
       },
     ],
   });
+
+  // Cache the result
+  geminiInterpretationCache.set(cacheKey, result.object);
+  console.log('[Daily Fortune] Gemini cache miss, stored for', cacheKey);
 
   return result.object;
 }

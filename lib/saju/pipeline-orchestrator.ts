@@ -144,44 +144,57 @@ export async function runSajuPipeline(
   notifyStep(4, "start");
   notifyStep(5, "start");
 
+  // 병렬 실행 with Promise.allSettled for better error handling
+  const [result3, result4, result5] = await Promise.allSettled([
+    analyzeStep3_TenGods(input, step1, step2),
+    analyzeStep4_SpecialStars(input, step1),
+    analyzeStep5_FortuneTiming(input, step1, step2),
+  ]);
+
+  // Process results individually to identify specific failures
   let step3: Step3Result;
   let step4: Step4Result;
   let step5: Step5Result;
+  const errors: string[] = [];
 
-  try {
-    // 병렬 실행
-    const [result3, result4, result5] = await Promise.all([
-      analyzeStep3_TenGods(input, step1, step2).then((result) => {
-        notifyStep(3, "complete", result);
-        return result;
-      }),
-      analyzeStep4_SpecialStars(input, step1).then((result) => {
-        notifyStep(4, "complete", result);
-        return result;
-      }),
-      analyzeStep5_FortuneTiming(input, step1, step2).then((result) => {
-        notifyStep(5, "complete", result);
-        return result;
-      }),
-    ]);
-
-    step3 = result3;
-    step4 = result4;
-    step5 = result5;
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    // 어떤 단계에서 실패했는지 알 수 없으므로 일반적인 에러 메시지
+  if (result3.status === "fulfilled") {
+    step3 = result3.value;
+    notifyStep(3, "complete", step3);
+  } else {
+    const errorMessage = result3.reason instanceof Error ? result3.reason.message : "Unknown error";
     notifyStep(3, "error", undefined, errorMessage);
+    errors.push(`Step 3: ${errorMessage}`);
+  }
+
+  if (result4.status === "fulfilled") {
+    step4 = result4.value;
+    notifyStep(4, "complete", step4);
+  } else {
+    const errorMessage = result4.reason instanceof Error ? result4.reason.message : "Unknown error";
     notifyStep(4, "error", undefined, errorMessage);
+    errors.push(`Step 4: ${errorMessage}`);
+  }
+
+  if (result5.status === "fulfilled") {
+    step5 = result5.value;
+    notifyStep(5, "complete", step5);
+  } else {
+    const errorMessage = result5.reason instanceof Error ? result5.reason.message : "Unknown error";
     notifyStep(5, "error", undefined, errorMessage);
-    throw new Error(`Step 3/4/5 병렬 실행 실패: ${errorMessage}`);
+    errors.push(`Step 5: ${errorMessage}`);
+  }
+
+  // If any step failed, throw with specific error details
+  if (errors.length > 0) {
+    throw new Error(`병렬 실행 실패: ${errors.join("; ")}`);
   }
 
   // Step 6: 종합 분석
+  // At this point, step3, step4, step5 are guaranteed to be assigned (errors would have thrown)
   notifyStep(6, "start");
   let step6: Step6Result;
   try {
-    step6 = await analyzeStep6_Synthesis(input, step1, step2, step3, step4, step5);
+    step6 = await analyzeStep6_Synthesis(input, step1, step2, step3!, step4!, step5!);
     notifyStep(6, "complete", step6);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -192,9 +205,9 @@ export async function runSajuPipeline(
   return {
     step1: step1 as unknown as Step1_Foundation,
     step2: step2 as unknown as Step2_DayMaster,
-    step3: step3 as unknown as Step3_TenGods,
-    step4: step4 as unknown as Step4_SpecialStars,
-    step5: step5 as unknown as Step5_FortuneTiming,
+    step3: step3! as unknown as Step3_TenGods,
+    step4: step4! as unknown as Step4_SpecialStars,
+    step5: step5! as unknown as Step5_FortuneTiming,
     step6: step6 as unknown as Step6_Synthesis,
   };
 }

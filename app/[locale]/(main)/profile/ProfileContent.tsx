@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { User, Sparkle, Calendar, FilePdf, SignOut } from "@phosphor-icons/react";
+import { useState, useCallback } from "react";
+import { User, Sparkle, Calendar, FilePdf, SignOut, CaretDown } from "@phosphor-icons/react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/i18n/navigation";
 import { toast } from "sonner";
 import type { UserProfile, SajuResult } from "@/lib/supabase/types";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -14,13 +14,43 @@ import { Link } from "@/lib/i18n/navigation";
 interface ProfileContentProps {
   user: SupabaseUser;
   profile: UserProfile | null;
-  savedResults: SajuResult[];
+  initialResults: SajuResult[];
+  totalCount: number;
+  pageSize: number;
 }
 
-export function ProfileContent({ user, profile, savedResults }: ProfileContentProps) {
+export function ProfileContent({ user, profile, initialResults, totalCount, pageSize }: ProfileContentProps) {
   const router = useRouter();
   const supabase = createClient();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [results, setResults] = useState<SajuResult[]>(initialResults);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const hasMore = results.length < totalCount;
+
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
+
+    setLoadingMore(true);
+    try {
+      const { data, error } = await supabase
+        .from("saju_results")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .range(results.length, results.length + pageSize - 1);
+
+      if (error) throw error;
+      if (data) {
+        setResults((prev) => [...prev, ...data]);
+      }
+    } catch (error) {
+      console.error("Error loading more results:", error);
+      toast.error("더 불러오는 중 오류가 발생했습니다");
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [loadingMore, hasMore, results.length, pageSize, supabase, user.id]);
 
   const isPremium =
     profile?.subscription_tier === "premium" &&
@@ -94,10 +124,10 @@ export function ProfileContent({ user, profile, savedResults }: ProfileContentPr
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
             <Calendar className="w-6 h-6 text-purple-400" weight="fill" />
-            저장된 사주 결과 ({savedResults.length})
+            저장된 사주 결과 ({totalCount})
           </h2>
 
-          {savedResults.length === 0 ? (
+          {results.length === 0 ? (
             <Card className="p-8 bg-white/5 border-white/10 text-center">
               <p className="text-white/60 mb-4">아직 저장된 사주 결과가 없습니다</p>
               <Link href="/saju">
@@ -108,7 +138,7 @@ export function ProfileContent({ user, profile, savedResults }: ProfileContentPr
             </Card>
           ) : (
             <div className="space-y-4">
-              {savedResults.map((result) => (
+              {results.map((result) => (
                 <Card
                   key={result.id}
                   className="p-6 bg-white/5 border-white/10 hover:bg-white/10 transition-colors"
@@ -139,6 +169,30 @@ export function ProfileContent({ user, profile, savedResults }: ProfileContentPr
                   </div>
                 </Card>
               ))}
+
+              {/* Load More Button */}
+              {hasMore && (
+                <div className="text-center pt-4">
+                  <Button
+                    onClick={loadMore}
+                    disabled={loadingMore}
+                    variant="outline"
+                    className="bg-white/5 border-white/10 hover:bg-white/10"
+                  >
+                    {loadingMore ? (
+                      <>
+                        <div className="w-4 h-4 mr-2 border-2 border-white/30 border-t-white/80 rounded-full animate-spin" />
+                        불러오는 중...
+                      </>
+                    ) : (
+                      <>
+                        <CaretDown className="w-4 h-4 mr-2" />
+                        더 보기 ({results.length}/{totalCount})
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -150,7 +204,7 @@ export function ProfileContent({ user, profile, savedResults }: ProfileContentPr
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <p className="text-2xl font-bold text-white">
-                  {savedResults.length}/1
+                  {totalCount}/1
                 </p>
                 <p className="text-sm text-white/60">저장</p>
               </div>

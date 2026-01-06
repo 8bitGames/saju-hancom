@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sun,
@@ -105,6 +105,24 @@ interface FortunePanelProps {
 }
 
 // ============================================================================
+// Constants (moved outside components to avoid recreation on each render)
+// ============================================================================
+
+const GRADE_CONFIG: Record<string, { bg: string; text: string; label: string }> = {
+  excellent: { bg: "bg-yellow-500/20", text: "text-yellow-400", label: "대길" },
+  good: { bg: "bg-green-500/20", text: "text-green-400", label: "길" },
+  normal: { bg: "bg-blue-500/20", text: "text-blue-400", label: "평" },
+  caution: { bg: "bg-orange-500/20", text: "text-orange-400", label: "주의" },
+};
+
+const GRADE_COLORS: Record<string, string> = {
+  excellent: "border-yellow-500/50 bg-yellow-500/10",
+  good: "border-green-500/50 bg-green-500/10",
+  normal: "border-blue-500/50 bg-blue-500/10",
+  caution: "border-orange-500/50 bg-orange-500/10",
+};
+
+// ============================================================================
 // Sub Components
 // ============================================================================
 
@@ -124,14 +142,7 @@ function GradeIcon({ grade }: { grade: string }) {
 }
 
 function GradeBadge({ grade, score }: { grade: string; score: number }) {
-  const gradeConfig: Record<string, { bg: string; text: string; label: string }> = {
-    excellent: { bg: "bg-yellow-500/20", text: "text-yellow-400", label: "대길" },
-    good: { bg: "bg-green-500/20", text: "text-green-400", label: "길" },
-    normal: { bg: "bg-blue-500/20", text: "text-blue-400", label: "평" },
-    caution: { bg: "bg-orange-500/20", text: "text-orange-400", label: "주의" },
-  };
-
-  const config = gradeConfig[grade] || gradeConfig.normal;
+  const config = GRADE_CONFIG[grade] || GRADE_CONFIG.normal;
 
   return (
     <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${config.bg}`}>
@@ -396,7 +407,7 @@ function PremiumLock({ onUpgradeClick }: { onUpgradeClick?: () => void }) {
 // Daily Fortune Section
 // ============================================================================
 
-function DailyFortuneSection({ data }: { data: DailyFortuneData | null }) {
+const DailyFortuneSection = memo(function DailyFortuneSection({ data }: { data: DailyFortuneData | null }) {
   if (!data) {
     return <FortuneLoadingAnimation />;
   }
@@ -497,13 +508,13 @@ function DailyFortuneSection({ data }: { data: DailyFortuneData | null }) {
       </div>
     </div>
   );
-}
+});
 
 // ============================================================================
 // Hourly Fortune Section
 // ============================================================================
 
-function HourlyFortuneSection({
+const HourlyFortuneSection = memo(function HourlyFortuneSection({
   data,
   isPremium,
   onUpgradeClick,
@@ -535,20 +546,14 @@ function HourlyFortuneSection({
       <div className="grid grid-cols-3 gap-2">
         {data.map((hourly, idx) => {
           const isCurrent = idx === currentPeriodIndex;
-          const gradeColors: Record<string, string> = {
-            excellent: "border-yellow-500/50 bg-yellow-500/10",
-            good: "border-green-500/50 bg-green-500/10",
-            normal: "border-blue-500/50 bg-blue-500/10",
-            caution: "border-orange-500/50 bg-orange-500/10",
-          };
 
           return (
             <div
               key={idx}
               className={`p-2.5 rounded-xl border transition-all ${
                 isCurrent
-                  ? "ring-2 ring-purple-500 " + (gradeColors[hourly.grade] || "border-white/10")
-                  : gradeColors[hourly.grade] || "border-white/10 bg-white/5"
+                  ? "ring-2 ring-purple-500 " + (GRADE_COLORS[hourly.grade] || "border-white/10")
+                  : GRADE_COLORS[hourly.grade] || "border-white/10 bg-white/5"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
@@ -604,13 +609,13 @@ function HourlyFortuneSection({
       )}
     </div>
   );
-}
+});
 
 // ============================================================================
 // Major Fortune Section (Exported for use in result page)
 // ============================================================================
 
-export function MajorFortuneSection({
+export const MajorFortuneSection = memo(function MajorFortuneSection({
   data,
   birthYear,
   isPremium,
@@ -732,7 +737,7 @@ export function MajorFortuneSection({
       </div>
     </div>
   );
-}
+});
 
 // ============================================================================
 // Main Component
