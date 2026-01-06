@@ -24,9 +24,9 @@ export const pageMetadata: Record<string, PageMetadataConfig> = {
 
   // Compatibility (Workplace) page
   compatibility: {
-    title: 'AI 직장 궁합 분석 - 동료와의 궁합',
-    description: '직장 동료와의 사주 궁합을 AI가 분석합니다. 업무 스타일, 소통 방식, 협업 궁합을 확인하고 최적의 팀워크를 만들어보세요.',
-    keywords: ['직장 궁합', '동료 궁합', '업무 궁합', '사주 궁합', 'AI 궁합', '팀 궁합'],
+    title: 'AI 동료 궁합 분석',
+    description: '동료와의 사주 궁합을 AI가 분석합니다. 업무 스타일, 소통 방식, 협업 궁합을 확인하고 최적의 팀워크를 만들어보세요.',
+    keywords: ['동료 궁합', '업무 궁합', '사주 궁합', 'AI 궁합', '팀 궁합'],
     canonical: '/compatibility',
     ogImage: '/images/og-cover-compatibility.jpg',
   },

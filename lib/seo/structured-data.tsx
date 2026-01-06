@@ -140,9 +140,9 @@ export function ServicesSchema() {
     {
       '@type': 'Service',
       '@id': `${baseUrl}/compatibility/#service`,
-      name: 'AI 직장 궁합 분석',
-      alternateName: 'AI Workplace Compatibility Analysis',
-      description: '직장 내 동료와의 궁합을 분석하여 최적의 협업 방법과 관계 개선 방안을 제시합니다.',
+      name: 'AI 동료 궁합 분석',
+      alternateName: 'AI Colleague Compatibility Analysis',
+      description: '동료와의 궁합을 분석하여 최적의 협업 방법과 관계 개선 방안을 제시합니다.',
       url: `${baseUrl}/compatibility`,
       provider: {
         '@id': `${baseUrl}/#organization`,

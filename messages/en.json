@@ -51,7 +51,7 @@
         "description": "Let me show you how this year's energy meets your birth chart in this very moment."
       },
       "compatibility": {
-        "title": "Workplace Compatibility",
+        "title": "Colleague Compatibility",
         "description": "Let me look into how your professional bond flows at this time.",
         "colleague": "Colleague",
         "boss": "Boss",
@@ -155,7 +155,7 @@
     }
   },
   "compatibility": {
-    "title": "Workplace Compatibility Analysis",
+    "title": "Colleague Compatibility",
     "subtitle": "Enter information for both people",
     "person1": "First Person",
     "person2": "Second Person",
@@ -223,7 +223,7 @@
     "savedToAccount": "Analysis records are saved to your account",
     "resultCount": "{count} analysis results",
     "sajuAnalysis": "Birth Chart Analysis",
-    "compatibilityAnalysis": "Workplace Compatibility",
+    "compatibilityAnalysis": "Colleague Compatibility",
     "coupleAnalysis": "Couple Compatibility",
     "faceReading": "Face Reading",
     "localOnly": "Local",

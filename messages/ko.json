@@ -155,7 +155,7 @@
     }
   },
   "compatibility": {
-    "title": "직장 궁합 분석",
+    "title": "동료 궁합",
     "subtitle": "두 사람의 정보를 입력해주세요",
     "person1": "첫 번째 사람",
     "person2": "두 번째 사람",
@@ -225,7 +225,7 @@
     "savedToAccount": "분석 기록은 계정에 저장됩니다",
     "resultCount": "{count}개의 분석 결과",
     "sajuAnalysis": "사주 분석",
-    "compatibilityAnalysis": "직장 궁합",
+    "compatibilityAnalysis": "동료 궁합",
     "coupleAnalysis": "연인 궁합",
     "faceReading": "관상 분석",
     "localOnly": "로컬",
