@@ -70,6 +70,16 @@ export function useVoiceChat({
     [onMessage]
   );
 
+  // Convert Int16 PCM to Float32 for Web Audio API
+  const int16ToFloat32 = useCallback((int16Array: Int16Array): Float32Array => {
+    const float32Array = new Float32Array(int16Array.length);
+    for (let i = 0; i < int16Array.length; i++) {
+      // Convert Int16 (-32768 to 32767) to Float32 (-1.0 to 1.0)
+      float32Array[i] = int16Array[i] / 32768;
+    }
+    return float32Array;
+  }, []);
+
   // Play TTS audio chunk
   const playAudioChunk = useCallback(async (base64Audio: string) => {
     if (!audioContextRef.current) return;
@@ -82,8 +92,9 @@ export function useVoiceChat({
         bytes[i] = binaryString.charCodeAt(i);
       }
 
-      // Convert PCM Float32 to AudioBuffer
-      const float32Array = new Float32Array(bytes.buffer);
+      // Convert PCM Int16 to Float32 for Web Audio API
+      const int16Array = new Int16Array(bytes.buffer);
+      const float32Array = int16ToFloat32(int16Array);
       audioQueueRef.current.push(float32Array);
 
       // Start playback if not already playing
@@ -93,7 +104,7 @@ export function useVoiceChat({
     } catch (err) {
       console.error("[useVoiceChat] Error playing audio:", err);
     }
-  }, []);
+  }, [int16ToFloat32]);
 
   // Play next audio chunk from queue
   const playNextInQueue = useCallback(async () => {

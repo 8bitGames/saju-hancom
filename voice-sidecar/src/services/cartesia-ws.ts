@@ -267,9 +267,9 @@ class CartesiaWebSocketService {
         encoding: AUDIO_CONFIG.tts.encoding,
         sample_rate: AUDIO_CONFIG.tts.sampleRate,
       },
-      // 0 = no buffering, start generating immediately for fastest first byte
-      // Since we send complete text at once, this is optimal
-      max_buffer_delay_ms: 0,
+      // Higher values = better quality, lower = faster first byte
+      // Using config value for quality vs latency tradeoff
+      max_buffer_delay_ms: CARTESIA_WS_CONFIG.maxBufferDelayMs,
     };
 
     console.log(`[Cartesia WS] Generating TTS for: "${text.substring(0, 50)}..." (${contextId})`);

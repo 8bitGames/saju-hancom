@@ -16,9 +16,8 @@ export const AUDIO_CONFIG = {
   },
   // TTS (Text-to-Speech) - Output to speakers
   tts: {
-    sampleRate: 24000, // Cartesia native
-    playbackRate: 44100, // Browser playback
-    encoding: "pcm_f32le" as const,
+    sampleRate: 44100, // CD quality for better audio
+    encoding: "pcm_s16le" as const, // Int16 format
     container: "raw" as const,
   },
 } as const;

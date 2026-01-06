@@ -14,18 +14,20 @@ export const AUDIO_CONFIG = {
     channels: 1,
   },
   tts: {
-    // Must match client: 24000Hz + pcm_f32le (Float32)
-    sampleRate: 24000,
-    encoding: "pcm_f32le" as const,
+    // Higher sample rate for better quality (CD quality)
+    sampleRate: 44100,
+    // pcm_s16le is more reliable for streaming
+    encoding: "pcm_s16le" as const,
     container: "raw" as const,
   },
 } as const;
 
-// Cartesia WebSocket Configuration - Optimized for real-time voice chat
+// Cartesia WebSocket Configuration - Optimized for quality + reasonable latency
 export const CARTESIA_WS_CONFIG = {
-  // Maximum time to buffer before starting generation (lower = faster first byte)
-  // Default is 3000ms, we use 50ms for real-time voice chat
-  maxBufferDelayMs: 50,
+  // Maximum time to buffer before starting generation
+  // Higher = better quality, lower = faster first byte
+  // 300ms provides good balance between quality and latency
+  maxBufferDelayMs: 300,
   // API version - use latest for best performance
   apiVersion: "2025-04-16" as const,
   // WebSocket URL
