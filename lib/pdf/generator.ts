@@ -1318,12 +1318,14 @@ export interface CompatibilityPDFData {
 const translateGeneralRelationType = (type?: string): string => {
   const typeMap: Record<string, string> = {
     'colleague': '동료',
-    'supervisor': '상사',
-    'subordinate': '부하',
+    'supervisor': '선배',
+    'subordinate': '후배',
     'partner': '파트너',
     'client': '고객',
     'mentor': '멘토',
     'mentee': '멘티',
+    'friend': '친구',
+    'family': '가족',
   };
   return typeMap[type || ''] || '동료';
 };

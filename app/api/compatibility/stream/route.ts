@@ -26,8 +26,8 @@ const validCategories: CompatibilityCategory[] = [
 function getRelationTypeLabel(type: string | undefined, locale: Locale): string {
   const labels: Record<string, { ko: string; en: string }> = {
     colleague: { ko: "동료", en: "colleague" },
-    supervisor: { ko: "상사", en: "supervisor" },
-    subordinate: { ko: "부하", en: "subordinate" },
+    supervisor: { ko: "선배", en: "senior" },
+    subordinate: { ko: "후배", en: "junior" },
     partner: { ko: "파트너", en: "partner" },
     client: { ko: "고객", en: "client" },
     mentor: { ko: "멘토", en: "mentor" },

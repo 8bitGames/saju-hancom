@@ -54,7 +54,7 @@
         "title": "직장 동료 궁합",
         "description": "지금 이 시기, 그 분과의 업무 인연이 어떤지 살펴보겠습니다.",
         "colleague": "동료",
-        "boss": "상사",
+        "boss": "선배",
         "partner": "파트너"
       },
       "faceReading": {
@@ -161,12 +161,14 @@
     "person2": "두 번째 사람",
     "relationTypes": {
       "colleague": "동료",
-      "boss": "상사",
-      "subordinate": "부하",
+      "boss": "선배",
+      "subordinate": "후배",
       "partner": "파트너",
       "client": "고객",
       "mentor": "멘토",
-      "mentee": "멘티"
+      "mentee": "멘티",
+      "friend": "친구",
+      "family": "가족"
     },
     "result": {
       "title": "궁합 분석 결과",

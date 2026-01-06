@@ -58,10 +58,8 @@ const MINUTES = Array.from({ length: 60 }, (_, i) => ({
   label: `${i.toString().padStart(2, "0")}분`,
 }));
 
-// 개인 관계 타입
+// 개인 관계 타입 (연인/부부는 커플 궁합에서 사용)
 const PERSONAL_RELATION_TYPES: { value: RelationType; label: string }[] = [
-  { value: "lover", label: "연인" },
-  { value: "spouse", label: "부부" },
   { value: "friend", label: "친구" },
   { value: "family", label: "가족" },
 ];
@@ -69,15 +67,15 @@ const PERSONAL_RELATION_TYPES: { value: RelationType; label: string }[] = [
 // 직장 관계 타입
 const WORK_RELATION_TYPES: { value: RelationType; label: string }[] = [
   { value: "colleague", label: "동료" },
-  { value: "supervisor", label: "상사" },
-  { value: "subordinate", label: "부하" },
+  { value: "supervisor", label: "선배" },
+  { value: "subordinate", label: "후배" },
   { value: "partner", label: "파트너" },
   { value: "client", label: "고객" },
   { value: "mentor", label: "멘토" },
   { value: "mentee", label: "멘티" },
 ];
 
-const RELATION_TYPES = [...PERSONAL_RELATION_TYPES, ...WORK_RELATION_TYPES];
+const RELATION_TYPES = [...WORK_RELATION_TYPES, ...PERSONAL_RELATION_TYPES];
 
 function PersonInputSection({
   title,

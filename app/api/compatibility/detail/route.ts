@@ -193,6 +193,243 @@ function generateCompatibilitySearchQueries(
   return queries.slice(0, 4); // 최대 4개
 }
 
+// JSON 스키마 가이드 생성 함수
+function getJsonSchemaGuide(locale: Locale, isRomantic: boolean, isWork: boolean): string {
+  if (locale === 'ko') {
+    return `
+## 응답 JSON 스키마 (반드시 이 형식으로 응답하세요)
+
+{
+  "overallScore": <0-100 사이의 종합 궁합 점수>,
+  "grade": "<excellent|good|normal|caution|challenging 중 하나>",
+  "gradeText": "<등급 설명 텍스트, 예: '천생연분', '좋은 궁합'>",
+  "summary": "<궁합 종합 요약 3-4문장>",
+
+  "cheonganHap": {
+    "person1Gan": "<첫 번째 사람의 일간, 예: 甲, 乙>",
+    "person2Gan": "<두 번째 사람의 일간>",
+    "hasHap": <true 또는 false>,
+    "hapType": "<합의 종류, 예: 갑기합토, 또는 null>",
+    "hapElement": "<합으로 생성되는 오행, 또는 null>",
+    "description": "<천간합 분석 설명>"
+  },
+
+  "jijiRelation": {
+    "yukHap": {
+      "pairs": [{"zhi1": "<지지1>", "zhi2": "<지지2>", "resultElement": "<결과 오행>"}],
+      "description": "<육합 분석 설명>"
+    },
+    "samHap": {
+      "groups": [{"zhis": ["<지지1>", "<지지2>", "<지지3>"], "resultElement": "<결과 오행>"}],
+      "description": "<삼합 분석 설명>"
+    },
+    "chung": {
+      "pairs": [{"zhi1": "<지지1>", "zhi2": "<지지2>"}],
+      "description": "<충 분석 설명>"
+    },
+    "hyung": {
+      "pairs": [{"zhi1": "<지지1>", "zhi2": "<지지2>"}],
+      "description": "<형 분석 설명>"
+    }
+  },
+
+  "iljuCompatibility": {
+    "person1Ilju": "<첫 번째 사람의 일주, 예: 甲子>",
+    "person2Ilju": "<두 번째 사람의 일주>",
+    "ganRelation": "<상생|상극|비화|합 중 하나>",
+    "zhiRelation": "<합|충|형|해|중립 중 하나>",
+    "overallIljuScore": <0-100 점수>,
+    "description": "<일주 궁합 설명>"
+  },
+
+  "elementBalanceAnalysis": {
+    "person1Dominant": "<첫 번째 사람의 강한 오행>",
+    "person2Dominant": "<두 번째 사람의 강한 오행>",
+    "person1Weak": "<첫 번째 사람의 약한 오행>",
+    "person2Weak": "<두 번째 사람의 약한 오행>",
+    "complementary": <true 또는 false>,
+    "description": "<오행 균형 분석 설명>"
+  },
+
+  "relationshipAnalysis": {
+    "emotional": {"score": <0-100>, "description": "<정서적 교감 설명>"},
+    "physical": {"score": <0-100>, "description": "<신체적 조화 설명>"},
+    "intellectual": {"score": <0-100>, "description": "<지적 교류 설명>"},
+    "spiritual": {"score": <0-100>, "description": "<정신적 유대 설명>"},
+    "financial": {"score": <0-100>, "description": "<경제적 조화 설명>"}
+  },
+
+  "timingAnalysis": {
+    "shortTerm": {"score": <0-100>, "description": "<단기 1-2년 전망>"},
+    "midTerm": {"score": <0-100>, "description": "<중기 3-5년 전망>"},
+    "longTerm": {"score": <0-100>, "description": "<장기 5년+ 전망>"}
+  },
+
+  ${isRomantic ? `"romanticAnalysis": {
+    "initialAttraction": {"score": <0-100>, "description": "<첫인상/끌림 설명>"},
+    "dateCompatibility": {"score": <0-100>, "description": "<데이트 궁합 설명>"},
+    "marriageProspect": {"score": <0-100>, "description": "<결혼 전망 설명>"},
+    "childrenFortune": {"score": <0-100>, "description": "<자녀운 설명>"}
+  },` : ''}
+
+  ${isWork ? `"workplaceAnalysis": {
+    "teamwork": {"score": <0-100>, "description": "<팀워크 궁합 설명>"},
+    "projectCollaboration": {"score": <0-100>, "description": "<프로젝트 협업 설명>"},
+    "decisionMaking": {"score": <0-100>, "description": "<의사결정 호환성 설명>"},
+    "stressHandling": {"score": <0-100>, "description": "<스트레스 대응 설명>"},
+    "careerSupport": {"score": <0-100>, "description": "<커리어 성장 지원 설명>"},
+    "tenGodRelation": {
+      "person1Role": "<첫 번째 사람의 십성 역할>",
+      "person2Role": "<두 번째 사람의 십성 역할>",
+      "relationDynamic": "<십성 기반 관계 다이나믹 설명>"
+    }
+  },` : ''}
+
+  "conflictPoints": [
+    {"area": "<갈등 영역>", "description": "<갈등 설명>", "solution": "<해결책>"}
+  ],
+
+  "compatibility": {
+    "communication": {"score": <0-100>, "description": "<소통 궁합 설명>"},
+    "collaboration": {"score": <0-100>, "description": "<협력 궁합 설명>"},
+    "trust": {"score": <0-100>, "description": "<신뢰 궁합 설명>"},
+    "growth": {"score": <0-100>, "description": "<성장 궁합 설명>"}
+  },
+
+  "strengths": ["<강점1>", "<강점2>", "<강점3>", "<강점4>"],
+  "challenges": ["<도전과제1>", "<도전과제2>", "<도전과제3>"],
+  "adviceForPerson1": ["<조언1>", "<조언2>", "<조언3>"],
+  "adviceForPerson2": ["<조언1>", "<조언2>", "<조언3>"],
+  "recommendedActivities": ["<활동1>", "<활동2>", "<활동3>", "<활동4>"],
+  "luckyDates": ["<날짜/시기1>", "<날짜/시기2>", "<날짜/시기3>"],
+  "luckyElements": {
+    "colors": ["<색상1>", "<색상2>"],
+    "directions": ["<방향1>", "<방향2>"],
+    "numbers": [<숫자1>, <숫자2>]
+  }
+}
+
+중요: 위 스키마를 정확히 따라 JSON만 응답하세요. 설명 텍스트나 마크다운 없이 순수 JSON만 반환하세요.
+`;
+  } else {
+    return `
+## Response JSON Schema (You MUST respond in this exact format)
+
+{
+  "overallScore": <0-100 overall compatibility score>,
+  "grade": "<one of: excellent|good|normal|caution|challenging>",
+  "gradeText": "<grade description text, e.g., 'Perfect Match', 'Good Compatibility'>",
+  "summary": "<3-4 sentence summary of compatibility>",
+
+  "cheonganHap": {
+    "person1Gan": "<first person's day stem, e.g., 甲, 乙>",
+    "person2Gan": "<second person's day stem>",
+    "hasHap": <true or false>,
+    "hapType": "<combination type, e.g., Jia-Ji Earth, or null>",
+    "hapElement": "<element created by combination, or null>",
+    "description": "<heavenly stem combination analysis>"
+  },
+
+  "jijiRelation": {
+    "yukHap": {
+      "pairs": [{"zhi1": "<branch1>", "zhi2": "<branch2>", "resultElement": "<result element>"}],
+      "description": "<six harmonies analysis>"
+    },
+    "samHap": {
+      "groups": [{"zhis": ["<branch1>", "<branch2>", "<branch3>"], "resultElement": "<result element>"}],
+      "description": "<three harmonies analysis>"
+    },
+    "chung": {
+      "pairs": [{"zhi1": "<branch1>", "zhi2": "<branch2>"}],
+      "description": "<clash analysis>"
+    },
+    "hyung": {
+      "pairs": [{"zhi1": "<branch1>", "zhi2": "<branch2>"}],
+      "description": "<punishment analysis>"
+    }
+  },
+
+  "iljuCompatibility": {
+    "person1Ilju": "<first person's day pillar, e.g., 甲子>",
+    "person2Ilju": "<second person's day pillar>",
+    "ganRelation": "<one of: 상생|상극|비화|합>",
+    "zhiRelation": "<one of: 합|충|형|해|중립>",
+    "overallIljuScore": <0-100 score>,
+    "description": "<day pillar compatibility description>"
+  },
+
+  "elementBalanceAnalysis": {
+    "person1Dominant": "<first person's dominant element>",
+    "person2Dominant": "<second person's dominant element>",
+    "person1Weak": "<first person's weak element>",
+    "person2Weak": "<second person's weak element>",
+    "complementary": <true or false>,
+    "description": "<element balance analysis>"
+  },
+
+  "relationshipAnalysis": {
+    "emotional": {"score": <0-100>, "description": "<emotional connection>"},
+    "physical": {"score": <0-100>, "description": "<physical harmony>"},
+    "intellectual": {"score": <0-100>, "description": "<intellectual exchange>"},
+    "spiritual": {"score": <0-100>, "description": "<spiritual bond>"},
+    "financial": {"score": <0-100>, "description": "<financial harmony>"}
+  },
+
+  "timingAnalysis": {
+    "shortTerm": {"score": <0-100>, "description": "<1-2 year outlook>"},
+    "midTerm": {"score": <0-100>, "description": "<3-5 year outlook>"},
+    "longTerm": {"score": <0-100>, "description": "<5+ year outlook>"}
+  },
+
+  ${isRomantic ? `"romanticAnalysis": {
+    "initialAttraction": {"score": <0-100>, "description": "<initial attraction>"},
+    "dateCompatibility": {"score": <0-100>, "description": "<dating compatibility>"},
+    "marriageProspect": {"score": <0-100>, "description": "<marriage prospect>"},
+    "childrenFortune": {"score": <0-100>, "description": "<children fortune>"}
+  },` : ''}
+
+  ${isWork ? `"workplaceAnalysis": {
+    "teamwork": {"score": <0-100>, "description": "<teamwork compatibility>"},
+    "projectCollaboration": {"score": <0-100>, "description": "<project collaboration>"},
+    "decisionMaking": {"score": <0-100>, "description": "<decision making compatibility>"},
+    "stressHandling": {"score": <0-100>, "description": "<stress handling>"},
+    "careerSupport": {"score": <0-100>, "description": "<career growth support>"},
+    "tenGodRelation": {
+      "person1Role": "<first person's ten god role>",
+      "person2Role": "<second person's ten god role>",
+      "relationDynamic": "<ten god based relationship dynamic>"
+    }
+  },` : ''}
+
+  "conflictPoints": [
+    {"area": "<conflict area>", "description": "<conflict description>", "solution": "<solution>"}
+  ],
+
+  "compatibility": {
+    "communication": {"score": <0-100>, "description": "<communication compatibility>"},
+    "collaboration": {"score": <0-100>, "description": "<collaboration compatibility>"},
+    "trust": {"score": <0-100>, "description": "<trust compatibility>"},
+    "growth": {"score": <0-100>, "description": "<growth compatibility>"}
+  },
+
+  "strengths": ["<strength1>", "<strength2>", "<strength3>", "<strength4>"],
+  "challenges": ["<challenge1>", "<challenge2>", "<challenge3>"],
+  "adviceForPerson1": ["<advice1>", "<advice2>", "<advice3>"],
+  "adviceForPerson2": ["<advice1>", "<advice2>", "<advice3>"],
+  "recommendedActivities": ["<activity1>", "<activity2>", "<activity3>", "<activity4>"],
+  "luckyDates": ["<date/timing1>", "<date/timing2>", "<date/timing3>"],
+  "luckyElements": {
+    "colors": ["<color1>", "<color2>"],
+    "directions": ["<direction1>", "<direction2>"],
+    "numbers": [<number1>, <number2>]
+  }
+}
+
+IMPORTANT: Follow this schema exactly and respond with pure JSON only. No explanatory text or markdown.
+`;
+  }
+}
+
 // 상세 궁합 분석 결과 스키마
 const DetailedCompatibilitySchema = z.object({
   // 기본 정보
@@ -456,6 +693,9 @@ export async function POST(request: NextRequest) {
       relationType: effectiveRelationType,
     });
 
+    // JSON 스키마 가이드 생성
+    const jsonSchemaGuide = getJsonSchemaGuide(locale, isRomantic, isWork);
+
     // Google Search grounding을 포함한 프롬프트
     const groundingPrompt = locale === 'ko'
       ? `
@@ -466,7 +706,7 @@ ${searchQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}
 
 ${userPrompt}
 
-응답은 반드시 유효한 JSON 형식으로만 제공해주세요. 다른 텍스트 없이 JSON만 반환하세요.
+${jsonSchemaGuide}
 `
       : `
 Please search the internet for the following topics to incorporate current trends and advice:
@@ -476,8 +716,18 @@ Based on the search results above, combine traditional BaZi analysis with modern
 
 ${userPrompt}
 
-Please respond ONLY with valid JSON format. Return only the JSON without any other text.
+${jsonSchemaGuide}
 `;
+
+    // 디버깅 로그
+    console.log("Compatibility analysis request:", {
+      relationType: effectiveRelationType,
+      isRomantic,
+      isWork,
+      locale,
+      person1Element,
+      person2Element,
+    });
 
     // Gemini API 호출 (Google Search grounding 포함)
     const response = await ai.models.generateContent({
@@ -520,10 +770,27 @@ Please respond ONLY with valid JSON format. Return only the JSON without any oth
     }
     cleanedResponse = cleanedResponse.trim();
 
-    const parsedData = JSON.parse(cleanedResponse);
+    let parsedData;
+    try {
+      parsedData = JSON.parse(cleanedResponse);
+    } catch (parseError) {
+      console.error("JSON parse error. Raw response:", cleanedResponse.substring(0, 500));
+      throw new Error(`Failed to parse AI response as JSON: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
+    }
 
     // Zod 스키마로 검증
-    const validatedData = DetailedCompatibilitySchema.parse(parsedData);
+    let validatedData;
+    try {
+      validatedData = DetailedCompatibilitySchema.parse(parsedData);
+    } catch (zodError) {
+      if (zodError instanceof z.ZodError) {
+        console.error("Zod validation failed. Received fields:", Object.keys(parsedData || {}));
+        console.error("First few fields of parsed data:", JSON.stringify(parsedData, null, 2).substring(0, 1000));
+      }
+      throw zodError;
+    }
+
+    console.log("AI response validated successfully. Overall score:", validatedData.overallScore);
 
     // 연인/부부 관계가 아니면 romanticAnalysis 제거
     if (!isRomantic && validatedData.romanticAnalysis) {
@@ -548,6 +815,20 @@ Please respond ONLY with valid JSON format. Return only the JSON without any oth
       // Default to Korean if we can't parse the body
     }
 
+    // Zod 검증 오류 먼저 확인
+    if (error instanceof z.ZodError) {
+      const missingFields = error.issues.map(issue => issue.path.join('.')).join(', ');
+      console.error("Zod validation error - missing fields:", missingFields);
+      console.error("Validation issues:", JSON.stringify(error.issues, null, 2));
+      return NextResponse.json(
+        {
+          error: getErrorMessage(locale, 'compatibilityError'),
+          details: process.env.NODE_ENV === 'development' ? `Missing fields: ${missingFields}` : undefined,
+        },
+        { status: 500 }
+      );
+    }
+
     if (error instanceof Error) {
       if (error.message.includes("API key") || error.message.includes("API_KEY")) {
         return NextResponse.json(
@@ -561,10 +842,13 @@ Please respond ONLY with valid JSON format. Return only the JSON without any oth
           { status: 429 }
         );
       }
-      if (error instanceof z.ZodError) {
-        console.error("Validation error:", error.issues);
+      if (error.message.includes("Failed to parse AI response")) {
+        console.error("JSON parsing failed");
         return NextResponse.json(
-          { error: getErrorMessage(locale, 'compatibilityError') },
+          {
+            error: getErrorMessage(locale, 'compatibilityError'),
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+          },
           { status: 500 }
         );
       }

@@ -223,12 +223,14 @@ function getScoreColor(score: number): string {
 function getRelationTypeKorean(type?: string): string {
   switch (type) {
     case "colleague": return "동료";
-    case "supervisor": return "상사";
-    case "subordinate": return "부하";
+    case "supervisor": return "선배";
+    case "subordinate": return "후배";
     case "partner": return "파트너";
     case "client": return "고객";
     case "mentor": return "멘토";
     case "mentee": return "멘티";
+    case "friend": return "친구";
+    case "family": return "가족";
     default: return "동료";
   }
 }

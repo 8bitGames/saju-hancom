@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useLocale } from "next-intl";
 import { Link, useRouter } from "@/lib/i18n/navigation";
 import {
   UsersThree,
@@ -202,6 +203,7 @@ function ScoreCard({
 function DetailedCompatibilityResultContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const locale = useLocale();
   const [result, setResult] = useState<DetailedCompatibilityResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -277,6 +279,13 @@ function DetailedCompatibilityResultContent() {
           gender: p2Gender,
         };
 
+        console.log("Sending API request with:", {
+          person1: person1Data,
+          person2: person2Data,
+          relationType,
+          locale,
+        });
+
         const response = await fetch("/api/compatibility/detail", {
           method: "POST",
           headers: {
@@ -286,12 +295,20 @@ function DetailedCompatibilityResultContent() {
             person1: person1Data,
             person2: person2Data,
             relationType,
+            locale,
           }),
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || "상세 궁합 분석에 실패했습니다.");
+          console.error("API error response:", {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorData,
+          });
+          const errorMsg = errorData.error || `상세 궁합 분석에 실패했습니다. (HTTP ${response.status})`;
+          const details = errorData.details ? ` [${errorData.details}]` : '';
+          throw new Error(errorMsg + details);
         }
 
         const compatibilityResult = await response.json();
@@ -305,7 +322,7 @@ function DetailedCompatibilityResultContent() {
     };
 
     fetchDetailedCompatibility();
-  }, [searchParams, router]);
+  }, [searchParams, router, locale]);
 
   if (isLoading) {
     const loadingSteps = [

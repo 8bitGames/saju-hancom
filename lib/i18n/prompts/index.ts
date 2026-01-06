@@ -2104,8 +2104,8 @@ const relationTypeLabels: Record<Locale, Record<string, string>> = {
   ko: {
     // 직장 관계
     colleague: '동료 관계',
-    supervisor: '상사-부하 관계',
-    subordinate: '부하-상사 관계',
+    supervisor: '선배-후배 관계',
+    subordinate: '후배-선배 관계',
     partner: '파트너/협력자 관계',
     client: '고객/거래처 관계',
     mentor: '멘토-멘티 관계',
