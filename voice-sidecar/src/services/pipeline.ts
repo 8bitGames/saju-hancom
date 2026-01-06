@@ -5,29 +5,42 @@ import { STT_MODEL, AUDIO_CONFIG, GEMINI_MODEL } from "../constants";
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
 const genai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY! });
 
+export interface PipelineTiming {
+  sttMs: number;
+  llmMs: number;
+  totalMs: number;
+}
+
 export async function processVoicePipeline(
   audioData: Uint8Array,
   systemPrompt: string,
   history: Array<{ role: "user" | "assistant"; content: string }>,
   locale: string
-): Promise<{ transcript: string; response: string }> {
+): Promise<{ transcript: string; response: string; timing: PipelineTiming }> {
+  const pipelineStart = Date.now();
 
   // 1. Speech-to-Text (Groq Whisper)
+  const sttStart = Date.now();
   const transcript = await transcribeAudio(audioData, locale);
+  const sttMs = Date.now() - sttStart;
 
   if (!transcript || transcript.trim().length === 0) {
     console.log("[Pipeline] No transcript detected");
-    return { transcript: "", response: "" };
+    return { transcript: "", response: "", timing: { sttMs, llmMs: 0, totalMs: Date.now() - pipelineStart } };
   }
 
-  console.log(`[Pipeline] Transcript: ${transcript}`);
+  console.log(`[Pipeline] STT completed in ${sttMs}ms: "${transcript}"`);
 
   // 2. Generate LLM response (Gemini)
+  const llmStart = Date.now();
   const response = await generateResponse(systemPrompt, history, transcript, locale);
+  const llmMs = Date.now() - llmStart;
 
-  console.log(`[Pipeline] Response: ${response.substring(0, 100)}...`);
+  const totalMs = Date.now() - pipelineStart;
+  console.log(`[Pipeline] LLM completed in ${llmMs}ms: "${response.substring(0, 80)}..."`);
+  console.log(`[Pipeline] ⏱️ TIMING: STT=${sttMs}ms, LLM=${llmMs}ms, Total=${totalMs}ms`);
 
-  return { transcript, response };
+  return { transcript, response, timing: { sttMs, llmMs, totalMs } };
 }
 
 async function transcribeAudio(audioData: Uint8Array, language: string): Promise<string> {

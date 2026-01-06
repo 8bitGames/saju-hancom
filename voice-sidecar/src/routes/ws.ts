@@ -1,7 +1,8 @@
 import type { ServerWebSocket } from "bun";
 import { processVoicePipeline } from "../services/pipeline";
+import { cartesiaWS } from "../services/cartesia-ws";
 import { sessionStore } from "./session";
-import { VAD_CONFIG, AUDIO_CONFIG, HANSA_VOICE_ID, TTS_MODEL } from "../constants";
+import { VAD_CONFIG, AUDIO_CONFIG } from "../constants";
 import type { SessionData, VoiceWebSocket, WSData } from "../types";
 
 // Active WebSocket sessions
@@ -204,10 +205,11 @@ async function handleAudioChunk(
         }
         session.audioBuffer = [];
 
+        const e2eStart = Date.now();
         console.log(`[WS] Processing audio: ${audioDurationMs.toFixed(0)}ms`);
 
         // Process through voice pipeline (STT -> LLM -> TTS)
-        const { transcript, response } = await processVoicePipeline(
+        const { transcript, response, timing } = await processVoicePipeline(
           combinedAudio,
           session.systemPrompt,
           session.conversationHistory,
@@ -224,7 +226,31 @@ async function handleAudioChunk(
           session.conversationHistory.push({ role: "assistant", content: response });
 
           ws.send(JSON.stringify({ type: "speaking" }));
-          await speakText(session, response, ws);
+          const ttsStart = Date.now();
+          const ttsFirstByteMs = await speakText(session, response, ws);
+          const ttsTotalMs = Date.now() - ttsStart;
+
+          const e2eFirstByte = timing.sttMs + timing.llmMs + ttsFirstByteMs;
+          const e2eTotal = Date.now() - e2eStart;
+
+          console.log(`[WS] ⏱️ E2E TIMING BREAKDOWN:`);
+          console.log(`     └─ STT (Groq Whisper): ${timing.sttMs}ms`);
+          console.log(`     └─ LLM (Gemini): ${timing.llmMs}ms`);
+          console.log(`     └─ TTS first byte (Cartesia): ${ttsFirstByteMs}ms`);
+          console.log(`     └─ TTS total: ${ttsTotalMs}ms`);
+          console.log(`     ⚡ TIME TO FIRST AUDIO: ${e2eFirstByte}ms`);
+          console.log(`     📊 TOTAL E2E: ${e2eTotal}ms`);
+
+          // Send timing to client for monitoring
+          ws.send(JSON.stringify({
+            type: "timing",
+            sttMs: timing.sttMs,
+            llmMs: timing.llmMs,
+            ttsFirstByteMs,
+            ttsTotalMs,
+            e2eFirstByte,
+            e2eTotal
+          }));
         }
 
       } catch (error) {
@@ -238,64 +264,113 @@ async function handleAudioChunk(
   }, VAD_CONFIG.silenceThresholdMs);
 }
 
-async function speakText(session: SessionData, text: string, ws: VoiceWebSocket): Promise<void> {
-  try {
-    console.log(`[TTS] Generating audio for: ${text.substring(0, 50)}...`);
+/**
+ * Streaming TTS using Cartesia WebSocket
+ *
+ * Key optimizations for low time-to-first-byte:
+ * 1. Persistent WebSocket connection (saves ~200ms connection overhead)
+ * 2. Streaming audio chunks (client hears audio as soon as first chunk arrives)
+ * 3. max_buffer_delay_ms=0 for immediate generation start
+ *
+ * Audio is streamed in chunks, dramatically reducing perceived latency
+ * compared to waiting for complete audio generation.
+ *
+ * @returns Time to first byte in milliseconds
+ */
+async function speakText(session: SessionData, text: string, ws: VoiceWebSocket): Promise<number> {
+  return new Promise((resolve) => {
+    const startTime = Date.now();
+    let firstChunkTime: number | null = null;
+    let firstChunkLatency = 0;
+    let totalBytes = 0;
+    const audioChunks: Uint8Array[] = [];
 
-    // Use Cartesia REST API for high-quality batch audio
-    const response = await fetch("https://api.cartesia.ai/tts/bytes", {
-      method: "POST",
-      headers: {
-        "Cartesia-Version": "2024-06-10",
-        "X-API-Key": process.env.CARTESIA_API_KEY!,
-        "Content-Type": "application/json",
+    console.log(`[TTS] Starting streaming generation for: "${text.substring(0, 50)}..."`);
+
+    // Notify client that streaming is starting
+    ws.send(JSON.stringify({ type: "tts_start" }));
+
+    cartesiaWS.generateStreaming(
+      text,
+      session.locale,
+      // onChunk - called for each audio chunk, stream immediately
+      (chunk: Uint8Array) => {
+        if (firstChunkTime === null) {
+          firstChunkTime = Date.now();
+          firstChunkLatency = firstChunkTime - startTime;
+          console.log(`[TTS] First chunk received in ${firstChunkLatency}ms`);
+        }
+
+        totalBytes += chunk.length;
+        audioChunks.push(chunk);
+
+        // Convert chunk to base64 and stream immediately to client
+        // This allows the client to start playing audio ASAP
+        let binary = "";
+        const chunkSize = 8192;
+        for (let i = 0; i < chunk.length; i += chunkSize) {
+          const subChunk = chunk.subarray(i, i + chunkSize);
+          binary += String.fromCharCode.apply(null, Array.from(subChunk));
+        }
+        const base64Chunk = btoa(binary);
+
+        ws.send(JSON.stringify({
+          type: "tts_chunk",
+          data: base64Chunk,
+          // Include metadata for client-side buffering decisions
+          sampleRate: AUDIO_CONFIG.tts.sampleRate,
+          encoding: AUDIO_CONFIG.tts.encoding,
+        }));
       },
-      body: JSON.stringify({
-        model_id: TTS_MODEL,
-        transcript: text,
-        voice: { mode: "id", id: HANSA_VOICE_ID },
-        language: session.locale === "ko" ? "ko" : session.locale,
-        output_format: {
-          container: "raw",
-          encoding: "pcm_f32le",
-          sample_rate: 24000,
-        },
-      }),
-    });
+      // onDone - called when generation is complete
+      () => {
+        const totalTime = Date.now() - startTime;
+        console.log(`[TTS] Completed: ${totalBytes} bytes in ${totalTime}ms (first chunk: ${firstChunkLatency}ms)`);
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("[TTS] API error:", error);
-      ws.send(JSON.stringify({ type: "error", error: "TTS generation failed" }));
-      return;
-    }
+        // Also send complete audio for clients that prefer buffered playback
+        if (audioChunks.length > 0) {
+          const totalLength = audioChunks.reduce((acc, c) => acc + c.length, 0);
+          const completeAudio = new Uint8Array(totalLength);
+          let offset = 0;
+          for (const chunk of audioChunks) {
+            completeAudio.set(chunk, offset);
+            offset += chunk.length;
+          }
 
-    // Get the complete audio buffer
-    const audioBuffer = await response.arrayBuffer();
-    console.log(`[TTS] Generated ${audioBuffer.byteLength} bytes of audio`);
+          let binary = "";
+          const chunkSize = 8192;
+          for (let i = 0; i < completeAudio.length; i += chunkSize) {
+            const subChunk = completeAudio.subarray(i, i + chunkSize);
+            binary += String.fromCharCode.apply(null, Array.from(subChunk));
+          }
+          const base64Audio = btoa(binary);
 
-    // Convert to base64 and send as single chunk
-    const uint8Array = new Uint8Array(audioBuffer);
-    let binary = "";
-    const chunkSize = 8192;
-    for (let i = 0; i < uint8Array.length; i += chunkSize) {
-      const chunk = uint8Array.subarray(i, i + chunkSize);
-      binary += String.fromCharCode.apply(null, Array.from(chunk));
-    }
-    const base64Audio = btoa(binary);
+          // Send complete audio as fallback (for clients not supporting streaming)
+          ws.send(JSON.stringify({ type: "tts_audio", data: base64Audio }));
+        }
 
-    ws.send(JSON.stringify({ type: "tts_audio", data: base64Audio }));
-    ws.send(JSON.stringify({ type: "tts_done" }));
-
-  } catch (error) {
-    console.error("[TTS] Error:", error);
-    ws.send(JSON.stringify({ type: "error", error: "TTS error" }));
-  }
+        ws.send(JSON.stringify({ type: "tts_done" }));
+        resolve(firstChunkLatency);
+      },
+      // onError
+      (error: string) => {
+        console.error("[TTS] Streaming error:", error);
+        ws.send(JSON.stringify({ type: "error", error: "TTS generation failed" }));
+        resolve(0);
+      }
+    );
+  });
 }
 
 async function handleInterrupt(ws: VoiceWebSocket, sessionId: string) {
   const session = wsSessions.get(sessionId);
   if (!session) return;
+
+  // Cancel any ongoing TTS generation
+  if (session.currentTTSContextId) {
+    cartesiaWS.cancelGeneration(session.currentTTSContextId);
+    session.currentTTSContextId = undefined;
+  }
 
   session.audioBuffer = [];
   session.isProcessing = false;

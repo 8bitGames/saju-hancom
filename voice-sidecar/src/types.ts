@@ -9,6 +9,8 @@ export interface SessionData {
   audioBuffer: Uint8Array[];
   silenceTimer: Timer | null;
   isProcessing: boolean;
+  // Current TTS context ID for interruption support
+  currentTTSContextId?: string;
 }
 
 export interface InitMessage {

@@ -4,10 +4,19 @@ import { logger } from "hono/logger";
 import { wsHandler } from "./routes/ws";
 import { sessionHandler } from "./routes/session";
 import { healthHandler } from "./routes/health";
+import { cartesiaWS } from "./services/cartesia-ws";
 import type { Server } from "bun";
 import type { WSData } from "./types";
 
 const app = new Hono();
+
+// Pre-warm Cartesia WebSocket connection for faster first TTS
+// This saves ~200ms on the first request
+cartesiaWS.connect().then(() => {
+  console.log("✅ Cartesia WebSocket pre-warmed");
+}).catch((err) => {
+  console.warn("⚠️ Cartesia WebSocket pre-warm failed:", err);
+});
 
 // Middleware
 app.use("*", logger());
