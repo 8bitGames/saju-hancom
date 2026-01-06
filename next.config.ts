@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
 
   // Headers for caching and security
   async headers() {
+    const isProduction = process.env.NODE_ENV === 'production';
+
     return [
       // Video files - aggressive caching
       {
@@ -100,10 +102,11 @@ const nextConfig: NextConfig = {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
           },
-          {
+          // HSTS only in production (breaks localhost development)
+          ...(isProduction ? [{
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains',
-          },
+          }] : []),
           {
             key: 'Permissions-Policy',
             value: 'camera=(self), microphone=(self), geolocation=(), interest-cohort=()',
@@ -123,7 +126,8 @@ const nextConfig: NextConfig = {
               "base-uri 'self'",
               "form-action 'self'",
               "frame-ancestors 'none'",
-              "upgrade-insecure-requests",
+              // upgrade-insecure-requests only in production (breaks localhost)
+              ...(isProduction ? ["upgrade-insecure-requests"] : []),
             ].join('; '),
           },
         ],

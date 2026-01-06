@@ -55,67 +55,8 @@ interface FaceReadingResult {
   luckyElements: string[];
 }
 
-// 스트리밍 카테고리 타입
-type StreamingCategory = "summary" | "personality" | "fortune" | "relationship" | "career" | "advice";
-
-const STREAMING_CATEGORIES: { key: StreamingCategory; label: string; icon: React.ElementType }[] = [
-  { key: "summary", label: "종합 해석", icon: Brain },
-  { key: "personality", label: "성격/기질", icon: User },
-  { key: "fortune", label: "운세/길흉", icon: Star },
-  { key: "relationship", label: "대인관계", icon: Users },
-  { key: "career", label: "직업/재물운", icon: Briefcase },
-  { key: "advice", label: "조언/개운법", icon: Lightbulb },
-];
-
-// 스트리밍 섹션 컴포넌트
-function StreamingSection({
-  category,
-  content,
-  isStreaming,
-  isComplete,
-}: {
-  category: StreamingCategory;
-  content: string;
-  isStreaming: boolean;
-  isComplete: boolean;
-}) {
-  const categoryInfo = STREAMING_CATEGORIES.find((c) => c.key === category);
-  if (!categoryInfo) return null;
-
-  const Icon = categoryInfo.icon;
-
-  return (
-    <div className="border border-white/10 rounded-xl overflow-hidden bg-white/5">
-      <div className="flex items-center gap-2 p-3 sm:p-4 border-b border-white/10 bg-white/5">
-        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#ef4444]" weight="fill" />
-        <span className="text-sm sm:text-base font-semibold text-white">
-          {categoryInfo.label}
-        </span>
-        {isStreaming && (
-          <span className="ml-auto flex items-center gap-1.5 text-[10px] sm:text-xs text-[#ef4444]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#ef4444] animate-pulse" />
-            분석 중...
-          </span>
-        )}
-        {isComplete && !isStreaming && (
-          <Check className="ml-auto w-4 h-4 text-green-400" weight="bold" />
-        )}
-      </div>
-      <div className="p-3 sm:p-4">
-        {content ? (
-          <MarkdownRenderer content={content} />
-        ) : isStreaming ? (
-          <div className="flex items-center gap-2 text-white/40 text-sm">
-            <div className="w-4 h-4 border-2 border-[#ef4444]/30 border-t-[#ef4444] rounded-full animate-spin" />
-            해석 생성 중...
-          </div>
-        ) : (
-          <div className="text-white/30 text-sm">대기 중...</div>
-        )}
-      </div>
-    </div>
-  );
-}
+// 스트리밍 카테고리 타입 (기본 분석: 종합 요약만)
+type StreamingCategory = "summary";
 
 // AI 분석 중 애니메이션
 function AIAnalyzingAnimation() {
@@ -187,19 +128,10 @@ export default function FaceReadingResultPage() {
   const hasCheckedAuth = useRef(false);
   const hasSaved = useRef(false);
 
-  // 스트리밍 상태
-  const [streamingContents, setStreamingContents] = useState<Record<StreamingCategory, string>>({
-    summary: "",
-    personality: "",
-    fortune: "",
-    relationship: "",
-    career: "",
-    advice: "",
-  });
-  const [streamingCategory, setStreamingCategory] = useState<StreamingCategory | null>(null);
-  const [completedCategories, setCompletedCategories] = useState<Set<StreamingCategory>>(new Set());
+  // 스트리밍 상태 (종합 요약만)
+  const [summaryContent, setSummaryContent] = useState("");
   const [isStreamingStarted, setIsStreamingStarted] = useState(false);
-  const [allStreamingComplete, setAllStreamingComplete] = useState(false);
+  const [isStreamingComplete, setIsStreamingComplete] = useState(false);
   const hasStartedStreaming = useRef(false);
 
   useEffect(() => {
@@ -256,8 +188,23 @@ export default function FaceReadingResultPage() {
     checkAndSave();
   }, [result, imageBase64, gender]);
 
-  // 스트리밍 카테고리 가져오기
-  const fetchStreamingCategory = useCallback(async (category: StreamingCategory, faceData: FaceReadingResult, genderValue: string) => {
+  // 종합 요약 스트리밍
+  const fetchSummary = useCallback(async () => {
+    if (!result || hasStartedStreaming.current) return;
+    hasStartedStreaming.current = true;
+
+    // 캐시 확인
+    const cacheKey = `face_summary_${JSON.stringify(result).slice(0, 100)}`;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+      setSummaryContent(cached);
+      setIsStreamingComplete(true);
+      return;
+    }
+
+    setIsStreamingStarted(true);
+
     try {
       const response = await fetch("/api/face-reading/stream", {
         method: "POST",
@@ -265,15 +212,15 @@ export default function FaceReadingResultPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          category,
-          faceData,
-          gender: genderValue,
+          category: "summary",
+          faceData: result,
+          gender,
           locale: "ko",
         }),
       });
 
       if (!response.ok) {
-        console.error(`Failed to fetch category ${category}`);
+        console.error("Failed to fetch summary");
         return;
       }
 
@@ -281,6 +228,7 @@ export default function FaceReadingResultPage() {
       if (!reader) return;
 
       const decoder = new TextDecoder();
+      let fullText = "";
 
       while (true) {
         const { done, value } = await reader.read();
@@ -295,13 +243,12 @@ export default function FaceReadingResultPage() {
               const data = JSON.parse(line.slice(6));
 
               if (data.type === "text") {
-                setStreamingContents((prev) => ({
-                  ...prev,
-                  [category]: prev[category] + data.content,
-                }));
+                fullText += data.content;
+                setSummaryContent(fullText);
               } else if (data.type === "done") {
-                // 카테고리 완료
-                setCompletedCategories((prev) => new Set([...prev, category]));
+                setIsStreamingComplete(true);
+                // 캐시 저장
+                localStorage.setItem(cacheKey, fullText);
               }
             } catch {
               // 파싱 오류 무시
@@ -310,64 +257,20 @@ export default function FaceReadingResultPage() {
         }
       }
     } catch (error) {
-      console.error(`Error streaming category ${category}:`, error);
+      console.error("Error streaming summary:", error);
     }
-  }, []);
-
-  // 모든 카테고리 순차 스트리밍
-  const streamAllCategories = useCallback(async () => {
-    if (!result || hasStartedStreaming.current) return;
-    hasStartedStreaming.current = true;
-
-    // 캐시 확인
-    const cacheKey = `face_streaming_${JSON.stringify(result).slice(0, 100)}`;
-    const cached = localStorage.getItem(cacheKey);
-
-    if (cached) {
-      try {
-        const cachedData = JSON.parse(cached);
-        setStreamingContents(cachedData);
-        setCompletedCategories(new Set(STREAMING_CATEGORIES.map((c) => c.key)));
-        setAllStreamingComplete(true);
-        return;
-      } catch {
-        localStorage.removeItem(cacheKey);
-      }
-    }
-
-    setIsStreamingStarted(true);
-
-    const categories: StreamingCategory[] = ["summary", "personality", "fortune", "relationship", "career", "advice"];
-
-    for (const category of categories) {
-      setStreamingCategory(category);
-      await fetchStreamingCategory(category, result, gender);
-      // 카테고리 간 짧은 딜레이
-      await new Promise((resolve) => setTimeout(resolve, 500));
-    }
-
-    setStreamingCategory(null);
-    setAllStreamingComplete(true);
-
-    // 캐시 저장
-    setTimeout(() => {
-      setStreamingContents((current) => {
-        localStorage.setItem(cacheKey, JSON.stringify(current));
-        return current;
-      });
-    }, 100);
-  }, [result, gender, fetchStreamingCategory]);
+  }, [result, gender]);
 
   // 스트리밍 시작
   useEffect(() => {
     if (result && !hasStartedStreaming.current) {
       // 약간의 딜레이 후 스트리밍 시작 (UI 렌더링 후)
       const timer = setTimeout(() => {
-        streamAllCategories();
+        fetchSummary();
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [result, streamAllCategories]);
+  }, [result, fetchSummary]);
 
   if (isLoading) {
     return (
@@ -581,7 +484,7 @@ export default function FaceReadingResultPage() {
         </div>
       </section>
 
-      {/* AI 스트리밍 해석 섹션 */}
+      {/* AI 종합 요약 섹션 */}
       <section className="bg-gradient-to-br from-[#ef4444]/10 to-pink-500/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4 border border-[#ef4444]/30">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-[#ef4444] to-pink-500 flex items-center justify-center">
@@ -589,13 +492,13 @@ export default function FaceReadingResultPage() {
           </div>
           <div>
             <h2 className="text-sm sm:text-base md:text-lg font-bold text-white">
-              AI 관상 해석
+              AI 종합 요약
             </h2>
             <p className="text-[10px] sm:text-xs text-white/60">
-              40년 경력 관상가의 깊이 있는 해석
+              관상가의 핵심 해석
             </p>
           </div>
-          {allStreamingComplete && (
+          {isStreamingComplete && (
             <div className="ml-auto flex items-center gap-1.5 text-green-400 text-xs">
               <Check className="w-4 h-4" weight="bold" />
               완료
@@ -604,38 +507,30 @@ export default function FaceReadingResultPage() {
         </div>
 
         {/* 스트리밍 진행 상태 */}
-        {!isStreamingStarted && !allStreamingComplete && (
+        {!isStreamingStarted && !isStreamingComplete && (
           <AIAnalyzingAnimation />
         )}
 
-        {/* 스트리밍 콘텐츠 */}
-        {(isStreamingStarted || allStreamingComplete) && (
-          <div className="space-y-3 sm:space-y-4">
-            {STREAMING_CATEGORIES.map(({ key }) => (
-              <StreamingSection
-                key={key}
-                category={key}
-                content={streamingContents[key]}
-                isStreaming={streamingCategory === key}
-                isComplete={completedCategories.has(key)}
-              />
-            ))}
+        {/* 종합 요약 콘텐츠 */}
+        {(isStreamingStarted || isStreamingComplete) && (
+          <div className="rounded-xl bg-white/5 p-3 sm:p-4">
+            {summaryContent ? (
+              <MarkdownRenderer content={summaryContent} />
+            ) : (
+              <div className="flex items-center gap-2 text-white/40 text-sm">
+                <div className="w-4 h-4 border-2 border-[#ef4444]/30 border-t-[#ef4444] rounded-full animate-spin" />
+                해석 생성 중...
+              </div>
+            )}
           </div>
         )}
 
-        {/* 진행률 표시 */}
-        {isStreamingStarted && !allStreamingComplete && (
-          <div className="pt-2">
-            <div className="flex items-center justify-between text-xs text-white/60 mb-1.5">
-              <span>분석 진행률</span>
-              <span>{completedCategories.size} / {STREAMING_CATEGORIES.length}</span>
-            </div>
-            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-[#ef4444] to-pink-500 rounded-full transition-all duration-500"
-                style={{ width: `${(completedCategories.size / STREAMING_CATEGORIES.length) * 100}%` }}
-              />
-            </div>
+        {/* 상세 분석 유도 */}
+        {isStreamingComplete && (
+          <div className="pt-2 text-center">
+            <p className="text-[10px] sm:text-xs text-white/50">
+              더 깊은 분석이 궁금하시다면 아래 버튼을 눌러주세요
+            </p>
           </div>
         )}
       </section>

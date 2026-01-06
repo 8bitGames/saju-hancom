@@ -38,7 +38,7 @@ export default async function CompatibilityPage() {
         <p className="text-[#3b82f6] text-sm font-medium tracking-wider">
           宮合分析
         </p>
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-2xl font-bold text-white break-keep">
           {t("title")}
         </h1>
         <p className="text-white/60 text-sm">

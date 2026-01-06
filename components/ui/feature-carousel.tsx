@@ -410,7 +410,7 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
                     {card.subtitle}
                   </p>
                   <h2
-                    className="font-bold text-white mb-4 leading-tight"
+                    className="font-bold text-white mb-4 leading-tight break-keep"
                     style={{
                       fontSize: locale === "ko" ? "2.5rem" : "1.5rem",
                     }}

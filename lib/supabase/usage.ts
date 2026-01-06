@@ -559,10 +559,12 @@ export async function getCoupleResultById(userId: string, resultId: string) {
 /**
  * Update couple result with detailed analysis data
  * This adds the detailed Myeongrihak analysis to an existing couple result
+ * If no existing record is found, creates a new one with the detailed result
  */
 export async function updateCoupleDetailedResult(
   userId: string,
-  person1Birth: {
+  person1: {
+    name: string;
     year: number;
     month: number;
     day: number;
@@ -571,7 +573,8 @@ export async function updateCoupleDetailedResult(
     gender: string;
     isLunar: boolean;
   },
-  person2Birth: {
+  person2: {
+    name: string;
     year: number;
     month: number;
     day: number;
@@ -586,30 +589,100 @@ export async function updateCoupleDetailedResult(
   const supabase = await createClient();
 
   // Find the existing couple result
-  const { data: existing, error: findError } = await supabase
+  // Use order + limit instead of .single() to handle multiple records gracefully
+  const { data: existingRecords, error: findError } = await supabase
     .from('couple_results')
     .select('id, result_data')
     .eq('user_id', userId)
-    .eq('p1_birth_year', person1Birth.year)
-    .eq('p1_birth_month', person1Birth.month)
-    .eq('p1_birth_day', person1Birth.day)
-    .eq('p1_birth_hour', person1Birth.hour)
-    .eq('p1_birth_minute', person1Birth.minute)
-    .eq('p1_gender', person1Birth.gender)
-    .eq('p1_is_lunar', person1Birth.isLunar)
-    .eq('p2_birth_year', person2Birth.year)
-    .eq('p2_birth_month', person2Birth.month)
-    .eq('p2_birth_day', person2Birth.day)
-    .eq('p2_birth_hour', person2Birth.hour)
-    .eq('p2_birth_minute', person2Birth.minute)
-    .eq('p2_gender', person2Birth.gender)
-    .eq('p2_is_lunar', person2Birth.isLunar)
+    .eq('p1_birth_year', person1.year)
+    .eq('p1_birth_month', person1.month)
+    .eq('p1_birth_day', person1.day)
+    .eq('p1_birth_hour', person1.hour)
+    .eq('p1_birth_minute', person1.minute)
+    .eq('p1_gender', person1.gender)
+    .eq('p1_is_lunar', person1.isLunar)
+    .eq('p2_birth_year', person2.year)
+    .eq('p2_birth_month', person2.month)
+    .eq('p2_birth_day', person2.day)
+    .eq('p2_birth_hour', person2.hour)
+    .eq('p2_birth_minute', person2.minute)
+    .eq('p2_gender', person2.gender)
+    .eq('p2_is_lunar', person2.isLunar)
     .eq('relation_type', relationType)
-    .single();
+    .order('updated_at', { ascending: false });
+
+  const existing = existingRecords && existingRecords.length > 0 ? existingRecords[0] : null;
 
   if (findError || !existing) {
-    console.error('[updateCoupleDetailedResult] Record not found:', findError?.message);
-    return { success: false, error: 'Couple result not found' };
+    // No existing record found - create a new one with upsert
+    console.log('[updateCoupleDetailedResult] No existing record found:', {
+      findErrorCode: findError?.code,
+      findErrorMessage: findError?.message,
+      person1,
+      person2,
+      relationType,
+    });
+
+    const { data: newRecord, error: upsertError } = await supabase
+      .from('couple_results')
+      .upsert(
+        {
+          user_id: userId,
+          p1_name: person1.name,
+          p1_birth_year: person1.year,
+          p1_birth_month: person1.month,
+          p1_birth_day: person1.day,
+          p1_birth_hour: person1.hour,
+          p1_birth_minute: person1.minute,
+          p1_gender: person1.gender,
+          p1_is_lunar: person1.isLunar,
+          p2_name: person2.name,
+          p2_birth_year: person2.year,
+          p2_birth_month: person2.month,
+          p2_birth_day: person2.day,
+          p2_birth_hour: person2.hour,
+          p2_birth_minute: person2.minute,
+          p2_gender: person2.gender,
+          p2_is_lunar: person2.isLunar,
+          relation_type: relationType,
+          result_data: { detailedResult: detailedResultData },
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: 'user_id,p1_birth_year,p1_birth_month,p1_birth_day,p1_birth_hour,p1_birth_minute,p1_gender,p1_is_lunar,p2_birth_year,p2_birth_month,p2_birth_day,p2_birth_hour,p2_birth_minute,p2_gender,p2_is_lunar,relation_type',
+          ignoreDuplicates: false,
+        }
+      )
+      .select('id')
+      .single();
+
+    if (upsertError) {
+      console.error('[updateCoupleDetailedResult] Upsert error:', upsertError);
+      return { success: false, error: upsertError.message };
+    }
+
+    console.log('[updateCoupleDetailedResult] Successfully upserted new record:', {
+      resultId: newRecord.id,
+      savedParams: {
+        p1_birth_year: person1.year,
+        p1_birth_month: person1.month,
+        p1_birth_day: person1.day,
+        p1_birth_hour: person1.hour,
+        p1_birth_minute: person1.minute,
+        p1_gender: person1.gender,
+        p1_is_lunar: person1.isLunar,
+        p2_birth_year: person2.year,
+        p2_birth_month: person2.month,
+        p2_birth_day: person2.day,
+        p2_birth_hour: person2.hour,
+        p2_birth_minute: person2.minute,
+        p2_gender: person2.gender,
+        p2_is_lunar: person2.isLunar,
+        relation_type: relationType,
+      },
+    });
+
+    return { success: true, resultId: newRecord.id };
   }
 
   // Update the result_data to include detailed analysis
@@ -637,10 +710,12 @@ export async function updateCoupleDetailedResult(
 /**
  * Update compatibility result with detailed analysis data
  * This adds the detailed Myeongrihak analysis to an existing compatibility (workplace) result
+ * If no existing record is found, creates a new one with the detailed result
  */
 export async function updateCompatibilityDetailedResult(
   userId: string,
-  person1Birth: {
+  person1: {
+    name: string;
     year: number;
     month: number;
     day: number;
@@ -649,7 +724,8 @@ export async function updateCompatibilityDetailedResult(
     gender: string;
     isLunar: boolean;
   },
-  person2Birth: {
+  person2: {
+    name: string;
     year: number;
     month: number;
     day: number;
@@ -668,26 +744,66 @@ export async function updateCompatibilityDetailedResult(
     .from('compatibility_results')
     .select('id, result_data')
     .eq('user_id', userId)
-    .eq('p1_birth_year', person1Birth.year)
-    .eq('p1_birth_month', person1Birth.month)
-    .eq('p1_birth_day', person1Birth.day)
-    .eq('p1_birth_hour', person1Birth.hour)
-    .eq('p1_birth_minute', person1Birth.minute)
-    .eq('p1_gender', person1Birth.gender)
-    .eq('p1_is_lunar', person1Birth.isLunar)
-    .eq('p2_birth_year', person2Birth.year)
-    .eq('p2_birth_month', person2Birth.month)
-    .eq('p2_birth_day', person2Birth.day)
-    .eq('p2_birth_hour', person2Birth.hour)
-    .eq('p2_birth_minute', person2Birth.minute)
-    .eq('p2_gender', person2Birth.gender)
-    .eq('p2_is_lunar', person2Birth.isLunar)
+    .eq('p1_birth_year', person1.year)
+    .eq('p1_birth_month', person1.month)
+    .eq('p1_birth_day', person1.day)
+    .eq('p1_birth_hour', person1.hour)
+    .eq('p1_birth_minute', person1.minute)
+    .eq('p1_gender', person1.gender)
+    .eq('p1_is_lunar', person1.isLunar)
+    .eq('p2_birth_year', person2.year)
+    .eq('p2_birth_month', person2.month)
+    .eq('p2_birth_day', person2.day)
+    .eq('p2_birth_hour', person2.hour)
+    .eq('p2_birth_minute', person2.minute)
+    .eq('p2_gender', person2.gender)
+    .eq('p2_is_lunar', person2.isLunar)
     .eq('relation_type', relationType)
     .single();
 
   if (findError || !existing) {
-    console.error('[updateCompatibilityDetailedResult] Record not found:', findError?.message);
-    return { success: false, error: 'Compatibility result not found' };
+    // No existing record found - create a new one with upsert
+    console.log('[updateCompatibilityDetailedResult] No existing record, creating new one with upsert');
+
+    const { data: newRecord, error: upsertError } = await supabase
+      .from('compatibility_results')
+      .upsert(
+        {
+          user_id: userId,
+          p1_name: person1.name,
+          p1_birth_year: person1.year,
+          p1_birth_month: person1.month,
+          p1_birth_day: person1.day,
+          p1_birth_hour: person1.hour,
+          p1_birth_minute: person1.minute,
+          p1_gender: person1.gender,
+          p1_is_lunar: person1.isLunar,
+          p2_name: person2.name,
+          p2_birth_year: person2.year,
+          p2_birth_month: person2.month,
+          p2_birth_day: person2.day,
+          p2_birth_hour: person2.hour,
+          p2_birth_minute: person2.minute,
+          p2_gender: person2.gender,
+          p2_is_lunar: person2.isLunar,
+          relation_type: relationType,
+          result_data: { detailedResult: detailedResultData },
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: 'user_id,p1_birth_year,p1_birth_month,p1_birth_day,p1_birth_hour,p1_birth_minute,p1_gender,p1_is_lunar,p2_birth_year,p2_birth_month,p2_birth_day,p2_birth_hour,p2_birth_minute,p2_gender,p2_is_lunar,relation_type',
+          ignoreDuplicates: false,
+        }
+      )
+      .select('id')
+      .single();
+
+    if (upsertError) {
+      console.error('[updateCompatibilityDetailedResult] Upsert error:', upsertError);
+      return { success: false, error: upsertError.message };
+    }
+
+    return { success: true, resultId: newRecord.id };
   }
 
   // Update the result_data to include detailed analysis
@@ -741,9 +857,11 @@ export async function getExistingDetailedCoupleResult(
   const supabase = await createClient();
 
   // Check couple_results table first
-  const { data: coupleResult, error: coupleError } = await supabase
+  // Use order + limit instead of .single() to handle multiple records gracefully
+  // Get the most recently updated record that has a detailedResult
+  const { data: coupleResults, error: coupleError } = await supabase
     .from('couple_results')
-    .select('result_data')
+    .select('result_data, updated_at')
     .eq('user_id', userId)
     .eq('p1_birth_year', person1Birth.year)
     .eq('p1_birth_month', person1Birth.month)
@@ -760,16 +878,20 @@ export async function getExistingDetailedCoupleResult(
     .eq('p2_gender', person2Birth.gender)
     .eq('p2_is_lunar', person2Birth.isLunar)
     .eq('relation_type', relationType)
-    .single();
+    .order('updated_at', { ascending: false });
 
-  if (!coupleError && coupleResult?.result_data?.detailedResult) {
-    return { success: true, detailedResult: coupleResult.result_data.detailedResult };
+  if (!coupleError && coupleResults && coupleResults.length > 0) {
+    // Find the first record that has detailedResult
+    const recordWithDetail = coupleResults.find(r => r.result_data?.detailedResult);
+    if (recordWithDetail?.result_data?.detailedResult) {
+      return { success: true, detailedResult: recordWithDetail.result_data.detailedResult };
+    }
   }
 
   // Check compatibility_results table if not found in couple_results
-  const { data: compatResult, error: compatError } = await supabase
+  const { data: compatResults, error: compatError } = await supabase
     .from('compatibility_results')
-    .select('result_data')
+    .select('result_data, updated_at')
     .eq('user_id', userId)
     .eq('p1_birth_year', person1Birth.year)
     .eq('p1_birth_month', person1Birth.month)
@@ -786,10 +908,13 @@ export async function getExistingDetailedCoupleResult(
     .eq('p2_gender', person2Birth.gender)
     .eq('p2_is_lunar', person2Birth.isLunar)
     .eq('relation_type', relationType)
-    .single();
+    .order('updated_at', { ascending: false });
 
-  if (!compatError && compatResult?.result_data?.detailedResult) {
-    return { success: true, detailedResult: compatResult.result_data.detailedResult };
+  if (!compatError && compatResults && compatResults.length > 0) {
+    const recordWithDetail = compatResults.find(r => r.result_data?.detailedResult);
+    if (recordWithDetail?.result_data?.detailedResult) {
+      return { success: true, detailedResult: recordWithDetail.result_data.detailedResult };
+    }
   }
 
   // No detailed result found

@@ -103,7 +103,7 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
         city: "seoul",
       });
       // window.location을 사용하여 깔끔하게 리다이렉트
-      window.location.replace(`/saju/fortune?${params.toString()}`);
+      window.location.replace(`/saju/result?${params.toString()}`);
     } else {
       setIsRedirecting(false);
     }

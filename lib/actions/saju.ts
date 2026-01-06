@@ -312,7 +312,18 @@ export async function autoSaveDetailedCoupleResult(input: SaveDetailedCoupleResu
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    console.log('[autoSaveDetailedCoupleResult] User check:', {
+      hasUser: !!user,
+      userId: user?.id,
+      inputParams: {
+        person1: { ...input.person1, name: input.person1.name },
+        person2: { ...input.person2, name: input.person2.name },
+        relationType: input.relationType,
+      },
+    });
+
     if (!user) {
+      console.log('[autoSaveDetailedCoupleResult] No user - cannot save');
       return { success: false, error: 'Not authenticated' };
     }
 
@@ -376,8 +387,19 @@ export async function getExistingDetailedResult(input: GetExistingDetailedResult
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    console.log('[getExistingDetailedResult] User check:', {
+      hasUser: !!user,
+      userId: user?.id,
+      inputParams: {
+        person1: input.person1,
+        person2: input.person2,
+        relationType: input.relationType,
+      },
+    });
+
     if (!user) {
       // Not authenticated - no saved data available
+      console.log('[getExistingDetailedResult] No user - returning undefined');
       return { success: true, detailedResult: undefined };
     }
 
@@ -387,6 +409,12 @@ export async function getExistingDetailedResult(input: GetExistingDetailedResult
       input.person2,
       input.relationType
     );
+
+    console.log('[getExistingDetailedResult] Result from getExistingDetailedCoupleResult:', {
+      success: result.success,
+      hasDetailedResult: !!result.detailedResult,
+      error: result.error,
+    });
 
     return result;
   } catch (error) {
