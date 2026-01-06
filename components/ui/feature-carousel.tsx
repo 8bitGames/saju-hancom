@@ -2,7 +2,6 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -11,7 +10,7 @@ import { StarsBackground } from "@/components/aceternity/stars-background";
 import { ShootingStars } from "@/components/aceternity/shooting-stars";
 import { CompanyModal } from "@/components/layout/company-modal";
 import { Buildings, ClockCounterClockwise, List, X, Globe } from "@phosphor-icons/react";
-import { usePathname, useRouter as useI18nRouter } from "@/lib/i18n/navigation";
+import { usePathname, useRouter } from "@/lib/i18n/navigation";
 import { locales, localeNames, type Locale } from "@/lib/i18n/config";
 
 export interface FeatureCard {
@@ -48,7 +47,6 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
   // Track which videos should be loaded (near viewport)
   const [loadedVideos, setLoadedVideos] = useState<Set<number>>(new Set([0]));
   const router = useRouter();
-  const i18nRouter = useI18nRouter();
   const pathname = usePathname();
   const t = useTranslations("header");
   const locale = useLocale() as Locale;
@@ -67,7 +65,7 @@ export function FeatureCarousel({ cards, className }: FeatureCarouselProps) {
   }, []);
 
   const switchLocale = (newLocale: Locale) => {
-    i18nRouter.replace(pathname, { locale: newLocale });
+    router.replace(pathname, { locale: newLocale });
     setIsMenuOpen(false);
     setIsLanguageExpanded(false);
   };

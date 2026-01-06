@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { AuthDialog } from "./AuthDialog";
+import { UpgradeDialog } from "./UpgradeDialog";
 import { toast } from "sonner";
 import { Share } from "@phosphor-icons/react";
 
@@ -34,6 +35,7 @@ export function ShareButton({
   className,
 }: ShareButtonProps) {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [canShare, setCanShare] = useState(false);
@@ -68,6 +70,21 @@ export function ShareButton({
     setLoading(true);
 
     try {
+      // Check usage limit
+      const usageResponse = await fetch("/api/saju/check-usage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ actionType: "kakao_share" }),
+      });
+
+      const usageData = await usageResponse.json();
+
+      if (!usageData.allowed) {
+        setShowUpgradeDialog(true);
+        setLoading(false);
+        return;
+      }
+
       let shareResultId = currentResultId;
 
       // If no resultId, try to save first
@@ -96,6 +113,8 @@ export function ShareButton({
         description ||
         `${birthData.year}년 ${birthData.month}월 ${birthData.day}일생 사주팔자 분석`;
 
+      let shareSuccess = false;
+
       if (canShare) {
         // Use Web Share API
         await navigator.share({
@@ -103,11 +122,22 @@ export function ShareButton({
           text: shareDescription,
           url: shareUrl,
         });
+        shareSuccess = true;
         toast.success("공유가 완료되었습니다");
       } else {
         // Fallback: Copy to clipboard
         await navigator.clipboard.writeText(shareUrl);
+        shareSuccess = true;
         toast.success("링크가 클립보드에 복사되었습니다");
+      }
+
+      // Track usage on success
+      if (shareSuccess) {
+        await fetch("/api/saju/track-usage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ actionType: "kakao_share" }),
+        });
       }
     } catch (error) {
       // User cancelled share or error occurred
@@ -118,6 +148,13 @@ export function ShareButton({
             const shareUrl = `${window.location.origin}/saju/s/${currentResultId}`;
             await navigator.clipboard.writeText(shareUrl);
             toast.success("링크가 클립보드에 복사되었습니다");
+
+            // Track usage on fallback success
+            await fetch("/api/saju/track-usage", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ actionType: "kakao_share" }),
+            });
           } else {
             toast.error("공유 중 오류가 발생했습니다");
           }
@@ -153,6 +190,12 @@ export function ShareButton({
         open={showAuthDialog}
         onOpenChange={setShowAuthDialog}
         onSuccess={handleShare}
+      />
+
+      <UpgradeDialog
+        open={showUpgradeDialog}
+        onOpenChange={setShowUpgradeDialog}
+        featureName="공유"
       />
     </>
   );

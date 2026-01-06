@@ -1,8 +1,8 @@
 export const STRIPE_CONFIG = {
-  // Product and Price IDs
-  PRODUCT_ID: 'prod_Te3cf0IeO2XcdR',
-  PRICE_ID_KRW: 'price_1SglVfIGSqpGTA9i1HIxPO7T', // ₩12,000/year
-  PRICE_ID_USD: 'price_1SglVgIGSqpGTA9i9TIdIQ2K', // $12/year
+  // Product and Price IDs - 사주 한사 프리미엄
+  PRODUCT_ID: 'prod_TedmkFfXlhNMxZ',
+  PRICE_ID_KRW: 'price_1ShKUdIGSqpGTA9iNkwLBxjk', // ₩12,000/year
+  PRICE_ID_USD: 'price_1ShKUfIGSqpGTA9icC31lLrz', // $12/year
 
   // Pricing details
   PRICES: {
@@ -10,13 +10,13 @@ export const STRIPE_CONFIG = {
       amount: 12000,
       currency: 'KRW',
       symbol: '₩',
-      priceId: 'price_1SglVfIGSqpGTA9i1HIxPO7T',
+      priceId: 'price_1ShKUdIGSqpGTA9iNkwLBxjk',
     },
     USD: {
       amount: 12,
       currency: 'USD',
       symbol: '$',
-      priceId: 'price_1SglVgIGSqpGTA9i9TIdIQ2K',
+      priceId: 'price_1ShKUfIGSqpGTA9icC31lLrz',
     },
   },
 

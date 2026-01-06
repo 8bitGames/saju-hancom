@@ -1,4 +1,4 @@
-# Voice Conversation Implementation Plan for Hansa (사주한컴)
+# Voice Conversation Implementation Plan for Hansa (사주한사)
 
 A comprehensive guide to implementing real-time voice conversations for saju analysis, compatibility, and face reading results.
 
@@ -2317,7 +2317,7 @@ The voice ID `de3dcaaa-317e-47e4-9302-777a1a6946f4` should be a warm, authoritat
 
 ---
 
-*This plan is designed for the Hansa (사주한컴) application and can be implemented incrementally. Each phase builds on the previous, allowing for testing and iteration.*
+*This plan is designed for the Hansa (사주한사) application and can be implemented incrementally. Each phase builds on the previous, allowing for testing and iteration.*
 
 ---
 

@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { CaretLeft, Buildings, ClockCounterClockwise, List, X, Globe, House } from "@phosphor-icons/react";
 import { StarsBackground } from "@/components/aceternity/stars-background";
 import { ShootingStars } from "@/components/aceternity/shooting-stars";
 import { CompanyModal } from "@/components/layout/company-modal";
-import { usePathname, useRouter as useI18nRouter } from "@/lib/i18n/navigation";
+import { usePathname, useRouter } from "@/lib/i18n/navigation";
 import { locales, localeNames, type Locale } from "@/lib/i18n/config";
 
 export default function MainLayout({
@@ -16,7 +15,6 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const i18nRouter = useI18nRouter();
   const pathname = usePathname();
   const locale = useLocale() as Locale;
   const t = useTranslations("header");
@@ -39,7 +37,7 @@ export default function MainLayout({
   }, []);
 
   const switchLocale = (newLocale: Locale) => {
-    i18nRouter.replace(pathname, { locale: newLocale });
+    router.replace(pathname, { locale: newLocale });
     setIsMenuOpen(false);
     setIsLanguageExpanded(false);
   };

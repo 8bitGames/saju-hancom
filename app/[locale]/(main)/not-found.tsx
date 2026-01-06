@@ -1,7 +1,7 @@
 "use client";
 
 import { MagnifyingGlass, House, ArrowLeft } from "@phosphor-icons/react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/i18n/navigation";
 
 export default function NotFound() {
   const router = useRouter();

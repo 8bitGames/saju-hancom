@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/i18n/navigation";
 import { useLocale } from "next-intl";
 import { Camera, User, X, ArrowRight, ArrowLeft, Lightbulb, CheckCircle, GenderMale, GenderFemale } from "@phosphor-icons/react";
 

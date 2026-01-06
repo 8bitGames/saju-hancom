@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { CheckoutButton } from "@/components/stripe/CheckoutButton";
 
 export const metadata: Metadata = {
-  title: "프리미엄 구독 | 사주 한컴",
+  title: "프리미엄 구독 | 사주 한사",
   description: "무제한 사주 분석과 PDF 다운로드를 누리세요",
 };
 
