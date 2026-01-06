@@ -7,7 +7,8 @@ import {
   upsertCoupleResult,
   saveFaceReadingResult,
   updateCoupleDetailedResult,
-  updateCompatibilityDetailedResult
+  updateCompatibilityDetailedResult,
+  getExistingDetailedCoupleResult
 } from '@/lib/supabase/usage';
 
 export interface SaveSajuResultInput {
@@ -334,6 +335,62 @@ export async function autoSaveDetailedCoupleResult(input: SaveDetailedCoupleResu
     return { success: false, error: result.error };
   } catch (error) {
     console.error('[autoSaveDetailedCoupleResult] Error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Get existing detailed compatibility result if it exists in the database
+ */
+export interface GetExistingDetailedResultInput {
+  person1: {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  };
+  person2: {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  };
+  relationType: string;
+}
+
+export async function getExistingDetailedResult(input: GetExistingDetailedResultInput): Promise<{
+  success: boolean;
+  detailedResult?: any;
+  error?: string;
+}> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      // Not authenticated - no saved data available
+      return { success: true, detailedResult: undefined };
+    }
+
+    const result = await getExistingDetailedCoupleResult(
+      user.id,
+      input.person1,
+      input.person2,
+      input.relationType
+    );
+
+    return result;
+  } catch (error) {
+    console.error('[getExistingDetailedResult] Error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

@@ -713,6 +713,90 @@ export async function updateCompatibilityDetailedResult(
 }
 
 /**
+ * Get existing detailed couple result if it exists
+ * Returns the detailed analysis data if found
+ */
+export async function getExistingDetailedCoupleResult(
+  userId: string,
+  person1Birth: {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  },
+  person2Birth: {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    gender: string;
+    isLunar: boolean;
+  },
+  relationType: string
+): Promise<{ success: boolean; detailedResult?: any; error?: string }> {
+  const supabase = await createClient();
+
+  // Check couple_results table first
+  const { data: coupleResult, error: coupleError } = await supabase
+    .from('couple_results')
+    .select('result_data')
+    .eq('user_id', userId)
+    .eq('p1_birth_year', person1Birth.year)
+    .eq('p1_birth_month', person1Birth.month)
+    .eq('p1_birth_day', person1Birth.day)
+    .eq('p1_birth_hour', person1Birth.hour)
+    .eq('p1_birth_minute', person1Birth.minute)
+    .eq('p1_gender', person1Birth.gender)
+    .eq('p1_is_lunar', person1Birth.isLunar)
+    .eq('p2_birth_year', person2Birth.year)
+    .eq('p2_birth_month', person2Birth.month)
+    .eq('p2_birth_day', person2Birth.day)
+    .eq('p2_birth_hour', person2Birth.hour)
+    .eq('p2_birth_minute', person2Birth.minute)
+    .eq('p2_gender', person2Birth.gender)
+    .eq('p2_is_lunar', person2Birth.isLunar)
+    .eq('relation_type', relationType)
+    .single();
+
+  if (!coupleError && coupleResult?.result_data?.detailedResult) {
+    return { success: true, detailedResult: coupleResult.result_data.detailedResult };
+  }
+
+  // Check compatibility_results table if not found in couple_results
+  const { data: compatResult, error: compatError } = await supabase
+    .from('compatibility_results')
+    .select('result_data')
+    .eq('user_id', userId)
+    .eq('p1_birth_year', person1Birth.year)
+    .eq('p1_birth_month', person1Birth.month)
+    .eq('p1_birth_day', person1Birth.day)
+    .eq('p1_birth_hour', person1Birth.hour)
+    .eq('p1_birth_minute', person1Birth.minute)
+    .eq('p1_gender', person1Birth.gender)
+    .eq('p1_is_lunar', person1Birth.isLunar)
+    .eq('p2_birth_year', person2Birth.year)
+    .eq('p2_birth_month', person2Birth.month)
+    .eq('p2_birth_day', person2Birth.day)
+    .eq('p2_birth_hour', person2Birth.hour)
+    .eq('p2_birth_minute', person2Birth.minute)
+    .eq('p2_gender', person2Birth.gender)
+    .eq('p2_is_lunar', person2Birth.isLunar)
+    .eq('relation_type', relationType)
+    .single();
+
+  if (!compatError && compatResult?.result_data?.detailedResult) {
+    return { success: true, detailedResult: compatResult.result_data.detailedResult };
+  }
+
+  // No detailed result found
+  return { success: true, detailedResult: undefined };
+}
+
+/**
  * Get user's face reading results
  */
 export async function getUserFaceReadingResults(userId: string) {

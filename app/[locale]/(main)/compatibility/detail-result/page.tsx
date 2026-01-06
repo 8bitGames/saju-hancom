@@ -36,7 +36,7 @@ import {
   FilePdf,
 } from "@phosphor-icons/react";
 import { downloadDetailedCompatibilityPDF, type DetailedCompatibilityPDFData } from "@/lib/pdf/generator";
-import { autoSaveDetailedCoupleResult, autoSaveDetailedCompatibilityResult } from "@/lib/actions/saju";
+import { autoSaveDetailedCoupleResult, autoSaveDetailedCompatibilityResult, getExistingDetailedResult } from "@/lib/actions/saju";
 import { TextGenerateEffect } from "@/components/aceternity/text-generate-effect";
 import { FlipWords } from "@/components/aceternity/flip-words";
 import { SparklesCore } from "@/components/aceternity/sparkles";
@@ -248,6 +248,39 @@ function DetailedCompatibilityResultContent() {
       }
 
       try {
+        // First, check if there's already saved detailed result in the database
+        const existingResult = await getExistingDetailedResult({
+          person1: {
+            year: p1Year,
+            month: p1Month,
+            day: p1Day,
+            hour: p1Hour,
+            minute: p1Minute,
+            gender: p1Gender,
+            isLunar: p1IsLunar,
+          },
+          person2: {
+            year: p2Year,
+            month: p2Month,
+            day: p2Day,
+            hour: p2Hour,
+            minute: p2Minute,
+            gender: p2Gender,
+            isLunar: p2IsLunar,
+          },
+          relationType: relationType || "friend",
+        });
+
+        if (existingResult.success && existingResult.detailedResult) {
+          console.log("[DetailedCompatibilityResult] Using existing saved result from database");
+          setResult(existingResult.detailedResult);
+          hasSavedRef.current = true; // Already saved, no need to save again
+          setIsLoading(false);
+          return;
+        }
+
+        console.log("[DetailedCompatibilityResult] No existing result found, fetching from API");
+
         const p1Longitude = getLongitudeByCity(p1City);
         const p1SajuResult = calculateSaju({
           year: p1Year,
