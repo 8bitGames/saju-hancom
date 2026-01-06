@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Link, useRouter } from "@/lib/i18n/navigation";
+import { useLocale } from "next-intl";
 import {
   Camera,
   Star,
@@ -396,6 +397,7 @@ function getElementColor(element: string): string {
 
 export default function DetailedFaceReadingResultPage() {
   const router = useRouter();
+  const locale = useLocale();
   const [result, setResult] = useState<DetailedFaceReadingResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -435,6 +437,7 @@ export default function DetailedFaceReadingResultPage() {
           body: JSON.stringify({
             imageBase64: storedData,
             gender: storedGender || "male",
+            locale,
           }),
         });
 
@@ -454,7 +457,7 @@ export default function DetailedFaceReadingResultPage() {
     };
 
     fetchDetailedFaceReading();
-  }, [router]);
+  }, [router, locale]);
 
   // 개별 카테고리 스트리밍 fetch
   const fetchStreamingCategory = useCallback(
@@ -475,7 +478,7 @@ export default function DetailedFaceReadingResultPage() {
             category,
             faceData,
             gender: genderValue,
-            locale: "ko",
+            locale,
           }),
         });
 
@@ -523,7 +526,7 @@ export default function DetailedFaceReadingResultPage() {
         setStreamingCategory(null);
       }
     },
-    []
+    [locale]
   );
 
   // 모든 카테고리 순차 스트리밍

@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import { Camera, User, X, ArrowRight, ArrowLeft, Lightbulb, CheckCircle, GenderMale, GenderFemale } from "@phosphor-icons/react";
 
 type Step = "gender" | "camera" | "preview";
@@ -21,6 +22,7 @@ const PHOTO_TIPS = [
 
 export function FaceReadingForm() {
   const router = useRouter();
+  const locale = useLocale();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [step, setStep] = useState<Step>("gender");
@@ -152,6 +154,7 @@ export function FaceReadingForm() {
         body: JSON.stringify({
           imageBase64: formData.imagePreview,
           gender: formData.gender,
+          locale,
         }),
       });
 
