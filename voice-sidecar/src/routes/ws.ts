@@ -4,6 +4,7 @@ import { cartesiaWS } from "../services/cartesia-ws";
 import { sessionStore } from "./session";
 import { VAD_CONFIG, AUDIO_CONFIG } from "../constants";
 import type { SessionData, VoiceWebSocket, WSData } from "../types";
+import { splitTextIntoChunks } from "../utils/text-chunker";
 
 // Active WebSocket sessions
 const wsSessions = new Map<string, SessionData>();
@@ -265,47 +266,90 @@ async function handleAudioChunk(
 }
 
 /**
- * Streaming TTS using Cartesia WebSocket
+ * Streaming TTS using Cartesia WebSocket with chunked text processing
  *
  * Key optimizations for low time-to-first-byte:
  * 1. Persistent WebSocket connection (saves ~200ms connection overhead)
- * 2. Streaming audio chunks (client hears audio as soon as first chunk arrives)
- * 3. max_buffer_delay_ms=0 for immediate generation start
+ * 2. Split long text into sentence chunks for faster first audio
+ * 3. Process chunks sequentially, streaming each immediately
+ * 4. max_buffer_delay_ms=50 for near-immediate generation start
  *
- * Audio is streamed in chunks, dramatically reducing perceived latency
- * compared to waiting for complete audio generation.
+ * For long responses, this dramatically reduces time-to-first-audio
+ * by processing and streaming the first sentence while subsequent
+ * sentences are still being converted.
  *
  * @returns Time to first byte in milliseconds
  */
 async function speakText(session: SessionData, text: string, ws: VoiceWebSocket): Promise<number> {
+  const startTime = Date.now();
+  let firstChunkLatency = 0;
+  let totalBytes = 0;
+
+  // Split text into sentence chunks for faster streaming
+  const textChunks = splitTextIntoChunks(text);
+  console.log(`[TTS] Starting chunked generation: ${textChunks.length} chunks for "${text.substring(0, 50)}..."`);
+
+  // Notify client that streaming is starting
+  ws.send(JSON.stringify({ type: "tts_start", totalChunks: textChunks.length }));
+
+  // Process each chunk sequentially
+  for (let i = 0; i < textChunks.length; i++) {
+    const chunk = textChunks[i];
+    const isFirstChunk = i === 0;
+    const isLastChunk = i === textChunks.length - 1;
+
+    console.log(`[TTS] Processing chunk ${i + 1}/${textChunks.length}: "${chunk.substring(0, 40)}..."`);
+
+    const chunkLatency = await generateAndStreamChunk(
+      chunk,
+      session.locale,
+      ws,
+      isFirstChunk,
+      (bytes) => { totalBytes += bytes; }
+    );
+
+    // Record first byte latency from the first chunk
+    if (isFirstChunk) {
+      firstChunkLatency = chunkLatency;
+      console.log(`[TTS] First audio chunk in ${firstChunkLatency}ms`);
+    }
+  }
+
+  const totalTime = Date.now() - startTime;
+  console.log(`[TTS] Completed: ${totalBytes} bytes in ${totalTime}ms (first chunk: ${firstChunkLatency}ms, ${textChunks.length} chunks)`);
+
+  ws.send(JSON.stringify({ type: "tts_done" }));
+  return firstChunkLatency;
+}
+
+/**
+ * Generate and stream a single text chunk via Cartesia WebSocket
+ */
+function generateAndStreamChunk(
+  text: string,
+  locale: string,
+  ws: VoiceWebSocket,
+  trackFirstByte: boolean,
+  onBytesGenerated: (bytes: number) => void
+): Promise<number> {
   return new Promise((resolve) => {
     const startTime = Date.now();
     let firstChunkTime: number | null = null;
     let firstChunkLatency = 0;
-    let totalBytes = 0;
-    const audioChunks: Uint8Array[] = [];
-
-    console.log(`[TTS] Starting streaming generation for: "${text.substring(0, 50)}..."`);
-
-    // Notify client that streaming is starting
-    ws.send(JSON.stringify({ type: "tts_start" }));
 
     cartesiaWS.generateStreaming(
       text,
-      session.locale,
+      locale,
       // onChunk - called for each audio chunk, stream immediately
       (chunk: Uint8Array) => {
-        if (firstChunkTime === null) {
+        if (firstChunkTime === null && trackFirstByte) {
           firstChunkTime = Date.now();
           firstChunkLatency = firstChunkTime - startTime;
-          console.log(`[TTS] First chunk received in ${firstChunkLatency}ms`);
         }
 
-        totalBytes += chunk.length;
-        audioChunks.push(chunk);
+        onBytesGenerated(chunk.length);
 
         // Convert chunk to base64 and stream immediately to client
-        // This allows the client to start playing audio ASAP
         let binary = "";
         const chunkSize = 8192;
         for (let i = 0; i < chunk.length; i += chunkSize) {
@@ -317,45 +361,17 @@ async function speakText(session: SessionData, text: string, ws: VoiceWebSocket)
         ws.send(JSON.stringify({
           type: "tts_chunk",
           data: base64Chunk,
-          // Include metadata for client-side buffering decisions
           sampleRate: AUDIO_CONFIG.tts.sampleRate,
           encoding: AUDIO_CONFIG.tts.encoding,
         }));
       },
-      // onDone - called when generation is complete
+      // onDone
       () => {
-        const totalTime = Date.now() - startTime;
-        console.log(`[TTS] Completed: ${totalBytes} bytes in ${totalTime}ms (first chunk: ${firstChunkLatency}ms)`);
-
-        // Also send complete audio for clients that prefer buffered playback
-        if (audioChunks.length > 0) {
-          const totalLength = audioChunks.reduce((acc, c) => acc + c.length, 0);
-          const completeAudio = new Uint8Array(totalLength);
-          let offset = 0;
-          for (const chunk of audioChunks) {
-            completeAudio.set(chunk, offset);
-            offset += chunk.length;
-          }
-
-          let binary = "";
-          const chunkSize = 8192;
-          for (let i = 0; i < completeAudio.length; i += chunkSize) {
-            const subChunk = completeAudio.subarray(i, i + chunkSize);
-            binary += String.fromCharCode.apply(null, Array.from(subChunk));
-          }
-          const base64Audio = btoa(binary);
-
-          // Send complete audio as fallback (for clients not supporting streaming)
-          ws.send(JSON.stringify({ type: "tts_audio", data: base64Audio }));
-        }
-
-        ws.send(JSON.stringify({ type: "tts_done" }));
         resolve(firstChunkLatency);
       },
       // onError
       (error: string) => {
-        console.error("[TTS] Streaming error:", error);
-        ws.send(JSON.stringify({ type: "error", error: "TTS generation failed" }));
+        console.error("[TTS] Chunk streaming error:", error);
         resolve(0);
       }
     );
