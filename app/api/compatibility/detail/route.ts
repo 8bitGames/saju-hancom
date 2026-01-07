@@ -9,6 +9,8 @@ import {
 import type { Locale } from "@/lib/i18n/config";
 import { GEMINI_MODEL } from "@/lib/constants/ai";
 import type { Element } from "@/lib/saju/types";
+import { calculatePersonCompatibility } from "@/lib/compatibility/calculator";
+import type { PersonInfo, RelationType } from "@/lib/compatibility/types";
 import { ELEMENT_KOREAN } from "@/lib/saju/constants";
 
 // 오행 상생상극 관계 분석
@@ -668,6 +670,45 @@ export async function POST(request: NextRequest) {
     const isRomantic = ['lover', 'spouse', 'dating', 'engaged', 'married', 'interested'].includes(effectiveRelationType);
     const isWork = ['colleague', 'supervisor', 'subordinate', 'partner', 'client', 'mentor', 'mentee'].includes(effectiveRelationType);
 
+    // 🆕 기본 궁합 점수 계산 (일관성 보장)
+    // person 데이터를 PersonInfo 형식으로 변환
+    let basicScore: number | null = null;
+    try {
+      const person1Info: PersonInfo = {
+        name: person1.name || '사용자1',
+        year: person1.year,
+        month: person1.month,
+        day: person1.day,
+        hour: person1.hour ?? 12,
+        minute: person1.minute ?? 0,
+        gender: person1.gender || 'M',
+        isLunar: person1.isLunar ?? false,
+        city: person1.city || 'Seoul',
+      };
+      const person2Info: PersonInfo = {
+        name: person2.name || '사용자2',
+        year: person2.year,
+        month: person2.month,
+        day: person2.day,
+        hour: person2.hour ?? 12,
+        minute: person2.minute ?? 0,
+        gender: person2.gender || 'M',
+        isLunar: person2.isLunar ?? false,
+        city: person2.city || 'Seoul',
+      };
+
+      const basicResult = calculatePersonCompatibility(
+        person1Info,
+        person2Info,
+        effectiveRelationType as RelationType
+      );
+      basicScore = basicResult.score;
+      console.log("Basic compatibility score calculated:", basicScore);
+    } catch (error) {
+      console.warn("Failed to calculate basic compatibility score:", error);
+      // 기본 점수 계산 실패 시 AI가 자체적으로 점수 생성
+    }
+
     // GoogleGenAI 초기화 (dynamic import to prevent build-time evaluation)
     const { GoogleGenAI } = await import("@google/genai");
     const ai = new GoogleGenAI({ apiKey });
@@ -698,6 +739,23 @@ export async function POST(request: NextRequest) {
     // JSON 스키마 가이드 생성
     const jsonSchemaGuide = getJsonSchemaGuide(locale, isRomantic, isWork);
 
+    // 🆕 기본 점수 기준 지시문 생성
+    const scoreInstruction = basicScore !== null
+      ? locale === 'ko'
+        ? `
+⚠️ 중요 지시사항 - 점수 일관성:
+- 종합 점수(overallScore)는 반드시 ${basicScore}점으로 설정하세요. 이 점수는 사주학적 알고리즘으로 계산된 기준 점수입니다.
+- 개별 항목 점수(communication, collaboration, trust, growth)는 ${basicScore}점을 기준으로 ±10점 범위 내에서 설정하세요.
+- 등급(grade)은 다음 기준을 따르세요: 85점 이상 = excellent, 70-84점 = good, 55-69점 = normal, 40-54점 = caution, 40점 미만 = challenging
+`
+        : `
+⚠️ IMPORTANT - Score Consistency:
+- The overall score (overallScore) MUST be set to exactly ${basicScore}. This score was calculated using traditional Saju astrology algorithms.
+- Individual item scores (communication, collaboration, trust, growth) should be within ±10 points of ${basicScore}.
+- Grade criteria: 85+ = excellent, 70-84 = good, 55-69 = normal, 40-54 = caution, below 40 = challenging
+`
+      : ''; // 기본 점수 계산 실패 시 AI 자체 생성
+
     // Google Search grounding을 포함한 프롬프트
     const groundingPrompt = locale === 'ko'
       ? `
@@ -705,7 +763,7 @@ export async function POST(request: NextRequest) {
 ${searchQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}
 
 위 검색 결과를 바탕으로, 전통 명리학 분석에 현대적 관점과 실용적 조언을 결합해주세요.
-
+${scoreInstruction}
 ${userPrompt}
 
 ${jsonSchemaGuide}
@@ -715,7 +773,7 @@ Please search the internet for the following topics to incorporate current trend
 ${searchQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}
 
 Based on the search results above, combine traditional BaZi analysis with modern perspectives and practical advice.
-
+${scoreInstruction}
 ${userPrompt}
 
 ${jsonSchemaGuide}
@@ -729,6 +787,7 @@ ${jsonSchemaGuide}
       locale,
       person1Element,
       person2Element,
+      basicScore, // 🆕 기본 점수 로깅 추가
     });
 
     // Gemini API 호출 (Google Search grounding 포함)
