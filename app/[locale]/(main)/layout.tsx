@@ -1,13 +1,56 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { useLocale, useTranslations } from "next-intl";
-import { CaretLeft, Buildings, ClockCounterClockwise, List, X, Globe, House } from "@phosphor-icons/react";
-import { CompanyModal } from "@/components/layout/company-modal";
+import { useState, useEffect } from "react";
+import { CaretLeft, Sun, Cloud, CloudRain, CloudSnow, Wind, MapPin, Sparkle } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/navigation";
 import { usePathname, useRouter } from "@/lib/i18n/navigation";
-import { locales, localeNames, type Locale } from "@/lib/i18n/config";
 import Image from "next/image";
+import { SplashScreen } from "@/components/ui/SplashScreen";
+
+// Weather condition type
+type WeatherCondition = "sunny" | "cloudy" | "rainy" | "snowy" | "windy";
+
+// Get weather icon based on condition
+function WeatherIcon({ condition, className }: { condition: WeatherCondition; className?: string }) {
+  const iconProps = { className, weight: "fill" as const };
+  switch (condition) {
+    case "sunny":
+      return <Sun {...iconProps} />;
+    case "cloudy":
+      return <Cloud {...iconProps} />;
+    case "rainy":
+      return <CloudRain {...iconProps} />;
+    case "snowy":
+      return <CloudSnow {...iconProps} />;
+    case "windy":
+      return <Wind {...iconProps} />;
+    default:
+      return <Sun {...iconProps} />;
+  }
+}
+
+// Simulate weather based on current date/time
+function getSimulatedWeather(): { condition: WeatherCondition; temp: number } {
+  const hour = new Date().getHours();
+  const month = new Date().getMonth();
+
+  // Base temperature by season (Korean climate)
+  let baseTemp = 15;
+  if (month >= 5 && month <= 8) baseTemp = 28; // Summer
+  else if (month >= 11 || month <= 1) baseTemp = -2; // Winter
+  else if (month >= 2 && month <= 4) baseTemp = 12; // Spring
+  else baseTemp = 18; // Fall
+
+  // Add some variation
+  const variation = Math.floor(Math.sin(Date.now() / 10000000) * 5);
+  const temp = baseTemp + variation;
+
+  // Determine weather condition (mostly sunny for good feng shui vibes)
+  const conditions: WeatherCondition[] = ["sunny", "sunny", "sunny", "cloudy", "sunny"];
+  const condition = conditions[Math.floor(Math.abs(Math.sin(Date.now() / 100000000)) * conditions.length)];
+
+  return { condition, temp };
+}
 
 export default function MainLayout({
   children,
@@ -16,178 +59,98 @@ export default function MainLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const locale = useLocale() as Locale;
-  const t = useTranslations("header");
-  const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLanguageExpanded, setIsLanguageExpanded] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [showSplash, setShowSplash] = useState(true);
+  const [weather, setWeather] = useState<{ condition: WeatherCondition; temp: number } | null>(null);
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-        setIsLanguageExpanded(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const switchLocale = (newLocale: Locale) => {
-    router.replace(pathname, { locale: newLocale });
-    setIsMenuOpen(false);
-    setIsLanguageExpanded(false);
+  const handleSplashComplete = () => {
+    setShowSplash(false);
   };
+
+  // Initialize weather on client side
+  useEffect(() => {
+    setWeather(getSimulatedWeather());
+  }, []);
 
   // 홈페이지가 아닌 경우에만 뒤로가기 버튼 표시
   const isHomePage = pathname === "/" || pathname === "";
 
   return (
     <>
+      {/* Splash Screen - shows on every page load */}
+      {showSplash && (
+        <SplashScreen onComplete={handleSplashComplete} duration={1500} />
+      )}
+
       {/* Main Page Container - Cheong-Giun Style */}
       <div className="relative z-10 min-h-screen min-h-dvh bg-[#F5F9FC]">
-        {/* Header - Clean white header, centered on PC */}
+        {/* Header */}
         <header className="fixed top-0 z-50 bg-white border-b border-gray-100 w-full max-w-[430px] left-1/2 -translate-x-1/2">
-          <div className="px-4 h-14 flex items-center justify-between">
-            {/* Left: Back button or Logo */}
-            <div className="flex items-center gap-2">
-              {!isHomePage && (
-                <button
-                  onClick={() => {
-                    if (window.history.length > 1) {
-                      router.back();
-                    } else {
-                      router.push("/");
-                    }
-                  }}
-                  className="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
-                  aria-label="Go back"
-                >
-                  <CaretLeft className="w-5 h-5" weight="bold" />
-                </button>
-              )}
-              <button
-                onClick={() => router.push("/")}
-                className="flex items-center gap-2 font-bold text-gray-800 hover:text-gray-600 transition-colors"
-              >
-                <Image
-                  src="/icons/categories/saju.png"
-                  alt="Logo"
-                  width={28}
-                  height={28}
-                  className="object-contain"
-                />
-                <span
-                  className="text-lg"
-                  style={{
-                    fontFamily: locale === "ko" ? "var(--font-noto-sans-kr), sans-serif" : "var(--font-geist-mono), monospace",
-                  }}
-                >
-                  {t("title")}
-                </span>
-              </button>
-            </div>
-
-            {/* Right: Menu Button */}
-            <div ref={menuRef}>
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
-                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              >
-                {isMenuOpen ? (
-                  <X className="w-5 h-5" weight="bold" />
-                ) : (
-                  <List className="w-5 h-5" weight="bold" />
-                )}
-              </button>
-
-              {/* Dropdown Menu - 점신 스타일 */}
-              {isMenuOpen && (
-                <div className="absolute top-full right-4 mt-2 w-48 rounded-xl bg-white border border-gray-100 shadow-lg overflow-hidden animate-fade-in">
-                  {/* Home */}
-                  <button
-                    onClick={() => {
-                      router.push("/");
-                      setIsMenuOpen(false);
-                    }}
-                    className="w-full px-4 py-3 flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-[#C4A35A] transition-colors"
-                  >
-                    <House className="w-5 h-5" />
-                    <span className="text-sm font-medium">{t("home")}</span>
-                  </button>
-
-                  {/* About / Company */}
-                  <button
-                    onClick={() => {
-                      setIsCompanyModalOpen(true);
-                      setIsMenuOpen(false);
-                    }}
-                    className="w-full px-4 py-3 flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-[#C4A35A] transition-colors border-t border-gray-50"
-                  >
-                    <Buildings className="w-5 h-5" />
-                    <span className="text-sm font-medium">{t("about")}</span>
-                  </button>
-
-                  {/* History / Record */}
-                  <button
-                    onClick={() => {
-                      router.push("/history");
-                      setIsMenuOpen(false);
-                    }}
-                    className="w-full px-4 py-3 flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-[#C4A35A] transition-colors border-t border-gray-50"
-                  >
-                    <ClockCounterClockwise className="w-5 h-5" />
-                    <span className="text-sm font-medium">{t("record")}</span>
-                  </button>
-
-                  {/* Language */}
-                  <div className="border-t border-gray-50">
-                    <button
-                      onClick={() => setIsLanguageExpanded(!isLanguageExpanded)}
-                      className="w-full px-4 py-3 flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-[#C4A35A] transition-colors"
-                    >
-                      <Globe className="w-5 h-5" />
-                      <span className="text-sm font-medium">{t("language")}</span>
-                      <span className="ml-auto text-xs text-gray-500">{localeNames[locale]}</span>
-                    </button>
-
-                    {/* Language Options */}
-                    {isLanguageExpanded && (
-                      <div className="bg-gray-50">
-                        {locales.map((l) => (
-                          <button
-                            key={l}
-                            onClick={() => switchLocale(l)}
-                            className={`w-full px-4 py-2 pl-12 text-left text-sm transition-colors ${
-                              l === locale
-                                ? "text-[#C4A35A] font-medium bg-[#C4A35A]/10"
-                                : "text-gray-500 hover:bg-white hover:text-gray-700"
-                            }`}
-                          >
-                            {localeNames[l]}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+          {/* Weather & Feng Shui Status Bar */}
+          <div className="px-4 h-7 flex items-center justify-between bg-gradient-to-r from-slate-50 to-blue-50 border-b border-gray-50 text-[10px]">
+            {/* Left: Location & Weather */}
+            <div className="flex items-center gap-2 text-gray-500">
+              <div className="flex items-center gap-0.5">
+                <MapPin className="w-3 h-3" weight="fill" />
+                <span>청리움</span>
+              </div>
+              {weather && (
+                <div className="flex items-center gap-0.5">
+                  <WeatherIcon condition={weather.condition} className="w-3 h-3 text-amber-500" />
+                  <span>{weather.temp}°</span>
                 </div>
               )}
             </div>
+
+            {/* Right: Feng Shui Status */}
+            <div className="flex items-center gap-1 text-emerald-600">
+              <Sparkle className="w-3 h-3" weight="fill" />
+              <span className="font-medium">기운 좋음</span>
+            </div>
+          </div>
+
+          {/* Main Header */}
+          <div className="px-4 h-12 flex items-center justify-between">
+            {/* Left: Back button (non-home only) */}
+            {!isHomePage ? (
+              <button
+                onClick={() => {
+                  if (window.history.length > 1) {
+                    router.back();
+                  } else {
+                    router.push("/");
+                  }
+                }}
+                className="w-8 h-8 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
+                aria-label="Go back"
+              >
+                <CaretLeft className="w-5 h-5" weight="bold" />
+              </button>
+            ) : (
+              <div className="w-8" />
+            )}
+
+            {/* Center: Logo */}
+            <button
+              onClick={() => router.push("/")}
+              className="absolute left-1/2 -translate-x-1/2"
+            >
+              <Image
+                src="/images/logo-cheonggiun-calligraphy.png"
+                alt="청기운"
+                width={80}
+                height={28}
+                className="object-contain"
+                priority
+              />
+            </button>
+
+            {/* Right: Spacer */}
+            <div className="w-8" />
           </div>
         </header>
 
-        {/* Company Modal */}
-        <CompanyModal
-          isOpen={isCompanyModalOpen}
-          onClose={() => setIsCompanyModalOpen(false)}
-        />
-
-        {/* Main Content */}
-        <main className="pt-14 pb-20">
+        {/* Main Content - pt-[76px] accounts for status bar (28px) + header (48px) */}
+        <main className="pt-[76px] pb-20">
           {children}
         </main>
 

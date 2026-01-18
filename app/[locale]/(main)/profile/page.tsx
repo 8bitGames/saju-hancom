@@ -1,10 +1,11 @@
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileContent } from "./ProfileContent";
+import { GuestProfileContent } from "./GuestProfileContent";
+import { getDominantElement, type ElementType } from "@/lib/constants/guardians";
 
 export const metadata: Metadata = {
-  title: "내 프로필 | 사주 한사",
+  title: "내 프로필 | 청기운",
   description: "구독 정보와 저장된 사주 결과를 확인하세요",
 };
 
@@ -18,7 +19,7 @@ export default async function ProfilePage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/saju");
+    return <GuestProfileContent />;
   }
 
   // Get user profile and saved results count in parallel
@@ -41,14 +42,31 @@ export default async function ProfilePage() {
   ]);
 
   const totalCount = countResult.count || 0;
+  const savedResults = savedResultsResult.data || [];
+
+  // Extract dominant element from the most recent saju result
+  let dominantElement: ElementType | null = null;
+  let latestShareId: string | undefined;
+
+  if (savedResults.length > 0) {
+    const latestResult = savedResults[0];
+    latestShareId = latestResult.share_id;
+    const resultData = latestResult.result_data as Record<string, unknown> | null;
+    if (resultData?.elementScores) {
+      const scores = resultData.elementScores as Record<string, number>;
+      dominantElement = getDominantElement(scores);
+    }
+  }
 
   return (
     <ProfileContent
       user={user}
       profile={profileResult.data}
-      initialResults={savedResultsResult.data || []}
+      initialResults={savedResults}
       totalCount={totalCount}
       pageSize={RESULTS_PER_PAGE}
+      dominantElement={dominantElement}
+      latestShareId={latestShareId}
     />
   );
 }

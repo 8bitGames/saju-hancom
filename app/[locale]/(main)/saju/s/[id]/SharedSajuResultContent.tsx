@@ -73,7 +73,7 @@ function GlowingCard({
         className="absolute inset-0 rounded-2xl blur-xl opacity-30"
         style={{ background: glowColor }}
       />
-      <div className="relative bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
+      <div className="relative bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         {children}
       </div>
     </motion.div>
@@ -105,10 +105,10 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
     >
       {/* Shared Banner */}
       <motion.div
-        className="text-center py-3 bg-purple-500/10 rounded-xl border border-purple-500/20"
+        className="text-center py-3 bg-[#C4A35A]/10 rounded-xl border border-[#C4A35A]/20"
         variants={itemVariants}
       >
-        <p className="text-sm text-purple-300">
+        <p className="text-sm text-[#C4A35A]">
           공유된 사주 분석 결과입니다
         </p>
       </motion.div>
@@ -119,7 +119,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
         variants={itemVariants}
       >
         <motion.p
-          className="text-[#a855f7] text-sm font-medium tracking-wider"
+          className="text-[#C4A35A] text-sm font-medium tracking-wider"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -127,7 +127,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
           四柱八字
         </motion.p>
         <motion.h1
-          className="text-2xl font-bold text-white"
+          className="text-2xl font-bold text-gray-800"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, type: "spring" }}
@@ -136,7 +136,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
         </motion.h1>
         <TextGenerateEffect
           words={`${result.meta?.solarDate || `${year}년 ${month}월 ${day}일`} (${gender === "male" ? "남" : "여"})`}
-          className="text-base text-white/60"
+          className="text-base text-gray-500"
           duration={0.3}
         />
       </motion.div>
@@ -144,12 +144,12 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
       {/* Catchphrase & Tags - from pipeline step6 */}
       {result.step6?.catchphrase && (
         <motion.div
-          className="bg-white/5 rounded-xl p-4 border border-white/10"
+          className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
           variants={itemVariants}
         >
           {/* 캐치프레이즈 */}
           <motion.p
-            className="text-center text-base sm:text-lg font-medium text-white/90 italic mb-3"
+            className="text-center text-base sm:text-lg font-medium text-gray-700 italic mb-3"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
@@ -167,7 +167,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
               {result.step6.tags.map((tag: string, index: number) => (
                 <span
                   key={index}
-                  className="px-3 py-1 text-xs sm:text-sm font-medium text-[#a855f7] bg-[#a855f7]/10 rounded-full border border-[#a855f7]/30"
+                  className="px-3 py-1 text-xs sm:text-sm font-medium text-[#C4A35A] bg-[#C4A35A]/10 rounded-full border border-[#C4A35A]/30"
                 >
                   #{tag}
                 </span>
@@ -178,7 +178,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
       )}
 
       {/* Four Pillars */}
-      <GlowingCard glowColor="rgba(168, 85, 247, 0.4)" variants={itemVariants}>
+      <GlowingCard glowColor="rgba(196, 163, 90, 0.2)" variants={itemVariants}>
         <div className="p-5 space-y-4">
           <motion.div
             className="flex items-center gap-2"
@@ -186,8 +186,8 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Atom className="w-5 h-5 text-[#a855f7]" weight="fill" />
-            <h2 className="font-semibold text-white text-lg">사주팔자</h2>
+            <Atom className="w-5 h-5 text-[#C4A35A]" weight="fill" />
+            <h2 className="font-semibold text-gray-800 text-lg">사주팔자</h2>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -203,7 +203,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
             >
-              <p className="text-xs text-white/40">
+              <p className="text-xs text-gray-400">
                 진태양시 보정: {result.meta.trueSolarTime} (
                 {result.meta.offsetMinutes > 0 ? "+" : ""}
                 {result.meta.offsetMinutes}분)
@@ -214,7 +214,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
       </GlowingCard>
 
       {/* Day Master Info */}
-      <GlowingCard glowColor="rgba(168, 85, 247, 0.5)" variants={itemVariants}>
+      <GlowingCard glowColor="rgba(196, 163, 90, 0.2)" variants={itemVariants}>
         <div className="p-5 space-y-3">
           <motion.div
             className="flex items-center gap-2"
@@ -222,12 +222,12 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <YinYang className="w-5 h-5 text-[#a855f7]" weight="fill" />
-            <h2 className="font-semibold text-white text-lg">일간 (일주)</h2>
+            <YinYang className="w-5 h-5 text-[#C4A35A]" weight="fill" />
+            <h2 className="font-semibold text-gray-800 text-lg">일간 (일주)</h2>
           </motion.div>
           <div className="flex items-center gap-4">
             <motion.div
-              className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center text-2xl font-bold text-white shadow-lg shadow-purple-500/30"
+              className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#C4A35A] to-[#a88f4a] flex items-center justify-center text-2xl font-bold text-white shadow-lg shadow-[#C4A35A]/30"
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{
@@ -236,7 +236,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
                 damping: 15,
                 delay: 0.5
               }}
-              whileHover={{ scale: 1.1, boxShadow: "0 0 30px rgba(168, 85, 247, 0.5)" }}
+              whileHover={{ scale: 1.1, boxShadow: "0 0 30px rgba(196, 163, 90, 0.5)" }}
             >
               {result.dayMaster}
             </motion.div>
@@ -246,10 +246,10 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6 }}
             >
-              <p className="font-medium text-white text-lg">
+              <p className="font-medium text-gray-800 text-lg">
                 {STEM_KOREAN[result.dayMaster as Gan]} ({ELEMENT_KOREAN[result.dayMasterElement as Element]})
               </p>
-              <p className="text-base text-white/60">
+              <p className="text-base text-gray-500">
                 {result.dayMasterYinYang === "yang" ? "양" : "음"}의 기운
               </p>
             </motion.div>
@@ -258,7 +258,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
       </GlowingCard>
 
       {/* Five Elements */}
-      <GlowingCard glowColor="rgba(168, 85, 247, 0.3)" variants={itemVariants}>
+      <GlowingCard glowColor="rgba(196, 163, 90, 0.2)" variants={itemVariants}>
         <div className="p-5 space-y-4">
           <div className="flex items-center justify-between">
             <motion.div
@@ -267,11 +267,11 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <Star className="w-5 h-5 text-[#a855f7]" weight="fill" />
-              <h2 className="font-semibold text-white text-lg">오행 분석</h2>
+              <Star className="w-5 h-5 text-[#C4A35A]" weight="fill" />
+              <h2 className="font-semibold text-gray-800 text-lg">오행 분석</h2>
             </motion.div>
             <motion.span
-              className="text-xs px-3 py-1 rounded-full bg-[#a855f7]/20 text-[#a855f7]"
+              className="text-xs px-3 py-1 rounded-full bg-[#C4A35A]/20 text-[#C4A35A]"
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.7, type: "spring" }}
@@ -292,14 +292,14 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
           </motion.div>
           {result.elementAnalysis?.yongShin && (
             <motion.div
-              className="pt-3 border-t border-white/10"
+              className="pt-3 border-t border-gray-200"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9 }}
             >
-              <p className="text-sm text-white/40">추천 용신</p>
+              <p className="text-sm text-gray-400">추천 용신</p>
               <motion.p
-                className="text-base font-medium text-[#a855f7]"
+                className="text-base font-medium text-[#C4A35A]"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.0 }}
@@ -312,7 +312,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
       </GlowingCard>
 
       {/* Ten Gods */}
-      <GlowingCard glowColor="rgba(168, 85, 247, 0.3)" variants={itemVariants}>
+      <GlowingCard glowColor="rgba(196, 163, 90, 0.2)" variants={itemVariants}>
         <div className="p-5 space-y-4">
           <motion.div
             className="flex items-center gap-2"
@@ -320,8 +320,8 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <Sparkle className="w-5 h-5 text-[#a855f7]" weight="fill" />
-            <h2 className="font-semibold text-white text-lg">십성 분석</h2>
+            <Sparkle className="w-5 h-5 text-[#C4A35A]" weight="fill" />
+            <h2 className="font-semibold text-gray-800 text-lg">십성 분석</h2>
           </motion.div>
           <motion.div
             initial={{ opacity: 0 }}
@@ -334,7 +334,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
       </GlowingCard>
 
       {/* Stars */}
-      <GlowingCard glowColor="rgba(234, 179, 8, 0.3)" variants={itemVariants}>
+      <GlowingCard glowColor="rgba(234, 179, 8, 0.2)" variants={itemVariants}>
         <div className="p-5 space-y-4">
           <motion.div
             className="flex items-center gap-2"
@@ -342,8 +342,8 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.7 }}
           >
-            <Star className="w-5 h-5 text-yellow-400" weight="fill" />
-            <h2 className="font-semibold text-white text-lg">
+            <Star className="w-5 h-5 text-yellow-500" weight="fill" />
+            <h2 className="font-semibold text-gray-800 text-lg">
               신살 ({result.stars?.length || 0})
             </h2>
           </motion.div>
@@ -359,7 +359,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
 
       {/* AI Interpretation - if available */}
       {interpretation && (
-        <GlowingCard glowColor="rgba(236, 72, 153, 0.4)" variants={itemVariants}>
+        <GlowingCard glowColor="rgba(196, 163, 90, 0.2)" variants={itemVariants}>
           <div className="p-5 space-y-4">
             <motion.div
               className="flex items-center gap-2"
@@ -367,8 +367,8 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8 }}
             >
-              <ChatCircle className="w-5 h-5 text-pink-400" weight="fill" />
-              <h2 className="font-semibold text-white text-lg">사주 풀이</h2>
+              <ChatCircle className="w-5 h-5 text-[#C4A35A]" weight="fill" />
+              <h2 className="font-semibold text-gray-800 text-lg">사주 풀이</h2>
             </motion.div>
 
             <motion.div
@@ -379,8 +379,8 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
             >
               {/* Overall Message */}
               {interpretation.overallMessage && (
-                <div className="p-4 rounded-xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20">
-                  <p className="text-white/90 text-base leading-relaxed">
+                <div className="p-4 rounded-xl bg-gradient-to-br from-[#C4A35A]/10 to-[#a88f4a]/10 border border-[#C4A35A]/20">
+                  <p className="text-gray-700 text-base leading-relaxed">
                     {typeof interpretation.overallMessage === 'string'
                       ? interpretation.overallMessage
                       : '사주 해석이 완료되었습니다.'}
@@ -392,11 +392,11 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
               {interpretation.personalityReading && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-pink-400" weight="fill" />
-                    <h3 className="text-sm font-medium text-white/80">성격과 기질</h3>
+                    <Heart className="w-4 h-4 text-pink-500" weight="fill" />
+                    <h3 className="text-sm font-medium text-gray-700">성격과 기질</h3>
                   </div>
                   {interpretation.personalityReading.summary && (
-                    <p className="text-sm text-white/70 leading-relaxed">
+                    <p className="text-sm text-gray-600 leading-relaxed">
                       {typeof interpretation.personalityReading.summary === 'string'
                         ? interpretation.personalityReading.summary
                         : ''}
@@ -409,11 +409,11 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
               {interpretation.elementInsight && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Lightning className="w-4 h-4 text-yellow-400" weight="fill" />
-                    <h3 className="text-sm font-medium text-white/80">오행의 기운</h3>
+                    <Lightning className="w-4 h-4 text-yellow-500" weight="fill" />
+                    <h3 className="text-sm font-medium text-gray-700">오행의 기운</h3>
                   </div>
                   {interpretation.elementInsight.balance && (
-                    <p className="text-sm text-white/70 leading-relaxed">
+                    <p className="text-sm text-gray-600 leading-relaxed">
                       {typeof interpretation.elementInsight.balance === 'string'
                         ? interpretation.elementInsight.balance
                         : ''}
@@ -426,10 +426,10 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
               {interpretation.tenGodInsight && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Lightbulb className="w-4 h-4 text-blue-400" weight="fill" />
-                    <h3 className="text-sm font-medium text-white/80">삶의 패턴</h3>
+                    <Lightbulb className="w-4 h-4 text-blue-500" weight="fill" />
+                    <h3 className="text-sm font-medium text-gray-700">삶의 패턴</h3>
                   </div>
-                  <p className="text-sm text-white/70 leading-relaxed">
+                  <p className="text-sm text-gray-600 leading-relaxed">
                     {typeof interpretation.tenGodInsight.dominant === 'string' ? interpretation.tenGodInsight.dominant : ''}{' '}
                     {typeof interpretation.tenGodInsight.lifePattern === 'string' ? interpretation.tenGodInsight.lifePattern : ''}
                   </p>
@@ -447,8 +447,8 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
       >
         <Link href="/saju" className="block">
           <motion.button
-            className="w-full h-14 rounded-xl bg-gradient-to-r from-purple-500 to-violet-600 flex items-center justify-center gap-2 text-white font-bold hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/30"
-            whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(168, 85, 247, 0.4)" }}
+            className="w-full h-14 rounded-xl bg-gradient-to-r from-[#C4A35A] to-[#a88f4a] flex items-center justify-center gap-2 text-white font-bold hover:opacity-90 transition-opacity shadow-lg shadow-[#C4A35A]/30"
+            whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(196, 163, 90, 0.4)" }}
             whileTap={{ scale: 0.98 }}
           >
             나도 사주 분석 해보기
@@ -459,7 +459,7 @@ export function SharedSajuResultContent({ birthData, resultData }: SharedSajuRes
 
       {/* Disclaimer */}
       <motion.p
-        className="text-center text-xs text-white/40 pt-2 pb-8"
+        className="text-center text-xs text-gray-400 pt-2 pb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}

@@ -10,7 +10,7 @@ export function Skeleton({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "animate-pulse rounded-lg bg-white/10",
+        "animate-pulse rounded-lg bg-gray-200",
         className
       )}
     />
@@ -20,7 +20,7 @@ export function Skeleton({ className }: SkeletonProps) {
 // Card skeleton for result pages
 export function CardSkeleton({ className }: SkeletonProps) {
   return (
-    <div className={cn("p-4 rounded-xl border border-white/10 bg-white/5 space-y-3", className)}>
+    <div className={cn("p-4 rounded-xl border border-gray-200 bg-gray-50 space-y-3", className)}>
       <Skeleton className="h-5 w-3/4" />
       <Skeleton className="h-4 w-full" />
       <Skeleton className="h-4 w-5/6" />
@@ -92,7 +92,7 @@ export function ResultSkeleton({ className }: SkeletonProps) {
       </div>
 
       {/* Main result card */}
-      <div className="p-6 rounded-2xl border border-white/10 bg-white/5 space-y-4">
+      <div className="p-6 rounded-2xl border border-gray-200 bg-gray-50 space-y-4">
         <Skeleton className="h-6 w-32" />
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-full" />
@@ -117,7 +117,7 @@ export function CarouselSkeleton({ className }: SkeletonProps) {
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className="flex-shrink-0 w-64 h-96 rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3"
+          className="flex-shrink-0 w-64 h-96 rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-3"
         >
           <Skeleton className="h-48 rounded-xl" />
           <Skeleton className="h-5 w-3/4" />
@@ -135,7 +135,7 @@ export function LoaderSkeleton({ className }: SkeletonProps) {
     <div className={cn("flex flex-col items-center justify-center gap-4", className)}>
       <div className="relative w-40 h-40 sm:w-48 sm:h-48">
         <Skeleton className="absolute inset-0 rounded-full" />
-        <div className="absolute inset-6 rounded-full bg-accent-primary/20 animate-pulse" />
+        <div className="absolute inset-6 rounded-full bg-[#C4A35A]/20 animate-pulse" />
       </div>
       <Skeleton className="h-6 w-32" />
       <Skeleton className="h-4 w-24" />

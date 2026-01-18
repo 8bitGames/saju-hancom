@@ -7,7 +7,7 @@ export function SkipLink({ href = "#main-content" }: { href?: string }) {
   return (
     <a
       href={href}
-      className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-purple-600 focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
+      className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[#C4A35A] focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
     >
       본문으로 건너뛰기
     </a>
@@ -63,7 +63,7 @@ export function FocusRing({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "absolute inset-0 rounded-lg ring-2 ring-purple-500 ring-offset-2 ring-offset-black opacity-0 group-focus-visible:opacity-100 pointer-events-none transition-opacity",
+        "absolute inset-0 rounded-lg ring-2 ring-[#C4A35A] ring-offset-2 ring-offset-white opacity-0 group-focus-visible:opacity-100 pointer-events-none transition-opacity",
         className
       )}
       aria-hidden="true"
@@ -74,8 +74,8 @@ export function FocusRing({ className }: { className?: string }) {
 // Keyboard navigation instructions
 export function KeyboardHint({ hint }: { hint: string }) {
   return (
-    <span className="hidden sm:inline-flex items-center gap-1 text-xs text-white/40 ml-auto">
-      <kbd className="px-1.5 py-0.5 rounded bg-white/10 font-mono text-[10px]">
+    <span className="hidden sm:inline-flex items-center gap-1 text-xs text-gray-400 ml-auto">
+      <kbd className="px-1.5 py-0.5 rounded bg-gray-100 font-mono text-[10px]">
         {hint}
       </kbd>
     </span>

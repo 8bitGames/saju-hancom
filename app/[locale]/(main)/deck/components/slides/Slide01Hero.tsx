@@ -58,10 +58,7 @@ export default function Slide01Hero() {
         className="mb-4 text-6xl font-bold lg:text-8xl"
       >
         <span className="bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
-          한사
-        </span>
-        <span className="ml-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-          AI
+          청기운
         </span>
       </motion.h1>
 
@@ -72,7 +69,7 @@ export default function Slide01Hero() {
         transition={{ duration: 0.6, delay: 0.5 }}
         className="mb-2 text-xl text-purple-300 lg:text-2xl"
       >
-        韓 + 四柱
+        青 · 氣 · 運
       </motion.p>
 
       {/* Tagline */}

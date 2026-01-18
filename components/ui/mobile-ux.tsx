@@ -124,12 +124,12 @@ export function PullToRefresh({
       >
         <div
           className={cn(
-            "w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center",
+            "w-10 h-10 rounded-full bg-gray-100 backdrop-blur-sm flex items-center justify-center",
             refreshing && "animate-spin"
           )}
         >
           <ArrowClockwise
-            className="w-5 h-5 text-purple-400"
+            className="w-5 h-5 text-[#C4A35A]"
             weight="bold"
             style={{
               transform: refreshing ? "none" : `rotate(${rotation}deg)`,
@@ -238,7 +238,7 @@ export function SwipeAction({
 
       {/* Main content */}
       <div
-        className="relative bg-[#0f0a1a]"
+        className="relative bg-white"
         style={{
           transform: `translateX(${offsetX}px)`,
           transition: swiping ? "none" : "transform 0.2s ease-out",
@@ -293,19 +293,19 @@ export function BottomSheet({
       {/* Sheet */}
       <div
         className={cn(
-          "fixed bottom-0 left-0 right-0 z-50 bg-[#1a1225] rounded-t-3xl max-h-[85vh] overflow-hidden animate-slide-up",
+          "fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl max-h-[85vh] overflow-hidden animate-slide-up shadow-2xl",
           className
         )}
       >
         {/* Handle */}
         <div className="flex justify-center py-3">
-          <div className="w-10 h-1 rounded-full bg-white/20" />
+          <div className="w-10 h-1 rounded-full bg-gray-300" />
         </div>
 
         {/* Title */}
         {title && (
-          <div className="px-6 pb-4 border-b border-white/10">
-            <h2 className="text-lg font-semibold text-white">{title}</h2>
+          <div className="px-6 pb-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
           </div>
         )}
 

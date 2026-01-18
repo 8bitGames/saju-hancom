@@ -85,7 +85,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-zinc-900 border-white/10 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-md bg-white border-gray-200 max-h-[90vh] overflow-y-auto">
         {/* 모드 선택 탭 - 상단에 고정 */}
         <div className="flex gap-2 mb-4" role="tablist" aria-label="로그인 방법 선택">
           <button
@@ -93,8 +93,8 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
             onClick={() => setMode("login")}
             className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
               mode === "login"
-                ? "bg-purple-600 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
+                ? "bg-[#C4A35A] text-white"
+                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
             }`}
             role="tab"
             aria-selected={mode === "login"}
@@ -109,7 +109,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
             className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
               mode === "register"
                 ? "bg-emerald-600 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
+                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
             }`}
             role="tab"
             aria-selected={mode === "register"}
@@ -122,7 +122,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
 
         <DialogHeader>
           <DialogTitle className={`text-xl flex items-center gap-2 ${
-            mode === "login" ? "text-purple-400" : "text-emerald-400"
+            mode === "login" ? "text-[#C4A35A]" : "text-emerald-600"
           }`}>
             {mode === "login" ? (
               <>
@@ -136,7 +136,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
               </>
             )}
           </DialogTitle>
-          <DialogDescription className="text-white/60">
+          <DialogDescription className="text-gray-500">
             {mode === "login"
               ? "이메일과 비밀번호로 로그인하세요"
               : "간단한 가입으로 사주 결과를 저장하세요"}
@@ -145,7 +145,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4" id="auth-form" role="tabpanel">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-white/80">
+            <Label htmlFor="email" className="text-gray-700">
               이메일
             </Label>
             <Input
@@ -155,13 +155,13 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+              className="bg-gray-50 border-gray-200 text-gray-800 placeholder:text-gray-400"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-white/80">
-              비밀번호 {mode === "register" && <span className="text-white/40">(6자 이상)</span>}
+            <Label htmlFor="password" className="text-gray-700">
+              비밀번호 {mode === "register" && <span className="text-gray-400">(6자 이상)</span>}
             </Label>
             <Input
               id="password"
@@ -171,7 +171,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+              className="bg-gray-50 border-gray-200 text-gray-800 placeholder:text-gray-400"
             />
           </div>
 
@@ -180,7 +180,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
             disabled={loading}
             className={`w-full ${
               mode === "login"
-                ? "bg-gradient-to-r from-purple-500 to-violet-600"
+                ? "bg-gradient-to-r from-[#C4A35A] to-[#a88f4a]"
                 : "bg-gradient-to-r from-emerald-500 to-teal-600"
             } hover:opacity-90`}
           >
@@ -200,11 +200,11 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
           </Button>
         </form>
 
-        <div className="border-t border-white/10 pt-4 mt-4">
-          <p className="text-xs text-white/40 text-center">
+        <div className="border-t border-gray-200 pt-4 mt-4">
+          <p className="text-xs text-gray-400 text-center">
             {mode === "register" ? (
               <>
-                가입 즉시 <span className="text-emerald-400">무료 혜택</span>: 저장 1회, PDF/공유 각 1회
+                가입 즉시 <span className="text-emerald-600">무료 혜택</span>: 저장 1회, PDF/공유 각 1회
               </>
             ) : (
               <>

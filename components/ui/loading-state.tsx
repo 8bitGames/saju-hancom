@@ -19,10 +19,10 @@ export function LoadingSpinner({ size = "md", className, label }: LoadingSpinner
   return (
     <div className={cn("flex items-center justify-center gap-2", className)} role="status">
       <CircleNotch
-        className={cn(sizeClasses[size], "animate-spin text-purple-400")}
+        className={cn(sizeClasses[size], "animate-spin text-[#C4A35A]")}
         weight="bold"
       />
-      {label && <span className="text-white/60 text-sm">{label}</span>}
+      {label && <span className="text-gray-500 text-sm">{label}</span>}
       <span className="sr-only">{label || "로딩 중..."}</span>
     </div>
   );
@@ -40,20 +40,20 @@ export function FullPageLoading({
 }: FullPageLoadingProps) {
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0f0a1a]/90 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm"
       role="status"
       aria-live="polite"
     >
       <div className="relative">
-        <div className="w-16 h-16 rounded-full border-4 border-purple-500/20 border-t-purple-500 animate-spin" />
+        <div className="w-16 h-16 rounded-full border-4 border-[#C4A35A]/20 border-t-[#C4A35A] animate-spin" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-8 h-8 rounded-full bg-purple-500/20 animate-pulse" />
+          <div className="w-8 h-8 rounded-full bg-[#C4A35A]/20 animate-pulse" />
         </div>
       </div>
 
-      <p className="mt-6 text-white font-medium">{message}</p>
+      <p className="mt-6 text-gray-800 font-medium">{message}</p>
       {submessage && (
-        <p className="mt-2 text-white/50 text-sm">{submessage}</p>
+        <p className="mt-2 text-gray-500 text-sm">{submessage}</p>
       )}
     </div>
   );
@@ -98,15 +98,15 @@ export function ProgressBar({
     <div className={cn("w-full", className)} role="progressbar" aria-valuenow={clampedProgress} aria-valuemin={0} aria-valuemax={100}>
       {(label || showPercentage) && (
         <div className="flex justify-between items-center mb-2">
-          {label && <span className="text-sm text-white/70">{label}</span>}
+          {label && <span className="text-sm text-gray-600">{label}</span>}
           {showPercentage && (
-            <span className="text-sm text-white/50">{Math.round(clampedProgress)}%</span>
+            <span className="text-sm text-gray-500">{Math.round(clampedProgress)}%</span>
           )}
         </div>
       )}
-      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-purple-500 to-purple-400 rounded-full transition-all duration-300 ease-out"
+          className="h-full bg-gradient-to-r from-[#C4A35A] to-[#a88f4a] rounded-full transition-all duration-300 ease-out"
           style={{ width: `${clampedProgress}%` }}
         />
       </div>
@@ -128,7 +128,7 @@ export function ContentSkeleton({
         <div
           key={i}
           className={cn(
-            "h-4 bg-white/10 rounded",
+            "h-4 bg-gray-200 rounded",
             i === lines - 1 && "w-3/4"
           )}
         />

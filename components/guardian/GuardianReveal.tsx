@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { type ElementType, getGuardian } from '@/lib/constants/guardians';
 import { GuardianAvatar } from './GuardianAvatar';
@@ -209,12 +210,18 @@ export function GuardianSearching({
                 )}
               >
                 <div
-                  className="w-20 h-20 rounded-full flex items-center justify-center text-4xl"
+                  className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden"
                   style={{
                     background: `linear-gradient(135deg, ${guardian.gradientFrom}, ${guardian.gradientTo})`,
                   }}
                 >
-                  {guardian.emoji}
+                  <Image
+                    src={guardian.imagePath}
+                    alt={guardian.name[locale]}
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
                 </div>
               </div>
             );

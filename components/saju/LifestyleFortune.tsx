@@ -32,16 +32,16 @@ function LifestyleLoading() {
     <div className="space-y-3">
       {/* Color & Food row */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="h-28 rounded-xl bg-white/5 animate-pulse" />
-        <div className="h-28 rounded-xl bg-white/5 animate-pulse" />
+        <div className="h-28 rounded-xl bg-gray-100 animate-pulse" />
+        <div className="h-28 rounded-xl bg-gray-100 animate-pulse" />
       </div>
       {/* Number & Direction row */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="h-24 rounded-xl bg-white/5 animate-pulse" />
-        <div className="h-24 rounded-xl bg-white/5 animate-pulse" />
+        <div className="h-24 rounded-xl bg-gray-100 animate-pulse" />
+        <div className="h-24 rounded-xl bg-gray-100 animate-pulse" />
       </div>
       {/* Activities */}
-      <div className="h-20 rounded-xl bg-white/5 animate-pulse" />
+      <div className="h-20 rounded-xl bg-gray-100 animate-pulse" />
     </div>
   );
 }
@@ -62,23 +62,23 @@ const LuckyColorCard = memo(function LuckyColorCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors"
+      className="p-4 rounded-xl bg-white border border-gray-200 hover:border-gray-300 transition-colors shadow-sm"
     >
       <div className="flex items-center gap-2 mb-3">
-        <Palette className="w-4 h-4 text-pink-400" weight="fill" />
-        <span className="text-xs text-white/50 font-medium">행운의 색상</span>
+        <Palette className="w-4 h-4 text-pink-500" weight="fill" />
+        <span className="text-xs text-gray-500 font-medium">행운의 색상</span>
       </div>
       <div className="flex items-center gap-3">
         <div
-          className="w-12 h-12 rounded-full ring-2 ring-offset-2 ring-offset-black ring-white/20 shadow-lg"
+          className="w-12 h-12 rounded-full ring-2 ring-offset-2 ring-offset-white ring-gray-200 shadow-lg"
           style={{ backgroundColor: color.hex }}
         />
         <div>
-          <p className="font-bold text-white">{color.name}</p>
-          <p className="text-xs text-white/50">{color.meaning}</p>
+          <p className="font-bold text-gray-800">{color.name}</p>
+          <p className="text-xs text-gray-500">{color.meaning}</p>
         </div>
       </div>
-      <p className="text-xs text-white/40 mt-2 leading-relaxed">{color.reason}</p>
+      <p className="text-xs text-gray-400 mt-2 leading-relaxed">{color.reason}</p>
     </motion.div>
   );
 });
@@ -95,18 +95,18 @@ const LuckyFoodCard = memo(function LuckyFoodCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors"
+      className="p-4 rounded-xl bg-white border border-gray-200 hover:border-gray-300 transition-colors shadow-sm"
     >
       <div className="flex items-center gap-2 mb-3">
-        <ForkKnife className="w-4 h-4 text-green-400" weight="fill" />
-        <span className="text-xs text-white/50 font-medium">행운의 음식</span>
+        <ForkKnife className="w-4 h-4 text-green-500" weight="fill" />
+        <span className="text-xs text-gray-500 font-medium">행운의 음식</span>
       </div>
       <div>
-        <p className="font-bold text-white text-lg">{food.name}</p>
-        <p className="text-xs text-white/50 mb-1">{food.category}</p>
-        <p className="text-xs text-green-300/80">{food.benefit}</p>
+        <p className="font-bold text-gray-800 text-lg">{food.name}</p>
+        <p className="text-xs text-gray-500 mb-1">{food.category}</p>
+        <p className="text-xs text-green-600">{food.benefit}</p>
       </div>
-      <p className="text-xs text-white/40 mt-2 leading-relaxed">{food.reason}</p>
+      <p className="text-xs text-gray-400 mt-2 leading-relaxed">{food.reason}</p>
     </motion.div>
   );
 });
@@ -123,17 +123,17 @@ const LuckyNumbersCard = memo(function LuckyNumbersCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors"
+      className="p-4 rounded-xl bg-white border border-gray-200 hover:border-gray-300 transition-colors shadow-sm"
     >
       <div className="flex items-center gap-2 mb-3">
-        <Hash className="w-4 h-4 text-blue-400" weight="fill" />
-        <span className="text-xs text-white/50 font-medium">행운의 숫자</span>
+        <Hash className="w-4 h-4 text-blue-500" weight="fill" />
+        <span className="text-xs text-gray-500 font-medium">행운의 숫자</span>
       </div>
       <div className="flex flex-wrap gap-2">
         {numbers.map((num, i) => (
           <span
             key={i}
-            className="px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-300 font-bold text-sm border border-blue-500/30"
+            className="px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 font-bold text-sm border border-blue-200"
           >
             {num}
           </span>
@@ -165,20 +165,20 @@ const LuckyDirectionCard = memo(function LuckyDirectionCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors"
+      className="p-4 rounded-xl bg-white border border-gray-200 hover:border-gray-300 transition-colors shadow-sm"
     >
       <div className="flex items-center gap-2 mb-3">
-        <Compass className="w-4 h-4 text-amber-400" weight="fill" />
-        <span className="text-xs text-white/50 font-medium">행운의 방향</span>
+        <Compass className="w-4 h-4 text-amber-500" weight="fill" />
+        <span className="text-xs text-gray-500 font-medium">행운의 방향</span>
       </div>
       <div className="flex items-center gap-3">
         <div className="relative w-10 h-10 flex items-center justify-center">
-          <div className="absolute inset-0 rounded-full border border-amber-500/30" />
+          <div className="absolute inset-0 rounded-full border border-amber-300" />
           <motion.div
             initial={{ rotate: 0 }}
             animate={{ rotate: rotation }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="text-amber-400"
+            className="text-amber-500"
           >
             <svg
               width="20"
@@ -191,8 +191,8 @@ const LuckyDirectionCard = memo(function LuckyDirectionCard({
           </motion.div>
         </div>
         <div>
-          <p className="font-bold text-white">{direction.name}</p>
-          <p className="text-xs text-white/50">{direction.meaning}</p>
+          <p className="font-bold text-gray-800">{direction.name}</p>
+          <p className="text-xs text-gray-500">{direction.meaning}</p>
         </div>
       </div>
     </motion.div>
@@ -213,11 +213,11 @@ const ActivitiesCard = memo(function ActivitiesCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className="p-4 rounded-xl bg-white/5 border border-white/10"
+      className="p-4 rounded-xl bg-white border border-gray-200 shadow-sm"
     >
       <div className="flex items-center gap-2 mb-3">
-        <Sparkle className="w-4 h-4 text-purple-400" weight="fill" />
-        <span className="text-xs text-white/50 font-medium">오늘의 활동 추천</span>
+        <Sparkle className="w-4 h-4 text-[#C4A35A]" weight="fill" />
+        <span className="text-xs text-gray-500 font-medium">오늘의 활동 추천</span>
       </div>
       <div className="space-y-3">
         {/* Recommended activities */}
@@ -225,7 +225,7 @@ const ActivitiesCard = memo(function ActivitiesCard({
           {luckyActivities.map((activity, i) => (
             <span
               key={i}
-              className="px-2.5 py-1 rounded-full bg-green-500/10 text-green-300 text-xs border border-green-500/20 flex items-center gap-1"
+              className="px-2.5 py-1 rounded-full bg-green-100 text-green-700 text-xs border border-green-200 flex items-center gap-1"
             >
               <CheckCircle className="w-3 h-3" weight="fill" />
               {activity}
@@ -237,7 +237,7 @@ const ActivitiesCard = memo(function ActivitiesCard({
           {avoidActivities.map((activity, i) => (
             <span
               key={i}
-              className="px-2.5 py-1 rounded-full bg-red-500/10 text-red-300 text-xs border border-red-500/20 flex items-center gap-1"
+              className="px-2.5 py-1 rounded-full bg-red-100 text-red-700 text-xs border border-red-200 flex items-center gap-1"
             >
               <XCircle className="w-3 h-3" weight="fill" />
               {activity}
@@ -257,9 +257,9 @@ const ElementInteractionCard = memo(function ElementInteractionCard({
   delay: number;
 }) {
   const relationColors = {
-    harmonious: "text-green-400 bg-green-500/10 border-green-500/20",
-    neutral: "text-blue-400 bg-blue-500/10 border-blue-500/20",
-    conflicting: "text-orange-400 bg-orange-500/10 border-orange-500/20",
+    harmonious: "text-green-700 bg-green-100 border-green-200",
+    neutral: "text-blue-700 bg-blue-100 border-blue-200",
+    conflicting: "text-orange-700 bg-orange-100 border-orange-200",
   };
   const relationLabels = {
     harmonious: "조화",
@@ -280,27 +280,27 @@ const ElementInteractionCard = memo(function ElementInteractionCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className="p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20"
+      className="p-4 rounded-xl bg-gradient-to-br from-[#C4A35A]/10 to-[#a88f4a]/10 border border-[#C4A35A]/30"
     >
       <div className="flex items-center gap-2 mb-3">
-        <Info className="w-4 h-4 text-purple-400" />
-        <span className="text-xs text-white/50 font-medium">오행 상호작용</span>
+        <Info className="w-4 h-4 text-[#C4A35A]" />
+        <span className="text-xs text-gray-500 font-medium">오행 상호작용</span>
       </div>
       <div className="flex items-center gap-3 mb-3">
         <div className="flex items-center gap-1.5">
-          <span className="text-xs text-white/50">용신</span>
-          <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-sm font-medium">
+          <span className="text-xs text-gray-500">용신</span>
+          <span className="px-2 py-0.5 rounded bg-[#C4A35A]/20 text-[#8B7241] text-sm font-medium">
             {elementKorean[data.usefulGodElement]}
           </span>
         </div>
-        <span className="text-white/30">+</span>
+        <span className="text-gray-300">+</span>
         <div className="flex items-center gap-1.5">
-          <span className="text-xs text-white/50">일진</span>
-          <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-sm font-medium">
+          <span className="text-xs text-gray-500">일진</span>
+          <span className="px-2 py-0.5 rounded bg-[#C4A35A]/20 text-[#8B7241] text-sm font-medium">
             {elementKorean[data.dailyElement]}
           </span>
         </div>
-        <span className="text-white/30">=</span>
+        <span className="text-gray-300">=</span>
         <span
           className={`px-2 py-0.5 rounded text-sm font-medium border ${
             relationColors[data.dailyUsefulGodRelation]
@@ -309,7 +309,7 @@ const ElementInteractionCard = memo(function ElementInteractionCard({
           {relationLabels[data.dailyUsefulGodRelation]}
         </span>
       </div>
-      <p className="text-xs text-white/60 leading-relaxed">
+      <p className="text-xs text-gray-600 leading-relaxed">
         {data.elementInteraction}
       </p>
     </motion.div>

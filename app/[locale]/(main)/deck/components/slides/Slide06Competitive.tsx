@@ -120,7 +120,7 @@ export default function Slide06Competitive() {
                 </motion.div>
               ))}
 
-              {/* Hansa AI Row */}
+              {/* Cheonggiun Row */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -128,7 +128,7 @@ export default function Slide06Competitive() {
                 className="grid grid-cols-4 gap-px bg-purple-500/30"
               >
                 <div className="bg-purple-500/20 p-3 text-sm font-bold text-purple-300">
-                  한사 AI
+                  청기운
                 </div>
                 <div className="flex items-center justify-center bg-purple-500/20 p-3">
                   <CheckCircle size={18} weight="fill" className="text-green-400" />

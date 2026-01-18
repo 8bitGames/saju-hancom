@@ -48,24 +48,24 @@ const GRADE_LABELS: Record<FortuneGrade, string> = {
 
 const GRADE_COLORS: Record<FortuneGrade, { bg: string; text: string; border: string }> = {
   excellent: {
-    bg: "bg-green-500",
-    text: "text-white",
-    border: "border-green-500",
+    bg: "bg-yellow-100",
+    text: "text-yellow-700",
+    border: "border-yellow-300",
   },
   good: {
-    bg: "bg-blue-500",
-    text: "text-white",
-    border: "border-blue-500",
+    bg: "bg-green-100",
+    text: "text-green-700",
+    border: "border-green-300",
   },
   normal: {
-    bg: "bg-gray-500/50",
-    text: "text-white/80",
-    border: "border-gray-500/50",
+    bg: "bg-blue-100",
+    text: "text-blue-700",
+    border: "border-blue-300",
   },
   caution: {
-    bg: "bg-orange-500",
-    text: "text-white",
-    border: "border-orange-500",
+    bg: "bg-orange-100",
+    text: "text-orange-700",
+    border: "border-orange-300",
   },
 };
 
@@ -78,22 +78,22 @@ function CalendarLoading() {
     <div className="space-y-4">
       {/* Header skeleton */}
       <div className="flex justify-between items-center">
-        <div className="h-8 w-32 rounded bg-white/5 animate-pulse" />
+        <div className="h-8 w-32 rounded bg-gray-100 animate-pulse" />
         <div className="flex gap-2">
-          <div className="h-8 w-8 rounded bg-white/5 animate-pulse" />
-          <div className="h-8 w-8 rounded bg-white/5 animate-pulse" />
+          <div className="h-8 w-8 rounded bg-gray-100 animate-pulse" />
+          <div className="h-8 w-8 rounded bg-gray-100 animate-pulse" />
         </div>
       </div>
       {/* Weekday header skeleton */}
       <div className="grid grid-cols-7 gap-1">
         {[...Array(7)].map((_, i) => (
-          <div key={i} className="h-6 rounded bg-white/5 animate-pulse" />
+          <div key={i} className="h-6 rounded bg-gray-100 animate-pulse" />
         ))}
       </div>
       {/* Calendar grid skeleton */}
       <div className="grid grid-cols-7 gap-1">
         {[...Array(35)].map((_, i) => (
-          <div key={i} className="aspect-square rounded-lg bg-white/5 animate-pulse" />
+          <div key={i} className="aspect-square rounded-lg bg-gray-100 animate-pulse" />
         ))}
       </div>
     </div>
@@ -117,24 +117,24 @@ const CalendarHeader = memo(function CalendarHeader({
 }) {
   return (
     <div className="flex justify-between items-center mb-4">
-      <h3 className="text-lg font-bold text-white flex items-center gap-2">
-        <CalendarBlank className="w-5 h-5 text-purple-400" weight="fill" />
+      <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+        <CalendarBlank className="w-5 h-5 text-[#C4A35A]" weight="fill" />
         {year}년 {month}월
       </h3>
       <div className="flex gap-1">
         <button
           onClick={onPrevMonth}
-          className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
           aria-label="이전 달"
         >
-          <CaretLeft className="w-5 h-5 text-white/70" />
+          <CaretLeft className="w-5 h-5 text-gray-500" />
         </button>
         <button
           onClick={onNextMonth}
-          className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
           aria-label="다음 달"
         >
-          <CaretRight className="w-5 h-5 text-white/70" />
+          <CaretRight className="w-5 h-5 text-gray-500" />
         </button>
       </div>
     </div>
@@ -148,7 +148,7 @@ const WeekdayHeader = memo(function WeekdayHeader() {
         <div
           key={day}
           className={`text-center text-xs font-medium py-1 ${
-            i === 0 ? "text-red-400" : i === 6 ? "text-blue-400" : "text-white/60"
+            i === 0 ? "text-red-500" : i === 6 ? "text-blue-500" : "text-gray-500"
           }`}
         >
           {day}
@@ -179,15 +179,15 @@ const DayCell = memo(function DayCell({
       className={`
         aspect-square rounded-lg text-xs font-medium
         flex flex-col items-center justify-center gap-0.5
-        transition-all cursor-pointer relative
+        transition-all cursor-pointer relative border
         ${getGradeBgColorClass(day.grade)}
-        ${isToday ? "ring-2 ring-purple-400 ring-offset-1 ring-offset-gray-900" : ""}
-        hover:ring-2 hover:ring-white/30
+        ${isToday ? "ring-2 ring-[#C4A35A] ring-offset-1 ring-offset-white" : ""}
+        hover:ring-2 hover:ring-gray-300
       `}
     >
       <span
         className={`
-          ${day.dayOfWeek === 0 ? "text-red-300" : day.dayOfWeek === 6 ? "text-blue-300" : "text-white"}
+          ${day.dayOfWeek === 0 ? "text-red-500" : day.dayOfWeek === 6 ? "text-blue-500" : "text-gray-800"}
         `}
       >
         {day.dayOfMonth}
@@ -218,7 +218,7 @@ const DayDetailModal = memo(function DayDetailModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40"
       onClick={onClose}
     >
       <motion.div
@@ -226,27 +226,27 @@ const DayDetailModal = memo(function DayDetailModal({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-gray-900 border border-white/10 rounded-2xl p-5 w-full max-w-sm shadow-xl"
+        className="bg-white border border-gray-200 rounded-2xl p-5 w-full max-w-sm shadow-xl"
       >
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div>
-            <p className="text-white font-bold text-lg">
+            <p className="text-gray-800 font-bold text-lg">
               {date.toLocaleDateString("ko-KR", {
                 month: "long",
                 day: "numeric",
                 weekday: "short",
               })}
             </p>
-            <p className="text-white/50 text-sm">
+            <p className="text-gray-500 text-sm">
               {day.pillar.ganZhiKorean} ({day.pillar.ganZhi})
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-white/10 transition-colors"
+            className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            <X className="w-5 h-5 text-white/50" />
+            <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
@@ -258,10 +258,10 @@ const DayDetailModal = memo(function DayDetailModal({
             {day.score}점
           </div>
           <div>
-            <p className={`font-semibold ${colors.text.replace("text-white", "text-white")}`}>
+            <p className={`font-semibold ${colors.text}`}>
               {day.gradeKorean}
             </p>
-            <p className="text-white/50 text-xs">
+            <p className="text-gray-500 text-xs">
               용신 관계:{" "}
               {day.usefulGodRelation === "support"
                 ? "강화"
@@ -275,14 +275,14 @@ const DayDetailModal = memo(function DayDetailModal({
         {/* Highlights */}
         {day.highlights.length > 0 && (
           <div className="mb-4">
-            <p className="text-white/70 text-xs mb-2 flex items-center gap-1">
+            <p className="text-gray-600 text-xs mb-2 flex items-center gap-1">
               <Info className="w-3 h-3" /> 오늘의 특징
             </p>
             <div className="flex flex-wrap gap-1">
               {day.highlights.map((highlight, i) => (
                 <span
                   key={i}
-                  className="px-2 py-1 bg-white/5 rounded-lg text-xs text-white/80"
+                  className="px-2 py-1 bg-gray-100 rounded-lg text-xs text-gray-700"
                 >
                   {highlight}
                 </span>
@@ -294,14 +294,14 @@ const DayDetailModal = memo(function DayDetailModal({
         {/* Good For */}
         {day.goodFor.length > 0 && (
           <div className="mb-3">
-            <p className="text-green-400 text-xs mb-2 flex items-center gap-1">
+            <p className="text-green-600 text-xs mb-2 flex items-center gap-1">
               <CheckCircle className="w-3 h-3" weight="fill" /> 좋은 일
             </p>
             <div className="flex flex-wrap gap-1">
               {day.goodFor.map((item, i) => (
                 <span
                   key={i}
-                  className="px-2 py-1 bg-green-500/20 text-green-300 rounded-lg text-xs"
+                  className="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs"
                 >
                   {item}
                 </span>
@@ -313,14 +313,14 @@ const DayDetailModal = memo(function DayDetailModal({
         {/* Bad For */}
         {day.badFor.length > 0 && (
           <div>
-            <p className="text-orange-400 text-xs mb-2 flex items-center gap-1">
+            <p className="text-orange-600 text-xs mb-2 flex items-center gap-1">
               <Warning className="w-3 h-3" weight="fill" /> 피할 일
             </p>
             <div className="flex flex-wrap gap-1">
               {day.badFor.map((item, i) => (
                 <span
                   key={i}
-                  className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded-lg text-xs"
+                  className="px-2 py-1 bg-orange-100 text-orange-700 rounded-lg text-xs"
                 >
                   {item}
                 </span>
@@ -339,7 +339,7 @@ const CalendarLegend = memo(function CalendarLegend() {
       {(Object.keys(GRADE_LABELS) as FortuneGrade[]).map((grade) => (
         <span key={grade} className="flex items-center gap-1">
           <div className={`w-3 h-3 rounded ${GRADE_COLORS[grade].bg}`} />
-          <span className="text-white/60">{GRADE_LABELS[grade]}</span>
+          <span className="text-gray-500">{GRADE_LABELS[grade]}</span>
         </span>
       ))}
     </div>
@@ -357,40 +357,40 @@ const MonthStatistics = memo(function MonthStatistics({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mt-4 p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20"
+      className="mt-4 p-4 rounded-xl bg-gradient-to-br from-[#C4A35A]/10 to-[#a88f4a]/10 border border-[#C4A35A]/30"
     >
       <div className="flex items-center gap-2 mb-3">
-        <Star className="w-4 h-4 text-purple-400" weight="fill" />
-        <span className="text-sm font-medium text-white">이달의 운세 요약</span>
+        <Star className="w-4 h-4 text-[#C4A35A]" weight="fill" />
+        <span className="text-sm font-medium text-gray-800">이달의 운세 요약</span>
       </div>
 
       <div className="grid grid-cols-2 gap-3 text-xs">
         <div>
-          <span className="text-white/50">평균 점수</span>
-          <p className="text-white font-semibold text-lg">{statistics.averageScore}점</p>
+          <span className="text-gray-500">평균 점수</span>
+          <p className="text-gray-800 font-semibold text-lg">{statistics.averageScore}점</p>
         </div>
         <div>
-          <span className="text-white/50">최고/최저</span>
-          <p className="text-white font-medium">
-            <span className="text-green-400">{statistics.maxScore}</span>
+          <span className="text-gray-500">최고/최저</span>
+          <p className="text-gray-800 font-medium">
+            <span className="text-green-600">{statistics.maxScore}</span>
             {" / "}
-            <span className="text-orange-400">{statistics.minScore}</span>
+            <span className="text-orange-600">{statistics.minScore}</span>
           </p>
         </div>
         <div>
-          <span className="text-white/50">대길일</span>
-          <p className="text-green-400 font-medium">{statistics.excellentCount}일</p>
+          <span className="text-gray-500">대길일</span>
+          <p className="text-green-600 font-medium">{statistics.excellentCount}일</p>
         </div>
         <div>
-          <span className="text-white/50">주의일</span>
-          <p className="text-orange-400 font-medium">{statistics.cautionCount}일</p>
+          <span className="text-gray-500">주의일</span>
+          <p className="text-orange-600 font-medium">{statistics.cautionCount}일</p>
         </div>
       </div>
 
       {excellentDays.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-white/10">
-          <p className="text-white/50 text-xs mb-1">대길일</p>
-          <p className="text-green-300 text-xs">
+        <div className="mt-3 pt-3 border-t border-gray-200">
+          <p className="text-gray-500 text-xs mb-1">대길일</p>
+          <p className="text-green-600 text-xs">
             {excellentDays.slice(0, 5).map((d) => {
               const date = new Date(d);
               return `${date.getDate()}일`;

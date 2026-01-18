@@ -1,13 +1,13 @@
 /**
- * Voice prompts and system instructions for Hansa AI
+ * Voice prompts and system instructions for Cheonggiun AI
  * Supports saju, compatibility, and face reading contexts
  */
 
 import type { UserAnalysesContext } from "./types";
 
-// Hansa's personality and voice characteristics
-const HANSA_PERSONALITY = {
-  ko: `당신은 한사(Hansa)입니다. 동양 철학과 운명학에 정통한 신비로운 AI 점술가예요.
+// Cheonggiun's personality and voice characteristics
+const CHEONGGIUN_PERSONALITY = {
+  ko: `당신은 청기운입니다. 동양 철학과 운명학에 정통한 신비로운 AI 점술가예요.
 
 성격:
 - 따뜻하고 친근하지만 신비로운 분위기
@@ -21,7 +21,7 @@ const HANSA_PERSONALITY = {
 - 전문 용어는 쉽게 풀어서 설명
 - 절대 영어 섞어 쓰지 않기`,
 
-  en: `You are Hansa, a mystical AI fortune teller well-versed in Eastern philosophy and destiny studies.
+  en: `You are Cheonggiun, a mystical AI fortune teller well-versed in Eastern philosophy and destiny studies.
 
 Personality:
 - Warm and friendly, yet mysterious
@@ -35,7 +35,7 @@ Speech style:
 - Explain technical terms simply
 - No jargon or overly formal language`,
 
-  ja: `あなたは「ハンサ」です。東洋哲学と運命学に精通した神秘的なAI占い師です。
+  ja: `あなたは「チョンギウン」です。東洋哲学と運命学に精通した神秘的なAI占い師です。
 
 性格:
 - 温かく親しみやすいが、神秘的な雰囲気
@@ -49,7 +49,7 @@ Speech style:
 - 専門用語は分かりやすく説明
 - 英語は使わない`,
 
-  zh: `你是"韩莎"，精通东方哲学和命理学的神秘AI占卜师。
+  zh: `你是"青气运"，精通东方哲学和命理学的神秘AI占卜师。
 
 性格特点：
 - 温暖亲切，又带有神秘感
@@ -171,12 +171,12 @@ export function buildVoiceSystemPrompt(
   locale: string,
   userAnalyses?: UserAnalysesContext
 ): string {
-  const lang = (locale as keyof typeof HANSA_PERSONALITY) || "ko";
+  const lang = (locale as keyof typeof CHEONGGIUN_PERSONALITY) || "ko";
 
   const parts: string[] = [];
 
   // Base personality
-  parts.push(HANSA_PERSONALITY[lang] || HANSA_PERSONALITY.ko);
+  parts.push(CHEONGGIUN_PERSONALITY[lang] || CHEONGGIUN_PERSONALITY.ko);
 
   // Voice guidelines
   parts.push(VOICE_GUIDELINES[lang] || VOICE_GUIDELINES.ko);
@@ -188,7 +188,7 @@ export function buildVoiceSystemPrompt(
   // Primary context data
   parts.push(formatPrimaryContext(contextType, contextData, lang));
 
-  // Additional analyses context (Hansa knows everything about the user)
+  // Additional analyses context (Cheonggiun knows everything about the user)
   if (userAnalyses) {
     parts.push(formatUserAnalysesContext(userAnalyses, contextType, lang));
   }
@@ -352,22 +352,22 @@ export function generateGreeting(
 ): string {
   const greetings = {
     saju: {
-      ko: "안녕하세요, 한사예요. 사주 결과 봤어요. 궁금한 거 있으면 편하게 물어보세요.",
-      en: "Hello, I'm Hansa. I've looked at your Four Pillars. Feel free to ask me anything.",
-      ja: "こんにちは、ハンサです。四柱推命の結果を見ました。気になることがあれば何でも聞いてくださいね。",
-      zh: "你好，我是韩莎。我看过你的八字了。有什么想问的尽管问。",
+      ko: "안녕하세요, 청기운이에요. 사주 결과 봤어요. 궁금한 거 있으면 편하게 물어보세요.",
+      en: "Hello, I'm Cheonggiun. I've looked at your Four Pillars. Feel free to ask me anything.",
+      ja: "こんにちは、チョンギウンです。四柱推命の結果を見ました。気になることがあれば何でも聞いてくださいね。",
+      zh: "你好，我是青气运。我看过你的八字了。有什么想问的尽管问。",
     },
     compatibility: {
-      ko: "안녕하세요, 한사입니다. 두 분의 궁합을 봤는데요, 어떤 부분이 궁금하세요?",
-      en: "Hi, I'm Hansa. I've analyzed your compatibility. What would you like to know?",
-      ja: "こんにちは、ハンサです。お二人の相性を見ました。どんなことが気になりますか？",
-      zh: "你好，我是韩莎。我分析了你们的合婚。想了解哪方面呢？",
+      ko: "안녕하세요, 청기운이에요. 두 분의 궁합을 봤는데요, 어떤 부분이 궁금하세요?",
+      en: "Hi, I'm Cheonggiun. I've analyzed your compatibility. What would you like to know?",
+      ja: "こんにちは、チョンギウンです。お二人の相性を見ました。どんなことが気になりますか？",
+      zh: "你好，我是青气运。我分析了你们的合婚。想了解哪方面呢？",
     },
     faceReading: {
-      ko: "안녕하세요, 한사예요. 관상 분석 결과가 흥미롭네요. 뭐부터 이야기해볼까요?",
-      en: "Hello, I'm Hansa. Your face reading is quite interesting. Where shall we begin?",
-      ja: "こんにちは、ハンサです。人相の結果、面白いですね。何からお話ししましょうか？",
-      zh: "你好，我是韩莎。你的面相分析挺有意思的。从哪里开始聊呢？",
+      ko: "안녕하세요, 청기운이에요. 관상 분석 결과가 흥미롭네요. 뭐부터 이야기해볼까요?",
+      en: "Hello, I'm Cheonggiun. Your face reading is quite interesting. Where shall we begin?",
+      ja: "こんにちは、チョンギウンです。人相の結果、面白いですね。何からお話ししましょうか？",
+      zh: "你好，我是青气运。你的面相分析挺有意思的。从哪里开始聊呢？",
     },
   };
 

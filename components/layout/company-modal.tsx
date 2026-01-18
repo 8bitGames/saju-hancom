@@ -41,12 +41,12 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
 
   const content = {
     en: {
-      title: "About Hansa AI",
+      title: "About Cheonggiun",
       tagline: "Where Ancient Wisdom Meets Modern Technology",
       intro: {
         heading: "Discover Your Destiny",
-        p1: "Hansa AI is a cutting-edge fortune-telling platform that bridges the gap between traditional Korean metaphysics (명리학, Myeongrihak) and state-of-the-art artificial intelligence. We've trained our AI models on over 100 comprehensive books about Saju (사주, Four Pillars of Destiny), creating the most accurate and insightful digital fortune-telling experience available today.",
-        p2: "Our mission is to make the profound wisdom of Korean fortune-telling accessible to a global audience. Whether you're a Gen Z explorer curious about Korean culture, a millennial seeking guidance, or anyone fascinated by the intersection of tradition and technology, Hansa AI offers personalized insights into your life path, relationships, and future.",
+        p1: "Cheonggiun is a cutting-edge fortune-telling platform that bridges the gap between traditional Korean metaphysics (명리학, Myeongrihak) and state-of-the-art artificial intelligence. We've trained our AI models on over 100 comprehensive books about Saju (사주, Four Pillars of Destiny), creating the most accurate and insightful digital fortune-telling experience available today.",
+        p2: "Our mission is to make the profound wisdom of Korean fortune-telling accessible to a global audience. Whether you're a Gen Z explorer curious about Korean culture, a millennial seeking guidance, or anyone fascinated by the intersection of tradition and technology, Cheonggiun offers personalized insights into your life path, relationships, and future.",
       },
       features: {
         heading: "What Makes Us Special",
@@ -85,15 +85,15 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
       close: "Close",
     },
     ko: {
-      title: "한사 AI 소개",
+      title: "청기운 소개",
       tagline: "고대의 지혜와 현대 기술의 만남",
       intro: {
         heading: "당신의 운명을 발견하세요",
-        p1: "한사 AI는 전통 한국 명리학과 최첨단 인공지능을 결합한 혁신적인 운세 플랫폼입니다. 사주(四柱八字)에 관한 100권 이상의 전문 서적으로 AI 모델을 학습시켜, 현존하는 가장 정확하고 통찰력 있는 디지털 운세 서비스를 제공합니다.",
-        p2: "저희의 미션은 한국 명리학의 깊은 지혜를 전 세계에 알리는 것입니다. 한국 문화에 관심 있는 MZ세대, 인생의 방향을 찾는 분들, 전통과 기술의 조화에 매료된 모든 분들에게 한사 AI는 인생 경로, 관계, 미래에 대한 맞춤형 인사이트를 제공합니다.",
+        p1: "청기운는 전통 한국 명리학과 최첨단 인공지능을 결합한 혁신적인 운세 플랫폼입니다. 사주(四柱八字)에 관한 100권 이상의 전문 서적으로 AI 모델을 학습시켜, 현존하는 가장 정확하고 통찰력 있는 디지털 운세 서비스를 제공합니다.",
+        p2: "저희의 미션은 한국 명리학의 깊은 지혜를 전 세계에 알리는 것입니다. 한국 문화에 관심 있는 MZ세대, 인생의 방향을 찾는 분들, 전통과 기술의 조화에 매료된 모든 분들에게 청기운는 인생 경로, 관계, 미래에 대한 맞춤형 인사이트를 제공합니다.",
       },
       features: {
-        heading: "한사 AI의 특별함",
+        heading: "청기운의 특별함",
         items: [
           {
             icon: Brain,
@@ -202,7 +202,7 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
 
           {/* Modal Content */}
           <motion.div
-            className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4 bg-gradient-to-br from-[#1a1033] via-[#0f0a1a] to-[#1a0a2a] rounded-3xl border border-white/10 shadow-2xl"
+            className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4 bg-white rounded-3xl border border-gray-200 shadow-2xl"
             initial={prefersReducedMotion ? { opacity: 1, scale: 1, y: 0 } : { scale: 0.9, opacity: 0, y: 50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 1, scale: 1, y: 0 } : { scale: 0.9, opacity: 0, y: 50 }}
@@ -211,11 +211,11 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
             {/* Close Button */}
             <motion.button
               onClick={onClose}
-              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-20"
+              className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors z-20"
               whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
               whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
             >
-              <X className="w-5 h-5 text-white" weight="bold" />
+              <X className="w-5 h-5 text-gray-600" weight="bold" />
             </motion.button>
 
             <motion.div
@@ -227,7 +227,7 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
             >
               {/* Header with animated title */}
               <motion.div className="text-center mb-8" variants={itemVariants}>
-                <h1 className="text-3xl font-bold text-white mb-2">
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">
                   {t.title.split("").map((char, i) => (
                     <motion.span
                       key={i}
@@ -243,7 +243,7 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
                 </h1>
 
                 <motion.p
-                  className="text-purple-300 text-lg"
+                  className="text-[#C4A35A] text-lg"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
@@ -254,42 +254,42 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
 
               {/* Introduction */}
               <motion.div className="mb-8" variants={itemVariants}>
-                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <Sparkle className="w-5 h-5 text-purple-400" weight="fill" />
+                <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Sparkle className="w-5 h-5 text-[#C4A35A]" weight="fill" />
                   {t.intro.heading}
                 </h2>
-                <p className="text-white/80 leading-relaxed mb-4" style={{ fontSize: "inherit" }}>
+                <p className="text-gray-600 leading-relaxed mb-4" style={{ fontSize: "inherit" }}>
                   {t.intro.p1}
                 </p>
-                <p className="text-white/80 leading-relaxed" style={{ fontSize: "inherit" }}>
+                <p className="text-gray-600 leading-relaxed" style={{ fontSize: "inherit" }}>
                   {t.intro.p2}
                 </p>
               </motion.div>
 
               {/* Features Grid */}
               <motion.div className="mb-8" variants={itemVariants}>
-                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <Certificate className="w-5 h-5 text-purple-400" weight="fill" />
+                <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Certificate className="w-5 h-5 text-[#C4A35A]" weight="fill" />
                   {t.features.heading}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {t.features.items.map((item, index) => (
                     <motion.div
                       key={index}
-                      className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-purple-500/50 transition-colors"
+                      className="p-4 rounded-xl bg-gray-50 border border-gray-200 hover:border-[#C4A35A]/50 transition-colors"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.6 + index * 0.1 }}
                       whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
                     >
                       <motion.div
-                        className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center mb-3"
+                        className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#C4A35A]/20 to-[#a88f4a]/20 flex items-center justify-center mb-3"
                         whileHover={prefersReducedMotion ? {} : { rotate: 10 }}
                       >
-                        <item.icon className="w-5 h-5 text-purple-400" weight="duotone" />
+                        <item.icon className="w-5 h-5 text-[#C4A35A]" weight="duotone" />
                       </motion.div>
-                      <h3 className="text-white font-medium mb-1" style={{ fontSize: "inherit" }}>{item.title}</h3>
-                      <p className="text-white/60 text-sm" style={{ fontSize: "inherit" }}>{item.desc}</p>
+                      <h3 className="text-gray-800 font-medium mb-1" style={{ fontSize: "inherit" }}>{item.title}</h3>
+                      <p className="text-gray-500 text-sm" style={{ fontSize: "inherit" }}>{item.desc}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -297,65 +297,65 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
 
               {/* Company Info */}
               <motion.div
-                className="p-6 rounded-2xl bg-gradient-to-br from-purple-900/30 to-pink-900/30 border border-purple-500/20"
+                className="p-6 rounded-2xl bg-gradient-to-br from-[#C4A35A]/10 to-[#a88f4a]/10 border border-[#C4A35A]/20"
                 variants={itemVariants}
               >
-                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <Buildings className="w-5 h-5 text-purple-400" weight="fill" />
+                <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Buildings className="w-5 h-5 text-[#C4A35A]" weight="fill" />
                   {t.company.heading}
                 </h2>
 
                 <div className="space-y-3">
                   <motion.div
-                    className="flex items-center gap-3 text-white/80"
+                    className="flex items-center gap-3 text-gray-600"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.8 }}
                   >
-                    <Buildings className="w-4 h-4 text-purple-400 flex-shrink-0" weight="duotone" />
+                    <Buildings className="w-4 h-4 text-[#C4A35A] flex-shrink-0" weight="duotone" />
                     <span style={{ fontSize: "inherit" }}>{t.company.name}</span>
-                    <span className="px-2 py-0.5 text-xs bg-purple-500/20 text-purple-300 rounded-full">
+                    <span className="px-2 py-0.5 text-xs bg-[#C4A35A]/20 text-[#8B7241] rounded-full">
                       {t.company.certification}
                     </span>
                   </motion.div>
 
                   <motion.div
-                    className="flex items-center gap-3 text-white/80"
+                    className="flex items-center gap-3 text-gray-600"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.9 }}
                   >
-                    <User className="w-4 h-4 text-purple-400 flex-shrink-0" weight="duotone" />
+                    <User className="w-4 h-4 text-[#C4A35A] flex-shrink-0" weight="duotone" />
                     <span style={{ fontSize: "inherit" }}>{t.company.ceo}</span>
                   </motion.div>
 
                   <motion.div
-                    className="flex items-center gap-3 text-white/80"
+                    className="flex items-center gap-3 text-gray-600"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 1.0 }}
                   >
-                    <Certificate className="w-4 h-4 text-purple-400 flex-shrink-0" weight="duotone" />
+                    <Certificate className="w-4 h-4 text-[#C4A35A] flex-shrink-0" weight="duotone" />
                     <span style={{ fontSize: "inherit" }}>{t.company.registration}</span>
                   </motion.div>
 
                   <motion.div
-                    className="flex items-start gap-3 text-white/80"
+                    className="flex items-start gap-3 text-gray-600"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 1.1 }}
                   >
-                    <MapPin className="w-4 h-4 text-purple-400 flex-shrink-0 mt-0.5" weight="duotone" />
+                    <MapPin className="w-4 h-4 text-[#C4A35A] flex-shrink-0 mt-0.5" weight="duotone" />
                     <span style={{ fontSize: "inherit" }}>{t.company.address}</span>
                   </motion.div>
 
                   <motion.div
-                    className="flex items-center gap-3 text-white/80"
+                    className="flex items-center gap-3 text-gray-600"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 1.2 }}
                   >
-                    <EnvelopeSimple className="w-4 h-4 text-purple-400 flex-shrink-0" weight="duotone" />
+                    <EnvelopeSimple className="w-4 h-4 text-[#C4A35A] flex-shrink-0" weight="duotone" />
                     <span style={{ fontSize: "inherit" }}>{t.company.contact}: info@modawn.ai</span>
                   </motion.div>
                 </div>
@@ -364,7 +364,7 @@ export function CompanyModal({ isOpen, onClose }: CompanyModalProps) {
               {/* Close Button */}
               <motion.button
                 onClick={onClose}
-                className="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:from-purple-500 hover:to-pink-500 transition-all"
+                className="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-[#C4A35A] to-[#a88f4a] text-white font-semibold hover:from-[#b89850] hover:to-[#937e40] transition-all"
                 whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
                 whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
                 variants={itemVariants}

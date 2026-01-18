@@ -33,7 +33,7 @@ app.route("/session", sessionHandler);
 // Start server with WebSocket support
 const port = Number(process.env.PORT) || 3001;
 
-console.log(`🎙️ Starting Hansa Voice Sidecar on port ${port}...`);
+console.log(`🎙️ Starting Cheonggiun Voice Sidecar on port ${port}...`);
 
 const server = Bun.serve({
   port,

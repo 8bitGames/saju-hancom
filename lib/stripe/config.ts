@@ -1,5 +1,5 @@
 export const STRIPE_CONFIG = {
-  // Product and Price IDs - 사주 한사 프리미엄
+  // Product and Price IDs - 청기운 프리미엄
   PRODUCT_ID: 'prod_TedmkFfXlhNMxZ',
   PRICE_ID_KRW: 'price_1ShKUdIGSqpGTA9iNkwLBxjk', // ₩12,000/year
   PRICE_ID_USD: 'price_1ShKUfIGSqpGTA9icC31lLrz', // $12/year

@@ -90,7 +90,7 @@ export interface LocalFaceReadingHistory extends LocalHistoryItem {
   resultData: any;
 }
 
-const STORAGE_KEY = 'hansa_history';
+const STORAGE_KEY = 'cheonggiun_history';
 const MAX_ITEMS = 20; // 최대 저장 개수
 
 /**

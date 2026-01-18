@@ -77,7 +77,7 @@ export async function GET(request: Request) {
                 marginBottom: "16px",
               }}
             >
-              韓 · 事
+              青 · 氣 · 運
             </div>
             {/* Main title */}
             <div
@@ -91,7 +91,7 @@ export async function GET(request: Request) {
                 marginBottom: "24px",
               }}
             >
-              한사
+              청기운
             </div>
             {/* Subtitle */}
             <div

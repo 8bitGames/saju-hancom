@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://hansa.ai.kr';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://cheonggiun.ai.kr';
 
 // Type definition for page metadata
 interface PageMetadataConfig {
@@ -68,24 +68,24 @@ export const pageMetadata: Record<string, PageMetadataConfig> = {
   // Premium page
   premium: {
     title: '프리미엄 구독 - 무제한 분석',
-    description: '한사 AI 프리미엄 구독으로 무제한 사주, 궁합, 관상 분석을 이용하세요. 광고 없는 프리미엄 경험을 제공합니다.',
-    keywords: ['프리미엄', '구독', '무제한', '한사 AI 프리미엄'],
+    description: '청기운 프리미엄 구독으로 무제한 사주, 궁합, 관상 분석을 이용하세요. 광고 없는 프리미엄 경험을 제공합니다.',
+    keywords: ['프리미엄', '구독', '무제한', '청기운 프리미엄'],
     canonical: '/premium',
   },
 
   // Profile page
   profile: {
     title: '내 프로필',
-    description: '한사 AI 계정 설정과 구독 정보를 관리하세요.',
+    description: '청기운 계정 설정과 구독 정보를 관리하세요.',
     keywords: ['프로필', '계정 설정', '구독 관리'],
     canonical: '/profile',
   },
 
   // Deck page
   deck: {
-    title: '한사 AI 소개',
-    description: '한사 AI 서비스 소개 자료입니다. AI 기반 운세 분석 서비스의 특징과 기능을 확인하세요.',
-    keywords: ['한사 AI', '서비스 소개', 'AI 운세'],
+    title: '청기운 소개',
+    description: '청기운 서비스 소개 자료입니다. AI 기반 운세 분석 서비스의 특징과 기능을 확인하세요.',
+    keywords: ['청기운', '서비스 소개', 'AI 운세'],
     canonical: '/deck',
   },
 

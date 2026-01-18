@@ -265,7 +265,7 @@ function CategoryLoadingAnimation({ category, messageIndex }: { category: string
         >
           {config.messages[messageIndex]}
         </p>
-        <p className="text-sm text-white/40">
+        <p className="text-sm text-gray-400">
           잠시만 기다려주세요
         </p>
       </div>
@@ -536,14 +536,14 @@ export function DetailAnalysisModal({
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal Container - 모바일 전체화면, 데스크톱 중앙 정렬 */}
-      <div className="relative flex flex-col w-full flex-1 min-h-0 md:flex-initial md:h-auto md:max-h-[85vh] md:max-w-2xl md:m-auto md:rounded-2xl bg-[#1a1033] shadow-2xl overflow-hidden">
+      <div className="relative flex flex-col w-full flex-1 min-h-0 md:flex-initial md:h-auto md:max-h-[85vh] md:max-w-2xl md:m-auto md:rounded-2xl bg-white shadow-2xl overflow-hidden">
         {/* Header - 항상 상단 고정 */}
-        <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-[#a855f7] z-20">
+        <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-gradient-to-r from-[#C4A35A] to-[#a88f4a] z-20">
           <div className="flex items-center gap-2 md:gap-3">
             <Sparkle className="w-5 h-5 md:w-6 md:h-6 text-white" weight="fill" />
             <h2 className="text-base md:text-xl font-bold text-white">{categoryTitle} 상세 분석</h2>
@@ -569,16 +569,16 @@ export function DetailAnalysisModal({
 
           {error && (
             <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-[#ef4444]/20 flex items-center justify-center">
-                <Warning className="w-8 h-8 text-[#ef4444]" weight="fill" />
+              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+                <Warning className="w-8 h-8 text-red-500" weight="fill" />
               </div>
-              <p className="text-white/60">{error}</p>
+              <p className="text-gray-500">{error}</p>
               <button
                 onClick={() => {
                   setError(null);
                   fetchDetailAnalysis();
                 }}
-                className="px-4 py-2 rounded-lg bg-[#a855f7] text-white font-medium hover:bg-[#9333ea] transition-colors"
+                className="px-4 py-2 rounded-lg bg-[#C4A35A] text-white font-medium hover:bg-[#a88f4a] transition-colors"
               >
                 다시 시도
               </button>
@@ -595,18 +595,18 @@ export function DetailAnalysisModal({
 
         {/* Footer - 닫기 + 다음 상세보기 버튼 */}
         {(content || error) && !isLoading && (
-          <div className="flex-shrink-0 px-4 py-3 md:px-6 md:py-4 bg-[#1a1033] border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
+          <div className="flex-shrink-0 px-4 py-3 md:px-6 md:py-4 bg-white border-t border-gray-200 pb-[env(safe-area-inset-bottom)]">
             <div className="flex gap-3">
               <button
                 onClick={onClose}
-                className="flex-1 py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20 transition-colors"
+                className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-800 font-medium hover:bg-gray-200 transition-colors"
               >
                 닫기
               </button>
               {nextCategory && onNextCategory && (
                 <button
                   onClick={onNextCategory}
-                  className="flex-1 py-3 rounded-xl bg-[#a855f7] text-white font-medium hover:bg-[#9333ea] transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 py-3 rounded-xl bg-[#C4A35A] text-white font-medium hover:bg-[#a88f4a] transition-colors flex items-center justify-center gap-2"
                 >
                   <span>{nextCategory.title} 상세보기</span>
                   <ArrowRight className="w-5 h-5" weight="bold" />

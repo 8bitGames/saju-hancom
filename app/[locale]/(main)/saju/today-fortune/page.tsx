@@ -1,9 +1,11 @@
 import { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { TodayFortuneContent } from "./TodayFortuneContent";
+import { getDominantElement } from "@/lib/constants/guardians";
+import type { ElementType } from "@/lib/constants/guardians";
 
 export const metadata: Metadata = {
-  title: "오늘의 운세 | 사주 한사",
+  title: "오늘의 운세 | 청기운",
   description: "오늘 하루의 기운을 미리 살펴보세요",
 };
 
@@ -53,11 +55,20 @@ export default async function TodayFortunePage({ searchParams }: PageProps) {
 
   const birthYear = sajuResult.data.birth_year;
 
+  // Extract element from result_data for guardian
+  let dominantElement: ElementType = "wood"; // default
+  const resultData = sajuResult.data.result_data as Record<string, unknown> | null;
+  if (resultData?.elementScores) {
+    const scores = resultData.elementScores as Record<string, number>;
+    dominantElement = getDominantElement(scores);
+  }
+
   return (
     <TodayFortuneContent
       shareId={shareId}
       birthYear={birthYear}
       isPremium={isPremium}
+      dominantElement={dominantElement}
     />
   );
 }

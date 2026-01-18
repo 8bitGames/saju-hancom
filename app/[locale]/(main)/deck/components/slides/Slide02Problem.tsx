@@ -156,7 +156,7 @@ export default function Slide02Problem() {
             transition={{ duration: 0.5, delay: 1.1 }}
             className="text-center text-lg text-white/70"
           >
-            <span className="font-bold text-purple-400">한사 AI</span>가 K-사주를 세계에 소개합니다
+            <span className="font-bold text-purple-400">청기운</span>이 K-사주를 세계에 소개합니다
           </motion.p>
         </div>
       </div>

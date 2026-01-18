@@ -4,7 +4,7 @@ import { Link } from "@/lib/i18n/navigation";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "프리미엄 구독 완료 | 사주 한사",
+  title: "프리미엄 구독 완료 | 청기운",
   description: "프리미엄 구독이 완료되었습니다",
 };
 

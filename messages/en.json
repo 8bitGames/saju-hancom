@@ -17,6 +17,7 @@
     "fortune": "Fortune",
     "compatibility": "Match",
     "history": "History",
+    "cheongrium": "Wellness",
     "profile": "Profile"
   },
   "nav": {
@@ -29,7 +30,7 @@
     "menuClose": "Close menu"
   },
   "header": {
-    "title": "Hansa AI",
+    "title": "Cheonggiun",
     "start": "Start",
     "view": "View",
     "swipeHint": "Swipe",

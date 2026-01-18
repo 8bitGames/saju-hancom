@@ -114,17 +114,17 @@ interface FortunePanelProps {
 // ============================================================================
 
 const GRADE_CONFIG: Record<string, { bg: string; text: string; label: string }> = {
-  excellent: { bg: "bg-yellow-500/20", text: "text-yellow-400", label: "대길" },
-  good: { bg: "bg-green-500/20", text: "text-green-400", label: "길" },
-  normal: { bg: "bg-blue-500/20", text: "text-blue-400", label: "평" },
-  caution: { bg: "bg-orange-500/20", text: "text-orange-400", label: "주의" },
+  excellent: { bg: "bg-yellow-100", text: "text-yellow-600", label: "대길" },
+  good: { bg: "bg-green-100", text: "text-green-600", label: "길" },
+  normal: { bg: "bg-blue-100", text: "text-blue-600", label: "평" },
+  caution: { bg: "bg-orange-100", text: "text-orange-600", label: "주의" },
 };
 
 const GRADE_COLORS: Record<string, string> = {
-  excellent: "border-yellow-500/50 bg-yellow-500/10",
-  good: "border-green-500/50 bg-green-500/10",
-  normal: "border-blue-500/50 bg-blue-500/10",
-  caution: "border-orange-500/50 bg-orange-500/10",
+  excellent: "border-yellow-300 bg-yellow-50",
+  good: "border-green-300 bg-green-50",
+  normal: "border-blue-300 bg-blue-50",
+  caution: "border-orange-300 bg-orange-50",
 };
 
 // ============================================================================
@@ -134,13 +134,13 @@ const GRADE_COLORS: Record<string, string> = {
 function GradeIcon({ grade }: { grade: string }) {
   switch (grade) {
     case "excellent":
-      return <Star className="w-5 h-5 text-yellow-400" weight="fill" />;
+      return <Star className="w-5 h-5 text-yellow-500" weight="fill" />;
     case "good":
-      return <TrendUp className="w-5 h-5 text-green-400" weight="fill" />;
+      return <TrendUp className="w-5 h-5 text-green-500" weight="fill" />;
     case "normal":
-      return <CheckCircle className="w-5 h-5 text-blue-400" weight="fill" />;
+      return <CheckCircle className="w-5 h-5 text-blue-500" weight="fill" />;
     case "caution":
-      return <Warning className="w-5 h-5 text-orange-400" weight="fill" />;
+      return <Warning className="w-5 h-5 text-orange-500" weight="fill" />;
     default:
       return <CheckCircle className="w-5 h-5 text-gray-400" />;
   }
@@ -191,13 +191,13 @@ function FortuneLoadingAnimation() {
         {starPositions.map((pos, i) => (
           <motion.div
             key={`star-${i}`}
-            className="absolute w-1 h-1 bg-white rounded-full"
+            className="absolute w-1 h-1 bg-[#C4A35A] rounded-full"
             style={{
               left: `${pos.left}%`,
               top: `${pos.top}%`,
             }}
             animate={{
-              opacity: [0.2, 1, 0.2],
+              opacity: [0.2, 0.8, 0.2],
               scale: [0.5, 1, 0.5],
             }}
             transition={{
@@ -213,12 +213,12 @@ function FortuneLoadingAnimation() {
       <div className="relative w-32 h-32">
         {/* 외곽 회전 링 */}
         <motion.div
-          className="absolute inset-0 rounded-full border-2 border-purple-500/30"
+          className="absolute inset-0 rounded-full border-2 border-[#C4A35A]/40"
           animate={{ rotate: 360 }}
           transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
         />
         <motion.div
-          className="absolute inset-2 rounded-full border border-violet-400/40"
+          className="absolute inset-2 rounded-full border border-[#a88f4a]/50"
           animate={{ rotate: -360 }}
           transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
         />
@@ -227,7 +227,7 @@ function FortuneLoadingAnimation() {
         {[...Array(3)].map((_, i) => (
           <motion.div
             key={`pulse-${i}`}
-            className="absolute inset-0 rounded-full border border-purple-400/30"
+            className="absolute inset-0 rounded-full border border-[#C4A35A]/30"
             animate={{
               scale: [1, 2],
               opacity: [0.5, 0],
@@ -273,11 +273,11 @@ function FortuneLoadingAnimation() {
               }}
             >
               <span className={`
-                ${i === 0 ? "text-green-400" : ""}
-                ${i === 1 ? "text-red-400" : ""}
-                ${i === 2 ? "text-yellow-400" : ""}
-                ${i === 3 ? "text-white" : ""}
-                ${i === 4 ? "text-blue-400" : ""}
+                ${i === 0 ? "text-green-600" : ""}
+                ${i === 1 ? "text-red-600" : ""}
+                ${i === 2 ? "text-yellow-600" : ""}
+                ${i === 3 ? "text-gray-600" : ""}
+                ${i === 4 ? "text-blue-600" : ""}
               `}>
                 {el}
               </span>
@@ -286,10 +286,10 @@ function FortuneLoadingAnimation() {
         })}
 
         {/* 중앙 빛나는 구슬 */}
-        <div className="absolute inset-4 rounded-full bg-gradient-to-br from-purple-600/80 via-violet-500/60 to-indigo-600/80 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-4 rounded-full bg-gradient-to-br from-[#C4A35A]/80 via-[#a88f4a]/60 to-[#C4A35A]/80 backdrop-blur-sm flex items-center justify-center overflow-hidden">
           {/* 내부 빛 효과 */}
           <motion.div
-            className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/30"
+            className="absolute inset-0 bg-gradient-to-t from-transparent via-white/20 to-white/40"
             animate={{
               opacity: [0.3, 0.6, 0.3],
             }}
@@ -304,7 +304,7 @@ function FortuneLoadingAnimation() {
           <AnimatePresence mode="wait">
             <motion.span
               key={stemIndex}
-              className="text-2xl font-bold text-white/90 z-10"
+              className="text-2xl font-bold text-white z-10"
               initial={{ opacity: 0, scale: 0.5, rotateY: -90 }}
               animate={{ opacity: 1, scale: 1, rotateY: 0 }}
               exit={{ opacity: 0, scale: 0.5, rotateY: 90 }}
@@ -322,8 +322,8 @@ function FortuneLoadingAnimation() {
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 2, repeat: Infinity }}
       >
-        <p className="text-white/80 font-medium flex items-center justify-center gap-2">
-          <Sparkle className="w-4 h-4 text-purple-400" weight="fill" />
+        <p className="text-gray-700 font-medium flex items-center justify-center gap-2">
+          <Sparkle className="w-4 h-4 text-[#C4A35A]" weight="fill" />
           오늘의 운세를 살피는 중
           <motion.span
             animate={{ opacity: [0, 1, 0] }}
@@ -332,7 +332,7 @@ function FortuneLoadingAnimation() {
             ...
           </motion.span>
         </p>
-        <p className="text-white/40 text-sm mt-1">
+        <p className="text-gray-400 text-sm mt-1">
           천기를 읽고 있습니다
         </p>
       </motion.div>
@@ -342,9 +342,9 @@ function FortuneLoadingAnimation() {
         {["☰", "☱", "☲", "☳", "☴", "☵", "☶", "☷"].map((trigram, i) => (
           <motion.span
             key={i}
-            className="text-white/30 text-xs"
+            className="text-gray-400 text-xs"
             animate={{
-              opacity: [0.2, 0.6, 0.2],
+              opacity: [0.3, 0.7, 0.3],
             }}
             transition={{
               duration: 1.5,
@@ -365,8 +365,8 @@ function LoadingSpinner() {
   return (
     <div className="flex items-center justify-center py-12">
       <div className="relative">
-        <div className="w-12 h-12 border-2 border-purple-500/30 rounded-full" />
-        <div className="absolute inset-0 w-12 h-12 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-12 h-12 border-2 border-[#C4A35A]/30 rounded-full" />
+        <div className="absolute inset-0 w-12 h-12 border-2 border-[#C4A35A] border-t-transparent rounded-full animate-spin" />
       </div>
     </div>
   );
@@ -378,26 +378,26 @@ function PremiumLock({ onUpgradeClick }: { onUpgradeClick?: () => void }) {
       {/* Blurred content placeholder */}
       <div className="filter blur-sm opacity-50 pointer-events-none">
         <div className="space-y-3">
-          <div className="h-20 bg-white/5 rounded-xl" />
-          <div className="h-32 bg-white/5 rounded-xl" />
+          <div className="h-20 bg-gray-100 rounded-xl" />
+          <div className="h-32 bg-gray-100 rounded-xl" />
         </div>
       </div>
 
       {/* Lock overlay */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 rounded-xl">
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 rounded-xl">
         <div className="text-center space-y-4 p-6">
-          <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-yellow-500/20 to-orange-500/20 flex items-center justify-center">
-            <Crown className="w-8 h-8 text-yellow-400" weight="fill" />
+          <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-[#C4A35A]/20 to-[#a88f4a]/20 flex items-center justify-center">
+            <Crown className="w-8 h-8 text-[#C4A35A]" weight="fill" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white mb-1">프리미엄 전용</h3>
-            <p className="text-sm text-white/60">
+            <h3 className="text-lg font-bold text-gray-800 mb-1">프리미엄 전용</h3>
+            <p className="text-sm text-gray-500">
               시운과 대운 분석은 프리미엄 회원만 이용 가능합니다
             </p>
           </div>
           <button
             onClick={onUpgradeClick}
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold text-sm hover:opacity-90 transition-opacity flex items-center gap-2 mx-auto"
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#C4A35A] to-[#a88f4a] text-white font-bold text-sm hover:opacity-90 transition-opacity flex items-center gap-2 mx-auto"
           >
             <Lock className="w-4 h-4" />
             프리미엄 구독하기
@@ -427,12 +427,12 @@ const DailyFortuneSection = memo(function DailyFortuneSection({ data }: { data: 
       {/* Date & Pillar */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-white/50 text-sm">{dateStr} ({weekday})</p>
+          <p className="text-gray-500 text-sm">{dateStr} ({weekday})</p>
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-2xl font-bold text-white">
+            <span className="text-2xl font-bold text-gray-800">
               {data.pillar.stem}{data.pillar.branch}
             </span>
-            <span className="text-white/60">
+            <span className="text-gray-500">
               ({data.pillar.stemKorean}{data.pillar.branchKorean})
             </span>
           </div>
@@ -441,34 +441,34 @@ const DailyFortuneSection = memo(function DailyFortuneSection({ data }: { data: 
       </div>
 
       {/* Theme & Description */}
-      <div className="p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20">
-        <h3 className="text-lg font-bold text-white mb-2">{data.analysis.theme}</h3>
-        <p className="text-sm text-white/70 leading-relaxed">
+      <div className="p-4 rounded-xl bg-gradient-to-br from-[#C4A35A]/10 to-[#a88f4a]/10 border border-[#C4A35A]/30">
+        <h3 className="text-lg font-bold text-gray-800 mb-2">{data.analysis.theme}</h3>
+        <p className="text-sm text-gray-600 leading-relaxed">
           {data.analysis.description}
         </p>
       </div>
 
       {/* Opportunities & Challenges */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20">
-          <p className="text-xs text-green-400 font-medium mb-2 flex items-center gap-1">
+        <div className="p-3 rounded-xl bg-green-50 border border-green-200">
+          <p className="text-xs text-green-600 font-medium mb-2 flex items-center gap-1">
             <TrendUp className="w-3.5 h-3.5" weight="fill" />
             좋은 기회
           </p>
           <ul className="space-y-1">
             {data.analysis.opportunities.map((item, idx) => (
-              <li key={idx} className="text-xs text-white/70">• {item}</li>
+              <li key={idx} className="text-xs text-gray-600">• {item}</li>
             ))}
           </ul>
         </div>
-        <div className="p-3 rounded-xl bg-orange-500/10 border border-orange-500/20">
-          <p className="text-xs text-orange-400 font-medium mb-2 flex items-center gap-1">
+        <div className="p-3 rounded-xl bg-orange-50 border border-orange-200">
+          <p className="text-xs text-orange-600 font-medium mb-2 flex items-center gap-1">
             <Warning className="w-3.5 h-3.5" weight="fill" />
             주의할 점
           </p>
           <ul className="space-y-1">
             {data.analysis.challenges.map((item, idx) => (
-              <li key={idx} className="text-xs text-white/70">• {item}</li>
+              <li key={idx} className="text-xs text-gray-600">• {item}</li>
             ))}
           </ul>
         </div>
@@ -476,8 +476,8 @@ const DailyFortuneSection = memo(function DailyFortuneSection({ data }: { data: 
 
       {/* Advice */}
       {data.analysis.advice && (
-        <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-          <p className="text-xs text-purple-300 flex items-center gap-1">
+        <div className="p-3 rounded-xl bg-gray-50 border border-gray-200">
+          <p className="text-xs text-[#C4A35A] flex items-center gap-1">
             <Sparkle className="w-3.5 h-3.5" weight="fill" />
             {data.analysis.advice}
           </p>
@@ -491,7 +491,7 @@ const DailyFortuneSection = memo(function DailyFortuneSection({ data }: { data: 
             {data.recommendedActivities.map((activity, idx) => (
               <span
                 key={idx}
-                className="px-2.5 py-1 rounded-full bg-green-500/10 text-green-300 text-xs border border-green-500/20"
+                className="px-2.5 py-1 rounded-full bg-green-50 text-green-600 text-xs border border-green-200"
               >
                 ✓ {activity}
               </span>
@@ -503,7 +503,7 @@ const DailyFortuneSection = memo(function DailyFortuneSection({ data }: { data: 
             {data.activitiesToAvoid.map((activity, idx) => (
               <span
                 key={idx}
-                className="px-2.5 py-1 rounded-full bg-red-500/10 text-red-300 text-xs border border-red-500/20"
+                className="px-2.5 py-1 rounded-full bg-red-50 text-red-600 text-xs border border-red-200"
               >
                 ✗ {activity}
               </span>
@@ -543,7 +543,7 @@ const HourlyFortuneSection = memo(function HourlyFortuneSection({
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-white/50 flex items-center gap-2">
+      <p className="text-sm text-gray-500 flex items-center gap-2">
         <Timer className="w-4 h-4" />
         12시진별 운세 (현재: {data[currentPeriodIndex]?.periodName || "알 수 없음"})
       </p>
@@ -557,24 +557,24 @@ const HourlyFortuneSection = memo(function HourlyFortuneSection({
               key={idx}
               className={`p-2.5 rounded-xl border transition-all ${
                 isCurrent
-                  ? "ring-2 ring-purple-500 " + (GRADE_COLORS[hourly.grade] || "border-white/10")
-                  : GRADE_COLORS[hourly.grade] || "border-white/10 bg-white/5"
+                  ? "ring-2 ring-[#C4A35A] " + (GRADE_COLORS[hourly.grade] || "border-gray-200")
+                  : GRADE_COLORS[hourly.grade] || "border-gray-200 bg-gray-50"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-medium text-white">
+                <span className="text-xs font-medium text-gray-800">
                   {hourly.periodName}
                 </span>
                 {isCurrent && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500 text-white">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#C4A35A] text-white">
                     NOW
                   </span>
                 )}
               </div>
-              <p className="text-[10px] text-white/40 mb-1">{hourly.timeRange}</p>
+              <p className="text-[10px] text-gray-400 mb-1">{hourly.timeRange}</p>
               <div className="flex items-center gap-1">
                 <GradeIcon grade={hourly.grade} />
-                <span className="text-xs text-white/60">{hourly.score}점</span>
+                <span className="text-xs text-gray-500">{hourly.score}점</span>
               </div>
             </div>
           );
@@ -583,29 +583,29 @@ const HourlyFortuneSection = memo(function HourlyFortuneSection({
 
       {/* 현재 시간대 상세 */}
       {data[currentPeriodIndex] && (
-        <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/30 mt-4">
-          <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
-            <Clock className="w-4 h-4 text-purple-400" />
+        <div className="p-4 rounded-xl bg-[#C4A35A]/10 border border-[#C4A35A]/30 mt-4">
+          <h4 className="text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-[#C4A35A]" />
             지금 시간대 ({data[currentPeriodIndex].periodName})
           </h4>
-          <p className="text-sm text-white/70 mb-3">
+          <p className="text-sm text-gray-600 mb-3">
             {data[currentPeriodIndex].description || `${data[currentPeriodIndex].periodName} 시간대입니다.`}
           </p>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <p className="text-xs text-green-400 mb-1">좋은 활동</p>
+              <p className="text-xs text-green-600 mb-1">좋은 활동</p>
               <ul className="space-y-0.5">
                 {(data[currentPeriodIndex].goodFor ?? []).map((item, idx) => (
-                  <li key={idx} className="text-xs text-white/60">• {item}</li>
+                  <li key={idx} className="text-xs text-gray-600">• {item}</li>
                 ))}
               </ul>
             </div>
             <div>
-              <p className="text-xs text-orange-400 mb-1">피할 활동</p>
+              <p className="text-xs text-orange-600 mb-1">피할 활동</p>
               <ul className="space-y-0.5">
                 {(data[currentPeriodIndex].avoidFor ?? []).map((item, idx) => (
-                  <li key={idx} className="text-xs text-white/60">• {item}</li>
+                  <li key={idx} className="text-xs text-gray-600">• {item}</li>
                 ))}
               </ul>
             </div>
@@ -651,17 +651,17 @@ export const MajorFortuneSection = memo(function MajorFortuneSection({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-white/50">
+          <p className="text-sm text-gray-500">
             대운수 {data.startAge}세 시작 ({data.direction === "forward" ? "순행" : "역행"})
           </p>
-          <p className="text-xs text-white/40">현재 나이: {currentAge}세</p>
+          <p className="text-xs text-gray-400">현재 나이: {currentAge}세</p>
         </div>
       </div>
 
       {/* Timeline */}
       <div className="relative">
         {/* Timeline line */}
-        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-white/10" />
+        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200" />
 
         <div className="space-y-3">
           {(data.fortunes ?? []).map((fortune, idx) => {
@@ -680,30 +680,30 @@ export const MajorFortuneSection = memo(function MajorFortuneSection({
                 <div
                   className={`absolute left-2 top-4 w-4 h-4 rounded-full border-2 ${
                     isCurrent
-                      ? "bg-purple-500 border-purple-400 ring-4 ring-purple-500/30"
+                      ? "bg-[#C4A35A] border-[#C4A35A] ring-4 ring-[#C4A35A]/30"
                       : isPast
-                      ? "bg-white/20 border-white/30"
-                      : "bg-white/10 border-white/20"
+                      ? "bg-gray-200 border-gray-300"
+                      : "bg-gray-100 border-gray-200"
                   }`}
                 />
 
                 <div
                   className={`p-4 rounded-xl border transition-all ${
                     isCurrent
-                      ? "bg-purple-500/10 border-purple-500/30"
-                      : "bg-white/5 border-white/10"
+                      ? "bg-[#C4A35A]/10 border-[#C4A35A]/30"
+                      : "bg-white border-gray-200"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-white">
+                      <span className="text-lg font-bold text-gray-800">
                         {fortune.pillar.stem}{fortune.pillar.branch}
                       </span>
-                      <span className="text-sm text-white/50">
+                      <span className="text-sm text-gray-500">
                         ({fortune.pillar.stemKorean}{fortune.pillar.branchKorean})
                       </span>
                       {isCurrent && (
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500 text-white">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#C4A35A] text-white">
                           현재
                         </span>
                       )}
@@ -711,14 +711,14 @@ export const MajorFortuneSection = memo(function MajorFortuneSection({
                     <GradeBadge grade={fortune.analysis?.grade || "normal"} score={fortune.analysis?.score || 50} />
                   </div>
 
-                  <p className="text-xs text-white/40 mb-2">
+                  <p className="text-xs text-gray-400 mb-2">
                     {fortune.startAge}세 ~ {fortune.endAge}세 ({fortune.startYear} ~ {fortune.endYear})
                   </p>
 
-                  <p className="text-sm font-medium text-white mb-1">
+                  <p className="text-sm font-medium text-gray-800 mb-1">
                     {fortune.analysis?.theme || "대운 분석"}
                   </p>
-                  <p className="text-sm text-white/60 leading-relaxed">
+                  <p className="text-sm text-gray-500 leading-relaxed">
                     {fortune.analysis?.description || "대운 기간입니다."}
                   </p>
 
@@ -727,7 +727,7 @@ export const MajorFortuneSection = memo(function MajorFortuneSection({
                       {(fortune.keywords ?? []).map((keyword, kidx) => (
                         <span
                           key={kidx}
-                          className="px-2 py-0.5 rounded-full bg-white/10 text-white/60 text-xs"
+                          className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs"
                         >
                           {keyword}
                         </span>
@@ -835,11 +835,11 @@ export function FortunePanel({
           <FortuneLoadingAnimation />
         ) : (
           <div className="space-y-4 py-8">
-            <div className="w-16 h-16 mx-auto rounded-full bg-amber-500/10 flex items-center justify-center mb-4">
-              <Sun className="w-8 h-8 text-amber-400" weight="fill" />
+            <div className="w-16 h-16 mx-auto rounded-full bg-[#C4A35A]/10 flex items-center justify-center mb-4">
+              <Sun className="w-8 h-8 text-[#C4A35A]" weight="fill" />
             </div>
-            <p className="text-white/80 font-medium">운세 분석 준비 중</p>
-            <p className="text-white/50 text-sm">
+            <p className="text-gray-700 font-medium">운세 분석 준비 중</p>
+            <p className="text-gray-500 text-sm">
               사주 분석이 저장되면 오늘의 운세를 확인할 수 있습니다
             </p>
           </div>
@@ -851,15 +851,15 @@ export function FortunePanel({
   return (
     <div className="space-y-4">
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/10" role="tablist" aria-label="운세 탭">
+      <div className="flex gap-1 p-1 bg-gray-100 rounded-xl border border-gray-200" role="tablist" aria-label="운세 탭">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`flex-1 py-2.5 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1.5 ${
               activeTab === tab.key
-                ? "bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-lg"
-                : "text-white/60 hover:text-white hover:bg-white/5"
+                ? "bg-gradient-to-r from-[#C4A35A] to-[#a88f4a] text-white shadow-lg"
+                : "text-gray-500 hover:text-gray-800 hover:bg-white"
             }`}
             role="tab"
             aria-selected={activeTab === tab.key}
@@ -868,7 +868,7 @@ export function FortunePanel({
             {tab.icon}
             <span className="whitespace-nowrap">{tab.label}</span>
             {tab.premium && !isPremium && (
-              <Crown className="w-3 h-3 text-yellow-400" weight="fill" />
+              <Crown className="w-3 h-3 text-[#C4A35A]" weight="fill" />
             )}
           </button>
         ))}
@@ -882,7 +882,7 @@ export function FortunePanel({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.2 }}
-          className="p-4 bg-white/5 rounded-xl border border-white/10"
+          className="p-4 bg-white rounded-xl border border-gray-200"
           role="tabpanel"
           id={`tabpanel-${activeTab}`}
           aria-labelledby={activeTab}

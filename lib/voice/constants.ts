@@ -1,5 +1,5 @@
 // Voice IDs
-export const HANSA_VOICE_ID = process.env.HANSA_VOICE_ID || "de3dcaaa-317e-47e4-9302-777a1a6946f4";
+export const CHEONGGIUN_VOICE_ID = process.env.CHEONGGIUN_VOICE_ID || "de3dcaaa-317e-47e4-9302-777a1a6946f4";
 
 // Model Configuration
 export const TTS_MODEL = "sonic-3"; // Cartesia TTS
@@ -45,5 +45,5 @@ export const VOICE_LANGUAGES = {
 } as const;
 
 // Voice Sidecar URLs
-export const VOICE_SIDECAR_WS_URL = process.env.NEXT_PUBLIC_VOICE_SIDECAR_URL || "wss://hansa-voice.fly.dev";
-export const VOICE_SIDECAR_API_URL = process.env.VOICE_SIDECAR_API_URL || "https://hansa-voice.fly.dev";
+export const VOICE_SIDECAR_WS_URL = process.env.NEXT_PUBLIC_VOICE_SIDECAR_URL || "wss://cheonggiun-voice.fly.dev";
+export const VOICE_SIDECAR_API_URL = process.env.VOICE_SIDECAR_API_URL || "https://cheonggiun-voice.fly.dev";

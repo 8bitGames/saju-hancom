@@ -4,7 +4,7 @@ This guide will help you complete the Stripe integration for premium subscriptio
 
 ## What's Already Done
 
-✅ Stripe product created: "사주 한사 프리미엄"
+✅ Stripe product created: "청기운 프리미엄"
 ✅ Prices created:
   - KRW: ₩12,000/year (`price_1SglVfIGSqpGTA9i1HIxPO7T`)
   - USD: $12/year (`price_1SglVgIGSqpGTA9i9TIdIQ2K`)

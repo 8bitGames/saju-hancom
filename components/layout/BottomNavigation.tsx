@@ -7,7 +7,7 @@ import {
   House,
   Sparkle,
   Calendar,
-  ClockCounterClockwise,
+  Leaf,
   User,
 } from "@phosphor-icons/react";
 import type { Locale } from "@/lib/i18n/config";
@@ -47,11 +47,11 @@ const NAV_ITEMS: NavItem[] = [
     matchPaths: ["/saju/today-fortune"],
   },
   {
-    id: "history",
-    href: "/history",
-    label: { ko: "기록", en: "History" },
-    icon: ClockCounterClockwise,
-    matchPaths: ["/history"],
+    id: "cheongrium",
+    href: "/cheongrium",
+    label: { ko: "청리움", en: "Wellness" },
+    icon: Leaf,
+    matchPaths: ["/cheongrium"],
   },
   {
     id: "profile",

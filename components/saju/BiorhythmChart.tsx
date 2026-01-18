@@ -48,13 +48,13 @@ function BiorhythmLoading() {
       {/* Status cards skeleton */}
       <div className="grid grid-cols-3 gap-3">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="h-24 rounded-xl bg-white/5 animate-pulse" />
+          <div key={i} className="h-24 rounded-xl bg-gray-100 animate-pulse" />
         ))}
       </div>
       {/* Chart skeleton */}
-      <div className="h-64 rounded-xl bg-white/5 animate-pulse" />
+      <div className="h-64 rounded-xl bg-gray-100 animate-pulse" />
       {/* Info skeleton */}
-      <div className="h-20 rounded-xl bg-white/5 animate-pulse" />
+      <div className="h-20 rounded-xl bg-gray-100 animate-pulse" />
     </div>
   );
 }
@@ -81,14 +81,14 @@ const StatusCard = memo(function StatusCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className={`p-4 rounded-xl ${getStatusBgColor(value)} border border-white/10`}
+      className={`p-4 rounded-xl ${getStatusBgColor(value)} border border-gray-200 shadow-sm`}
     >
       <div className="flex items-center gap-2 mb-2">
         <Icon className={`w-4 h-4 ${color}`} weight="fill" />
-        <span className="text-xs text-white/60">{getRhythmLabel(type)}</span>
+        <span className="text-xs text-gray-500">{getRhythmLabel(type)}</span>
       </div>
       <p className={`text-2xl font-bold ${getStatusColor(value)}`}>{value}%</p>
-      <p className="text-xs text-white/50 mt-1">{getStatusText(value)}</p>
+      <p className="text-xs text-gray-400 mt-1">{getStatusText(value)}</p>
     </motion.div>
   );
 });
@@ -103,9 +103,9 @@ const CriticalDaysAlert = memo(function CriticalDaysAlert({
   // 최대 5개까지만 표시
   const displayDays = criticalDays.slice(0, 5);
   const typeColors = {
-    physical: "text-red-400",
-    emotional: "text-green-400",
-    intellectual: "text-blue-400",
+    physical: "text-red-600",
+    emotional: "text-green-600",
+    intellectual: "text-blue-600",
   };
 
   return (
@@ -113,17 +113,17 @@ const CriticalDaysAlert = memo(function CriticalDaysAlert({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
-      className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20"
+      className="p-4 rounded-xl bg-yellow-50 border border-yellow-200"
     >
       <div className="flex items-center gap-2 mb-2">
-        <Warning className="w-4 h-4 text-yellow-400" weight="fill" />
-        <span className="text-sm font-medium text-yellow-400">주의 필요일</span>
+        <Warning className="w-4 h-4 text-yellow-600" weight="fill" />
+        <span className="text-sm font-medium text-yellow-700">주의 필요일</span>
       </div>
       <div className="flex flex-wrap gap-2">
         {displayDays.map((day, i) => (
           <span
             key={i}
-            className={`px-2 py-1 rounded-full bg-white/5 text-xs ${
+            className={`px-2 py-1 rounded-full bg-yellow-100 text-xs border border-yellow-200 ${
               typeColors[day.type]
             }`}
           >
@@ -135,7 +135,7 @@ const CriticalDaysAlert = memo(function CriticalDaysAlert({
           </span>
         ))}
       </div>
-      <p className="text-xs text-white/40 mt-2">
+      <p className="text-xs text-gray-500 mt-2">
         이 날들은 바이오리듬이 0에 가까운 변환점입니다. 컨디션 관리에 주의하세요.
       </p>
     </motion.div>
@@ -152,16 +152,16 @@ const BestDaysInfo = memo(function BestDaysInfo({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
-      className="p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20"
+      className="p-4 rounded-xl bg-gradient-to-br from-[#C4A35A]/10 to-[#a88f4a]/10 border border-[#C4A35A]/30"
     >
       <div className="flex items-center gap-2 mb-3">
-        <Star className="w-4 h-4 text-purple-400" weight="fill" />
-        <span className="text-sm font-medium text-white">최고의 날 예측</span>
+        <Star className="w-4 h-4 text-[#C4A35A]" weight="fill" />
+        <span className="text-sm font-medium text-gray-800">최고의 날 예측</span>
       </div>
       <div className="grid grid-cols-2 gap-3 text-xs">
         <div>
-          <span className="text-white/50">종합 최고일</span>
-          <p className="text-white font-medium mt-1 flex items-center gap-1">
+          <span className="text-gray-500">종합 최고일</span>
+          <p className="text-gray-800 font-medium mt-1 flex items-center gap-1">
             <CalendarBlank className="w-3 h-3" />
             {new Date(bestDays.overallBest.date).toLocaleDateString("ko-KR", {
               month: "long",
@@ -170,8 +170,8 @@ const BestDaysInfo = memo(function BestDaysInfo({
           </p>
         </div>
         <div>
-          <span className="text-white/50">신체 최고일</span>
-          <p className="text-red-300 font-medium mt-1">
+          <span className="text-gray-500">신체 최고일</span>
+          <p className="text-red-600 font-medium mt-1">
             {new Date(bestDays.physicalBest.date).toLocaleDateString("ko-KR", {
               month: "short",
               day: "numeric",
@@ -180,8 +180,8 @@ const BestDaysInfo = memo(function BestDaysInfo({
           </p>
         </div>
         <div>
-          <span className="text-white/50">감성 최고일</span>
-          <p className="text-green-300 font-medium mt-1">
+          <span className="text-gray-500">감성 최고일</span>
+          <p className="text-green-600 font-medium mt-1">
             {new Date(bestDays.emotionalBest.date).toLocaleDateString("ko-KR", {
               month: "short",
               day: "numeric",
@@ -190,8 +190,8 @@ const BestDaysInfo = memo(function BestDaysInfo({
           </p>
         </div>
         <div>
-          <span className="text-white/50">지성 최고일</span>
-          <p className="text-blue-300 font-medium mt-1">
+          <span className="text-gray-500">지성 최고일</span>
+          <p className="text-blue-600 font-medium mt-1">
             {new Date(bestDays.intellectualBest.date).toLocaleDateString("ko-KR", {
               month: "short",
               day: "numeric",
@@ -224,8 +224,8 @@ const CustomTooltip = ({
   });
 
   return (
-    <div className="bg-gray-900/95 border border-white/20 rounded-lg p-3 shadow-xl">
-      <p className="text-white text-sm font-medium mb-2">{formattedDate}</p>
+    <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-xl">
+      <p className="text-gray-800 text-sm font-medium mb-2">{formattedDate}</p>
       <div className="space-y-1">
         {payload.map((entry, index) => {
           const labels: Record<string, string> = {
@@ -345,24 +345,24 @@ export const BiorhythmChart = memo(function BiorhythmChart({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="p-4 rounded-xl bg-white/5 border border-white/10"
+        className="p-4 rounded-xl bg-white border border-gray-200 shadow-sm"
       >
-        <p className="text-xs text-white/50 mb-3">30일 바이오리듬 예측</p>
+        <p className="text-xs text-gray-500 mb-3">30일 바이오리듬 예측</p>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
               <XAxis
                 dataKey="displayDate"
-                tick={{ fontSize: 10, fill: "rgba(255,255,255,0.5)" }}
-                tickLine={{ stroke: "rgba(255,255,255,0.2)" }}
-                axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                tick={{ fontSize: 10, fill: "rgba(0,0,0,0.5)" }}
+                tickLine={{ stroke: "rgba(0,0,0,0.2)" }}
+                axisLine={{ stroke: "rgba(0,0,0,0.2)" }}
               />
               <YAxis
                 domain={[-100, 100]}
-                tick={{ fontSize: 10, fill: "rgba(255,255,255,0.5)" }}
-                tickLine={{ stroke: "rgba(255,255,255,0.2)" }}
-                axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                tick={{ fontSize: 10, fill: "rgba(0,0,0,0.5)" }}
+                tickLine={{ stroke: "rgba(0,0,0,0.2)" }}
+                axisLine={{ stroke: "rgba(0,0,0,0.2)" }}
                 ticks={[-100, -50, 0, 50, 100]}
               />
               <Tooltip content={<CustomTooltip />} />
@@ -375,13 +375,13 @@ export const BiorhythmChart = memo(function BiorhythmChart({
                     intellectual: "지성",
                   };
                   return (
-                    <span className="text-xs text-white/70">
+                    <span className="text-xs text-gray-600">
                       {labels[value] || value}
                     </span>
                   );
                 }}
               />
-              <ReferenceLine y={0} stroke="rgba(255,255,255,0.3)" strokeDasharray="3 3" />
+              <ReferenceLine y={0} stroke="rgba(0,0,0,0.2)" strokeDasharray="3 3" />
               <Line
                 type="monotone"
                 dataKey="physical"

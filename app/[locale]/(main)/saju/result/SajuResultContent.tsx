@@ -18,8 +18,11 @@ import { autoSaveSajuResult } from "@/lib/actions/saju";
 import { saveLocalSajuResult } from "@/lib/local-history";
 import { InlineSajuChat } from "@/components/saju/InlineSajuChat";
 import { MajorFortuneSection, MajorFortuneData } from "@/components/saju/FortunePanel";
+import { ScentRecommendation } from "@/components/saju/ScentRecommendation";
+import { RecommendationsPanel } from "@/components/recommendation";
 import { createClient } from "@/lib/supabase/client";
 import type { Gender } from "@/lib/saju/types";
+import type { ElementType } from "@/lib/constants/guardians";
 
 // Tab types for content switching
 type ContentTab = "analysis" | "chat";
@@ -732,6 +735,40 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
         </div>
       </GlowingCard>
 
+      {/* Scent Recommendation */}
+      <motion.div variants={itemVariants}>
+        <ScentRecommendation
+          element={result.elementAnalysis.dominant[0] as ElementType || "wood"}
+          locale="ko"
+        />
+      </motion.div>
+
+      {/* Personalized Recommendations - Carelink, Cheongrium */}
+      <GlowingCard glowColor="rgba(34, 197, 94, 0.3)" variants={itemVariants}>
+        <div className="p-5 space-y-4">
+          <motion.div
+            className="flex items-center gap-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.72 }}
+          >
+            <Sparkle className="w-5 h-5 text-green-500" weight="fill" />
+            <h2 className="font-semibold text-text-primary text-lg">맞춤 추천</h2>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.73 }}
+          >
+            <RecommendationsPanel
+              dominantElement={result.elementAnalysis.dominant[0] as ElementType || "wood"}
+              locale="ko"
+              showTitle={false}
+            />
+          </motion.div>
+        </div>
+      </GlowingCard>
+
       {/* Major Fortune (대운) */}
       <GlowingCard glowColor="rgba(99, 102, 241, 0.3)" variants={itemVariants}>
         <div className="p-5 space-y-4">
@@ -941,21 +978,21 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
               <ChatCircleDots className="w-6 h-6 text-white" weight="fill" />
             </motion.div>
             <div>
-              <h2 className="font-bold text-text-primary text-lg">AI 사주 상담</h2>
-              <p className="text-sm text-blue-300">나만의 사주 전문가와 대화하세요</p>
+              <h2 className="font-bold text-gray-800 text-lg">AI 사주 상담</h2>
+              <p className="text-sm text-blue-600">나만의 사주 전문가와 대화하세요</p>
             </div>
           </motion.div>
 
           {/* Value proposition */}
           <motion.div
-            className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20"
+            className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0 }}
           >
-            <p className="text-text-primary text-sm leading-relaxed">
-              방금 분석한 <span className="text-blue-300 font-semibold">당신의 사주 데이터</span>를 기반으로
-              연애, 직업, 재물, 건강 등 <span className="text-cyan-300 font-semibold">맞춤형 상담</span>을
+            <p className="text-gray-700 text-sm leading-relaxed">
+              방금 분석한 <span className="text-blue-600 font-semibold">당신의 사주 데이터</span>를 기반으로
+              연애, 직업, 재물, 건강 등 <span className="text-cyan-600 font-semibold">맞춤형 상담</span>을
               AI가 즉시 답변해드립니다.
             </p>
           </motion.div>
@@ -967,7 +1004,7 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
             animate={{ opacity: 1 }}
             transition={{ delay: 1.1 }}
           >
-            <p className="text-xs text-text-muted flex items-center gap-1.5">
+            <p className="text-xs text-gray-500 flex items-center gap-1.5">
               <Chats className="w-4 h-4" />
               이런 것들을 물어볼 수 있어요
             </p>
@@ -980,7 +1017,7 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
               ].map((question, idx) => (
                 <motion.span
                   key={question}
-                  className="px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-200 text-xs border border-blue-500/30 hover:bg-blue-500/30 transition-colors cursor-default"
+                  className="px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-xs border border-blue-200 hover:bg-blue-200 transition-colors cursor-default"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 1.15 + idx * 0.05 }}
@@ -1009,12 +1046,12 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
 
           {/* Trust badge */}
           <motion.p
-            className="text-center text-xs text-text-muted flex items-center justify-center gap-1.5"
+            className="text-center text-xs text-gray-500 flex items-center justify-center gap-1.5"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.3 }}
           >
-            <Sparkle className="w-3.5 h-3.5 text-blue-400" weight="fill" />
+            <Sparkle className="w-3.5 h-3.5 text-blue-500" weight="fill" />
             Google AI 기반 실시간 맞춤 상담
           </motion.p>
         </div>

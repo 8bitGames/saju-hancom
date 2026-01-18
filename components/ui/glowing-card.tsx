@@ -18,7 +18,7 @@ interface GlowingCardProps {
 export function GlowingCard({
   children,
   className,
-  glowColor = "rgba(168, 85, 247, 0.5)",
+  glowColor = "rgba(196, 163, 90, 0.3)",
   variants,
   initial,
   animate,
@@ -41,14 +41,14 @@ export function GlowingCard({
     >
       {/* Ambient glow effect - always visible */}
       <div
-        className="absolute -inset-0.5 rounded-2xl opacity-75 blur-xl transition-all duration-500 group-hover:opacity-100 group-hover:blur-2xl"
+        className="absolute -inset-0.5 rounded-2xl opacity-50 blur-xl transition-all duration-500 group-hover:opacity-75 group-hover:blur-2xl"
         style={{
           background: `linear-gradient(135deg, ${glowColor}, transparent 60%)`,
         }}
       />
 
       {/* Content container */}
-      <div className="relative bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
+      <div className="relative bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         {children}
       </div>
     </motion.div>
@@ -59,7 +59,7 @@ export function GlowingCard({
 export function GlowingSection({
   children,
   className,
-  glowColor = "rgba(168, 85, 247, 0.3)",
+  glowColor = "rgba(196, 163, 90, 0.2)",
 }: {
   children: React.ReactNode;
   className?: string;
@@ -69,7 +69,7 @@ export function GlowingSection({
     <div className={cn("relative group", className)}>
       {/* Animated gradient border glow */}
       <div
-        className="absolute -inset-[1px] rounded-2xl opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+        className="absolute -inset-[1px] rounded-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"
         style={{
           background: `linear-gradient(135deg, ${glowColor}, transparent 50%, ${glowColor})`,
           backgroundSize: "200% 200%",
@@ -79,14 +79,14 @@ export function GlowingSection({
 
       {/* Drop shadow glow */}
       <div
-        className="absolute inset-0 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500"
+        className="absolute inset-0 rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"
         style={{
           background: glowColor,
         }}
       />
 
       {/* Content */}
-      <div className="relative bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
+      <div className="relative bg-white rounded-2xl border border-gray-200 shadow-sm">
         {children}
       </div>
     </div>

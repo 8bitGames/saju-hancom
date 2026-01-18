@@ -49,11 +49,11 @@ const ELEMENT_ICONS: Record<string, React.ReactNode> = {
  * 오행 요소 색상 매핑
  */
 const ELEMENT_COLORS: Record<string, string> = {
-  목: "bg-green-500/20 text-green-400 border-green-500/30",
-  화: "bg-red-500/20 text-red-400 border-red-500/30",
-  토: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  금: "bg-slate-300/20 text-slate-300 border-slate-300/30",
-  수: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+  목: "bg-green-100 text-green-600 border-green-200",
+  화: "bg-red-100 text-red-600 border-red-200",
+  토: "bg-yellow-100 text-yellow-600 border-yellow-200",
+  금: "bg-gray-100 text-gray-600 border-gray-200",
+  수: "bg-blue-100 text-blue-600 border-blue-200",
 };
 
 /**
@@ -61,25 +61,25 @@ const ELEMENT_COLORS: Record<string, string> = {
  */
 const FORTUNE_STYLES = {
   good: {
-    bg: "bg-green-500/20",
-    border: "border-green-500/30",
-    text: "text-green-400",
+    bg: "bg-green-50",
+    border: "border-green-200",
+    text: "text-green-600",
     label: "길몽",
     icon: <Star className="w-5 h-5" weight="fill" />,
     description: "좋은 징조의 꿈입니다",
   },
   neutral: {
-    bg: "bg-blue-500/20",
-    border: "border-blue-500/30",
-    text: "text-blue-400",
+    bg: "bg-blue-50",
+    border: "border-blue-200",
+    text: "text-blue-600",
     label: "평몽",
     icon: <Sparkle className="w-5 h-5" weight="fill" />,
     description: "중립적인 의미의 꿈입니다",
   },
   caution: {
-    bg: "bg-orange-500/20",
-    border: "border-orange-500/30",
-    text: "text-orange-400",
+    bg: "bg-orange-50",
+    border: "border-orange-200",
+    text: "text-orange-600",
     label: "주의",
     icon: <Warning className="w-5 h-5" weight="fill" />,
     description: "주의가 필요한 암시가 있습니다",
@@ -113,7 +113,7 @@ export function DreamResult({ result, onReset }: DreamResultProps) {
             <h3 className={`text-lg font-semibold ${fortuneStyle.text}`}>
               {fortuneStyle.label}
             </h3>
-            <p className="text-sm text-white/60">{fortuneStyle.description}</p>
+            <p className="text-sm text-gray-500">{fortuneStyle.description}</p>
           </div>
         </div>
       </motion.div>
@@ -126,7 +126,7 @@ export function DreamResult({ result, onReset }: DreamResultProps) {
           transition={{ delay: 0.2 }}
           className="space-y-3"
         >
-          <h4 className="text-sm font-medium text-white/80">꿈의 상징</h4>
+          <h4 className="text-sm font-medium text-gray-700">꿈의 상징</h4>
           <div className="grid grid-cols-1 gap-2">
             {result.symbols.map((symbol, index) => {
               const style = FORTUNE_STYLES[symbol.fortune];
@@ -141,7 +141,7 @@ export function DreamResult({ result, onReset }: DreamResultProps) {
                   <span className={`font-semibold ${style.text}`}>
                     {symbol.symbol}
                   </span>
-                  <span className="text-sm text-white/70 flex-1">
+                  <span className="text-sm text-gray-600 flex-1">
                     {symbol.meaning}
                   </span>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${style.bg} ${style.text}`}>
@@ -159,10 +159,10 @@ export function DreamResult({ result, onReset }: DreamResultProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-white/5 rounded-xl p-4 border border-white/10"
+        className="bg-gray-50 rounded-xl p-4 border border-gray-200"
       >
-        <h4 className="text-sm font-medium text-white/80 mb-3">상세 해석</h4>
-        <p className="text-white/90 leading-relaxed whitespace-pre-wrap">
+        <h4 className="text-sm font-medium text-gray-700 mb-3">상세 해석</h4>
+        <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
           {result.interpretation}
         </p>
       </motion.div>
@@ -172,13 +172,13 @@ export function DreamResult({ result, onReset }: DreamResultProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="bg-indigo-500/10 rounded-xl p-4 border border-indigo-500/30"
+        className="bg-[#C4A35A]/10 rounded-xl p-4 border border-[#C4A35A]/30"
       >
         <div className="flex items-start gap-3">
-          <Lightbulb className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" weight="fill" />
+          <Lightbulb className="w-5 h-5 text-[#C4A35A] flex-shrink-0 mt-0.5" weight="fill" />
           <div>
-            <h4 className="text-sm font-medium text-indigo-400 mb-1">조언</h4>
-            <p className="text-white/80 text-sm">{result.advice}</p>
+            <h4 className="text-sm font-medium text-[#C4A35A] mb-1">조언</h4>
+            <p className="text-gray-700 text-sm">{result.advice}</p>
           </div>
         </div>
       </motion.div>
@@ -191,16 +191,16 @@ export function DreamResult({ result, onReset }: DreamResultProps) {
         className="grid grid-cols-2 gap-4"
       >
         {/* 행운의 숫자 */}
-        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
           <div className="flex items-center gap-2 mb-3">
-            <Hash className="w-4 h-4 text-purple-400" weight="bold" />
-            <h4 className="text-sm font-medium text-white/80">행운의 숫자</h4>
+            <Hash className="w-4 h-4 text-[#C4A35A]" weight="bold" />
+            <h4 className="text-sm font-medium text-gray-700">행운의 숫자</h4>
           </div>
           <div className="flex flex-wrap gap-2">
             {result.luckyNumbers.map((num, index) => (
               <span
                 key={index}
-                className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm font-medium"
+                className="px-3 py-1 bg-[#C4A35A]/10 text-[#C4A35A] rounded-full text-sm font-medium"
               >
                 {num}
               </span>
@@ -209,14 +209,14 @@ export function DreamResult({ result, onReset }: DreamResultProps) {
         </div>
 
         {/* 관련 오행 */}
-        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-          <h4 className="text-sm font-medium text-white/80 mb-3">관련 오행</h4>
+        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+          <h4 className="text-sm font-medium text-gray-700 mb-3">관련 오행</h4>
           <div className="flex flex-wrap gap-2">
             {result.relatedElements.map((element, index) => (
               <span
                 key={index}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border ${
-                  ELEMENT_COLORS[element] || "bg-gray-500/20 text-gray-400"
+                  ELEMENT_COLORS[element] || "bg-gray-100 text-gray-600 border-gray-200"
                 }`}
               >
                 {ELEMENT_ICONS[element]}
@@ -233,7 +233,7 @@ export function DreamResult({ result, onReset }: DreamResultProps) {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7 }}
         onClick={onReset}
-        className="w-full py-3 text-white/70 hover:text-white transition-colors text-sm"
+        className="w-full py-3 text-gray-500 hover:text-gray-700 transition-colors text-sm"
       >
         다른 꿈 해석하기
       </motion.button>

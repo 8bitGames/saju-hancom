@@ -135,7 +135,7 @@ export interface FaceReadingContext {
 
 export type PrimaryContext = SajuContext | CompatibilityContext | FaceReadingContext;
 
-// All user's analyses - Hansa has full picture of the user
+// All user's analyses - Cheonggiun has full picture of the user
 export interface UserAnalysesContext {
   saju?: SajuContext;
   compatibility?: {
@@ -153,7 +153,7 @@ export interface VoiceSessionConfig {
   locale: string;
   // Primary context for this conversation (what page user is on)
   primaryContext: PrimaryContext;
-  // All user's analyses for full context (Hansa knows everything about user)
+  // All user's analyses for full context (Cheonggiun knows everything about user)
   userAnalyses?: UserAnalysesContext;
   // Previous conversation history (for resuming)
   conversationId?: string;

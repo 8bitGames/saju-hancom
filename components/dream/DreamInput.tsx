@@ -48,12 +48,12 @@ export function DreamInput({ onSubmit, isLoading, disabled }: DreamInputProps) {
     >
       {/* 헤더 */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-12 h-12 rounded-full bg-indigo-500/20 flex items-center justify-center">
-          <MoonStars className="w-6 h-6 text-indigo-400" weight="fill" />
+        <div className="w-12 h-12 rounded-full bg-[#C4A35A]/10 flex items-center justify-center">
+          <MoonStars className="w-6 h-6 text-[#C4A35A]" weight="fill" />
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-white">꿈 해몽</h2>
-          <p className="text-sm text-white/60">
+          <h2 className="text-lg font-semibold text-gray-800">꿈 해몽</h2>
+          <p className="text-sm text-gray-500">
             꿈을 이야기해주시면 전통 해몽으로 풀이해 드립니다
           </p>
         </div>
@@ -67,11 +67,11 @@ export function DreamInput({ onSubmit, isLoading, disabled }: DreamInputProps) {
           placeholder="간밤에 꾼 꿈을 자세히 적어주세요...
 
 예시: 높은 산 정상에서 용이 하늘로 올라가는 것을 보았습니다. 용의 몸은 황금빛으로 빛나고 있었고, 저는 그 광경을 지켜보며 큰 감동을 느꼈습니다."
-          className="w-full min-h-[180px] p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 resize-none pr-16 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50"
+          className="w-full min-h-[180px] p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder:text-gray-400 resize-none pr-16 focus:outline-none focus:ring-2 focus:ring-[#C4A35A]/50 focus:border-[#C4A35A]/50"
           disabled={isLoading || disabled}
         />
-        <div className="absolute bottom-3 right-3 text-xs text-white/40">
-          <span className={charCount < 10 ? "text-orange-400" : charCount > 2000 ? "text-red-400" : "text-white/40"}>
+        <div className="absolute bottom-3 right-3 text-xs text-gray-400">
+          <span className={charCount < 10 ? "text-orange-500" : charCount > 2000 ? "text-red-500" : "text-gray-400"}>
             {charCount}
           </span>
           /2000
@@ -90,9 +90,9 @@ export function DreamInput({ onSubmit, isLoading, disabled }: DreamInputProps) {
       )}
 
       {/* 안내 문구 */}
-      <div className="bg-indigo-500/10 rounded-lg p-3 text-sm text-white/70">
+      <div className="bg-[#C4A35A]/10 rounded-lg p-3 text-sm text-gray-600">
         <p className="flex items-start gap-2">
-          <span className="text-indigo-400">💡</span>
+          <span className="text-[#C4A35A]">💡</span>
           <span>
             꿈에서 본 장면, 등장인물, 느낌 등을 구체적으로 적어주시면
             더 정확한 해몽을 받을 수 있습니다.
@@ -104,7 +104,7 @@ export function DreamInput({ onSubmit, isLoading, disabled }: DreamInputProps) {
       <Button
         type="submit"
         disabled={!isValidLength || isLoading || disabled}
-        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+        className="w-full bg-gradient-to-r from-[#C4A35A] to-[#a88f4a] hover:from-[#b8974e] hover:to-[#9c8344] text-white"
       >
         {isLoading ? (
           <>

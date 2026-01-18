@@ -13,18 +13,19 @@ import {
   PREMIUM_CATEGORIES,
   RELATIONSHIP_CATEGORIES,
   FUN_CATEGORIES,
-  getPopularCategories,
-  getNewCategories,
   type CategoryIcon,
 } from "@/lib/constants/category-icons";
 import { cn } from "@/lib/utils";
 import {
-  Sun,
+  Sun as SunIcon,
   ArrowRight,
   Crown,
   CaretRight,
 } from "@phosphor-icons/react";
 import type { Locale } from "@/lib/i18n/config";
+import { QuickActionCards } from "@/components/home/QuickActionCards";
+import { DailyGuardianMessage } from "@/components/home/DailyGuardianMessage";
+import { DailyCheongiumEnergy } from "@/components/home/DailyCheongiumEnergy";
 
 // Category section component
 function CategorySection({
@@ -122,24 +123,14 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#F5F9FC]">
-      {/* Header Banner - Clean Mobile Style */}
-      <section className="bg-white px-4 pt-6 pb-4 border-b border-gray-100">
-        <div className="max-w-md mx-auto">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/images/logo-cheonggiun.png"
-              alt="청기운"
-              width={120}
-              height={40}
-              className="object-contain"
-              priority
-            />
-          </div>
-          <p className="text-sm text-gray-500 mt-2">
-            AI가 분석하는 정확한 사주풀이
-          </p>
-        </div>
-      </section>
+      {/* Daily Cheongrium Energy Card - New Enhanced Version */}
+      <DailyCheongiumEnergy locale={locale} className="bg-white pt-4" />
+
+      {/* Quick Action Cards - Main CTAs */}
+      <QuickActionCards locale={locale} className="bg-white" />
+
+      {/* Daily Guardian Message */}
+      <DailyGuardianMessage locale={locale} />
 
       {/* Today's Fortune Banner (if eligible) */}
       {fortuneData?.eligible && fortuneData?.shareId && (
@@ -151,7 +142,7 @@ export default function HomePage() {
             >
               <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-100">
                 <div className="flex-shrink-0 w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                  <Sun className="w-6 h-6 text-amber-500" weight="fill" />
+                  <SunIcon className="w-6 h-6 text-amber-500" weight="fill" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-gray-800">
@@ -286,40 +277,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer - Company Information */}
-      <footer className="px-4 py-8 pb-28 bg-[#1A5A8A]">
-        <div className="max-w-md mx-auto">
-          {/* Disclaimer */}
-          <p className="text-xs text-white/70 text-center leading-relaxed mb-6">
-            AI 운세 마스터는 전통 명리학과 AI 기술을 결합하여
-            <br />
-            재미있는 운세 정보를 제공합니다.
-          </p>
-
-          {/* Company Info */}
-          <div className="border-t border-white/20 pt-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-sm font-bold text-white">모드온 AI</span>
-              <span className="text-[10px] text-white/60 border border-white/30 px-1.5 py-0.5 rounded">벤처기업인증</span>
-            </div>
-            <div className="space-y-1 text-xs text-white/60">
-              <p>대표: 정다운</p>
-              <p>사업자등록번호: 145-87-03354</p>
-              <p>서울특별시 서초구 사평대로53길 94, 4층</p>
-              <p className="pt-2">
-                <a href="mailto:info@modawn.ai" className="text-white/80 hover:text-white">
-                  E: info@modawn.ai
-                </a>
-              </p>
-            </div>
-          </div>
-
-          {/* Copyright */}
-          <p className="text-[10px] text-white/40 text-center mt-6">
-            © 2025 모드온 AI. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      {/* Bottom spacing for navigation */}
+      <div className="h-8" />
     </div>
   );
 }

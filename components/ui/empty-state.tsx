@@ -88,17 +88,17 @@ export function EmptyState({
       aria-label={displayTitle}
     >
       {displayIcon && (
-        <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6 text-white/30">
+        <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-6 text-gray-300">
           {displayIcon}
         </div>
       )}
 
       {displayTitle && (
-        <h3 className="text-lg font-semibold text-white mb-2">{displayTitle}</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">{displayTitle}</h3>
       )}
 
       {displayDescription && (
-        <p className="text-white/60 mb-6 max-w-sm">{displayDescription}</p>
+        <p className="text-gray-500 mb-6 max-w-sm">{displayDescription}</p>
       )}
 
       {children}
@@ -111,8 +111,8 @@ export function EmptyState({
               className={cn(
                 "px-5 py-2.5 rounded-xl font-medium transition-colors",
                 action.variant === "secondary"
-                  ? "bg-white/10 text-white hover:bg-white/20"
-                  : "bg-accent-primary text-white hover:bg-accent-primary-hover"
+                  ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  : "bg-[#C4A35A] text-white hover:bg-[#a88f4a]"
               )}
             >
               {action.label}
@@ -121,7 +121,7 @@ export function EmptyState({
           {secondaryAction && (
             <button
               onClick={secondaryAction.onClick}
-              className="px-5 py-2.5 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20 transition-colors"
+              className="px-5 py-2.5 rounded-xl bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition-colors"
             >
               {secondaryAction.label}
             </button>
@@ -143,7 +143,7 @@ export function InlineEmptyState({
   return (
     <div
       className={cn(
-        "py-8 text-center text-white/50 text-sm",
+        "py-8 text-center text-gray-500 text-sm",
         className
       )}
       role="status"

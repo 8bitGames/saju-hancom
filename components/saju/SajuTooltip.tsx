@@ -122,10 +122,10 @@ export function SajuTooltip({
       className={`
         inline-flex items-center justify-center
         px-1 py-0.5 rounded
-        underline decoration-dotted decoration-white/30 underline-offset-2
-        hover:bg-white/10 active:bg-white/20
+        underline decoration-dotted decoration-gray-300 underline-offset-2
+        hover:bg-gray-100 active:bg-gray-200
         transition-colors cursor-pointer
-        focus:outline-none focus:ring-2 focus:ring-purple-500/50
+        focus:outline-none focus:ring-2 focus:ring-[#C4A35A]/50
         ${className}
       `}
       style={elementColor ? { color: elementColor } : undefined}
@@ -145,7 +145,7 @@ export function SajuTooltip({
         {buttonEl}
       </PopoverTrigger>
       <PopoverContent
-        className="w-auto max-w-[280px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+        className="w-auto max-w-[280px] p-3 bg-white border-gray-200 text-gray-800 shadow-lg"
         sideOffset={8}
         align="center"
       >
@@ -157,7 +157,7 @@ export function SajuTooltip({
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: elementColor }}
               />
-              <span className="text-xs text-white/60">
+              <span className="text-xs text-gray-500">
                 {type === "stem" && ELEMENT_KOREAN[STEM_ELEMENTS[text as Gan]]}
                 {type === "branch" && ELEMENT_KOREAN[BRANCH_ELEMENTS[text as Zhi]]}
               </span>

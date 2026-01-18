@@ -17,6 +17,7 @@
     "fortune": "운세",
     "compatibility": "궁합",
     "history": "기록",
+    "cheongrium": "청리움",
     "profile": "내정보"
   },
   "nav": {
@@ -29,7 +30,7 @@
     "menuClose": "메뉴 닫기"
   },
   "header": {
-    "title": "한사 AI",
+    "title": "청기운",
     "start": "시작하기",
     "view": "보기",
     "swipeHint": "스와이프",

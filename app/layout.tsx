@@ -40,7 +40,7 @@ const geistMono = Geist_Mono({
   preload: false, // Mono is less critical, load on demand
 });
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://hansa.ai.kr';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://cheonggiun.ai.kr';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -57,8 +57,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "한사 AI | AI 사주 운세 분석 - 사주팔자, 궁합, 관상",
-    template: "%s | 한사 AI",
+    default: "청기운 | AI 사주 운세 분석 - 사주팔자, 궁합, 관상",
+    template: "%s | 청기운",
   },
   description: "AI 기반의 사주팔자, 궁합, 관상 분석 서비스. 정확한 만세력 데이터와 AI 기술로 당신의 운명을 분석합니다. 무료 사주 풀이, 커플 궁합, 직장 궁합, 관상 분석을 지금 바로 확인하세요.",
   keywords: [
@@ -71,9 +71,9 @@ export const metadata: Metadata = {
     "saju", "fortune telling", "compatibility", "face reading", "AI fortune",
     "Korean astrology", "four pillars", "bazi", "Korean horoscope",
   ],
-  authors: [{ name: "한사 AI", url: baseUrl }],
-  creator: "한사 AI",
-  publisher: "한사 AI",
+  authors: [{ name: "청기운", url: baseUrl }],
+  creator: "청기운",
+  publisher: "청기운",
   formatDetection: {
     email: false,
     address: false,
@@ -117,9 +117,9 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   openGraph: {
-    title: "한사 AI | AI 사주 운세 분석",
+    title: "청기운 | AI 사주 운세 분석",
     description: "AI가 분석하는 정확한 사주팔자, 궁합, 관상. 무료로 당신의 운명을 확인하세요.",
-    siteName: "한사 AI",
+    siteName: "청기운",
     type: "website",
     url: baseUrl,
     locale: "ko_KR",
@@ -129,24 +129,24 @@ export const metadata: Metadata = {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "한사 AI - AI 운세 분석 서비스",
+        alt: "청기운 - AI 운세 분석 서비스",
         type: "image/png",
       },
       {
         url: "/images/og-cover-four-pillars.jpg",
         width: 1200,
         height: 630,
-        alt: "한사 AI - 사주팔자 분석",
+        alt: "청기운 - 사주팔자 분석",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "한사 AI | AI 사주 운세 분석",
+    title: "청기운 | AI 사주 운세 분석",
     description: "AI가 분석하는 정확한 사주팔자, 궁합, 관상. 무료로 당신의 운명을 확인하세요.",
     images: ["/api/og"],
-    creator: "@hansa_ai",
-    site: "@hansa_ai",
+    creator: "@cheonggiun_ai",
+    site: "@cheonggiun_ai",
   },
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
@@ -161,7 +161,7 @@ export const metadata: Metadata = {
     // Apple specific
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'black-translucent',
-    'apple-mobile-web-app-title': '한사 AI',
+    'apple-mobile-web-app-title': '청기운',
     // Microsoft specific
     'msapplication-TileColor': '#0a0a0a',
     'msapplication-config': '/browserconfig.xml',

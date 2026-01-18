@@ -1,0 +1,2562 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>청기운 (Cheong-Giun) - Mobile Mockup</title>
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================
+       DESIGN TOKENS (from hansa-uiux-redesign-analysis.md)
+       ========================================== */
+    :root {
+      /* Five Elements - Primary */
+      --element-wood: #2D5A27;
+      --element-fire: #B91C1C;
+      --element-earth: #C4A35A;
+      --element-metal: #9CA3AF;
+      --element-water: #1E3A5F;
+
+      /* Five Elements - Light (Backgrounds) */
+      --element-wood-light: #E8F5E9;
+      --element-fire-light: #FFEBEE;
+      --element-earth-light: #FFF8E1;
+      --element-metal-light: #F5F5F5;
+      --element-water-light: #E3F2FD;
+
+      /* Five Elements - Gradient Pairs */
+      --element-wood-gradient: linear-gradient(135deg, #2D5A27, #4CAF50);
+      --element-fire-gradient: linear-gradient(135deg, #B91C1C, #FF5722);
+      --element-earth-gradient: linear-gradient(135deg, #C4A35A, #FFB74D);
+      --element-metal-gradient: linear-gradient(135deg, #9CA3AF, #CFD8DC);
+      --element-water-gradient: linear-gradient(135deg, #1E3A5F, #42A5F5);
+
+      /* Brand - Cheongrium Inspired */
+      --brand-primary: #0E4168;
+      --brand-secondary: #1A5A8A;
+      --brand-accent: #C4A35A;
+      --brand-light: #F5F9FC;
+
+      /* Semantic */
+      --success: #2D5A27;
+      --warning: #C4A35A;
+      --error: #B91C1C;
+      --info: #1E3A5F;
+
+      /* Neutrals */
+      --gray-50: #FAFAFA;
+      --gray-100: #F5F5F5;
+      --gray-200: #EEEEEE;
+      --gray-300: #E0E0E0;
+      --gray-400: #BDBDBD;
+      --gray-500: #9E9E9E;
+      --gray-600: #757575;
+      --gray-700: #616161;
+      --gray-800: #424242;
+      --gray-900: #212121;
+
+      /* Typography */
+      --font-primary: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-display: 'Noto Serif KR', serif;
+
+      /* Font Sizes */
+      --text-xs: 0.75rem;
+      --text-sm: 0.875rem;
+      --text-base: 1rem;
+      --text-lg: 1.125rem;
+      --text-xl: 1.25rem;
+      --text-2xl: 1.5rem;
+      --text-3xl: 1.875rem;
+      --text-4xl: 2.25rem;
+
+      /* Spacing */
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+
+      /* Component Tokens */
+      --card-radius: 1rem;
+      --button-radius: 0.5rem;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* ==========================================
+       RESET & BASE
+       ========================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--gray-900);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: var(--space-8);
+    }
+
+    /* ==========================================
+       SLIDE CONTAINER
+       ========================================== */
+    .slideshow-container {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .phone-frame {
+      background: #1a1a1a;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .phone-screen {
+      background: var(--brand-light);
+      border-radius: 32px;
+      width: 375px;
+      height: 812px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ==========================================
+       SLIDES
+       ========================================== */
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    /* ==========================================
+       NAVIGATION CONTROLS
+       ========================================== */
+    .nav-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-4);
+      margin-top: var(--space-6);
+    }
+
+    .nav-btn {
+      background: var(--brand-primary);
+      color: white;
+      border: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background: var(--brand-secondary);
+      transform: scale(1.05);
+    }
+
+    .nav-btn:disabled {
+      background: var(--gray-400);
+      cursor: not-allowed;
+    }
+
+    .slide-counter {
+      color: white;
+      font-size: var(--text-sm);
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .slide-dots {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+      flex-wrap: wrap;
+      max-width: 400px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gray-600);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dot.active {
+      background: var(--brand-accent);
+      transform: scale(1.2);
+    }
+
+    .slide-title {
+      color: var(--gray-400);
+      font-size: var(--text-xs);
+      text-align: center;
+      margin-top: var(--space-3);
+    }
+
+    /* ==========================================
+       COMMON COMPONENTS
+       ========================================== */
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 var(--space-6);
+      font-size: var(--text-sm);
+      font-weight: 600;
+    }
+
+    .status-bar-dark {
+      background: transparent;
+      color: white;
+    }
+
+    .status-bar-light {
+      background: transparent;
+      color: var(--gray-900);
+    }
+
+    .status-icons {
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+    }
+
+    /* Header */
+    .header {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .header-title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+
+    .header-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: var(--gray-700);
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-4) var(--space-6);
+      border-radius: var(--button-radius);
+      font-size: var(--text-base);
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--brand-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--brand-secondary);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--brand-primary);
+      border: 1px solid var(--gray-300);
+    }
+
+    .btn-element-wood { background: var(--element-wood); color: white; }
+    .btn-element-fire { background: var(--element-fire); color: white; }
+    .btn-element-earth { background: var(--element-earth); color: white; }
+    .btn-element-metal { background: var(--element-metal); color: var(--gray-800); }
+    .btn-element-water { background: var(--element-water); color: white; }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .btn-lg {
+      padding: var(--space-5) var(--space-8);
+      font-size: var(--text-lg);
+    }
+
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: var(--card-radius);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-element {
+      color: white;
+    }
+
+    .card-wood { background: var(--element-wood-gradient); }
+    .card-fire { background: var(--element-fire-gradient); }
+    .card-earth { background: var(--element-earth-gradient); }
+    .card-metal { background: var(--element-metal-gradient); }
+    .card-water { background: var(--element-water-gradient); }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: white;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 16px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1);
+      color: var(--gray-500);
+      font-size: var(--text-xs);
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: var(--brand-primary);
+    }
+
+    .nav-item i {
+      font-size: 24px;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-label {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--gray-700);
+      margin-bottom: var(--space-2);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid var(--gray-300);
+      border-radius: var(--button-radius);
+      font-size: var(--text-base);
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(14, 65, 104, 0.1);
+    }
+
+    .radio-group {
+      display: flex;
+      gap: var(--space-4);
+    }
+
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      cursor: pointer;
+    }
+
+    .radio-circle {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--gray-400);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .radio-circle.active {
+      border-color: var(--brand-primary);
+    }
+
+    .radio-circle.active::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: var(--brand-primary);
+      border-radius: 50%;
+    }
+
+    /* Element Bar */
+    .element-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .element-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: var(--text-sm);
+      font-weight: 600;
+    }
+
+    .element-label {
+      width: 40px;
+      font-size: var(--text-sm);
+      color: var(--gray-700);
+    }
+
+    .element-track {
+      flex: 1;
+      height: 8px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .element-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .element-value {
+      width: 32px;
+      text-align: right;
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    /* Progress Steps */
+    .progress-steps {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: white;
+      border-radius: var(--button-radius);
+      border: 1px solid var(--gray-200);
+    }
+
+    .progress-step.active {
+      border-color: var(--brand-primary);
+      background: rgba(14, 65, 104, 0.05);
+    }
+
+    .progress-step.completed {
+      border-color: var(--success);
+      background: rgba(45, 90, 39, 0.05);
+    }
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gray-200);
+      color: var(--gray-600);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-sm);
+      font-weight: 600;
+    }
+
+    .progress-step.active .step-number {
+      background: var(--brand-primary);
+      color: white;
+    }
+
+    .progress-step.completed .step-number {
+      background: var(--success);
+      color: white;
+    }
+
+    .step-info {
+      flex: 1;
+    }
+
+    .step-title {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+
+    .step-desc {
+      font-size: var(--text-xs);
+      color: var(--gray-500);
+    }
+
+    .step-icon {
+      font-size: 20px;
+      color: var(--gray-400);
+    }
+
+    .progress-step.active .step-icon {
+      color: var(--brand-primary);
+    }
+
+    .progress-step.completed .step-icon {
+      color: var(--success);
+    }
+
+    /* Chat Messages */
+    .chat-container {
+      flex: 1;
+      padding: var(--space-4);
+      overflow-y: auto;
+    }
+
+    .chat-message {
+      display: flex;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .chat-message.user {
+      flex-direction: row-reverse;
+    }
+
+    .chat-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .chat-bubble {
+      max-width: 70%;
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--card-radius);
+      font-size: var(--text-sm);
+      line-height: 1.5;
+    }
+
+    .chat-message.guardian .chat-bubble {
+      background: white;
+      color: var(--gray-800);
+      border: 1px solid var(--gray-200);
+    }
+
+    .chat-message.user .chat-bubble {
+      background: var(--brand-primary);
+      color: white;
+    }
+
+    /* Chat Input */
+    .chat-input-area {
+      padding: var(--space-4);
+      background: white;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .chat-input-wrapper {
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid var(--gray-300);
+      border-radius: 24px;
+      font-size: var(--text-sm);
+      font-family: inherit;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+    }
+
+    .chat-send-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--brand-primary);
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* Suggested Prompts */
+    .suggested-prompts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .prompt-chip {
+      padding: var(--space-2) var(--space-3);
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: 20px;
+      font-size: var(--text-xs);
+      color: var(--gray-700);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .prompt-chip:hover {
+      background: var(--brand-primary);
+      color: white;
+      border-color: var(--brand-primary);
+    }
+
+    /* Voice Chat */
+    .voice-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: white;
+      position: relative;
+    }
+
+    .voice-circle::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      background: inherit;
+      opacity: 0.3;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .voice-circle.listening::before {
+      animation: pulse-active 0.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.1); opacity: 0.1; }
+    }
+
+    @keyframes pulse-active {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.15); opacity: 0.5; }
+    }
+
+    .sound-wave {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 40px;
+    }
+
+    .wave-bar {
+      width: 4px;
+      background: var(--brand-primary);
+      border-radius: 2px;
+      animation: wave 0.5s ease-in-out infinite;
+    }
+
+    .wave-bar:nth-child(1) { height: 20px; animation-delay: 0s; }
+    .wave-bar:nth-child(2) { height: 30px; animation-delay: 0.1s; }
+    .wave-bar:nth-child(3) { height: 40px; animation-delay: 0.2s; }
+    .wave-bar:nth-child(4) { height: 30px; animation-delay: 0.3s; }
+    .wave-bar:nth-child(5) { height: 20px; animation-delay: 0.4s; }
+
+    @keyframes wave {
+      0%, 100% { transform: scaleY(0.5); }
+      50% { transform: scaleY(1); }
+    }
+
+    /* Service Grid for Home Screen */
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+      padding: var(--space-4);
+    }
+
+    .service-card {
+      background: white;
+      border-radius: var(--card-radius);
+      padding: var(--space-6);
+      text-align: center;
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .service-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .service-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-3);
+      font-size: 28px;
+      color: white;
+    }
+
+    .service-title {
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: var(--space-1);
+    }
+
+    .service-desc {
+      font-size: var(--text-xs);
+      color: var(--gray-500);
+    }
+
+    /* Guardian Card */
+    .guardian-card {
+      background: white;
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .guardian-image {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+    }
+
+    .guardian-content {
+      padding: var(--space-6);
+      text-align: center;
+    }
+
+    .guardian-name {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: var(--space-2);
+    }
+
+    .guardian-element {
+      font-size: var(--text-sm);
+      color: var(--gray-600);
+      margin-bottom: var(--space-4);
+    }
+
+    .guardian-greeting {
+      font-size: var(--text-base);
+      color: var(--gray-700);
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* Score Display */
+    .score-display {
+      text-align: center;
+      margin-bottom: var(--space-6);
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 6px solid var(--brand-accent);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-3);
+    }
+
+    .score-value {
+      font-size: var(--text-4xl);
+      font-weight: 700;
+      color: var(--brand-primary);
+    }
+
+    .score-label {
+      font-size: var(--text-xs);
+      color: var(--gray-500);
+    }
+
+    .score-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .score-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .score-item-label {
+      width: 80px;
+      font-size: var(--text-sm);
+      color: var(--gray-600);
+    }
+
+    .score-item-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .score-item-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: var(--brand-primary);
+    }
+
+    .score-item-value {
+      width: 40px;
+      text-align: right;
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    /* Face Analysis Grid */
+    .face-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+
+    .face-section {
+      background: white;
+      border-radius: var(--button-radius);
+      padding: var(--space-4);
+      text-align: center;
+      border: 1px solid var(--gray-200);
+    }
+
+    .face-section-title {
+      font-size: var(--text-xs);
+      color: var(--gray-500);
+      margin-bottom: var(--space-2);
+    }
+
+    .face-section-score {
+      font-size: var(--text-lg);
+      font-weight: 700;
+      color: var(--brand-primary);
+    }
+
+    /* History List */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: white;
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .history-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+    }
+
+    .history-info {
+      flex: 1;
+    }
+
+    .history-title {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+
+    .history-date {
+      font-size: var(--text-xs);
+      color: var(--gray-500);
+    }
+
+    .history-arrow {
+      font-size: 20px;
+      color: var(--gray-400);
+    }
+
+    /* ==========================================
+       SLIDES CONTENT
+       ========================================== */
+  </style>
+</head>
+<body>
+  <div class="slideshow-container">
+    <div class="phone-frame">
+      <div class="phone-screen">
+
+        <!-- ==========================================
+             SLIDE 1: WELCOME SCREEN
+             ========================================== -->
+        <div class="slide active" data-title="환영 화면">
+          <div style="height: 100%; background: linear-gradient(180deg, var(--brand-primary) 0%, var(--brand-secondary) 100%); display: flex; flex-direction: column; padding: var(--space-6);">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-dark">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: var(--space-8);">
+
+              <!-- Five Elements Icons -->
+              <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-8);">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--element-wood); display: flex; align-items: center; justify-content: center;">
+                  <i class="ph-fill ph-tree" style="color: white; font-size: 24px;"></i>
+                </div>
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--element-fire); display: flex; align-items: center; justify-content: center;">
+                  <i class="ph-fill ph-fire" style="color: white; font-size: 24px;"></i>
+                </div>
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--element-earth); display: flex; align-items: center; justify-content: center;">
+                  <i class="ph-fill ph-mountains" style="color: white; font-size: 24px;"></i>
+                </div>
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--element-metal); display: flex; align-items: center; justify-content: center;">
+                  <i class="ph-fill ph-diamonds-four" style="color: var(--gray-700); font-size: 24px;"></i>
+                </div>
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--element-water); display: flex; align-items: center; justify-content: center;">
+                  <i class="ph-fill ph-drop" style="color: white; font-size: 24px;"></i>
+                </div>
+              </div>
+
+              <!-- Logo/Title -->
+              <h1 style="font-family: var(--font-display); font-size: var(--text-4xl); font-weight: 700; color: white; margin-bottom: var(--space-3);">청기운</h1>
+              <p style="font-size: var(--text-lg); color: rgba(255,255,255,0.8); margin-bottom: var(--space-2);">Cheong-Giun</p>
+              <p style="font-size: var(--text-sm); color: rgba(255,255,255,0.6);">맑은 정기가 모이는 곳</p>
+            </div>
+
+            <!-- Bottom -->
+            <div style="padding: var(--space-4);">
+              <button class="btn btn-full btn-lg" style="background: white; color: var(--brand-primary);">
+                시작하기
+              </button>
+              <p style="text-align: center; margin-top: var(--space-4); font-size: var(--text-xs); color: rgba(255,255,255,0.6);">
+                계속하면 이용약관에 동의하는 것입니다
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 2: HOME SCREEN (Main)
+             ========================================== -->
+        <div class="slide" data-title="홈 화면">
+          <div style="height: 100%; background: var(--brand-light); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-light">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div style="padding: var(--space-4) var(--space-6); display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <p style="font-size: var(--text-sm); color: var(--gray-600);">안녕하세요</p>
+                <h2 style="font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700; color: var(--gray-900);">오늘의 운세를 확인하세요</h2>
+              </div>
+              <button class="header-btn">
+                <i class="ph ph-bell" style="font-size: 24px;"></i>
+              </button>
+            </div>
+
+            <!-- Service Grid -->
+            <div class="service-grid" style="flex: 1;">
+              <!-- Saju Analysis -->
+              <div class="service-card">
+                <div class="service-icon" style="background: var(--element-water-gradient);">
+                  <i class="ph-fill ph-yin-yang"></i>
+                </div>
+                <div class="service-title">사주 분석</div>
+                <div class="service-desc">사주팔자 종합 분석</div>
+              </div>
+
+              <!-- Compatibility -->
+              <div class="service-card">
+                <div class="service-icon" style="background: var(--element-fire-gradient);">
+                  <i class="ph-fill ph-heart"></i>
+                </div>
+                <div class="service-title">궁합</div>
+                <div class="service-desc">연인/친구 궁합 분석</div>
+              </div>
+
+              <!-- Face Reading -->
+              <div class="service-card">
+                <div class="service-icon" style="background: var(--element-earth-gradient);">
+                  <i class="ph-fill ph-user-focus"></i>
+                </div>
+                <div class="service-title">관상</div>
+                <div class="service-desc">AI 관상 분석</div>
+              </div>
+
+              <!-- Guardian Chat -->
+              <div class="service-card">
+                <div class="service-icon" style="background: var(--element-wood-gradient);">
+                  <i class="ph-fill ph-chats-circle"></i>
+                </div>
+                <div class="service-title">수호신 상담</div>
+                <div class="service-desc">텍스트/음성 상담</div>
+              </div>
+            </div>
+
+            <!-- Today's Fortune Preview -->
+            <div style="padding: var(--space-4);">
+              <div class="card" style="background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary)); color: white;">
+                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
+                  <i class="ph-fill ph-sun" style="font-size: 24px;"></i>
+                  <span style="font-size: var(--text-sm); font-weight: 600;">오늘의 운세</span>
+                </div>
+                <p style="font-size: var(--text-sm); opacity: 0.9; line-height: 1.5;">
+                  오늘은 새로운 시작에 좋은 날입니다. 청룡의 기운이 함께합니다.
+                </p>
+              </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+              <div class="nav-item active">
+                <i class="ph-fill ph-house"></i>
+                <span>홈</span>
+              </div>
+              <div class="nav-item">
+                <i class="ph ph-compass"></i>
+                <span>탐색</span>
+              </div>
+              <div class="nav-item">
+                <i class="ph ph-clock-counter-clockwise"></i>
+                <span>기록</span>
+              </div>
+              <div class="nav-item">
+                <i class="ph ph-user"></i>
+                <span>프로필</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 3: BIRTH INFO INPUT
+             ========================================== -->
+        <div class="slide" data-title="생년월일 입력">
+          <div style="height: 100%; background: var(--brand-light); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-light">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header">
+              <button class="header-btn">
+                <i class="ph ph-arrow-left" style="font-size: 24px;"></i>
+              </button>
+              <span class="header-title">사주 분석</span>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; padding: var(--space-6); overflow-y: auto; padding-bottom: 120px;">
+
+              <!-- Progress Indicator -->
+              <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-8);">
+                <div style="flex: 1; height: 4px; background: var(--brand-primary); border-radius: 2px;"></div>
+                <div style="flex: 1; height: 4px; background: var(--gray-200); border-radius: 2px;"></div>
+                <div style="flex: 1; height: 4px; background: var(--gray-200); border-radius: 2px;"></div>
+              </div>
+
+              <h2 style="font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-2);">
+                생년월일시를 알려주세요
+              </h2>
+              <p style="font-size: var(--text-sm); color: var(--gray-600); margin-bottom: var(--space-8);">
+                정확한 사주 분석을 위해 태어난 시간까지 입력해주세요
+              </p>
+
+              <!-- Form -->
+              <div class="form-group">
+                <label class="form-label">이름</label>
+                <input type="text" class="form-input" placeholder="이름을 입력하세요" value="홍길동">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">생년월일</label>
+                <div style="display: flex; gap: var(--space-2);">
+                  <input type="text" class="form-input" placeholder="년" value="1990" style="flex: 1.5;">
+                  <input type="text" class="form-input" placeholder="월" value="05" style="flex: 1;">
+                  <input type="text" class="form-input" placeholder="일" value="15" style="flex: 1;">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">태어난 시간</label>
+                <select class="form-input">
+                  <option>모름</option>
+                  <option>자시 (23:00-01:00)</option>
+                  <option>축시 (01:00-03:00)</option>
+                  <option>인시 (03:00-05:00)</option>
+                  <option selected>묘시 (05:00-07:00)</option>
+                  <option>진시 (07:00-09:00)</option>
+                  <option>사시 (09:00-11:00)</option>
+                  <option>오시 (11:00-13:00)</option>
+                  <option>미시 (13:00-15:00)</option>
+                  <option>신시 (15:00-17:00)</option>
+                  <option>유시 (17:00-19:00)</option>
+                  <option>술시 (19:00-21:00)</option>
+                  <option>해시 (21:00-23:00)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">성별</label>
+                <div class="radio-group">
+                  <div class="radio-item">
+                    <div class="radio-circle active"></div>
+                    <span>남성</span>
+                  </div>
+                  <div class="radio-item">
+                    <div class="radio-circle"></div>
+                    <span>여성</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">달력 기준</label>
+                <div class="radio-group">
+                  <div class="radio-item">
+                    <div class="radio-circle active"></div>
+                    <span>양력</span>
+                  </div>
+                  <div class="radio-item">
+                    <div class="radio-circle"></div>
+                    <span>음력</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Button -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-4); background: white; border-top: 1px solid var(--gray-200);">
+              <button class="btn btn-primary btn-full btn-lg">
+                다음
+                <i class="ph ph-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 4: GUARDIAN REVEAL
+             ========================================== -->
+        <div class="slide" data-title="수호신 공개">
+          <div style="height: 100%; background: linear-gradient(180deg, var(--element-wood) 0%, #1a3a1a 100%); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-dark">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: var(--space-6);">
+
+              <!-- Guardian Card -->
+              <div class="guardian-card" style="width: 100%; max-width: 320px;">
+                <div class="guardian-image" style="background: var(--element-wood-gradient);">
+                  <i class="ph-fill ph-tree"></i>
+                </div>
+                <div class="guardian-content">
+                  <p style="font-size: var(--text-xs); color: var(--element-wood); font-weight: 600; margin-bottom: var(--space-1);">목(木) - 동쪽</p>
+                  <h2 class="guardian-name">청룡</h2>
+                  <p class="guardian-element">Cheongryong</p>
+                  <p class="guardian-greeting">
+                    "새로운 시작의 기운을 담아<br>인사드립니다"
+                  </p>
+                </div>
+              </div>
+
+              <!-- Location Badge -->
+              <div style="display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-6); padding: var(--space-3) var(--space-5); background: rgba(255,255,255,0.1); border-radius: 20px;">
+                <i class="ph ph-map-pin" style="color: white;"></i>
+                <span style="color: white; font-size: var(--text-sm);">녹차밭에서 당신을 맞이합니다</span>
+              </div>
+            </div>
+
+            <!-- Bottom Button -->
+            <div style="padding: var(--space-6);">
+              <button class="btn btn-full btn-lg" style="background: white; color: var(--element-wood);">
+                사주 분석 시작하기
+                <i class="ph ph-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 5: ANALYSIS PROGRESS (6 Steps)
+             ========================================== -->
+        <div class="slide" data-title="분석 진행">
+          <div style="height: 100%; background: var(--brand-light); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-light">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header" style="border-bottom: none;">
+              <div style="width: 40px;"></div>
+              <span class="header-title">사주 분석 중</span>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; padding: var(--space-6); display: flex; flex-direction: column;">
+
+              <!-- Guardian Avatar -->
+              <div style="text-align: center; margin-bottom: var(--space-6);">
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--element-wood-gradient); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-3); font-size: 40px; color: white;">
+                  <i class="ph-fill ph-tree"></i>
+                </div>
+                <p style="font-size: var(--text-sm); color: var(--gray-600);">
+                  청룡이 당신의 사주를 분석하고 있습니다
+                </p>
+              </div>
+
+              <!-- 6 Steps Progress -->
+              <div class="progress-steps">
+                <div class="progress-step completed">
+                  <div class="step-number">
+                    <i class="ph-fill ph-check" style="font-size: 14px;"></i>
+                  </div>
+                  <div class="step-info">
+                    <div class="step-title">사주 기초 분석</div>
+                    <div class="step-desc">사주팔자 기본 구성 분석</div>
+                  </div>
+                  <i class="ph-fill ph-check-circle step-icon"></i>
+                </div>
+
+                <div class="progress-step completed">
+                  <div class="step-number">
+                    <i class="ph-fill ph-check" style="font-size: 14px;"></i>
+                  </div>
+                  <div class="step-info">
+                    <div class="step-title">일주 분석</div>
+                    <div class="step-desc">일간과 일지의 관계 분석</div>
+                  </div>
+                  <i class="ph-fill ph-check-circle step-icon"></i>
+                </div>
+
+                <div class="progress-step active">
+                  <div class="step-number">3</div>
+                  <div class="step-info">
+                    <div class="step-title">십성 분석</div>
+                    <div class="step-desc">십성의 배치와 영향 분석</div>
+                  </div>
+                  <i class="ph ph-spinner step-icon" style="animation: spin 1s linear infinite;"></i>
+                </div>
+
+                <div class="progress-step">
+                  <div class="step-number">4</div>
+                  <div class="step-info">
+                    <div class="step-title">신살 분석</div>
+                    <div class="step-desc">길신과 흉살 분석</div>
+                  </div>
+                  <i class="ph ph-circle step-icon"></i>
+                </div>
+
+                <div class="progress-step">
+                  <div class="step-number">5</div>
+                  <div class="step-info">
+                    <div class="step-title">운세 분석</div>
+                    <div class="step-desc">대운과 세운 흐름 분석</div>
+                  </div>
+                  <i class="ph ph-circle step-icon"></i>
+                </div>
+
+                <div class="progress-step">
+                  <div class="step-number">6</div>
+                  <div class="step-info">
+                    <div class="step-title">종합 해석</div>
+                    <div class="step-desc">전체 사주 종합 해석</div>
+                  </div>
+                  <i class="ph ph-circle step-icon"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Loading Message -->
+            <div style="padding: var(--space-6); text-align: center;">
+              <div style="background: white; border-radius: var(--card-radius); padding: var(--space-4); box-shadow: var(--shadow-sm);">
+                <p style="font-size: var(--text-sm); color: var(--gray-600); line-height: 1.5;">
+                  <i class="ph ph-sparkle" style="color: var(--brand-accent);"></i>
+                  십성의 배치를 분석하고 있습니다...
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <style>
+            @keyframes spin {
+              from { transform: rotate(0deg); }
+              to { transform: rotate(360deg); }
+            }
+          </style>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 6: RESULTS OVERVIEW
+             ========================================== -->
+        <div class="slide" data-title="결과 개요">
+          <div style="height: 100%; background: var(--brand-light); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-light">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header">
+              <button class="header-btn">
+                <i class="ph ph-arrow-left" style="font-size: 24px;"></i>
+              </button>
+              <span class="header-title">사주 분석 결과</span>
+              <button class="header-btn">
+                <i class="ph ph-share-network" style="font-size: 24px;"></i>
+              </button>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; padding: var(--space-4); overflow-y: auto; padding-bottom: 100px;">
+
+              <!-- User Info Card -->
+              <div class="card" style="margin-bottom: var(--space-4); background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary)); color: white;">
+                <div style="display: flex; align-items: center; gap: var(--space-4);">
+                  <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                    <i class="ph-fill ph-tree" style="font-size: 28px;"></i>
+                  </div>
+                  <div>
+                    <h3 style="font-size: var(--text-lg); font-weight: 700;">홍길동</h3>
+                    <p style="font-size: var(--text-sm); opacity: 0.8;">1990년 5월 15일 묘시 (양력)</p>
+                    <p style="font-size: var(--text-xs); opacity: 0.6;">경오년 신사월 갑진일 정묘시</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Element Balance -->
+              <div class="card" style="margin-bottom: var(--space-4);">
+                <h3 style="font-size: var(--text-base); font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">
+                  <i class="ph ph-chart-bar" style="color: var(--brand-primary);"></i>
+                  오행 균형
+                </h3>
+
+                <div class="element-bar">
+                  <div class="element-icon" style="background: var(--element-wood);">木</div>
+                  <span class="element-label">목</span>
+                  <div class="element-track">
+                    <div class="element-fill" style="width: 35%; background: var(--element-wood);"></div>
+                  </div>
+                  <span class="element-value">35%</span>
+                </div>
+
+                <div class="element-bar">
+                  <div class="element-icon" style="background: var(--element-fire);">火</div>
+                  <span class="element-label">화</span>
+                  <div class="element-track">
+                    <div class="element-fill" style="width: 20%; background: var(--element-fire);"></div>
+                  </div>
+                  <span class="element-value">20%</span>
+                </div>
+
+                <div class="element-bar">
+                  <div class="element-icon" style="background: var(--element-earth);">土</div>
+                  <span class="element-label">토</span>
+                  <div class="element-track">
+                    <div class="element-fill" style="width: 15%; background: var(--element-earth);"></div>
+                  </div>
+                  <span class="element-value">15%</span>
+                </div>
+
+                <div class="element-bar">
+                  <div class="element-icon" style="background: var(--element-metal);">金</div>
+                  <span class="element-label">금</span>
+                  <div class="element-track">
+                    <div class="element-fill" style="width: 10%; background: var(--element-metal);"></div>
+                  </div>
+                  <span class="element-value">10%</span>
+                </div>
+
+                <div class="element-bar">
+                  <div class="element-icon" style="background: var(--element-water);">水</div>
+                  <span class="element-label">수</span>
+                  <div class="element-track">
+                    <div class="element-fill" style="width: 20%; background: var(--element-water);"></div>
+                  </div>
+                  <span class="element-value">20%</span>
+                </div>
+              </div>
+
+              <!-- Category Cards -->
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3);">
+                <div class="card" style="padding: var(--space-4); cursor: pointer;">
+                  <i class="ph ph-briefcase" style="font-size: 24px; color: var(--element-wood); margin-bottom: var(--space-2);"></i>
+                  <h4 style="font-size: var(--text-sm); font-weight: 600; color: var(--gray-800);">재물운</h4>
+                  <p style="font-size: var(--text-xs); color: var(--gray-500);">안정적인 재물 흐름</p>
+                </div>
+
+                <div class="card" style="padding: var(--space-4); cursor: pointer;">
+                  <i class="ph ph-heart" style="font-size: 24px; color: var(--element-fire); margin-bottom: var(--space-2);"></i>
+                  <h4 style="font-size: var(--text-sm); font-weight: 600; color: var(--gray-800);">애정운</h4>
+                  <p style="font-size: var(--text-xs); color: var(--gray-500);">새로운 인연 가능</p>
+                </div>
+
+                <div class="card" style="padding: var(--space-4); cursor: pointer;">
+                  <i class="ph ph-graduation-cap" style="font-size: 24px; color: var(--element-water); margin-bottom: var(--space-2);"></i>
+                  <h4 style="font-size: var(--text-sm); font-weight: 600; color: var(--gray-800);">학업운</h4>
+                  <p style="font-size: var(--text-xs); color: var(--gray-500);">집중력 상승 시기</p>
+                </div>
+
+                <div class="card" style="padding: var(--space-4); cursor: pointer;">
+                  <i class="ph ph-first-aid-kit" style="font-size: 24px; color: var(--element-earth); margin-bottom: var(--space-2);"></i>
+                  <h4 style="font-size: var(--text-sm); font-weight: 600; color: var(--gray-800);">건강운</h4>
+                  <p style="font-size: var(--text-xs); color: var(--gray-500);">간 건강에 주의</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom CTA -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-4); background: white; border-top: 1px solid var(--gray-200);">
+              <button class="btn btn-primary btn-full">
+                <i class="ph ph-chats-circle"></i>
+                수호신에게 상담받기
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 7: GUARDIAN CHAT
+             ========================================== -->
+        <div class="slide" data-title="수호신 채팅">
+          <div style="height: 100%; background: var(--brand-light); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-light">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header">
+              <button class="header-btn">
+                <i class="ph ph-arrow-left" style="font-size: 24px;"></i>
+              </button>
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--element-wood-gradient); display: flex; align-items: center; justify-content: center;">
+                  <i class="ph-fill ph-tree" style="font-size: 16px; color: white;"></i>
+                </div>
+                <span class="header-title">청룡</span>
+              </div>
+              <button class="header-btn">
+                <i class="ph ph-microphone" style="font-size: 24px;"></i>
+              </button>
+            </div>
+
+            <!-- Chat Container -->
+            <div class="chat-container" style="flex: 1;">
+
+              <!-- Guardian Message -->
+              <div class="chat-message guardian">
+                <div class="chat-avatar" style="background: var(--element-wood-gradient); color: white;">
+                  <i class="ph-fill ph-tree"></i>
+                </div>
+                <div class="chat-bubble">
+                  안녕하세요, 홍길동님. 저는 당신의 수호신 청룡입니다. 사주 분석 결과에 대해 궁금한 점이 있으시면 무엇이든 물어보세요.
+                </div>
+              </div>
+
+              <!-- User Message -->
+              <div class="chat-message user">
+                <div class="chat-bubble">
+                  올해 재물운이 어떤가요? 투자를 해도 될까요?
+                </div>
+              </div>
+
+              <!-- Guardian Response -->
+              <div class="chat-message guardian">
+                <div class="chat-avatar" style="background: var(--element-wood-gradient); color: white;">
+                  <i class="ph-fill ph-tree"></i>
+                </div>
+                <div class="chat-bubble">
+                  올해는 목(木)의 기운이 강해 새로운 시작에 유리합니다. 다만 상반기보다는 하반기에 재물운이 더 좋아질 것으로 보입니다. 큰 투자는 7월 이후가 좋겠습니다.
+                </div>
+              </div>
+            </div>
+
+            <!-- Suggested Prompts -->
+            <div style="padding: 0 var(--space-4);">
+              <div class="suggested-prompts">
+                <span class="prompt-chip">올해 건강운은?</span>
+                <span class="prompt-chip">직장운이 궁금해요</span>
+                <span class="prompt-chip">연애운 알려주세요</span>
+                <span class="prompt-chip">이사해도 될까요?</span>
+              </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-area">
+              <div class="chat-input-wrapper">
+                <input type="text" class="chat-input" placeholder="메시지를 입력하세요...">
+                <button class="chat-send-btn">
+                  <i class="ph ph-paper-plane-tilt" style="font-size: 20px;"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 8: VOICE CHAT
+             ========================================== -->
+        <div class="slide" data-title="음성 상담">
+          <div style="height: 100%; background: linear-gradient(180deg, var(--brand-primary) 0%, var(--brand-secondary) 100%); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-dark">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div style="padding: var(--space-4); display: flex; align-items: center; justify-content: space-between;">
+              <button class="header-btn" style="color: white;">
+                <i class="ph ph-x" style="font-size: 24px;"></i>
+              </button>
+              <span style="color: white; font-weight: 600;">음성 상담</span>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: var(--space-6);">
+
+              <!-- Guardian Info -->
+              <p style="color: rgba(255,255,255,0.7); font-size: var(--text-sm); margin-bottom: var(--space-4);">청룡과 대화 중</p>
+
+              <!-- Voice Circle -->
+              <div class="voice-circle listening" style="background: var(--element-wood-gradient);">
+                <i class="ph-fill ph-tree"></i>
+              </div>
+
+              <!-- Status Text -->
+              <p style="color: white; font-size: var(--text-lg); font-weight: 600; margin-top: var(--space-8);">
+                듣고 있습니다...
+              </p>
+
+              <!-- Sound Wave Animation -->
+              <div class="sound-wave" style="margin-top: var(--space-4);">
+                <div class="wave-bar" style="background: rgba(255,255,255,0.8);"></div>
+                <div class="wave-bar" style="background: rgba(255,255,255,0.8);"></div>
+                <div class="wave-bar" style="background: rgba(255,255,255,0.8);"></div>
+                <div class="wave-bar" style="background: rgba(255,255,255,0.8);"></div>
+                <div class="wave-bar" style="background: rgba(255,255,255,0.8);"></div>
+              </div>
+
+              <!-- Transcript -->
+              <div style="margin-top: var(--space-8); background: rgba(255,255,255,0.1); border-radius: var(--card-radius); padding: var(--space-4); width: 100%; max-width: 280px;">
+                <p style="color: rgba(255,255,255,0.6); font-size: var(--text-xs); margin-bottom: var(--space-2);">인식된 내용</p>
+                <p style="color: white; font-size: var(--text-sm);">"올해 재물운이 궁금해요..."</p>
+              </div>
+            </div>
+
+            <!-- Control Buttons -->
+            <div style="padding: var(--space-8); display: flex; justify-content: center; gap: var(--space-6);">
+              <button style="width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 24px; cursor: pointer;">
+                <i class="ph ph-keyboard"></i>
+              </button>
+              <button style="width: 72px; height: 72px; border-radius: 50%; background: var(--element-fire); border: none; color: white; font-size: 32px; cursor: pointer;">
+                <i class="ph-fill ph-microphone"></i>
+              </button>
+              <button style="width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 24px; cursor: pointer;">
+                <i class="ph ph-speaker-high"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 9: COMPATIBILITY INPUT
+             ========================================== -->
+        <div class="slide" data-title="궁합 입력">
+          <div style="height: 100%; background: var(--brand-light); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-light">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header">
+              <button class="header-btn">
+                <i class="ph ph-arrow-left" style="font-size: 24px;"></i>
+              </button>
+              <span class="header-title">궁합 분석</span>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; padding: var(--space-6); overflow-y: auto; padding-bottom: 120px;">
+
+              <h2 style="font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-2); text-align: center;">
+                두 사람의 정보를 입력하세요
+              </h2>
+              <p style="font-size: var(--text-sm); color: var(--gray-600); margin-bottom: var(--space-8); text-align: center;">
+                정확한 궁합 분석을 위해 생년월일시를 입력해주세요
+              </p>
+
+              <!-- Person 1 -->
+              <div class="card" style="margin-bottom: var(--space-4);">
+                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                  <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--element-fire-light); display: flex; align-items: center; justify-content: center;">
+                    <i class="ph ph-user" style="font-size: 20px; color: var(--element-fire);"></i>
+                  </div>
+                  <h3 style="font-size: var(--text-base); font-weight: 600; color: var(--gray-800);">첫 번째 사람</h3>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">이름</label>
+                  <input type="text" class="form-input" placeholder="이름" value="홍길동">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">생년월일</label>
+                  <input type="text" class="form-input" placeholder="YYYY-MM-DD" value="1990-05-15">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">성별</label>
+                  <div class="radio-group">
+                    <div class="radio-item">
+                      <div class="radio-circle active"></div>
+                      <span>남성</span>
+                    </div>
+                    <div class="radio-item">
+                      <div class="radio-circle"></div>
+                      <span>여성</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Person 2 -->
+              <div class="card">
+                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                  <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--element-water-light); display: flex; align-items: center; justify-content: center;">
+                    <i class="ph ph-user" style="font-size: 20px; color: var(--element-water);"></i>
+                  </div>
+                  <h3 style="font-size: var(--text-base); font-weight: 600; color: var(--gray-800);">두 번째 사람</h3>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">이름</label>
+                  <input type="text" class="form-input" placeholder="이름" value="김영희">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">생년월일</label>
+                  <input type="text" class="form-input" placeholder="YYYY-MM-DD" value="1992-08-22">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">성별</label>
+                  <div class="radio-group">
+                    <div class="radio-item">
+                      <div class="radio-circle"></div>
+                      <span>남성</span>
+                    </div>
+                    <div class="radio-item">
+                      <div class="radio-circle active"></div>
+                      <span>여성</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Button -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-4); background: white; border-top: 1px solid var(--gray-200);">
+              <button class="btn btn-primary btn-full btn-lg">
+                <i class="ph ph-heart"></i>
+                궁합 분석하기
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 10: COMPATIBILITY RESULT
+             ========================================== -->
+        <div class="slide" data-title="궁합 결과">
+          <div style="height: 100%; background: var(--brand-light); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-light">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header">
+              <button class="header-btn">
+                <i class="ph ph-arrow-left" style="font-size: 24px;"></i>
+              </button>
+              <span class="header-title">궁합 분석 결과</span>
+              <button class="header-btn">
+                <i class="ph ph-share-network" style="font-size: 24px;"></i>
+              </button>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; padding: var(--space-4); overflow-y: auto; padding-bottom: 100px;">
+
+              <!-- Couple Display -->
+              <div style="display: flex; align-items: center; justify-content: center; gap: var(--space-4); margin-bottom: var(--space-6);">
+                <div style="text-align: center;">
+                  <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--element-fire-light); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-2);">
+                    <i class="ph ph-user" style="font-size: 32px; color: var(--element-fire);"></i>
+                  </div>
+                  <p style="font-size: var(--text-sm); font-weight: 600; color: var(--gray-800);">홍길동</p>
+                  <p style="font-size: var(--text-xs); color: var(--gray-500);">경오년생</p>
+                </div>
+
+                <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--element-fire-gradient); display: flex; align-items: center; justify-content: center;">
+                  <i class="ph-fill ph-heart" style="font-size: 24px; color: white;"></i>
+                </div>
+
+                <div style="text-align: center;">
+                  <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--element-water-light); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-2);">
+                    <i class="ph ph-user" style="font-size: 32px; color: var(--element-water);"></i>
+                  </div>
+                  <p style="font-size: var(--text-sm); font-weight: 600; color: var(--gray-800);">김영희</p>
+                  <p style="font-size: var(--text-xs); color: var(--gray-500);">임신년생</p>
+                </div>
+              </div>
+
+              <!-- Score Card -->
+              <div class="card" style="margin-bottom: var(--space-4);">
+                <div class="score-display">
+                  <div class="score-circle">
+                    <span class="score-value">87</span>
+                    <span class="score-label">점</span>
+                  </div>
+                  <p style="font-size: var(--text-base); font-weight: 600; color: var(--gray-800);">천생연분</p>
+                  <p style="font-size: var(--text-sm); color: var(--gray-600);">서로를 보완하는 좋은 궁합입니다</p>
+                </div>
+
+                <!-- Score Breakdown -->
+                <div class="score-breakdown">
+                  <div class="score-item">
+                    <span class="score-item-label">일주 조화</span>
+                    <div class="score-item-bar">
+                      <div class="score-item-fill" style="width: 90%;"></div>
+                    </div>
+                    <span class="score-item-value">90%</span>
+                  </div>
+                  <div class="score-item">
+                    <span class="score-item-label">삼합 관계</span>
+                    <div class="score-item-bar">
+                      <div class="score-item-fill" style="width: 85%;"></div>
+                    </div>
+                    <span class="score-item-value">85%</span>
+                  </div>
+                  <div class="score-item">
+                    <span class="score-item-label">육합 관계</span>
+                    <div class="score-item-bar">
+                      <div class="score-item-fill" style="width: 80%;"></div>
+                    </div>
+                    <span class="score-item-value">80%</span>
+                  </div>
+                  <div class="score-item">
+                    <span class="score-item-label">오행 균형</span>
+                    <div class="score-item-bar">
+                      <div class="score-item-fill" style="width: 88%;"></div>
+                    </div>
+                    <span class="score-item-value">88%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Analysis Summary -->
+              <div class="card">
+                <h3 style="font-size: var(--text-base); font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">
+                  <i class="ph ph-sparkle" style="color: var(--brand-accent);"></i>
+                  궁합 해석
+                </h3>
+                <p style="font-size: var(--text-sm); color: var(--gray-700); line-height: 1.6;">
+                  두 분의 일주가 상생 관계를 이루고 있어 서로에게 긍정적인 영향을 줍니다. 특히 목(木)과 수(水)의 조화로 감정적 교류가 원활하며, 장기적인 관계에서 안정감을 느낄 수 있습니다.
+                </p>
+              </div>
+            </div>
+
+            <!-- Bottom CTA -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-4); background: white; border-top: 1px solid var(--gray-200);">
+              <button class="btn btn-primary btn-full">
+                <i class="ph ph-chats-circle"></i>
+                더 자세히 상담받기
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 11: FACE READING INPUT
+             ========================================== -->
+        <div class="slide" data-title="관상 촬영">
+          <div style="height: 100%; background: var(--gray-900); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-dark">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div style="padding: var(--space-4); display: flex; align-items: center; justify-content: space-between;">
+              <button class="header-btn" style="color: white;">
+                <i class="ph ph-x" style="font-size: 24px;"></i>
+              </button>
+              <span style="color: white; font-weight: 600;">관상 분석</span>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <!-- Camera View -->
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: var(--space-6);">
+
+              <!-- Face Guide -->
+              <div style="width: 240px; height: 320px; border: 3px dashed rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative;">
+                <i class="ph ph-user" style="font-size: 100px; color: rgba(255,255,255,0.2);"></i>
+
+                <!-- Guide Lines -->
+                <div style="position: absolute; top: 30%; left: 10%; right: 10%; border-top: 1px dashed rgba(255,255,255,0.3);"></div>
+                <div style="position: absolute; top: 50%; left: 10%; right: 10%; border-top: 1px dashed rgba(255,255,255,0.3);"></div>
+                <div style="position: absolute; top: 70%; left: 10%; right: 10%; border-top: 1px dashed rgba(255,255,255,0.3);"></div>
+              </div>
+
+              <!-- Guide Text -->
+              <p style="color: rgba(255,255,255,0.7); font-size: var(--text-sm); margin-top: var(--space-6); text-align: center;">
+                얼굴을 가이드에 맞춰주세요<br>
+                <span style="font-size: var(--text-xs); opacity: 0.7;">정면을 바라보고 자연스러운 표정을 유지하세요</span>
+              </p>
+            </div>
+
+            <!-- Capture Button -->
+            <div style="padding: var(--space-8); display: flex; justify-content: center;">
+              <button style="width: 72px; height: 72px; border-radius: 50%; background: white; border: 4px solid var(--gray-300); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: white; border: 2px solid var(--gray-200);"></div>
+              </button>
+            </div>
+
+            <!-- Options -->
+            <div style="padding: var(--space-4) var(--space-8); display: flex; justify-content: center; gap: var(--space-8);">
+              <button style="background: transparent; border: none; color: white; display: flex; flex-direction: column; align-items: center; gap: var(--space-2); cursor: pointer;">
+                <i class="ph ph-image" style="font-size: 24px;"></i>
+                <span style="font-size: var(--text-xs);">갤러리</span>
+              </button>
+              <button style="background: transparent; border: none; color: white; display: flex; flex-direction: column; align-items: center; gap: var(--space-2); cursor: pointer;">
+                <i class="ph ph-arrows-clockwise" style="font-size: 24px;"></i>
+                <span style="font-size: var(--text-xs);">전환</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 12: FACE READING RESULT
+             ========================================== -->
+        <div class="slide" data-title="관상 결과">
+          <div style="height: 100%; background: var(--brand-light); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-light">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header">
+              <button class="header-btn">
+                <i class="ph ph-arrow-left" style="font-size: 24px;"></i>
+              </button>
+              <span class="header-title">관상 분석 결과</span>
+              <button class="header-btn">
+                <i class="ph ph-share-network" style="font-size: 24px;"></i>
+              </button>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; padding: var(--space-4); overflow-y: auto; padding-bottom: 100px;">
+
+              <!-- Face Preview -->
+              <div style="text-align: center; margin-bottom: var(--space-6);">
+                <div style="width: 120px; height: 120px; border-radius: 50%; background: var(--gray-200); margin: 0 auto var(--space-3); display: flex; align-items: center; justify-content: center;">
+                  <i class="ph ph-user" style="font-size: 60px; color: var(--gray-400);"></i>
+                </div>
+                <p style="font-size: var(--text-sm); color: var(--gray-600);">분석 완료</p>
+              </div>
+
+              <!-- 삼정 (Three Sections) Analysis -->
+              <div class="card" style="margin-bottom: var(--space-4);">
+                <h3 style="font-size: var(--text-base); font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">
+                  <i class="ph ph-ruler" style="color: var(--brand-primary);"></i>
+                  삼정 (三停) 분석
+                </h3>
+
+                <div class="face-grid">
+                  <div class="face-section">
+                    <div class="face-section-title">상정 (上停)</div>
+                    <div class="face-section-score">85</div>
+                    <p style="font-size: 10px; color: var(--gray-500); margin-top: var(--space-1);">초년운</p>
+                  </div>
+                  <div class="face-section">
+                    <div class="face-section-title">중정 (中停)</div>
+                    <div class="face-section-score">92</div>
+                    <p style="font-size: 10px; color: var(--gray-500); margin-top: var(--space-1);">중년운</p>
+                  </div>
+                  <div class="face-section">
+                    <div class="face-section-title">하정 (下停)</div>
+                    <div class="face-section-score">78</div>
+                    <p style="font-size: 10px; color: var(--gray-500); margin-top: var(--space-1);">말년운</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 오관 (Five Features) Analysis -->
+              <div class="card" style="margin-bottom: var(--space-4);">
+                <h3 style="font-size: var(--text-base); font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">
+                  <i class="ph ph-eye" style="color: var(--brand-primary);"></i>
+                  오관 (五官) 분석
+                </h3>
+
+                <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                  <div class="score-item">
+                    <span class="score-item-label">눈 (目)</span>
+                    <div class="score-item-bar">
+                      <div class="score-item-fill" style="width: 88%; background: var(--element-water);"></div>
+                    </div>
+                    <span class="score-item-value">88</span>
+                  </div>
+                  <div class="score-item">
+                    <span class="score-item-label">코 (鼻)</span>
+                    <div class="score-item-bar">
+                      <div class="score-item-fill" style="width: 82%; background: var(--element-earth);"></div>
+                    </div>
+                    <span class="score-item-value">82</span>
+                  </div>
+                  <div class="score-item">
+                    <span class="score-item-label">입 (口)</span>
+                    <div class="score-item-bar">
+                      <div class="score-item-fill" style="width: 75%; background: var(--element-fire);"></div>
+                    </div>
+                    <span class="score-item-value">75</span>
+                  </div>
+                  <div class="score-item">
+                    <span class="score-item-label">귀 (耳)</span>
+                    <div class="score-item-bar">
+                      <div class="score-item-fill" style="width: 90%; background: var(--element-metal);"></div>
+                    </div>
+                    <span class="score-item-value">90</span>
+                  </div>
+                  <div class="score-item">
+                    <span class="score-item-label">눈썹 (眉)</span>
+                    <div class="score-item-bar">
+                      <div class="score-item-fill" style="width: 85%; background: var(--element-wood);"></div>
+                    </div>
+                    <span class="score-item-value">85</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Summary -->
+              <div class="card">
+                <h3 style="font-size: var(--text-base); font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">
+                  <i class="ph ph-sparkle" style="color: var(--brand-accent);"></i>
+                  종합 해석
+                </h3>
+                <p style="font-size: var(--text-sm); color: var(--gray-700); line-height: 1.6;">
+                  전체적으로 균형 잡힌 관상입니다. 중정이 발달하여 30-50대에 크게 발복할 운세이며, 귀가 좋아 어른들의 도움을 받을 수 있습니다. 눈이 맑아 판단력이 뛰어납니다.
+                </p>
+              </div>
+            </div>
+
+            <!-- Bottom CTA -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-4); background: white; border-top: 1px solid var(--gray-200);">
+              <button class="btn btn-primary btn-full">
+                <i class="ph ph-chats-circle"></i>
+                더 자세히 상담받기
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 13: HISTORY
+             ========================================== -->
+        <div class="slide" data-title="기록">
+          <div style="height: 100%; background: var(--brand-light); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-light">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header">
+              <div style="width: 40px;"></div>
+              <span class="header-title">기록</span>
+              <button class="header-btn">
+                <i class="ph ph-funnel" style="font-size: 24px;"></i>
+              </button>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; padding: var(--space-4); overflow-y: auto; padding-bottom: 100px;">
+
+              <!-- Filter Tabs -->
+              <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-4); overflow-x: auto;">
+                <button class="btn btn-primary" style="padding: var(--space-2) var(--space-4); font-size: var(--text-sm); white-space: nowrap;">전체</button>
+                <button class="btn btn-secondary" style="padding: var(--space-2) var(--space-4); font-size: var(--text-sm); white-space: nowrap;">사주</button>
+                <button class="btn btn-secondary" style="padding: var(--space-2) var(--space-4); font-size: var(--text-sm); white-space: nowrap;">궁합</button>
+                <button class="btn btn-secondary" style="padding: var(--space-2) var(--space-4); font-size: var(--text-sm); white-space: nowrap;">관상</button>
+                <button class="btn btn-secondary" style="padding: var(--space-2) var(--space-4); font-size: var(--text-sm); white-space: nowrap;">상담</button>
+              </div>
+
+              <!-- History List -->
+              <div class="history-list">
+                <div class="history-item">
+                  <div class="history-icon" style="background: var(--element-water-gradient);">
+                    <i class="ph-fill ph-yin-yang"></i>
+                  </div>
+                  <div class="history-info">
+                    <div class="history-title">사주 분석</div>
+                    <div class="history-date">2026.01.17 오전 9:30</div>
+                  </div>
+                  <i class="ph ph-caret-right history-arrow"></i>
+                </div>
+
+                <div class="history-item">
+                  <div class="history-icon" style="background: var(--element-fire-gradient);">
+                    <i class="ph-fill ph-heart"></i>
+                  </div>
+                  <div class="history-info">
+                    <div class="history-title">궁합 - 김영희</div>
+                    <div class="history-date">2026.01.16 오후 3:15</div>
+                  </div>
+                  <i class="ph ph-caret-right history-arrow"></i>
+                </div>
+
+                <div class="history-item">
+                  <div class="history-icon" style="background: var(--element-wood-gradient);">
+                    <i class="ph-fill ph-chats-circle"></i>
+                  </div>
+                  <div class="history-info">
+                    <div class="history-title">청룡 상담</div>
+                    <div class="history-date">2026.01.15 오후 7:45</div>
+                  </div>
+                  <i class="ph ph-caret-right history-arrow"></i>
+                </div>
+
+                <div class="history-item">
+                  <div class="history-icon" style="background: var(--element-earth-gradient);">
+                    <i class="ph-fill ph-user-focus"></i>
+                  </div>
+                  <div class="history-info">
+                    <div class="history-title">관상 분석</div>
+                    <div class="history-date">2026.01.14 오전 11:20</div>
+                  </div>
+                  <i class="ph ph-caret-right history-arrow"></i>
+                </div>
+
+                <div class="history-item">
+                  <div class="history-icon" style="background: var(--element-water-gradient);">
+                    <i class="ph-fill ph-yin-yang"></i>
+                  </div>
+                  <div class="history-info">
+                    <div class="history-title">사주 분석</div>
+                    <div class="history-date">2026.01.10 오후 2:00</div>
+                  </div>
+                  <i class="ph ph-caret-right history-arrow"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+              <div class="nav-item">
+                <i class="ph ph-house"></i>
+                <span>홈</span>
+              </div>
+              <div class="nav-item">
+                <i class="ph ph-compass"></i>
+                <span>탐색</span>
+              </div>
+              <div class="nav-item active">
+                <i class="ph-fill ph-clock-counter-clockwise"></i>
+                <span>기록</span>
+              </div>
+              <div class="nav-item">
+                <i class="ph ph-user"></i>
+                <span>프로필</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 14: PROFILE
+             ========================================== -->
+        <div class="slide" data-title="프로필">
+          <div style="height: 100%; background: var(--brand-light); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-light">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header">
+              <div style="width: 40px;"></div>
+              <span class="header-title">프로필</span>
+              <button class="header-btn">
+                <i class="ph ph-gear" style="font-size: 24px;"></i>
+              </button>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; padding: var(--space-4); overflow-y: auto; padding-bottom: 100px;">
+
+              <!-- Profile Card -->
+              <div class="card" style="text-align: center; margin-bottom: var(--space-4);">
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--element-wood-gradient); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-3);">
+                  <i class="ph-fill ph-tree" style="font-size: 40px; color: white;"></i>
+                </div>
+                <h2 style="font-size: var(--text-xl); font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-1);">홍길동</h2>
+                <p style="font-size: var(--text-sm); color: var(--gray-600); margin-bottom: var(--space-3);">1990.05.15 묘시</p>
+
+                <div style="display: flex; justify-content: center; gap: var(--space-2); flex-wrap: wrap;">
+                  <span style="padding: var(--space-1) var(--space-3); background: var(--element-wood-light); color: var(--element-wood); border-radius: 12px; font-size: var(--text-xs); font-weight: 500;">
+                    수호신: 청룡
+                  </span>
+                  <span style="padding: var(--space-1) var(--space-3); background: var(--brand-light); color: var(--brand-primary); border-radius: 12px; font-size: var(--text-xs); font-weight: 500;">
+                    목(木) 기운
+                  </span>
+                </div>
+              </div>
+
+              <!-- Stats -->
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-bottom: var(--space-4);">
+                <div class="card" style="padding: var(--space-4); text-align: center;">
+                  <p style="font-size: var(--text-2xl); font-weight: 700; color: var(--brand-primary);">12</p>
+                  <p style="font-size: var(--text-xs); color: var(--gray-500);">분석 횟수</p>
+                </div>
+                <div class="card" style="padding: var(--space-4); text-align: center;">
+                  <p style="font-size: var(--text-2xl); font-weight: 700; color: var(--brand-primary);">5</p>
+                  <p style="font-size: var(--text-xs); color: var(--gray-500);">상담 횟수</p>
+                </div>
+                <div class="card" style="padding: var(--space-4); text-align: center;">
+                  <p style="font-size: var(--text-2xl); font-weight: 700; color: var(--brand-primary);">3</p>
+                  <p style="font-size: var(--text-xs); color: var(--gray-500);">궁합 분석</p>
+                </div>
+              </div>
+
+              <!-- Menu List -->
+              <div class="card" style="padding: 0;">
+                <div style="display: flex; align-items: center; padding: var(--space-4); border-bottom: 1px solid var(--gray-100); cursor: pointer;">
+                  <i class="ph ph-user-circle" style="font-size: 24px; color: var(--gray-600); margin-right: var(--space-3);"></i>
+                  <span style="flex: 1; font-size: var(--text-sm); color: var(--gray-800);">내 정보 수정</span>
+                  <i class="ph ph-caret-right" style="color: var(--gray-400);"></i>
+                </div>
+                <div style="display: flex; align-items: center; padding: var(--space-4); border-bottom: 1px solid var(--gray-100); cursor: pointer;">
+                  <i class="ph ph-crown" style="font-size: 24px; color: var(--brand-accent); margin-right: var(--space-3);"></i>
+                  <span style="flex: 1; font-size: var(--text-sm); color: var(--gray-800);">프리미엄 구독</span>
+                  <i class="ph ph-caret-right" style="color: var(--gray-400);"></i>
+                </div>
+                <div style="display: flex; align-items: center; padding: var(--space-4); border-bottom: 1px solid var(--gray-100); cursor: pointer;">
+                  <i class="ph ph-bell" style="font-size: 24px; color: var(--gray-600); margin-right: var(--space-3);"></i>
+                  <span style="flex: 1; font-size: var(--text-sm); color: var(--gray-800);">알림 설정</span>
+                  <i class="ph ph-caret-right" style="color: var(--gray-400);"></i>
+                </div>
+                <div style="display: flex; align-items: center; padding: var(--space-4); border-bottom: 1px solid var(--gray-100); cursor: pointer;">
+                  <i class="ph ph-question" style="font-size: 24px; color: var(--gray-600); margin-right: var(--space-3);"></i>
+                  <span style="flex: 1; font-size: var(--text-sm); color: var(--gray-800);">고객 지원</span>
+                  <i class="ph ph-caret-right" style="color: var(--gray-400);"></i>
+                </div>
+                <div style="display: flex; align-items: center; padding: var(--space-4); cursor: pointer;">
+                  <i class="ph ph-sign-out" style="font-size: 24px; color: var(--error); margin-right: var(--space-3);"></i>
+                  <span style="flex: 1; font-size: var(--text-sm); color: var(--error);">로그아웃</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+              <div class="nav-item">
+                <i class="ph ph-house"></i>
+                <span>홈</span>
+              </div>
+              <div class="nav-item">
+                <i class="ph ph-compass"></i>
+                <span>탐색</span>
+              </div>
+              <div class="nav-item">
+                <i class="ph ph-clock-counter-clockwise"></i>
+                <span>기록</span>
+              </div>
+              <div class="nav-item active">
+                <i class="ph-fill ph-user"></i>
+                <span>프로필</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             SLIDE 15: OTHER GUARDIANS GALLERY
+             ========================================== -->
+        <div class="slide" data-title="오방신 갤러리">
+          <div style="height: 100%; background: var(--brand-light); display: flex; flex-direction: column;">
+
+            <!-- Status Bar -->
+            <div class="status-bar status-bar-light">
+              <span>9:41</span>
+              <div class="status-icons">
+                <i class="ph ph-cell-signal-full"></i>
+                <i class="ph ph-wifi-high"></i>
+                <i class="ph ph-battery-full"></i>
+              </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header">
+              <button class="header-btn">
+                <i class="ph ph-arrow-left" style="font-size: 24px;"></i>
+              </button>
+              <span class="header-title">오방신 (五方神)</span>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; padding: var(--space-4); overflow-y: auto;">
+
+              <p style="font-size: var(--text-sm); color: var(--gray-600); margin-bottom: var(--space-6); text-align: center;">
+                동서남북과 중앙을 수호하는 다섯 신령
+              </p>
+
+              <!-- Guardian Cards Grid -->
+              <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+
+                <!-- 청룡 -->
+                <div class="card card-element card-wood" style="display: flex; align-items: center; gap: var(--space-4);">
+                  <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 32px;">
+                    <i class="ph-fill ph-tree"></i>
+                  </div>
+                  <div style="flex: 1;">
+                    <h3 style="font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-1);">청룡 (靑龍)</h3>
+                    <p style="font-size: var(--text-xs); opacity: 0.8;">목(木) · 동쪽 · 녹차밭</p>
+                  </div>
+                </div>
+
+                <!-- 주작 -->
+                <div class="card card-element card-fire" style="display: flex; align-items: center; gap: var(--space-4);">
+                  <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 32px;">
+                    <i class="ph-fill ph-fire"></i>
+                  </div>
+                  <div style="flex: 1;">
+                    <h3 style="font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-1);">주작 (朱雀)</h3>
+                    <p style="font-size: var(--text-xs); opacity: 0.8;">화(火) · 남쪽 · 용소</p>
+                  </div>
+                </div>
+
+                <!-- 황룡 -->
+                <div class="card card-element card-earth" style="display: flex; align-items: center; gap: var(--space-4);">
+                  <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 32px;">
+                    <i class="ph-fill ph-mountains"></i>
+                  </div>
+                  <div style="flex: 1;">
+                    <h3 style="font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-1);">황룡 (黃龍)</h3>
+                    <p style="font-size: var(--text-xs); opacity: 0.8;">토(土) · 중앙 · 약초원</p>
+                  </div>
+                </div>
+
+                <!-- 백호 -->
+                <div class="card card-element card-metal" style="display: flex; align-items: center; gap: var(--space-4); color: var(--gray-800);">
+                  <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; font-size: 32px;">
+                    <i class="ph-fill ph-diamonds-four"></i>
+                  </div>
+                  <div style="flex: 1;">
+                    <h3 style="font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-1);">백호 (白虎)</h3>
+                    <p style="font-size: var(--text-xs); opacity: 0.8;">금(金) · 서쪽 · 오하산방</p>
+                  </div>
+                </div>
+
+                <!-- 현무 -->
+                <div class="card card-element card-water" style="display: flex; align-items: center; gap: var(--space-4);">
+                  <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 32px;">
+                    <i class="ph-fill ph-drop"></i>
+                  </div>
+                  <div style="flex: 1;">
+                    <h3 style="font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-1);">현무 (玄武)</h3>
+                    <p style="font-size: var(--text-xs); opacity: 0.8;">수(水) · 북쪽 · 명당 기도터</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+      <button class="nav-btn" onclick="changeSlide(-1)" id="prevBtn">
+        <i class="ph ph-caret-left" style="font-size: 24px;"></i>
+      </button>
+      <span class="slide-counter" id="slideCounter">1 / 15</span>
+      <button class="nav-btn" onclick="changeSlide(1)" id="nextBtn">
+        <i class="ph ph-caret-right" style="font-size: 24px;"></i>
+      </button>
+    </div>
+
+    <div class="slide-dots" id="slideDots"></div>
+    <div class="slide-title" id="slideTitle"></div>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const dotsContainer = document.getElementById('slideDots');
+
+    // Create dots
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.onclick = () => goToSlide(i);
+      dotsContainer.appendChild(dot);
+    }
+
+    function updateSlide() {
+      slides.forEach((slide, index) => {
+        slide.classList.remove('active');
+        if (index === currentSlide) {
+          slide.classList.add('active');
+        }
+      });
+
+      // Update dots
+      document.querySelectorAll('.dot').forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSlide);
+      });
+
+      // Update counter
+      document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+
+      // Update title
+      const slideTitle = slides[currentSlide].dataset.title;
+      document.getElementById('slideTitle').textContent = slideTitle || '';
+
+      // Update buttons
+      document.getElementById('prevBtn').disabled = currentSlide === 0;
+      document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+    }
+
+    function changeSlide(direction) {
+      currentSlide = Math.max(0, Math.min(totalSlides - 1, currentSlide + direction));
+      updateSlide();
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      updateSlide();
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        changeSlide(1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        changeSlide(-1);
+      }
+    });
+
+    // Initialize
+    updateSlide();
+  </script>
+</body>
+</html>

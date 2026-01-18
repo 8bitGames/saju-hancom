@@ -115,7 +115,7 @@ export default function Slide04Product() {
               <div className="relative h-64 w-32 overflow-hidden rounded-3xl border-4 border-white/20 bg-gradient-to-br from-purple-900 to-pink-900">
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
                   <Sparkle size={48} weight="fill" className="mb-4 text-purple-300" />
-                  <p className="text-center text-xs text-white/80">한사 AI</p>
+                  <p className="text-center text-xs text-white/80">청기운</p>
                   <p className="text-center text-xs text-white/50">사주 분석 화면</p>
                 </div>
               </div>

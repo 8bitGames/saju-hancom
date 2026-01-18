@@ -57,7 +57,7 @@ const STATE_CONFIG: Record<
   },
   speaking: {
     icon: <Waveform weight="fill" size={24} />,
-    label: "Hansa is speaking",
+    label: "Cheonggiun is speaking",
     color: "bg-blue-500",
     pulse: true,
   },
@@ -136,8 +136,8 @@ export function VoiceChatButton({
         className={cn(
           "py-3 px-4 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap",
           state === "idle" || state === "error"
-            ? "text-white/60 hover:text-white hover:bg-white/5"
-            : "bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-lg",
+            ? "text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+            : "bg-gradient-to-r from-[#C4A35A] to-[#a88f4a] text-white shadow-lg",
           stateConfig.pulse && "animate-pulse",
           className
         )}
@@ -184,26 +184,26 @@ export function VoiceChatButton({
     <div
       className={cn(
         "w-80 rounded-2xl shadow-xl",
-        "bg-gray-900/95 backdrop-blur-sm border border-gray-700",
+        "bg-white border border-gray-200",
         "overflow-hidden"
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gray-800/50">
+      <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <div
             className={cn(
               "w-2 h-2 rounded-full",
-              isConnected ? "bg-green-500 animate-pulse" : "bg-gray-500"
+              isConnected ? "bg-green-500 animate-pulse" : "bg-gray-400"
             )}
           />
-          <span className="text-sm font-medium text-white">
+          <span className="text-sm font-medium text-gray-800">
             {isConnected ? "Voice Chat Active" : "Voice Chat"}
           </span>
         </div>
         <button
           onClick={handleDisconnect}
-          className="p-1 rounded-full hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
+          className="p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-800 transition-colors"
           aria-label="음성 채팅 닫기"
         >
           <X weight="bold" size={18} />
@@ -211,34 +211,34 @@ export function VoiceChatButton({
       </div>
 
       {/* Transcript Display */}
-      <div className="px-4 py-3 min-h-[100px] max-h-[200px] overflow-y-auto">
+      <div className="px-4 py-3 min-h-[100px] max-h-[200px] overflow-y-auto bg-white">
         {error && (
-          <div className="text-sm text-red-400 mb-2">{error}</div>
+          <div className="text-sm text-red-500 mb-2">{error}</div>
         )}
 
         {state === "listening" && userTranscript && (
           <div className="mb-2">
             <span className="text-xs text-gray-500 block mb-1">You:</span>
-            <p className="text-sm text-gray-300">{userTranscript}</p>
+            <p className="text-sm text-gray-600">{userTranscript}</p>
           </div>
         )}
 
         {(state === "processing" || state === "speaking") && aiTranscript && (
           <div>
-            <span className="text-xs text-gray-500 block mb-1">Hansa:</span>
-            <p className="text-sm text-white">{aiTranscript}</p>
+            <span className="text-xs text-gray-500 block mb-1">Cheonggiun:</span>
+            <p className="text-sm text-gray-800">{aiTranscript}</p>
           </div>
         )}
 
         {state === "connecting" && (
           <div className="flex items-center justify-center h-16">
-            <SpinnerGap weight="bold" size={32} className="animate-spin text-violet-500" />
+            <SpinnerGap weight="bold" size={32} className="animate-spin text-[#C4A35A]" />
           </div>
         )}
 
         {state === "ready" && !userTranscript && !aiTranscript && (
           <div className="text-center text-gray-500 text-sm py-4">
-            Start speaking to Hansa
+            Start speaking to Cheonggiun
           </div>
         )}
 
@@ -256,13 +256,13 @@ export function VoiceChatButton({
                 />
               ))}
             </div>
-            <span className="text-sm text-gray-400">Listening...</span>
+            <span className="text-sm text-gray-500">Listening...</span>
           </div>
         )}
       </div>
 
       {/* Controls */}
-      <div className="flex items-center justify-center gap-4 px-4 py-4 bg-gray-800/30">
+      <div className="flex items-center justify-center gap-4 px-4 py-4 bg-gray-50 border-t border-gray-100">
         {/* Mute Button */}
         <button
           onClick={toggleMute}
@@ -270,8 +270,8 @@ export function VoiceChatButton({
           className={cn(
             "p-3 rounded-full transition-all duration-200",
             isMuted
-              ? "bg-red-600 hover:bg-red-700 text-white"
-              : "bg-gray-700 hover:bg-gray-600 text-white",
+              ? "bg-red-500 hover:bg-red-600 text-white"
+              : "bg-gray-200 hover:bg-gray-300 text-gray-700",
             !isConnected && "opacity-50 cursor-not-allowed"
           )}
           title={isMuted ? "Unmute" : "Mute"}
@@ -317,7 +317,7 @@ export function VoiceChatButton({
       </div>
 
       {/* Status Bar */}
-      <div className="px-4 py-2 bg-gray-800/50 text-center">
+      <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 text-center">
         <span className="text-xs text-gray-500">{stateConfig.label}</span>
       </div>
     </div>

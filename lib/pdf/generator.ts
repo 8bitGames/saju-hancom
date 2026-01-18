@@ -256,7 +256,7 @@ export function generatePDFHTML(data: SajuPDFData): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hansa AI - 사주 분석 결과</title>
+  <title>청기운 - 사주 분석 결과</title>
   <style>
     @page {
       size: A4;
@@ -393,7 +393,7 @@ export function generatePDFHTML(data: SajuPDFData): string {
 </head>
 <body>
   <div class="logo">
-    <h1>Hansa AI</h1>
+    <h1>청기운</h1>
     <p>AI 기반 사주 분석 시스템</p>
   </div>
 
@@ -704,7 +704,7 @@ export function generatePDFHTML(data: SajuPDFData): string {
     <p>이 분석은 전통 명리학을 기반으로 한 참고용 정보입니다.</p>
     <p>개인의 운명은 노력과 선택에 의해 얼마든지 바뀔 수 있습니다.</p>
     <p style="margin-top: 8px;">생성일: ${new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-    <p class="brand">Powered by Hansa AI</p>
+    <p class="brand">Powered by 청기운</p>
   </div>
 </body>
 </html>
@@ -714,7 +714,7 @@ export function generatePDFHTML(data: SajuPDFData): string {
 /**
  * Download PDF using browser print dialog
  */
-export async function downloadPDF(data: SajuPDFData, filename: string = 'hansa-ai-saju-report.pdf') {
+export async function downloadPDF(data: SajuPDFData, filename: string = 'cheonggiun-saju-report.pdf') {
   console.log('[PDF] Starting PDF generation...', { filename });
 
   try {
@@ -843,7 +843,7 @@ export function generateCoupleCompatibilityPDFHTML(data: CoupleCompatibilityPDFD
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hansa AI - 커플 궁합 분석 결과</title>
+  <title>청기운 - 커플 궁합 분석 결과</title>
   <style>
     @page {
       size: A4;
@@ -1076,7 +1076,7 @@ export function generateCoupleCompatibilityPDFHTML(data: CoupleCompatibilityPDFD
 </head>
 <body>
   <div class="logo">
-    <h1>Hansa AI</h1>
+    <h1>청기운</h1>
     <p>AI 기반 커플 궁합 분석</p>
   </div>
 
@@ -1232,7 +1232,7 @@ export function generateCoupleCompatibilityPDFHTML(data: CoupleCompatibilityPDFD
     <p>이 분석은 전통 명리학을 기반으로 한 참고용 정보입니다.</p>
     <p>두 분의 관계는 서로의 노력과 이해로 더욱 발전할 수 있습니다.</p>
     <p style="margin-top: 8px;">생성일: ${new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-    <p class="brand">Powered by Hansa AI</p>
+    <p class="brand">Powered by 청기운</p>
   </div>
 </body>
 </html>
@@ -1244,7 +1244,7 @@ export function generateCoupleCompatibilityPDFHTML(data: CoupleCompatibilityPDFD
  */
 export async function downloadCoupleCompatibilityPDF(
   data: CoupleCompatibilityPDFData,
-  filename: string = 'hansa-ai-couple-compatibility.pdf'
+  filename: string = 'cheonggiun-couple-compatibility.pdf'
 ) {
   console.log('[PDF] Starting Couple Compatibility PDF generation...', { filename });
 
@@ -1349,7 +1349,7 @@ export function generateCompatibilityPDFHTML(data: CompatibilityPDFData): string
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hansa AI - 궁합 분석 결과</title>
+  <title>청기운 - 궁합 분석 결과</title>
   <style>
     @page {
       size: A4;
@@ -1569,7 +1569,7 @@ export function generateCompatibilityPDFHTML(data: CompatibilityPDFData): string
 </head>
 <body>
   <div class="logo">
-    <h1>Hansa AI</h1>
+    <h1>청기운</h1>
     <p>AI 기반 궁합 분석</p>
   </div>
 
@@ -1709,7 +1709,7 @@ export function generateCompatibilityPDFHTML(data: CompatibilityPDFData): string
     <p>이 분석은 전통 명리학을 기반으로 한 참고용 정보입니다.</p>
     <p>두 분의 관계는 서로의 노력과 이해로 더욱 발전할 수 있습니다.</p>
     <p style="margin-top: 8px;">생성일: ${new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-    <p class="brand">Powered by Hansa AI</p>
+    <p class="brand">Powered by 청기운</p>
   </div>
 </body>
 </html>
@@ -1721,7 +1721,7 @@ export function generateCompatibilityPDFHTML(data: CompatibilityPDFData): string
  */
 export async function downloadCompatibilityPDF(
   data: CompatibilityPDFData,
-  filename: string = 'hansa-ai-compatibility.pdf'
+  filename: string = 'cheonggiun-compatibility.pdf'
 ) {
   console.log('[PDF] Starting Compatibility PDF generation...', { filename });
 
@@ -1856,7 +1856,7 @@ export function generatePipelinePDFHTML(data: PipelinePDFData): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hansa AI - 전문 사주 분석 결과</title>
+  <title>청기운 - 전문 사주 분석 결과</title>
   <style>
     @page {
       size: A4;
@@ -2168,7 +2168,7 @@ export function generatePipelinePDFHTML(data: PipelinePDFData): string {
 </head>
 <body>
   <div class="logo">
-    <h1>Hansa AI</h1>
+    <h1>청기운</h1>
     <p>AI 기반 전문 사주 분석</p>
   </div>
 
@@ -2532,7 +2532,7 @@ export function generatePipelinePDFHTML(data: PipelinePDFData): string {
     <p>이 분석은 전통 명리학을 기반으로 한 참고용 정보입니다.</p>
     <p>개인의 운명은 노력과 선택에 의해 얼마든지 바뀔 수 있습니다.</p>
     <p style="margin-top: 6px;">생성일: ${new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-    <p class="brand">Powered by Hansa AI - 6단계 전문 사주 분석</p>
+    <p class="brand">Powered by 청기운 - 6단계 전문 사주 분석</p>
   </div>
 </body>
 </html>
@@ -2544,7 +2544,7 @@ export function generatePipelinePDFHTML(data: PipelinePDFData): string {
  */
 export async function downloadPipelinePDF(
   data: PipelinePDFData,
-  filename: string = 'hansa-ai-professional-saju.pdf'
+  filename: string = 'cheonggiun-professional-saju.pdf'
 ) {
   console.log('[PDF] Starting Pipeline PDF generation...', { filename });
 
@@ -3948,7 +3948,7 @@ function generateDetailedCompatibilityPDFHTML(data: DetailedCompatibilityPDFData
     <footer class="footer">
       <p>본 분석은 전통 명리학을 기반으로 한 참고 자료입니다.</p>
       <p>생성일: ${new Date().toLocaleDateString('ko-KR')}</p>
-      <p>Hansa AI - AI 운세 마스터</p>
+      <p>청기운 - AI 운세 마스터</p>
     </footer>
   </div>
 </body>

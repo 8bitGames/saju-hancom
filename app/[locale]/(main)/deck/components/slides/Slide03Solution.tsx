@@ -33,7 +33,7 @@ export default function Slide03Solution() {
   return (
     <SlideWrapper>
       <div className="flex h-full flex-col items-center justify-center">
-        <SlideTitle>한사 AI 솔루션</SlideTitle>
+        <SlideTitle>청기운 솔루션</SlideTitle>
 
         <motion.p
           initial={{ opacity: 0 }}

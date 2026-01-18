@@ -326,3 +326,231 @@ export const ELEMENT_INFO = ELEMENT_ORDER.map((element) => ({
   guardian: GUARDIANS[element],
   korean: elementTypeToKorean(element),
 }));
+
+/**
+ * 수호신 인사말
+ */
+export const GUARDIAN_GREETINGS: Record<ElementType, { ko: string; en: string }> = {
+  wood: {
+    ko: '안녕하세요, 저는 동쪽 녹차밭을 지키는 청룡입니다. 오늘도 성장의 기운을 전해드릴게요.',
+    en: "Hello, I am Azure Dragon, guardian of the eastern green tea fields. Let me share the energy of growth with you today.",
+  },
+  fire: {
+    ko: '반갑습니다! 저는 남쪽 용소를 지키는 주작이에요. 오늘 당신의 열정에 불을 지펴드릴게요!',
+    en: "Greetings! I am Vermilion Bird, guardian of the southern Dragon Pond. Let me ignite your passion today!",
+  },
+  earth: {
+    ko: '어서 오세요. 저는 중앙 약초원을 돌보는 황룡입니다. 편안한 마음으로 이야기 나눠요.',
+    en: "Welcome. I am Yellow Dragon, tender of the central herb garden. Let's talk with a peaceful heart.",
+  },
+  metal: {
+    ko: '만나서 반갑습니다. 저는 서쪽 오하산방을 지키는 백호입니다. 명료한 답을 드리겠습니다.',
+    en: "Pleased to meet you. I am White Tiger, guardian of the western Tea House. I will give you clear answers.",
+  },
+  water: {
+    ko: '안녕하세요. 저는 북쪽 명당 기도터를 수호하는 현무입니다. 깊은 지혜를 나누어 드릴게요.',
+    en: "Hello. I am Black Tortoise, protector of the northern Sacred Ground. Let me share deep wisdom with you.",
+  },
+};
+
+/**
+ * 수호신 채팅 추천 질문
+ */
+export const GUARDIAN_PROMPTS: Record<ElementType, { ko: string[]; en: string[] }> = {
+  wood: {
+    ko: [
+      '오늘 새로운 시작을 하기에 좋은 날인가요?',
+      '창의력을 높이려면 어떻게 해야 할까요?',
+      '성장을 위해 지금 집중해야 할 것은?',
+      '녹차밭에서 가장 좋은 시간은 언제인가요?',
+    ],
+    en: [
+      'Is today a good day for new beginnings?',
+      'How can I boost my creativity?',
+      'What should I focus on for growth?',
+      'When is the best time at the green tea field?',
+    ],
+  },
+  fire: {
+    ko: [
+      '오늘 열정을 불태울 수 있는 일은?',
+      '용기가 필요할 때 어떻게 해야 하나요?',
+      '인간관계에서 주의할 점은?',
+      '용소에서 느낄 수 있는 에너지는?',
+    ],
+    en: [
+      'What can I put my passion into today?',
+      'What should I do when I need courage?',
+      'What should I be careful about in relationships?',
+      'What energy can I feel at Dragon Pond?',
+    ],
+  },
+  earth: {
+    ko: [
+      '마음의 안정을 찾으려면 어떻게 해야 할까요?',
+      '균형 잡힌 하루를 보내려면?',
+      '건강을 위해 오늘 할 수 있는 일은?',
+      '약초원에서 추천하는 활동은?',
+    ],
+    en: [
+      'How can I find peace of mind?',
+      'How can I have a balanced day?',
+      'What can I do for my health today?',
+      'What activities do you recommend at the herb garden?',
+    ],
+  },
+  metal: {
+    ko: [
+      '중요한 결정을 앞두고 있는데 조언해 주세요',
+      '집중력을 높이는 방법은?',
+      '불필요한 것을 정리하려면?',
+      '오하산방에서의 다도 체험은 어떤가요?',
+    ],
+    en: [
+      'I have an important decision - any advice?',
+      'How can I improve my focus?',
+      'How can I declutter what is unnecessary?',
+      'What is the tea ceremony like at the Tea House?',
+    ],
+  },
+  water: {
+    ko: [
+      '직관을 믿어도 될까요?',
+      '깊은 고민이 있는데 도움을 주세요',
+      '내면의 평화를 찾는 방법은?',
+      '명당에서 기도하면 어떤 효과가 있나요?',
+    ],
+    en: [
+      'Can I trust my intuition?',
+      'I have a deep concern - can you help?',
+      'How can I find inner peace?',
+      'What benefits come from praying at the Sacred Ground?',
+    ],
+  },
+};
+
+/**
+ * 수호신 일일 메시지 (날짜와 오행에 따라 결정)
+ */
+export const GUARDIAN_DAILY_MESSAGES: Record<ElementType, { ko: string[]; en: string[] }> = {
+  wood: {
+    ko: [
+      '오늘은 새로운 시작에 좋은 기운이 감돌고 있어요. 도전을 두려워하지 마세요.',
+      '성장과 발전의 에너지가 넘치는 하루입니다. 배움에 집중해 보세요.',
+      '창의적인 아이디어가 떠오르는 날이에요. 메모해 두세요!',
+      '녹차밭의 아침 안개처럼, 맑은 마음으로 하루를 시작하세요.',
+      '새순이 돋듯이, 오늘 당신 안에서도 새로운 가능성이 피어나요.',
+    ],
+    en: [
+      'Good energy for new beginnings today. Do not fear challenges.',
+      'A day full of growth energy. Focus on learning.',
+      'Creative ideas will come today. Make sure to note them down!',
+      'Like morning mist on the tea field, start your day with a clear mind.',
+      'Like new sprouts emerging, new possibilities bloom within you today.',
+    ],
+  },
+  fire: {
+    ko: [
+      '열정과 활력이 넘치는 하루가 될 거예요. 자신감을 가지세요!',
+      '인간관계에서 좋은 일이 생길 수 있어요. 주변 사람들에게 따뜻하게 대해주세요.',
+      '적극적인 행동이 좋은 결과를 가져올 거예요.',
+      '용소의 불꽃처럼, 오늘 당신의 열정을 마음껏 표현하세요.',
+      '따뜻한 마음으로 다가가면, 좋은 인연이 찾아올 거예요.',
+    ],
+    en: [
+      'Today will be full of passion and vitality. Have confidence!',
+      'Good things may happen in your relationships. Be warm to those around you.',
+      'Active actions will bring good results.',
+      'Like the flames of Dragon Pond, express your passion fully today.',
+      'Approach with a warm heart, and good connections will come.',
+    ],
+  },
+  earth: {
+    ko: [
+      '안정적인 에너지가 감도는 하루예요. 차분하게 일을 처리하세요.',
+      '신뢰와 믿음이 중요한 날입니다. 약속을 꼭 지켜주세요.',
+      '꾸준함이 빛을 발하는 날이에요. 기본에 충실하세요.',
+      '약초원의 향기처럼, 오늘 하루 마음의 치유를 경험하세요.',
+      '대지처럼 든든하게, 주변 사람들에게 의지가 되어주세요.',
+    ],
+    en: [
+      'A day with stable energy. Handle things calmly.',
+      'Trust and faith are important today. Keep your promises.',
+      'A day where consistency shines. Stick to basics.',
+      'Like the fragrance of the herb garden, experience healing today.',
+      'Be reliable like the earth, be someone others can depend on.',
+    ],
+  },
+  metal: {
+    ko: [
+      '결단력이 필요한 날이에요. 망설이지 말고 결정하세요.',
+      '정리정돈과 마무리에 좋은 기운이 있어요.',
+      '명확한 목표를 세우고 실행에 옮기세요.',
+      '오하산방의 차처럼, 오늘은 맑고 깨끗한 마음을 유지하세요.',
+      '불필요한 것을 덜어내고, 본질에 집중하는 하루가 되길.',
+    ],
+    en: [
+      'A day requiring decisiveness. Do not hesitate to decide.',
+      'Good energy for organizing and finishing tasks.',
+      'Set clear goals and take action.',
+      'Like tea at the Tea House, maintain a clear and pure mind today.',
+      'May this be a day of removing the unnecessary and focusing on essence.',
+    ],
+  },
+  water: {
+    ko: [
+      '직관과 통찰력이 높아지는 날이에요. 내면의 목소리에 귀 기울여 보세요.',
+      '유연한 대처가 필요한 하루예요. 흐름에 맡겨보세요.',
+      '깊이 있는 대화가 좋은 관계를 만들어줄 거예요.',
+      '명당의 맑은 기운처럼, 오늘 마음속 잡념을 비워보세요.',
+      '고요한 물이 깊은 것처럼, 내면의 깊이를 탐구해 보세요.',
+    ],
+    en: [
+      'Intuition and insight are heightened today. Listen to your inner voice.',
+      'A day requiring flexibility. Go with the flow.',
+      'Deep conversations will create good relationships.',
+      'Like the pure energy of the Sacred Ground, empty your mind today.',
+      'Like still waters run deep, explore your inner depths.',
+    ],
+  },
+};
+
+/**
+ * 오늘의 수호신 메시지 가져오기
+ */
+export function getTodayGuardianMessage(
+  element: ElementType,
+  locale: 'ko' | 'en' = 'ko'
+): string {
+  const messages = GUARDIAN_DAILY_MESSAGES[element][locale];
+  const today = new Date();
+  const dayOfYear = Math.floor(
+    (today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) /
+      (1000 * 60 * 60 * 24)
+  );
+  return messages[dayOfYear % messages.length];
+}
+
+/**
+ * 오늘의 담당 수호신 (날짜 기반 로테이션)
+ */
+export function getTodayGuardian(): Guardian {
+  const today = new Date();
+  const dayOfYear = Math.floor(
+    (today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) /
+      (1000 * 60 * 60 * 24)
+  );
+  return GUARDIANS[ELEMENT_ORDER[dayOfYear % 5]];
+}
+
+/**
+ * 오늘의 담당 오행 (날짜 기반 로테이션)
+ */
+export function getTodayElement(): ElementType {
+  const today = new Date();
+  const dayOfYear = Math.floor(
+    (today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) /
+      (1000 * 60 * 60 * 24)
+  );
+  return ELEMENT_ORDER[dayOfYear % 5];
+}

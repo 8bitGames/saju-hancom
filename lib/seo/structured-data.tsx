@@ -1,6 +1,6 @@
 import Script from 'next/script';
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://hansa.ai.kr';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://cheonggiun.ai.kr';
 
 // Organization Schema
 export function OrganizationSchema() {
@@ -8,8 +8,8 @@ export function OrganizationSchema() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     '@id': `${baseUrl}/#organization`,
-    name: '한사 AI',
-    alternateName: ['Hansa AI', 'HansaAI', '한사AI'],
+    name: '청기운',
+    alternateName: ['Cheonggiun', 'HansaAI', '한사AI'],
     url: baseUrl,
     logo: {
       '@type': 'ImageObject',
@@ -43,8 +43,8 @@ export function WebSiteSchema() {
     '@type': 'WebSite',
     '@id': `${baseUrl}/#website`,
     url: baseUrl,
-    name: '한사 AI',
-    alternateName: 'Hansa AI - AI Fortune Analysis',
+    name: '청기운',
+    alternateName: 'Cheonggiun - AI Fortune Analysis',
     description: 'AI 기반의 사주, 궁합, 관상 분석으로 당신의 운명을 알아보세요.',
     publisher: {
       '@id': `${baseUrl}/#organization`,
@@ -75,7 +75,7 @@ export function WebApplicationSchema() {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     '@id': `${baseUrl}/#webapp`,
-    name: '한사 AI',
+    name: '청기운',
     url: baseUrl,
     applicationCategory: 'LifestyleApplication',
     operatingSystem: 'Any',
@@ -197,10 +197,10 @@ export function FAQSchema() {
     mainEntity: [
       {
         '@type': 'Question',
-        name: '한사 AI는 어떤 서비스인가요?',
+        name: '청기운는 어떤 서비스인가요?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: '한사 AI는 AI 기술을 활용하여 사주팔자, 궁합, 관상 분석을 제공하는 서비스입니다. 정확한 만세력 데이터를 기반으로 개인 맞춤형 운세 분석을 제공합니다.',
+          text: '청기운는 AI 기술을 활용하여 사주팔자, 궁합, 관상 분석을 제공하는 서비스입니다. 정확한 만세력 데이터를 기반으로 개인 맞춤형 운세 분석을 제공합니다.',
         },
       },
       {
@@ -229,7 +229,7 @@ export function FAQSchema() {
       },
       {
         '@type': 'Question',
-        name: '한사 AI는 무료인가요?',
+        name: '청기운는 무료인가요?',
         acceptedAnswer: {
           '@type': 'Answer',
           text: '기본적인 사주, 궁합, 관상 분석은 무료로 제공됩니다. 더 상세한 분석과 추가 기능은 프리미엄 구독을 통해 이용하실 수 있습니다.',
@@ -240,7 +240,7 @@ export function FAQSchema() {
         name: 'AI 운세 분석의 정확도는 어떤가요?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: '한사 AI는 정확한 만세력 데이터와 전통 명리학 이론을 기반으로 분석합니다. AI 기술을 통해 일관되고 객관적인 분석을 제공하며, 지속적으로 정확도를 개선하고 있습니다.',
+          text: '청기운는 정확한 만세력 데이터와 전통 명리학 이론을 기반으로 분석합니다. AI 기술을 통해 일관되고 객관적인 분석을 제공하며, 지속적으로 정확도를 개선하고 있습니다.',
         },
       },
     ],
@@ -399,7 +399,7 @@ export function SoftwareApplicationSchema() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: '한사 AI',
+    name: '청기운',
     applicationCategory: 'LifestyleApplication',
     operatingSystem: 'Web',
     offers: {

@@ -35,24 +35,24 @@ export default async function FaceReadingPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-2 py-4">
-        <p className="text-[#ef4444] text-sm font-medium tracking-wider">
+        <p className="text-[#C4A35A] text-sm font-medium tracking-wider">
           觀相分析
         </p>
-        <h1 className="text-2xl font-bold text-text-primary">
+        <h1 className="text-2xl font-bold text-gray-800">
           {t("title")}
         </h1>
-        <p className="text-text-secondary text-sm">
+        <p className="text-gray-500 text-sm">
           {t("subtitle")}
         </p>
       </div>
 
       {/* Form Card */}
-      <div className="bg-white rounded-2xl p-5 border border-border shadow-sm">
+      <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
         <FaceReadingFormWrapper />
       </div>
 
       {/* Privacy Notice */}
-      <p className="text-center text-xs text-text-muted px-4">
+      <p className="text-center text-xs text-gray-400 px-4">
         관상 분석은 재미를 위한 참고용 정보입니다
       </p>
     </div>
