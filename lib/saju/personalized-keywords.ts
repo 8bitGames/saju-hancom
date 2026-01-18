@@ -787,16 +787,16 @@ export const CATEGORY_GROUNDING_INTENSITY: Record<string, GroundingIntensity> = 
  * 그라운딩 강도별 프롬프트 템플릿 (한국어)
  */
 export const GROUNDING_PROMPTS_KO: Record<GroundingIntensity, string> = {
-  HIGH: `⚠️ **중요: 반드시 검색을 활용하세요!**
+  HIGH: `**중요: 반드시 검색을 활용하세요!**
 이 카테고리는 시의성 있는 정보가 핵심입니다.
 반드시 {year}년 최신 정보를 Google 검색하여 구체적인 데이터와 트렌드를 인용하세요.
 검색 없이는 정확한 조언이 불가능합니다.`,
 
-  MEDIUM: `📊 **최신 트렌드 참고 권장**
+  MEDIUM: `**최신 트렌드 참고 권장**
 {year}년 관련 트렌드나 통계가 답변 품질을 높일 수 있다면 검색을 활용하세요.
 전통적 해석과 현대 트렌드를 적절히 조화시켜 답변해주세요.`,
 
-  LOW: `📖 **전통적 해석 중심**
+  LOW: `**전통적 해석 중심**
 사주의 전통적 해석을 중심으로 답변하세요.
 최신 트렌드 검색은 특별히 필요한 경우에만 활용하세요.`,
 };
@@ -805,16 +805,16 @@ export const GROUNDING_PROMPTS_KO: Record<GroundingIntensity, string> = {
  * 그라운딩 강도별 프롬프트 템플릿 (영어)
  */
 export const GROUNDING_PROMPTS_EN: Record<GroundingIntensity, string> = {
-  HIGH: `⚠️ **IMPORTANT: You MUST use search!**
+  HIGH: `**IMPORTANT: You MUST use search!**
 This category requires timely information.
 You MUST search for {year} latest data and trends using Google Search.
 Accurate advice is impossible without searching.`,
 
-  MEDIUM: `📊 **Recommended: Reference Current Trends**
+  MEDIUM: `**Recommended: Reference Current Trends**
 If {year} trends or statistics would improve your answer quality, use search.
 Balance traditional interpretation with modern trends in your response.`,
 
-  LOW: `📖 **Traditional Interpretation Focus**
+  LOW: `**Traditional Interpretation Focus**
 Focus on traditional birth chart interpretation.
 Use trend searching only when specifically needed.`,
 };

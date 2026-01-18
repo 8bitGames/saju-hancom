@@ -380,7 +380,7 @@ async function generateHourlyInterpretation(
 ${hourlyFortunes.hourlyFortunes
   .map(
     (h) =>
-      `- ${h.periodName}(${h.timeRange}): ${h.gradeKorean} ${h.hasHarmony ? "✨합" : ""} ${h.hasClash ? "⚠️충" : ""}`
+      `- ${h.periodName}(${h.timeRange}): ${h.gradeKorean} ${h.hasHarmony ? "[합]" : ""} ${h.hasClash ? "[충]" : ""}`
   )
   .join("\n")}
 

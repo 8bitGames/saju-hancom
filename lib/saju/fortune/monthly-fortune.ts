@@ -323,20 +323,20 @@ export function getMonthFortuneSummary(
   const highlights: string[] = [];
 
   if (interaction.harmonies.length > 0) {
-    highlights.push(`✨ ${interaction.harmonies.join(", ")}`);
+    highlights.push(interaction.harmonies.join(", "));
   }
   if (interaction.clashes.length > 0) {
-    highlights.push(`⚠️ ${interaction.clashes.join(", ")}`);
+    highlights.push(interaction.clashes.join(", "));
   }
   if (usefulGodResult.relation === "support") {
-    highlights.push("💪 용신에 좋은 달");
+    highlights.push("용신에 좋은 달");
   } else if (usefulGodResult.relation === "against") {
-    highlights.push("🔻 용신에 불리한 달");
+    highlights.push("용신에 불리한 달");
   }
 
   const termInfo = MONTH_SOLAR_TERMS[month];
   if (termInfo) {
-    highlights.push(`📅 ${termInfo.name} 시작`);
+    highlights.push(`${termInfo.name} 시작`);
   }
 
   return {

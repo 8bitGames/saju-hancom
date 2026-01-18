@@ -293,17 +293,17 @@ export function getCurrentHourFortuneSummary(
   const highlights: string[] = [];
 
   if (result.baseAnalysis.natalInteraction.harmonies.length > 0) {
-    highlights.push(`✨ ${result.baseAnalysis.natalInteraction.harmonies.join(", ")}`);
+    highlights.push(result.baseAnalysis.natalInteraction.harmonies.join(", "));
   }
   if (result.baseAnalysis.natalInteraction.clashes.length > 0) {
-    highlights.push(`⚠️ ${result.baseAnalysis.natalInteraction.clashes.join(", ")}`);
+    highlights.push(result.baseAnalysis.natalInteraction.clashes.join(", "));
   }
 
   const usefulGodResult = analyzeUsefulGodRelation(result.pillar.element as Element, usefulGodElement);
   if (usefulGodResult.relation === "support") {
-    highlights.push("💪 용신에 좋은 시간");
+    highlights.push("용신에 좋은 시간");
   } else if (usefulGodResult.relation === "against") {
-    highlights.push("🔻 용신에 불리한 시간");
+    highlights.push("용신에 불리한 시간");
   }
 
   // 다음 좋은 시간대 찾기

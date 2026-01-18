@@ -1,11 +1,34 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Noto_Sans_KR } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { HomePageSchema } from "@/lib/seo/structured-data";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// Pretendard font - Korean-optimized modern sans-serif
+const pretendard = localFont({
+  src: [
+    {
+      path: "../public/fonts/Pretendard-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Pretendard-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Pretendard-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Pretendard-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-pretendard",
   display: "swap",
   preload: true,
 });
@@ -15,15 +38,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
   display: "swap",
   preload: false, // Mono is less critical, load on demand
-});
-
-const notoSansKR = Noto_Sans_KR({
-  variable: "--font-noto-sans-kr",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"], // Removed 600, use 500 or 700 instead
-  display: "swap",
-  preload: true,
-  adjustFontFallback: true, // Reduce CLS by adjusting fallback metrics
 });
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://hansa.ai.kr';
@@ -171,10 +185,15 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${notoSansKR.variable} antialiased`}
+        className={`${pretendard.className} ${pretendard.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        {children}
+        {/* PC View Wrapper - White margins on desktop, centered mobile view */}
+        <div className="pc-wrapper">
+          <div className="mobile-container">
+            {children}
+          </div>
+        </div>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Toaster } from 'sonner';
 import { locales, type Locale } from '@/lib/i18n/config';
+import BottomNavigation from '@/components/layout/BottomNavigation';
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -27,12 +28,13 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider messages={messages}>
       {children}
+      <BottomNavigation />
       <Toaster
         position="top-center"
         toastOptions={{
           style: {
-            background: 'rgba(15, 10, 26, 0.95)',
-            border: '1px solid rgba(139, 92, 246, 0.3)',
+            background: 'rgba(14, 65, 104, 0.95)',
+            border: '1px solid rgba(196, 163, 90, 0.3)',
             color: '#ffffff',
           },
           className: 'backdrop-blur-sm',

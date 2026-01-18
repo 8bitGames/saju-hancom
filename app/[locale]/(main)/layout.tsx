@@ -7,6 +7,7 @@ import { CompanyModal } from "@/components/layout/company-modal";
 import { BottomNav } from "@/components/navigation";
 import { usePathname, useRouter } from "@/lib/i18n/navigation";
 import { locales, localeNames, type Locale } from "@/lib/i18n/config";
+import Image from "next/image";
 
 export default function MainLayout({
   children,
@@ -46,11 +47,11 @@ export default function MainLayout({
 
   return (
     <>
-      {/* Main Page Container - 점신 스타일 */}
-      <div className="relative z-10 min-h-screen min-h-dvh bg-[#F5F5F5]">
-        {/* Header - 점신 스타일 (간결한 흰색 헤더) */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-          <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
+      {/* Main Page Container - Cheong-Giun Style */}
+      <div className="relative z-10 min-h-screen min-h-dvh bg-[#F5F9FC]">
+        {/* Header - Clean white header, centered on PC */}
+        <header className="fixed top-0 z-50 bg-white border-b border-gray-100 w-full max-w-[430px] left-1/2 -translate-x-1/2">
+          <div className="px-4 h-14 flex items-center justify-between">
             {/* Left: Back button or Logo */}
             <div className="flex items-center gap-2">
               {!isHomePage && (
@@ -72,7 +73,13 @@ export default function MainLayout({
                 onClick={() => router.push("/")}
                 className="flex items-center gap-2 font-bold text-gray-800 hover:text-gray-600 transition-colors"
               >
-                <span className="text-xl">🔮</span>
+                <Image
+                  src="/icons/categories/saju.png"
+                  alt="Logo"
+                  width={28}
+                  height={28}
+                  className="object-contain"
+                />
                 <span
                   className="text-lg"
                   style={{
@@ -107,7 +114,7 @@ export default function MainLayout({
                       router.push("/");
                       setIsMenuOpen(false);
                     }}
-                    className="w-full px-4 py-3 flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-amber-500 transition-colors"
+                    className="w-full px-4 py-3 flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-[#C4A35A] transition-colors"
                   >
                     <House className="w-5 h-5" />
                     <span className="text-sm font-medium">{t("home")}</span>
@@ -119,7 +126,7 @@ export default function MainLayout({
                       setIsCompanyModalOpen(true);
                       setIsMenuOpen(false);
                     }}
-                    className="w-full px-4 py-3 flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-amber-500 transition-colors border-t border-gray-50"
+                    className="w-full px-4 py-3 flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-[#C4A35A] transition-colors border-t border-gray-50"
                   >
                     <Buildings className="w-5 h-5" />
                     <span className="text-sm font-medium">{t("about")}</span>
@@ -131,7 +138,7 @@ export default function MainLayout({
                       router.push("/history");
                       setIsMenuOpen(false);
                     }}
-                    className="w-full px-4 py-3 flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-amber-500 transition-colors border-t border-gray-50"
+                    className="w-full px-4 py-3 flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-[#C4A35A] transition-colors border-t border-gray-50"
                   >
                     <ClockCounterClockwise className="w-5 h-5" />
                     <span className="text-sm font-medium">{t("record")}</span>
@@ -141,7 +148,7 @@ export default function MainLayout({
                   <div className="border-t border-gray-50">
                     <button
                       onClick={() => setIsLanguageExpanded(!isLanguageExpanded)}
-                      className="w-full px-4 py-3 flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-amber-500 transition-colors"
+                      className="w-full px-4 py-3 flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-[#C4A35A] transition-colors"
                     >
                       <Globe className="w-5 h-5" />
                       <span className="text-sm font-medium">{t("language")}</span>
@@ -157,7 +164,7 @@ export default function MainLayout({
                             onClick={() => switchLocale(l)}
                             className={`w-full px-4 py-2 pl-12 text-left text-sm transition-colors ${
                               l === locale
-                                ? "text-amber-500 font-medium bg-amber-50"
+                                ? "text-[#C4A35A] font-medium bg-[#C4A35A]/10"
                                 : "text-gray-500 hover:bg-white hover:text-gray-700"
                             }`}
                           >
@@ -181,7 +188,7 @@ export default function MainLayout({
 
         {/* Main Content */}
         <main className="pt-14 pb-20">
-          <div className="max-w-md mx-auto">{children}</div>
+          {children}
         </main>
 
         {/* Bottom Navigation */}

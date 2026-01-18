@@ -103,7 +103,7 @@ export const DAY_MASTER_DETAILED: Record<Gan, DayMasterDetailedInfo> = {
     compatibleWith: ["己", "戊", "癸"],
     suitableFields: ["경영", "정치", "교육", "법조계", "건축", "임업"],
     visualMetaphor: {
-      emoji: "🌲",
+      emoji: "",
       color: "진녹색 (Deep Green)",
       colorHex: "#228B22",
       icon: "tree-deciduous",
@@ -152,7 +152,7 @@ export const DAY_MASTER_DETAILED: Record<Gan, DayMasterDetailedInfo> = {
     compatibleWith: ["庚", "辛", "壬"],
     suitableFields: ["예술", "디자인", "상담", "서비스업", "의료", "화훼"],
     visualMetaphor: {
-      emoji: "🌿",
+      emoji: "",
       color: "연두색 (Light Green)",
       colorHex: "#90EE90",
       icon: "flower",
@@ -201,7 +201,7 @@ export const DAY_MASTER_DETAILED: Record<Gan, DayMasterDetailedInfo> = {
     compatibleWith: ["辛", "壬", "癸"],
     suitableFields: ["방송", "연예", "마케팅", "정치", "에너지", "레저"],
     visualMetaphor: {
-      emoji: "☀️",
+      emoji: "",
       color: "주황색 (Orange)",
       colorHex: "#FF8C00",
       icon: "sun",
@@ -250,7 +250,7 @@ export const DAY_MASTER_DETAILED: Record<Gan, DayMasterDetailedInfo> = {
     compatibleWith: ["壬", "癸", "庚"],
     suitableFields: ["문학", "예술", "요리", "심리상담", "종교", "연구"],
     visualMetaphor: {
-      emoji: "🕯️",
+      emoji: "",
       color: "붉은색 (Crimson)",
       colorHex: "#DC143C",
       icon: "flame",
@@ -299,7 +299,7 @@ export const DAY_MASTER_DETAILED: Record<Gan, DayMasterDetailedInfo> = {
     compatibleWith: ["癸", "甲", "乙"],
     suitableFields: ["부동산", "건설", "농업", "금융", "행정", "교육"],
     visualMetaphor: {
-      emoji: "🏔️",
+      emoji: "",
       color: "황토색 (Ochre)",
       colorHex: "#CC7722",
       icon: "mountain",
@@ -348,7 +348,7 @@ export const DAY_MASTER_DETAILED: Record<Gan, DayMasterDetailedInfo> = {
     compatibleWith: ["甲", "乙", "丙"],
     suitableFields: ["서비스업", "요식업", "농업", "유통", "회계", "의료"],
     visualMetaphor: {
-      emoji: "🌾",
+      emoji: "",
       color: "베이지색 (Beige)",
       colorHex: "#D2B48C",
       icon: "leaf",
@@ -397,7 +397,7 @@ export const DAY_MASTER_DETAILED: Record<Gan, DayMasterDetailedInfo> = {
     compatibleWith: ["乙", "丁", "壬"],
     suitableFields: ["법조계", "군인", "경찰", "금융", "제조업", "스포츠"],
     visualMetaphor: {
-      emoji: "⚔️",
+      emoji: "",
       color: "은색 (Silver)",
       colorHex: "#C0C0C0",
       icon: "sword",
@@ -446,7 +446,7 @@ export const DAY_MASTER_DETAILED: Record<Gan, DayMasterDetailedInfo> = {
     compatibleWith: ["丙", "丁", "壬"],
     suitableFields: ["패션", "보석", "금융", "의료", "미용", "정밀기술"],
     visualMetaphor: {
-      emoji: "💎",
+      emoji: "",
       color: "백금색 (Platinum)",
       colorHex: "#E5E4E2",
       icon: "gem",
@@ -495,7 +495,7 @@ export const DAY_MASTER_DETAILED: Record<Gan, DayMasterDetailedInfo> = {
     compatibleWith: ["丁", "戊", "辛"],
     suitableFields: ["학문", "연구", "컨설팅", "무역", "물류", "IT"],
     visualMetaphor: {
-      emoji: "🌊",
+      emoji: "",
       color: "감청색 (Navy Blue)",
       colorHex: "#000080",
       icon: "waves",
@@ -544,7 +544,7 @@ export const DAY_MASTER_DETAILED: Record<Gan, DayMasterDetailedInfo> = {
     compatibleWith: ["戊", "己", "丙"],
     suitableFields: ["예술", "종교", "심리학", "의료", "연구", "창작"],
     visualMetaphor: {
-      emoji: "💧",
+      emoji: "",
       color: "하늘색 (Sky Blue)",
       colorHex: "#87CEEB",
       icon: "droplet",

@@ -643,15 +643,15 @@ export function getTodayFortuneSummary(
   const highlights: string[] = [];
 
   if (result.natalInteraction.harmonies.length > 0) {
-    highlights.push(`✨ ${result.natalInteraction.harmonies.join(", ")}`);
+    highlights.push(result.natalInteraction.harmonies.join(", "));
   }
   if (result.natalInteraction.clashes.length > 0) {
-    highlights.push(`⚠️ ${result.natalInteraction.clashes.join(", ")}`);
+    highlights.push(result.natalInteraction.clashes.join(", "));
   }
   if (result.usefulGodRelation === "support") {
-    highlights.push("💪 용신에 좋은 날");
+    highlights.push("용신에 좋은 날");
   } else if (result.usefulGodRelation === "against") {
-    highlights.push("🔻 용신에 불리한 날");
+    highlights.push("용신에 불리한 날");
   }
 
   return {

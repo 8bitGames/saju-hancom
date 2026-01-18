@@ -33,11 +33,10 @@ export default async function SajuPage() {
 
   return (
     <div className="space-y-4 px-4">
-      {/* Header - 점신 스타일 */}
+      {/* Header - Cheong-Giun Style */}
       <div className="bg-white rounded-2xl p-5 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 rounded-full mb-3">
-          <span className="text-lg">✨</span>
-          <span className="text-amber-600 text-xs font-medium">四柱八字</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#C4A35A]/10 rounded-full mb-3">
+          <span className="text-[#C4A35A] text-xs font-semibold">四柱八字</span>
         </div>
         <h1 className="text-xl font-bold text-gray-800 mb-2">
           {t("title")}

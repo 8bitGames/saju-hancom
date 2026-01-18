@@ -142,13 +142,13 @@ export function generateDayMasterBasicContext(
       ? `
 ## 🧬 나의 사주 DNA - 일간 발견하기
 
-### 💫 당신만의 일간
+### 당신만의 일간
 사주의 핵심인 일간. **10가지 천간 중에서 당신은 단 하나를 타고났습니다.**
 ${concept.definition}
 
 ---
 
-### 🌟 발견: 당신의 일간은 "${dayMasterInfo.korean}"입니다
+### 발견: 당신의 일간은 "${dayMasterInfo.korean}"입니다
 
 당신의 내면에는 **${dayMasterInfo.naturalSymbol}**의 기운이 흐르고 있습니다.
 
@@ -158,31 +158,31 @@ ${concept.definition}
 
 ---
 
-### 🔍 당신의 기운 들여다보기
+### 당신의 기운 들여다보기
 
-${dayMasterInfo.detailedDescription.map((d, i) => `${i === 0 ? '💡' : '•'} ${d}`).join("\n")}
+${dayMasterInfo.detailedDescription.map((d, i) => `${i === 0 ? '▸' : '•'} ${d}`).join("\n")}
 
 ---
 
-### ⚡ 당신만의 강점 카드
+### 당신만의 강점 카드
 
 **핵심 키워드**: \`${dayMasterInfo.keywords.join("` `")}\`
 
-✨ **이런 점이 강합니다**:
+**이런 점이 강합니다**:
 ${dayMasterInfo.strengths.map((s) => `  • ${s}`).join("\n")}
 
-⚠️ **이런 점은 주의하세요**:
+**이런 점은 주의하세요**:
 ${dayMasterInfo.weaknesses.map((w) => `  • ${w}`).join("\n")}
 
 ---
 
-### 🔄 다른 일간과 비교하면?
+### 다른 일간과 비교하면?
 
 ${comparisonText}
 
 ---
 
-### 🌊 오행의 흐름 속 당신의 위치
+### 오행의 흐름 속 당신의 위치
 
 당신의 ${dayMasterInfo.korean}은 오행의 순환 속에서 이렇게 작용합니다:
 
@@ -193,17 +193,17 @@ ${comparisonText}
 
 ---
 
-### 💼 이런 분야가 잘 맞아요
+### 이런 분야가 잘 맞아요
 
 ${dayMasterInfo.suitableFields.map((f) => `\`${f}\``).join(" • ")}
 
 ---
 
-### 🔗 더 알아보기
+### 더 알아보기
 
-> 💡 이 일간이 **실제 성격에 어떻게 나타나는지**는 → [성격] 탭에서
-> 💡 이 일간에 맞는 **직업과 커리어**는 → [직업] 탭에서
-> 💡 이 일간의 **재물운과 투자 성향**은 → [재물] 탭에서
+> 이 일간이 **실제 성격에 어떻게 나타나는지**는 → [성격] 탭에서
+> 이 일간에 맞는 **직업과 커리어**는 → [직업] 탭에서
+> 이 일간의 **재물운과 투자 성향**은 → [재물] 탭에서
 
 ---
 
@@ -214,15 +214,15 @@ ${dayMasterInfo.suitableFields.map((f) => `\`${f}\``).join(" • ")}
 - 마지막에 종합 분석 탭으로 자연스럽게 유도하세요
 `
       : `
-## 🧬 Discover Your Saju DNA - The Day Master
+## Discover Your Saju DNA - The Day Master
 
-### 💫 Your Unique Day Master
+### Your Unique Day Master
 The Day Master is the core of your Saju chart. **Among 10 Heavenly Stems, you were born with just one.**
 ${concept.definition}
 
 ---
 
-### 🌟 Discovery: Your Day Master is "${dayMasterInfo.korean}" (${dayMasterInfo.hanja})
+### Discovery: Your Day Master is "${dayMasterInfo.korean}" (${dayMasterInfo.hanja})
 
 Within you flows the energy of **${dayMasterInfo.naturalSymbol}**.
 
@@ -232,31 +232,31 @@ This is your inner DNA.
 
 ---
 
-### 🔍 Looking Into Your Energy
+### Looking Into Your Energy
 
-${dayMasterInfo.detailedDescription.map((d, i) => `${i === 0 ? '💡' : '•'} ${d}`).join("\n")}
+${dayMasterInfo.detailedDescription.map((d, i) => `${i === 0 ? '▸' : '•'} ${d}`).join("\n")}
 
 ---
 
-### ⚡ Your Strength Cards
+### Your Strength Cards
 
 **Core Keywords**: \`${dayMasterInfo.keywords.join("` `")}\`
 
-✨ **Your Strengths**:
+**Your Strengths**:
 ${dayMasterInfo.strengths.map((s) => `  • ${s}`).join("\n")}
 
-⚠️ **Watch Points**:
+**Watch Points**:
 ${dayMasterInfo.weaknesses.map((w) => `  • ${w}`).join("\n")}
 
 ---
 
-### 🔄 Compared to Other Day Masters
+### Compared to Other Day Masters
 
 ${comparisonText}
 
 ---
 
-### 🌊 Your Position in the Five Element Flow
+### Your Position in the Five Element Flow
 
 Your ${dayMasterInfo.korean} operates within the Five Element cycle:
 
@@ -267,17 +267,17 @@ Your ${dayMasterInfo.korean} operates within the Five Element cycle:
 
 ---
 
-### 💼 Suitable Fields
+### Suitable Fields
 
 ${dayMasterInfo.suitableFields.map((f) => `\`${f}\``).join(" • ")}
 
 ---
 
-### 🔗 Explore Further
+### Explore Further
 
-> 💡 How this Day Master **manifests in your personality** → [Personality] tab
-> 💡 **Career paths** that match your Day Master → [Career] tab
-> 💡 Your Day Master's **wealth patterns** → [Wealth] tab
+> How this Day Master **manifests in your personality** → [Personality] tab
+> **Career paths** that match your Day Master → [Career] tab
+> Your Day Master's **wealth patterns** → [Wealth] tab
 
 ---
 
@@ -436,9 +436,9 @@ export function generateTenGodsBasicContext(
   const promptContext =
     locale === "ko"
       ? `
-## 🗺️ 나의 에너지 지도 - 십성 발견하기
+## 나의 에너지 지도 - 십성 발견하기
 
-### 💫 사주 속 에너지의 비밀
+### 사주 속 에너지의 비밀
 당신의 사주에는 **10가지 에너지**가 서로 다른 비율로 담겨 있습니다.
 마치 성격의 레시피처럼, 어떤 에너지가 많고 어떤 에너지가 적은지가 당신만의 특성을 만들어냅니다.
 
@@ -446,7 +446,7 @@ ${concept.definition}
 
 ---
 
-### 🎨 5가지 에너지 그룹
+### 5가지 에너지 그룹
 
 ${concept.groups.map((g) => `
 **${g.name}** - ${g.description}
@@ -455,7 +455,7 @@ ${concept.groups.map((g) => `
 
 ---
 
-### 📊 당신의 에너지 분포도
+### 당신의 에너지 분포도
 
 당신의 사주에서 발견된 십성들입니다:
 
@@ -464,29 +464,29 @@ ${yourTenGods.map((tg) => `| **${tg.korean}** | ${tg.position} |
 
 ---
 
-### ⚡ 에너지 밸런스 분석
+### 에너지 밸런스 분석
 
 ${distributionSummary}
 
-🔥 **강한 에너지**: \`${dominantSummary}\`
+**강한 에너지**: \`${dominantSummary}\`
 > 이 에너지가 당신의 성격과 행동 패턴에 가장 크게 영향을 미칩니다.
 
-💧 **보완이 필요한 에너지**: \`${lackingSummary}\`
+**보완이 필요한 에너지**: \`${lackingSummary}\`
 > 부족하다고 나쁜 것이 아닙니다. 다른 에너지로 보완되거나, 대운에서 채워질 수 있습니다.
 
 ---
 
-### 🧭 에너지 읽는 법
+### 에너지 읽는 법
 
 ${concept.howToRead.map((h, i) => `${i + 1}. ${h}`).join("\n")}
 
 ---
 
-### 🔗 더 깊이 알아보기
+### 더 깊이 알아보기
 
-> 💡 이 에너지들이 **실제 성격에 어떻게 나타나는지**는 → [성격] 탭에서
-> 💡 에너지 조합에 따른 **적합한 직업**은 → [직업] 탭에서
-> 💡 **대인관계 스타일**에 미치는 영향은 → [관계] 탭에서
+> 이 에너지들이 **실제 성격에 어떻게 나타나는지**는 → [성격] 탭에서
+> 에너지 조합에 따른 **적합한 직업**은 → [직업] 탭에서
+> **대인관계 스타일**에 미치는 영향은 → [관계] 탭에서
 
 ---
 
@@ -497,9 +497,9 @@ ${concept.howToRead.map((h, i) => `${i + 1}. ${h}`).join("\n")}
 - 마지막에 종합 분석 탭으로 자연스럽게 유도하세요
 `
       : `
-## 🗺️ Your Energy Map - Discovering Ten Gods
+## Your Energy Map - Discovering Ten Gods
 
-### 💫 The Secret Energies in Your Saju
+### The Secret Energies in Your Saju
 Your chart contains **10 types of energies** in different proportions.
 Like a personality recipe, the balance of these energies creates your unique characteristics.
 
@@ -507,7 +507,7 @@ ${concept.definition}
 
 ---
 
-### 🎨 Five Energy Groups
+### Five Energy Groups
 
 ${concept.groups.map((g) => `
 **${g.name}** - ${g.description}
@@ -516,7 +516,7 @@ ${concept.groups.map((g) => `
 
 ---
 
-### 📊 Your Energy Distribution
+### Your Energy Distribution
 
 The Ten Gods found in your chart:
 
@@ -525,29 +525,29 @@ ${yourTenGods.map((tg) => `| **${tg.korean}** | ${tg.position} |
 
 ---
 
-### ⚡ Energy Balance Analysis
+### Energy Balance Analysis
 
 ${distributionSummary}
 
-🔥 **Strong Energies**: \`${dominantSummary}\`
+**Strong Energies**: \`${dominantSummary}\`
 > These energies have the greatest influence on your personality and behavior patterns.
 
-💧 **Energies Needing Complement**: \`${lackingSummary}\`
+**Energies Needing Complement**: \`${lackingSummary}\`
 > Lacking doesn't mean bad. They can be complemented by other energies or fulfilled in major fortune periods.
 
 ---
 
-### 🧭 How to Read Your Energy Map
+### How to Read Your Energy Map
 
 ${concept.howToRead.map((h, i) => `${i + 1}. ${h}`).join("\n")}
 
 ---
 
-### 🔗 Explore Further
+### Explore Further
 
-> 💡 How these energies **manifest in your personality** → [Personality] tab
-> 💡 **Suitable careers** based on energy combinations → [Career] tab
-> 💡 Impact on your **relationship style** → [Relationship] tab
+> How these energies **manifest in your personality** → [Personality] tab
+> **Suitable careers** based on energy combinations → [Career] tab
+> Impact on your **relationship style** → [Relationship] tab
 
 ---
 
@@ -672,12 +672,12 @@ export function generateStarsBasicContext(
       ? concept.categories.map((c) => `- **${c.name}**: ${c.description} (예: ${c.examples.join(", ")})`).join("\n")
       : concept.categories.map((c) => `- **${c.name}**: ${c.description} (e.g., ${c.examples.join(", ")})`).join("\n");
 
-  // 카드 타입별 이모지 생성
-  const getCardEmoji = (type: "auspicious" | "inauspicious" | "neutral"): string => {
+  // 카드 타입별 마커 생성
+  const getCardMarker = (type: "auspicious" | "inauspicious" | "neutral"): string => {
     switch (type) {
-      case "auspicious": return "🌟";
-      case "inauspicious": return "⚠️";
-      case "neutral": return "🔮";
+      case "auspicious": return "[길]";
+      case "inauspicious": return "[흉]";
+      case "neutral": return "[중]";
     }
   };
 
@@ -685,9 +685,9 @@ export function generateStarsBasicContext(
   const promptContext =
     locale === "ko"
       ? `
-## 🃏 나의 특수 카드 - 신살 발견하기
+## 나의 특수 카드 - 신살 발견하기
 
-### 💫 사주 속 특별한 카드들
+### 사주 속 특별한 카드들
 신살은 사주 안에 숨겨진 **특수 카드**와 같습니다.
 어떤 카드는 행운을 가져오고, 어떤 카드는 주의가 필요하며, 어떤 카드는 특별한 재능을 나타냅니다.
 
@@ -695,56 +695,56 @@ ${concept.definition}
 
 ---
 
-### 🎴 카드의 종류
+### 카드의 종류
 
 ${concept.categories.map((c) => `
-**${c.name}** ${c.name.includes("길") ? "🌟" : c.name.includes("흉") ? "⚠️" : "🔮"}
+**${c.name}** ${c.name.includes("길") ? "[길]" : c.name.includes("흉") ? "[흉]" : "[중]"}
 > ${c.description}
 > 예시: \`${c.examples.join("` `")}\`
 `).join("\n")}
 
 ---
 
-### 🎯 당신이 가진 카드들
+### 당신이 가진 카드들
 
 ${yourStars.length > 0 ? yourStars.map((s) => `
 ---
-${getCardEmoji(s.type)} **${s.name}** (${s.hanja})
-📍 위치: ${s.position || "전체 사주"}
+${getCardMarker(s.type)} **${s.name}** (${s.hanja})
+위치: ${s.position || "전체 사주"}
 
 > "${s.shortDescription}"
 
-${s.traditionalMeaning ? `**📜 전통적 의미**: ${s.traditionalMeaning}` : ""}
-${s.modernInterpretation ? `**🔄 현대적 해석**: ${s.modernInterpretation}` : ""}
-${s.advice ? `**💡 활용 팁**: ${s.advice}` : ""}
+${s.traditionalMeaning ? `**전통적 의미**: ${s.traditionalMeaning}` : ""}
+${s.modernInterpretation ? `**현대적 해석**: ${s.modernInterpretation}` : ""}
+${s.advice ? `**활용 팁**: ${s.advice}` : ""}
 `).join("\n") : "현재 분석된 특수 카드가 없습니다."}
 
 ---
 
-### 📊 카드 덱 요약
+### 카드 덱 요약
 
-🌟 **행운의 카드 (길신)**: ${categorySummary.auspicious.length > 0 ? `\`${categorySummary.auspicious.join("` `")}\`` : "없음"}
+**행운의 카드 (길신)**: ${categorySummary.auspicious.length > 0 ? `\`${categorySummary.auspicious.join("` `")}\`` : "없음"}
 > 이 카드들은 당신에게 자연스러운 행운과 재능을 부여합니다.
 
-⚠️ **주의 카드 (흉신)**: ${categorySummary.inauspicious.length > 0 ? `\`${categorySummary.inauspicious.join("` `")}\`` : "없음"}
+**주의 카드 (흉신)**: ${categorySummary.inauspicious.length > 0 ? `\`${categorySummary.inauspicious.join("` `")}\`` : "없음"}
 > 나쁜 것이 아니라 **주의가 필요한 영역**을 알려주는 신호입니다.
 
-🔮 **중성 카드**: ${categorySummary.neutral.length > 0 ? `\`${categorySummary.neutral.join("` `")}\`` : "없음"}
+**중성 카드**: ${categorySummary.neutral.length > 0 ? `\`${categorySummary.neutral.join("` `")}\`` : "없음"}
 > 상황에 따라 다르게 작용하는 카드입니다.
 
 ---
 
-### 🧭 카드 읽는 법
+### 카드 읽는 법
 
 ${concept.howToRead.map((h, i) => `${i + 1}. ${h}`).join("\n")}
 
 ---
 
-### 🔗 더 깊이 알아보기
+### 더 깊이 알아보기
 
-> 💡 이 카드들이 **성격에 미치는 영향**은 → [성격] 탭에서
-> 💡 **직업 선택**에 영향을 주는 카드들 → [직업] 탭에서
-> 💡 **건강**과 관련된 신살의 의미 → [건강] 탭에서
+> 이 카드들이 **성격에 미치는 영향**은 → [성격] 탭에서
+> **직업 선택**에 영향을 주는 카드들 → [직업] 탭에서
+> **건강**과 관련된 신살의 의미 → [건강] 탭에서
 
 ---
 
@@ -755,9 +755,9 @@ ${concept.howToRead.map((h, i) => `${i + 1}. ${h}`).join("\n")}
 - 마지막에 종합 분석 탭으로 자연스럽게 유도하세요
 `
       : `
-## 🃏 Your Special Cards - Discovering Stars
+## Your Special Cards - Discovering Stars
 
-### 💫 Hidden Cards in Your Saju
+### Hidden Cards in Your Saju
 Stars (Shen Sha) are like **special cards** hidden in your chart.
 Some bring luck, some require attention, and some reveal unique talents.
 
@@ -765,56 +765,56 @@ ${concept.definition}
 
 ---
 
-### 🎴 Types of Cards
+### Types of Cards
 
 ${concept.categories.map((c) => `
-**${c.name}** ${c.name.includes("Auspicious") ? "🌟" : c.name.includes("Inauspicious") ? "⚠️" : "🔮"}
+**${c.name}** ${c.name.includes("Auspicious") ? "[+]" : c.name.includes("Inauspicious") ? "[-]" : "[~]"}
 > ${c.description}
 > Examples: \`${c.examples.join("` `")}\`
 `).join("\n")}
 
 ---
 
-### 🎯 Your Card Collection
+### Your Card Collection
 
 ${yourStars.length > 0 ? yourStars.map((s) => `
 ---
-${getCardEmoji(s.type)} **${s.name}** (${s.hanja})
-📍 Position: ${s.position || "Entire Chart"}
+${getCardMarker(s.type)} **${s.name}** (${s.hanja})
+Position: ${s.position || "Entire Chart"}
 
 > "${s.shortDescription}"
 
-${s.traditionalMeaning ? `**📜 Traditional Meaning**: ${s.traditionalMeaning}` : ""}
-${s.modernInterpretation ? `**🔄 Modern Interpretation**: ${s.modernInterpretation}` : ""}
-${s.advice ? `**💡 Usage Tip**: ${s.advice}` : ""}
+${s.traditionalMeaning ? `**Traditional Meaning**: ${s.traditionalMeaning}` : ""}
+${s.modernInterpretation ? `**Modern Interpretation**: ${s.modernInterpretation}` : ""}
+${s.advice ? `**Usage Tip**: ${s.advice}` : ""}
 `).join("\n") : "No special cards analyzed at this time."}
 
 ---
 
-### 📊 Your Card Deck Summary
+### Your Card Deck Summary
 
-🌟 **Lucky Cards (Auspicious)**: ${categorySummary.auspicious.length > 0 ? `\`${categorySummary.auspicious.join("` `")}\`` : "None"}
+**Lucky Cards (Auspicious)**: ${categorySummary.auspicious.length > 0 ? `\`${categorySummary.auspicious.join("` `")}\`` : "None"}
 > These cards grant you natural luck and talents.
 
-⚠️ **Caution Cards (Inauspicious)**: ${categorySummary.inauspicious.length > 0 ? `\`${categorySummary.inauspicious.join("` `")}\`` : "None"}
+**Caution Cards (Inauspicious)**: ${categorySummary.inauspicious.length > 0 ? `\`${categorySummary.inauspicious.join("` `")}\`` : "None"}
 > Not bad - they signal **areas needing attention**.
 
-🔮 **Neutral Cards**: ${categorySummary.neutral.length > 0 ? `\`${categorySummary.neutral.join("` `")}\`` : "None"}
+**Neutral Cards**: ${categorySummary.neutral.length > 0 ? `\`${categorySummary.neutral.join("` `")}\`` : "None"}
 > Cards that work differently depending on the situation.
 
 ---
 
-### 🧭 How to Read Your Cards
+### How to Read Your Cards
 
 ${concept.howToRead.map((h, i) => `${i + 1}. ${h}`).join("\n")}
 
 ---
 
-### 🔗 Explore Further
+### Explore Further
 
-> 💡 How these cards **affect your personality** → [Personality] tab
-> 💡 Cards influencing **career choice** → [Career] tab
-> 💡 Health-related meaning of stars → [Health] tab
+> How these cards **affect your personality** → [Personality] tab
+> Cards influencing **career choice** → [Career] tab
+> Health-related meaning of stars → [Health] tab
 
 ---
 
@@ -917,7 +917,7 @@ export function generateFortuneBasicContext(
 
     return majorFortune.periods.slice(0, 8).map((period, index) => {
       const isCurrentPeriod = currentAge >= period.startAge && currentAge < period.endAge;
-      const marker = isCurrentPeriod ? "📍" : "○";
+      const marker = isCurrentPeriod ? "▶" : "○";
       const highlight = isCurrentPeriod ? "**" : "";
       return `${marker} ${highlight}${period.startAge}~${period.endAge}세${highlight}: ${period.pillar.koreanReading || period.pillar.ganZhi} ${isCurrentPeriod ? "(현재)" : ""}`;
     }).join("\n");
@@ -927,15 +927,15 @@ export function generateFortuneBasicContext(
   const promptContext =
     locale === "ko"
       ? `
-## 📅 나의 인생 타임라인 - 운세 구조 발견하기
+## 나의 인생 타임라인 - 운세 구조 발견하기
 
-### 💫 시간 속의 당신
+### 시간 속의 당신
 사주에는 **인생의 시간표**가 담겨 있습니다.
 10년 단위의 큰 흐름(대운)과 1년 단위의 작은 흐름(세운)이 겹쳐지며 당신의 시간을 만들어갑니다.
 
 ---
 
-### 🌊 대운(大運) - 10년의 큰 파도
+### 대운(大運) - 10년의 큰 파도
 
 ${concept.majorFortune.definition}
 
@@ -947,24 +947,24 @@ ${concept.majorFortune.importance.map((i) => `• ${i}`).join("\n")}
 
 ---
 
-### 🗺️ 당신의 대운 타임라인
+### 당신의 대운 타임라인
 
-📊 **기본 정보**
+**기본 정보**
 - 대운 시작 나이: **${majorFortune?.startAge || "정보 없음"}세**
 - 대운 방향: **${directionDesc}**
 
-📍 **현재 위치**
+**현재 위치**
 ${currentPeriod ? `지금 당신은 **${currentPeriod.startAge}~${currentPeriod.endAge}세 대운** 안에 있습니다.
 > 이 시기의 주제: **${currentPeriod.description}**` : "> 현재 대운 정보를 불러올 수 없습니다."}
 
-**📈 대운 흐름도**
+**대운 흐름도**
 \`\`\`
 ${getFortuneTimeline()}
 \`\`\`
 
 ---
 
-### 🎯 세운(歲運) - 1년의 작은 파도
+### 세운(歲運) - 1년의 작은 파도
 
 ${concept.annualFortune.definition}
 
@@ -976,32 +976,32 @@ ${concept.annualFortune.importance.map((i) => `• ${i}`).join("\n")}
 
 ---
 
-### 🌙 월운(月運) - 달의 리듬
+### 월운(月運) - 달의 리듬
 
 ${concept.monthlyFortune.definition}
 
 ---
 
-### 🧭 운세 읽는 법
+### 운세 읽는 법
 
 ${concept.howToRead.map((h, i) => `${i + 1}. ${h}`).join("\n")}
 
 ---
 
-### 💡 알아두세요
+### 알아두세요
 
-> 🔮 이 탭은 **운세의 구조**를 보여드립니다
+> 이 탭은 **운세의 구조**를 보여드립니다
 > 대운/세운이 무엇인지, 당신의 타임라인이 어떻게 구성되어 있는지를 이해하는 곳입니다.
 
-> 📊 **올해/내년 구체적 운세 해석**은 종합 분석 탭에서 더 깊이 다룹니다!
+> **올해/내년 구체적 운세 해석**은 종합 분석 탭에서 더 깊이 다룹니다!
 
 ---
 
-### 🔗 더 깊이 알아보기
+### 더 깊이 알아보기
 
-> 💡 **올해의 운세**가 구체적으로 궁금하다면 → [성격] 탭 또는 다른 종합 분석 참조
-> 💡 **직업운과 재물운** 타이밍 → [직업], [재물] 탭에서
-> 💡 **건강에 주의해야 할 시기** → [건강] 탭에서
+> **올해의 운세**가 구체적으로 궁금하다면 → [성격] 탭 또는 다른 종합 분석 참조
+> **직업운과 재물운** 타이밍 → [직업], [재물] 탭에서
+> **건강에 주의해야 할 시기** → [건강] 탭에서
 
 ---
 
@@ -1012,15 +1012,15 @@ ${concept.howToRead.map((h, i) => `${i + 1}. ${h}`).join("\n")}
 - 구체적 해석은 종합 분석 탭으로 자연스럽게 유도하세요
 `
       : `
-## 📅 Your Life Timeline - Discovering Fortune Structure
+## Your Life Timeline - Discovering Fortune Structure
 
-### 💫 You in Time
+### You in Time
 Your Saju contains a **life timetable**.
 The big waves of 10-year cycles (Major Fortune) and small waves of yearly cycles (Annual Fortune) overlap to create your time.
 
 ---
 
-### 🌊 Major Fortune - The 10-Year Wave
+### Major Fortune - The 10-Year Wave
 
 ${concept.majorFortune.definition}
 
@@ -1032,24 +1032,24 @@ ${concept.majorFortune.importance.map((i) => `• ${i}`).join("\n")}
 
 ---
 
-### 🗺️ Your Major Fortune Timeline
+### Your Major Fortune Timeline
 
-📊 **Basic Info**
+**Basic Info**
 - Major Fortune starts at: **age ${majorFortune?.startAge || "N/A"}**
 - Direction: **${directionDesc}**
 
-📍 **Current Position**
+**Current Position**
 ${currentPeriod ? `You are currently in the **${currentPeriod.startAge}~${currentPeriod.endAge} age Major Fortune**.
 > Theme of this period: **${currentPeriod.description}**` : "> Current major fortune info unavailable."}
 
-**📈 Fortune Flow Chart**
+**Fortune Flow Chart**
 \`\`\`
 ${getFortuneTimeline()}
 \`\`\`
 
 ---
 
-### 🎯 Annual Fortune - The Yearly Wave
+### Annual Fortune - The Yearly Wave
 
 ${concept.annualFortune.definition}
 
@@ -1061,32 +1061,32 @@ ${concept.annualFortune.importance.map((i) => `• ${i}`).join("\n")}
 
 ---
 
-### 🌙 Monthly Fortune - The Moon's Rhythm
+### Monthly Fortune - The Moon's Rhythm
 
 ${concept.monthlyFortune.definition}
 
 ---
 
-### 🧭 How to Read Fortune
+### How to Read Fortune
 
 ${concept.howToRead.map((h, i) => `${i + 1}. ${h}`).join("\n")}
 
 ---
 
-### 💡 Keep in Mind
+### Keep in Mind
 
-> 🔮 This tab shows the **structure of fortune**
+> This tab shows the **structure of fortune**
 > It's for understanding what Major/Annual Fortune is and how your timeline is structured.
 
-> 📊 **Specific fortune interpretation for this year/next year** is covered in depth in comprehensive analysis tabs!
+> **Specific fortune interpretation for this year/next year** is covered in depth in comprehensive analysis tabs!
 
 ---
 
-### 🔗 Explore Further
+### Explore Further
 
-> 💡 Curious about **this year's fortune** specifically → [Personality] tab or other comprehensive analysis
-> 💡 **Career and wealth timing** → [Career], [Wealth] tabs
-> 💡 **Health caution periods** → [Health] tab
+> Curious about **this year's fortune** specifically → [Personality] tab or other comprehensive analysis
+> **Career and wealth timing** → [Career], [Wealth] tabs
+> **Health caution periods** → [Health] tab
 
 ---
 

@@ -15,7 +15,7 @@ export interface Guardian {
     ko: string;
     en: string;
   };
-  emoji: string;
+  imagePath: string;
   color: string;
   colorLight: string;
   gradientFrom: string;
@@ -54,7 +54,7 @@ export const GUARDIANS: Record<ElementType, Guardian> = {
       ko: '목(木)',
       en: 'Wood',
     },
-    emoji: '🐲',
+    imagePath: '/icons/guardians/wood.png',
     color: '#2D5A27',
     colorLight: '#4A7C43',
     gradientFrom: '#2D5A27',
@@ -91,7 +91,7 @@ export const GUARDIANS: Record<ElementType, Guardian> = {
       ko: '화(火)',
       en: 'Fire',
     },
-    emoji: '🦅',
+    imagePath: '/icons/guardians/fire.png',
     color: '#B91C1C',
     colorLight: '#DC2626',
     gradientFrom: '#B91C1C',
@@ -128,7 +128,7 @@ export const GUARDIANS: Record<ElementType, Guardian> = {
       ko: '토(土)',
       en: 'Earth',
     },
-    emoji: '🐉',
+    imagePath: '/icons/guardians/earth.png',
     color: '#C4A35A',
     colorLight: '#D4B86A',
     gradientFrom: '#C4A35A',
@@ -165,7 +165,7 @@ export const GUARDIANS: Record<ElementType, Guardian> = {
       ko: '금(金)',
       en: 'Metal',
     },
-    emoji: '🐅',
+    imagePath: '/icons/guardians/metal.png',
     color: '#6B7280',
     colorLight: '#9CA3AF',
     gradientFrom: '#6B7280',
@@ -202,7 +202,7 @@ export const GUARDIANS: Record<ElementType, Guardian> = {
       ko: '수(水)',
       en: 'Water',
     },
-    emoji: '🐢',
+    imagePath: '/icons/guardians/water.png',
     color: '#1E3A5F',
     colorLight: '#2563EB',
     gradientFrom: '#1E3A5F',

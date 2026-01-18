@@ -308,7 +308,7 @@ function SajuFortuneContent() {
               </p>
               <div className="bg-white/5 rounded-xl p-4 mb-4">
                 <p className="text-sm text-white/70 mb-2 font-medium">
-                  📖 완전한 PDF를 받으시려면:
+                  완전한 PDF를 받으시려면:
                 </p>
                 <p className="text-sm text-white/50">
                   아래 분석 결과에서 각 영역의 <span className="text-[#a855f7]">"상세보기"</span> 버튼을 모두 클릭하여 8개 영역의 상세 분석을 먼저 확인해주세요.

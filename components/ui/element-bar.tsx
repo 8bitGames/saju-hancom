@@ -92,7 +92,7 @@ export function ElementBar({
                     className="font-medium"
                     style={{ color: guardian.color }}
                   >
-                    {guardian.emoji} {guardian.element.ko.charAt(0)}
+                    {guardian.element.ko.charAt(0)}
                   </span>
                 )}
                 {showPercentages && (
@@ -138,7 +138,7 @@ export function SingleElementBar({
             className={cn('font-medium', labelSizeClasses[size])}
             style={{ color: guardian.color }}
           >
-            {guardian.emoji} {guardian.element.ko}
+            {guardian.element.ko}
           </span>
           <span className={cn('text-text-muted', labelSizeClasses[size])}>
             {percentage}%
@@ -224,7 +224,6 @@ export function ElementBadges({
             className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-white text-sm font-medium"
             style={{ backgroundColor: guardian.color }}
           >
-            {guardian.emoji}
             <span>{guardian.element.ko.charAt(0)}</span>
             <span className="opacity-80">{percentage}%</span>
           </span>

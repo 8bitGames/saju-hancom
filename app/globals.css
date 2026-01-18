@@ -1,26 +1,24 @@
 @import "tailwindcss";
 
 /* ============================================
-   점신 (Jeomsin) Style Design System
+   청기운 (Cheong-Giun) Design System
    AI 운세 서비스 - Global Styles
    ============================================ */
 
 :root {
-  /* 점신 스타일 브랜드 컬러 */
-  --brand-primary: #333333;
-  --brand-secondary: #666666;
-  --brand-accent: #FFD700;
-  --brand-light: #FFFFFF;
-  --brand-dark: #222222;
-  --brand-pink: #F8BBD9;
-  --brand-yellow: #FFE066;
+  /* 청기운 브랜드 컬러 - Cheongrium Inspired */
+  --brand-primary: #0E4168;
+  --brand-secondary: #1A5A8A;
+  --brand-accent: #C4A35A;
+  --brand-light: #F5F9FC;
+  --brand-dark: #0A3350;
 
-  /* Background & Foreground - Jeomsin Style */
+  /* Background & Foreground - Cheong-Giun Style */
   --background: #FFFFFF;
-  --foreground: #222222;
+  --foreground: #212121;
   --background-secondary: #F5F5F5;
   --background-card: #FFFFFF;
-  --background-section: #F8F8F8;
+  --background-section: #F5F9FC;
 
   /* 오행 (Five Elements) Colors - Traditional Korean Palette */
   --element-wood: #2D5A27;
@@ -38,11 +36,11 @@
   --yin: #4F46E5;
   --yang: #EA580C;
 
-  /* Text Colors - Jeomsin Style */
-  --text-primary: #222222;
-  --text-secondary: #555555;
-  --text-tertiary: #6B7280;
-  --text-muted: #777777;
+  /* Text Colors - High Contrast for Readability */
+  --text-primary: #111111;
+  --text-secondary: #333333;
+  --text-tertiary: #444444;
+  --text-muted: #555555;
 
   /* Elevated Background */
   --background-elevated: #FFFFFF;
@@ -60,28 +58,28 @@
   --background-dark: #222222;
   --background-darkest: #111111;
 
-  /* Status Colors */
-  --success: #16A34A;
-  --warning: #EA580C;
-  --caution: #CA8A04;
-  --error: #DC2626;
-  --info: #2563EB;
+  /* Status Colors - Matching Five Elements */
+  --success: #2D5A27;
+  --warning: #C4A35A;
+  --caution: #C4A35A;
+  --error: #B91C1C;
+  --info: #1E3A5F;
 
   /* shadcn/ui compatible colors */
   --card: #FFFFFF;
-  --card-foreground: #222222;
+  --card-foreground: #212121;
   --popover: #FFFFFF;
-  --popover-foreground: #222222;
-  --primary: #FFD700;
-  --primary-foreground: #222222;
-  --secondary: #F5F5F5;
-  --secondary-foreground: #222222;
+  --popover-foreground: #212121;
+  --primary: #0E4168;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5F9FC;
+  --secondary-foreground: #0E4168;
   --muted: #F5F5F5;
-  --muted-foreground: #777777;
-  --destructive: #DC2626;
+  --muted-foreground: #555555;
+  --destructive: #B91C1C;
   --destructive-foreground: #FFFFFF;
-  --ring: #FFD700;
-  --input: #EEEEEE;
+  --ring: #0E4168;
+  --input: #E0E0E0;
 
   /* Spacing */
   --header-height: 56px;
@@ -146,8 +144,8 @@
   --color-error: var(--error);
   --color-info: var(--info);
 
-  /* Fonts */
-  --font-sans: var(--font-geist-sans);
+  /* Fonts - Pretendard for Korean-optimized typography */
+  --font-sans: var(--font-pretendard), -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: var(--font-geist-mono);
 
   /* Infinite Moving Cards Animation */
@@ -1130,4 +1128,130 @@ a {
 .bottom-nav-label {
   font-size: 0.75rem;
   font-weight: 500;
+}
+
+/* ============================================
+   PC View - Mobile Centered Layout
+   ============================================ */
+
+/* PC wrapper to center mobile view with white margins */
+.pc-wrapper {
+  min-height: 100vh;
+  background: white;
+}
+
+.mobile-container {
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: var(--brand-light);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+/* On mobile, remove shadow and full width */
+@media (max-width: 430px) {
+  .mobile-container {
+    max-width: 100%;
+    box-shadow: none;
+  }
+}
+
+/* PC specific adjustments */
+@media (min-width: 768px) {
+  .mobile-container {
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+
+  /* Fixed elements should be constrained to mobile container width */
+  .bottom-nav {
+    max-width: 430px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* ============================================
+   Category Icon Grid
+   ============================================ */
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: transform 0.2s ease;
+}
+
+.category-item:active {
+  transform: scale(0.95);
+}
+
+.category-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 1rem;
+  object-fit: contain;
+  background: var(--background-card);
+  padding: 0.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.category-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   Guardian Card Styles
+   ============================================ */
+
+.guardian-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: var(--background-card);
+  transition: all 0.2s ease;
+}
+
+.guardian-image {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: var(--shadow-md);
+}
+
+.guardian-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.guardian-element {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   Font Display - Noto Serif KR for headers
+   ============================================ */
+
+.font-display {
+  font-family: 'Noto Serif KR', serif;
 }

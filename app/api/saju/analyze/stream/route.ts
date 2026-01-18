@@ -21,20 +21,20 @@ const LOCALIZED_STEPS: Record<Locale, Array<{
   icon: string;
 }>> = {
   ko: [
-    { step: 1, name: "기초 구조 분석", description: "사주 원국을 분석하고 있습니다...", icon: "🔮" },
-    { step: 2, name: "일간 심층 분석", description: "일간의 특성을 파악하고 있습니다...", icon: "☯️" },
-    { step: 3, name: "십성 분석", description: "십성의 조화를 분석하고 있습니다...", icon: "⭐" },
-    { step: 4, name: "신살 분석", description: "신살을 해석하고 있습니다...", icon: "🌟" },
-    { step: 5, name: "대운/세운 분석", description: "올해 운세를 살펴보고 있습니다...", icon: "📅" },
-    { step: 6, name: "종합 분석", description: "종합 분석을 완성하고 있습니다...", icon: "✨" },
+    { step: 1, name: "기초 구조 분석", description: "사주 원국을 분석하고 있습니다...", icon: "" },
+    { step: 2, name: "일간 심층 분석", description: "일간의 특성을 파악하고 있습니다...", icon: "" },
+    { step: 3, name: "십성 분석", description: "십성의 조화를 분석하고 있습니다...", icon: "" },
+    { step: 4, name: "신살 분석", description: "신살을 해석하고 있습니다...", icon: "" },
+    { step: 5, name: "대운/세운 분석", description: "올해 운세를 살펴보고 있습니다...", icon: "" },
+    { step: 6, name: "종합 분석", description: "종합 분석을 완성하고 있습니다...", icon: "" },
   ],
   en: [
-    { step: 1, name: "Foundation Analysis", description: "Analyzing your birth chart structure...", icon: "🔮" },
-    { step: 2, name: "Day Master Analysis", description: "Examining your Day Master characteristics...", icon: "☯️" },
-    { step: 3, name: "Ten Gods Analysis", description: "Analyzing the Ten Gods harmony...", icon: "⭐" },
-    { step: 4, name: "Symbolic Stars Analysis", description: "Interpreting the symbolic stars...", icon: "🌟" },
-    { step: 5, name: "Fortune Timing Analysis", description: "Examining this year's fortune...", icon: "📅" },
-    { step: 6, name: "Comprehensive Analysis", description: "Completing the comprehensive analysis...", icon: "✨" },
+    { step: 1, name: "Foundation Analysis", description: "Analyzing your birth chart structure...", icon: "" },
+    { step: 2, name: "Day Master Analysis", description: "Examining your Day Master characteristics...", icon: "" },
+    { step: 3, name: "Ten Gods Analysis", description: "Analyzing the Ten Gods harmony...", icon: "" },
+    { step: 4, name: "Symbolic Stars Analysis", description: "Interpreting the symbolic stars...", icon: "" },
+    { step: 5, name: "Fortune Timing Analysis", description: "Examining this year's fortune...", icon: "" },
+    { step: 6, name: "Comprehensive Analysis", description: "Completing the comprehensive analysis...", icon: "" },
   ],
 };
 

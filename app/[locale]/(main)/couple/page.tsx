@@ -33,11 +33,10 @@ export default async function CouplePage() {
 
   return (
     <div className="space-y-4 px-4">
-      {/* Header - 점신 스타일 */}
+      {/* Header - Cheong-Giun Style */}
       <div className="bg-white rounded-2xl p-5 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-pink-50 rounded-full mb-3">
-          <span className="text-lg">💕</span>
-          <span className="text-pink-600 text-xs font-medium">緣分分析</span>
+          <span className="text-pink-600 text-xs font-semibold">緣分分析</span>
         </div>
         <h1 className="text-xl font-bold text-gray-800 mb-2">
           {t("title")}

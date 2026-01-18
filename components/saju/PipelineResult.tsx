@@ -611,7 +611,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                         )}
                         <p className={`text-[10px] sm:text-xs mt-1.5 sm:mt-2 ${
                           isLocked ? "text-white/30" : "text-accent-primary"
-                        }`}>{isLocked ? "🔒 상세보기" : "상세보기"}</p>
+                        }`}>{isLocked ? "상세보기" : "상세보기"}</p>
                       </div>
                     );
                   })}
@@ -689,7 +689,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
 
                 {/* 핵심 메시지 */}
                 <div className="bg-white/10 rounded-lg p-3 sm:p-4 mb-4">
-                  <p className="text-xs text-white/60 mb-1">✨ 오늘의 핵심 메시지</p>
+                  <p className="text-xs text-white/60 mb-1">오늘의 핵심 메시지</p>
                   <p className="text-sm sm:text-base font-medium text-white italic">&ldquo;{step6.oneLineMessage}&rdquo;</p>
                 </div>
 
@@ -970,7 +970,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4">
                     <div className="p-3 sm:p-4 bg-success/10 rounded-xl border border-success/30">
-                      <p className="text-base sm:text-lg font-bold text-success mb-2">✨ 기회</p>
+                      <p className="text-base sm:text-lg font-bold text-success mb-2">기회</p>
                       <ul className="space-y-1.5 sm:space-y-2">
                         {step5.yearlyFortune.opportunities.map((o, i) => (
                           <li key={i} className="text-sm sm:text-base text-success/90 leading-relaxed">• {o}</li>
@@ -978,7 +978,7 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...(생략)' : ''}`;
                       </ul>
                     </div>
                     <div className="p-3 sm:p-4 bg-warning/10 rounded-xl border border-warning/30">
-                      <p className="text-base sm:text-lg font-bold text-warning mb-2">⚡ 도전</p>
+                      <p className="text-base sm:text-lg font-bold text-warning mb-2">도전</p>
                       <ul className="space-y-1.5 sm:space-y-2">
                         {step5.yearlyFortune.challenges.map((c, i) => (
                           <li key={i} className="text-sm sm:text-base text-warning/90 leading-relaxed">• {c}</li>

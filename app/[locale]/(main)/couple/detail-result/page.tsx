@@ -1057,7 +1057,7 @@ function CoupleDetailResultContent() {
         <section className="bg-gradient-to-br from-pink-100 to-rose-100 rounded-2xl p-5 space-y-4 border border-pink-300">
           <div className="flex items-center gap-2">
             <Heart className="w-5 h-5 text-pink-500" weight="fill" />
-            <h2 className="text-lg font-semibold text-pink-500">💕 연애/결혼 특별 분석</h2>
+            <h2 className="text-lg font-semibold text-pink-500">연애/결혼 특별 분석</h2>
           </div>
 
           <div className="space-y-4">
@@ -1161,7 +1161,7 @@ function CoupleDetailResultContent() {
       {/* 강점과 도전 */}
       <div className="grid grid-cols-1 gap-4">
         <section className="bg-white rounded-2xl p-5 space-y-3 border border-border shadow-sm">
-          <h2 className="text-lg font-semibold text-pink-500">💖 관계의 강점</h2>
+          <h2 className="text-lg font-semibold text-pink-500">관계의 강점</h2>
           <ul className="space-y-2">
             {result.strengths.map((strength, idx) => (
               <li key={idx} className="flex items-start gap-2 text-base text-text-primary">
@@ -1173,7 +1173,7 @@ function CoupleDetailResultContent() {
         </section>
 
         <section className="bg-white rounded-2xl p-5 space-y-3 border border-border shadow-sm">
-          <h2 className="text-lg font-semibold text-orange-500">⚠️ 도전 과제</h2>
+          <h2 className="text-lg font-semibold text-orange-500">도전 과제</h2>
           <ul className="space-y-2">
             {result.challenges.map((challenge, idx) => (
               <li key={idx} className="flex items-start gap-2 text-base text-text-primary">
@@ -1216,7 +1216,7 @@ function CoupleDetailResultContent() {
       <section className="bg-white rounded-2xl p-5 space-y-3 border border-border shadow-sm">
         <div className="flex items-center gap-2">
           <Sparkle className="w-5 h-5 text-pink-500" weight="fill" />
-          <h2 className="text-lg font-semibold text-text-primary">💑 함께하면 좋은 데이트</h2>
+          <h2 className="text-lg font-semibold text-text-primary">함께하면 좋은 데이트</h2>
         </div>
         <div className="flex flex-wrap gap-2">
           {result.recommendedActivities.map((activity, idx) => (
@@ -1231,7 +1231,7 @@ function CoupleDetailResultContent() {
       <section className="bg-white rounded-2xl p-5 space-y-3 border border-border shadow-sm">
         <div className="flex items-center gap-2">
           <CalendarBlank className="w-5 h-5 text-pink-500" weight="fill" />
-          <h2 className="text-lg font-semibold text-text-primary">📅 기념일/중요한 날짜</h2>
+          <h2 className="text-lg font-semibold text-text-primary">기념일/중요한 날짜</h2>
         </div>
         <ul className="space-y-2">
           {result.luckyDates.map((date, idx) => (
@@ -1247,7 +1247,7 @@ function CoupleDetailResultContent() {
       <section className="bg-white rounded-2xl p-5 space-y-4 border border-border shadow-sm">
         <div className="flex items-center gap-2">
           <Clover className="w-5 h-5 text-pink-500" weight="fill" />
-          <h2 className="text-lg font-semibold text-text-primary">🍀 함께할 때 행운의 요소</h2>
+          <h2 className="text-lg font-semibold text-text-primary">함께할 때 행운의 요소</h2>
         </div>
 
         <div className="space-y-4">

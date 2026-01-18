@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { type ElementType, getGuardian } from '@/lib/constants/guardians';
 
@@ -49,7 +50,7 @@ export function GuardianAvatar({
     >
       <div
         className={cn(
-          'rounded-full flex items-center justify-center transition-all duration-300',
+          'rounded-full flex items-center justify-center transition-all duration-300 overflow-hidden',
           sizeClasses[size],
           showGlow && guardian.glowAnimation,
           onClick && 'cursor-pointer hover:scale-105 active:scale-95'
@@ -58,13 +59,13 @@ export function GuardianAvatar({
           background: `linear-gradient(135deg, ${guardian.gradientFrom}, ${guardian.gradientTo})`,
         }}
       >
-        <span
-          role="img"
-          aria-label={guardian.name.ko}
-          className="select-none"
-        >
-          {guardian.emoji}
-        </span>
+        <Image
+          src={guardian.imagePath}
+          alt={guardian.name.ko}
+          width={80}
+          height={80}
+          className="w-[70%] h-[70%] object-contain"
+        />
       </div>
 
       {showName && (
@@ -97,7 +98,7 @@ export function GuardianAvatarInline({
   return (
     <span
       className={cn(
-        'inline-flex items-center justify-center w-6 h-6 rounded-full text-sm',
+        'inline-flex items-center justify-center w-6 h-6 rounded-full overflow-hidden',
         className
       )}
       style={{
@@ -106,7 +107,13 @@ export function GuardianAvatarInline({
       role="img"
       aria-label={guardian.name.ko}
     >
-      {guardian.emoji}
+      <Image
+        src={guardian.imagePath}
+        alt={guardian.name.ko}
+        width={20}
+        height={20}
+        className="w-[70%] h-[70%] object-contain"
+      />
     </span>
   );
 }
@@ -135,9 +142,13 @@ export function GuardianBadge({
         backgroundColor: guardian.color,
       }}
     >
-      <span role="img" aria-label={guardian.name.ko}>
-        {guardian.emoji}
-      </span>
+      <Image
+        src={guardian.imagePath}
+        alt={guardian.name.ko}
+        width={16}
+        height={16}
+        className="w-4 h-4 object-contain"
+      />
       {showElement && <span>{guardian.element.ko}</span>}
     </span>
   );

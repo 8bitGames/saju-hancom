@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -13,14 +14,20 @@ interface NavItem {
   matchPaths?: string[];
 }
 
-// 홈 아이콘 (점신 로고 스타일)
+// 홈 아이콘 (로고 이미지)
 function HomeIcon({ active }: { active?: boolean }) {
   return (
     <div className={cn(
-      "text-2xl",
-      active ? "scale-110" : ""
+      "w-6 h-6 flex items-center justify-center",
+      active ? "scale-110" : "opacity-70"
     )}>
-      🔮
+      <Image
+        src="/icons/categories/saju.png"
+        alt="Home"
+        width={24}
+        height={24}
+        className="object-contain"
+      />
     </div>
   );
 }
@@ -145,11 +152,11 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50"
+      className="fixed bottom-0 z-50 bg-white border-t border-gray-100 w-full max-w-[430px] left-1/2 -translate-x-1/2"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       aria-label="Main navigation"
     >
-      <div className="flex justify-around items-center h-16 max-w-md mx-auto">
+      <div className="flex justify-around items-center h-16">
         {navItems.map((item) => {
           const active = isActive(item);
 
@@ -160,7 +167,7 @@ export function BottomNav() {
               className={cn(
                 'flex flex-col items-center justify-center gap-1 py-2 px-3 min-w-[56px] transition-colors',
                 active
-                  ? 'text-amber-600'
+                  ? 'text-[#0E4168]'
                   : 'text-gray-500 hover:text-gray-700'
               )}
               aria-current={active ? 'page' : undefined}
@@ -168,7 +175,7 @@ export function BottomNav() {
               {active ? item.activeIcon : item.icon}
               <span className={cn(
                 "text-[10px] font-medium",
-                active && "text-amber-600"
+                active && "text-[#0E4168]"
               )}>
                 {t(item.labelKey)}
               </span>

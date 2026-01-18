@@ -392,22 +392,22 @@ function generateHighlights(
 
   // 긍정적 관계
   if (interaction.harmonies.length > 0) {
-    highlights.push(`✨ ${interaction.harmonies.join(", ")}`);
+    highlights.push(interaction.harmonies.join(", "));
   }
 
   // 부정적 관계
   if (interaction.clashes.length > 0) {
-    highlights.push(`⚠️ ${interaction.clashes.join(", ")}`);
+    highlights.push(interaction.clashes.join(", "));
   }
   if (interaction.punishments.length > 0) {
-    highlights.push(`⛔ ${interaction.punishments.join(", ")}`);
+    highlights.push(interaction.punishments.join(", "));
   }
 
   // 용신 관계
   if (usefulGodRelation === "support") {
-    highlights.push("💪 용신 강화");
+    highlights.push("용신 강화");
   } else if (usefulGodRelation === "against") {
-    highlights.push("🔻 용신 약화");
+    highlights.push("용신 약화");
   }
 
   return highlights;

@@ -458,9 +458,9 @@ function generatePastEventInferences(
 /**
  * 미래 방향 제시 생성
  * 사주 특성과 과거 경험을 바탕으로 "앞으로 이렇게 나아가세요" 조언
- * 🆕 카테고리별로 다른 내용을 생성하여 중복 방지
+ * 카테고리별로 다른 내용을 생성하여 중복 방지
  *
- * ⚠️ 중요: 각 카테고리는 해당 주제의 조언만 생성해야 함
+ * 중요: 각 카테고리는 해당 주제의 조언만 생성해야 함
  * - career: 직업/커리어 조언만 (투자/재물 조언 금지)
  * - wealth: 재물/투자 조언만 (커리어 조언 금지)
  * - health: 건강 조언만
@@ -483,10 +483,10 @@ function generateFutureDirectionAdvice(
   const starNames = stars.map(s => s.star.name.toLowerCase());
 
   if (locale === "ko") {
-    // 🆕 카테고리별 분기 - 각 카테고리에 맞는 미래 방향만 생성
+    // 카테고리별 분기 - 각 카테고리에 맞는 미래 방향만 생성
     switch (category) {
       case "dayMaster":
-        // 🆕 일간: 일간 오행 기반 발전 방향 조언
+        // 일간: 일간 오행 기반 발전 방향 조언
         const dayMasterElement = chart.dayMaster.element;
         if (dayMasterElement === "water") {
           advice.push("물의 유연함을 살려 다양한 분야에서 기회를 모색하세요. 한 곳에 고정되기보다 흐름에 맡기시면 좋은 방향으로 흘러가실 겁니다.");
@@ -507,7 +507,7 @@ function generateFutureDirectionAdvice(
         break;
 
       case "personality":
-        // 🆕 성격/적성: 십성과 신살 기반 성격 발전 조언
+        // 성격/적성: 십성과 신살 기반 성격 발전 조언
         if (dominantTenGods.includes("jeonggwan") || dominantTenGods.includes("pyeongwan")) {
           advice.push("책임감이 강하신 분이니, 이제는 자신을 위한 시간도 챙기세요. 남을 위해 희생만 하다 보면 지치실 수 있습니다.");
         }
@@ -526,7 +526,7 @@ function generateFutureDirectionAdvice(
         break;
 
       case "career":
-        // 직업: 커리어/직업 조언만 (⚠️ 투자/재물 조언 금지)
+        // 직업: 커리어/직업 조언만 (투자/재물 조언 금지)
         if (starNames.some(n => n.includes("역마"))) {
           advice.push(`역마의 에너지를 커리어에 활용하세요. ${yearPillar.description}의 해에는 새로운 직장이나 업무 환경으로 이동하시면 좋은 결과가 있을 겁니다.`);
         }
@@ -542,7 +542,7 @@ function generateFutureDirectionAdvice(
         break;
 
       case "wealth":
-        // 재물: 재물/투자 조언만 (⚠️ 커리어 조언 금지)
+        // 재물: 재물/투자 조언만 (커리어 조언 금지)
         if (dominantTenGods.includes("jeongjae") || dominantTenGods.includes("pyeonjae")) {
           advice.push("현실적 감각이 뛰어나시니 재테크에서 좋은 기회를 잡으실 수 있습니다. 단, 과욕은 금물이에요.");
         }
@@ -569,7 +569,7 @@ function generateFutureDirectionAdvice(
         break;
 
       case "health":
-        // 건강: 건강 조언만 (⚠️ 커리어/재물 조언 금지)
+        // 건강: 건강 조언만 (커리어/재물 조언 금지)
         if (flags.healthCaution) {
           advice.push("건강이 모든 것의 기반입니다. 앞으로는 몸의 신호를 무시하지 마시고, 정기적인 관리를 습관화하세요.");
         }

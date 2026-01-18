@@ -36,7 +36,6 @@ export default async function CompatibilityPage() {
       {/* Header - 점신 스타일 */}
       <div className="bg-white rounded-2xl p-5 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-full mb-3">
-          <span className="text-lg">👥</span>
           <span className="text-blue-600 text-xs font-medium">宮合分析</span>
         </div>
         <h1 className="text-xl font-bold text-gray-800 mb-2 break-keep">

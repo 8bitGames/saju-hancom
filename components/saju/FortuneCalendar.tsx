@@ -264,10 +264,10 @@ const DayDetailModal = memo(function DayDetailModal({
             <p className="text-white/50 text-xs">
               용신 관계:{" "}
               {day.usefulGodRelation === "support"
-                ? "💪 강화"
+                ? "강화"
                 : day.usefulGodRelation === "against"
-                ? "🔻 약화"
-                : "➖ 중립"}
+                ? "약화"
+                : "중립"}
             </p>
           </div>
         </div>
@@ -389,7 +389,7 @@ const MonthStatistics = memo(function MonthStatistics({
 
       {excellentDays.length > 0 && (
         <div className="mt-3 pt-3 border-t border-white/10">
-          <p className="text-white/50 text-xs mb-1">🌟 대길일</p>
+          <p className="text-white/50 text-xs mb-1">대길일</p>
           <p className="text-green-300 text-xs">
             {excellentDays.slice(0, 5).map((d) => {
               const date = new Date(d);

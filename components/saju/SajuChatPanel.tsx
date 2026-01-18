@@ -24,15 +24,15 @@ interface SajuChatPanelProps {
 
 // 상세 분석 카테고리 목록
 const DETAIL_CATEGORIES = [
-  { key: "dayMaster", name: "일간", icon: "☯️" },
-  { key: "tenGods", name: "십성", icon: "⭐" },
-  { key: "stars", name: "신살", icon: "🌟" },
-  { key: "fortune", name: "운세", icon: "📅" },
-  { key: "personality", name: "성격", icon: "🎭" },  // 종합탭 성격 분석 (dayMaster와 분리)
-  { key: "career", name: "직업운", icon: "💼" },
-  { key: "relationship", name: "대인관계", icon: "💕" },
-  { key: "health", name: "건강운", icon: "💪" },
-  { key: "wealth", name: "재물운", icon: "💰" },
+  { key: "dayMaster", name: "일간" },
+  { key: "tenGods", name: "십성" },
+  { key: "stars", name: "신살" },
+  { key: "fortune", name: "운세" },
+  { key: "personality", name: "성격" },  // 종합탭 성격 분석 (dayMaster와 분리)
+  { key: "career", name: "직업운" },
+  { key: "relationship", name: "대인관계" },
+  { key: "health", name: "건강운" },
+  { key: "wealth", name: "재물운" },
 ] as const;
 
 const SUGGESTED_QUESTIONS = [
@@ -249,13 +249,13 @@ export function SajuChatPanel({ sajuContext, sajuResult, gender, locale = "ko" }
                               ) : (
                                 <span className="w-3.5 h-3.5 rounded-full border border-current" />
                               )}
-                              <span>{cat.icon} {cat.name}</span>
+                              <span>{cat.name}</span>
                             </div>
                           ))}
                         </div>
 
                         <p className="text-xs text-amber-600 dark:text-amber-500 mt-2">
-                          💡 위 탭에서 &quot;상세 분석&quot; 버튼을 눌러주세요
+                          위 탭에서 &quot;상세 분석&quot; 버튼을 눌러주세요
                         </p>
                       </div>
                       <button
@@ -279,7 +279,7 @@ export function SajuChatPanel({ sajuContext, sajuResult, gender, locale = "ko" }
                           모든 상세 분석 완료!
                         </p>
                         <p className="text-xs text-green-600 dark:text-green-500">
-                          최대 정확도로 상담할 수 있어요 ✨
+                          최대 정확도로 상담할 수 있어요
                         </p>
                       </div>
                     </div>

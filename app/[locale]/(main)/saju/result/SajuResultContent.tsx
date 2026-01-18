@@ -873,7 +873,7 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
                     )}
                     {interpretation.elementInsight.recommendation && (
                       <p className="text-xs text-purple-300 italic">
-                        💡 {typeof interpretation.elementInsight.recommendation === 'string'
+                        {typeof interpretation.elementInsight.recommendation === 'string'
                           ? interpretation.elementInsight.recommendation
                           : ''}
                       </p>
@@ -900,12 +900,12 @@ export function SajuResultContent({ searchParams }: { searchParams: SearchParams
                   <div className="p-3 rounded-xl bg-background-secondary space-y-2">
                     {interpretation.starInsight.positive && typeof interpretation.starInsight.positive === 'string' && (
                       <p className="text-xs text-green-300">
-                        ✨ {interpretation.starInsight.positive}
+                        {interpretation.starInsight.positive}
                       </p>
                     )}
                     {interpretation.starInsight.caution && typeof interpretation.starInsight.caution === 'string' && (
                       <p className="text-xs text-orange-300">
-                        ⚠️ {interpretation.starInsight.caution}
+                        {interpretation.starInsight.caution}
                       </p>
                     )}
                   </div>

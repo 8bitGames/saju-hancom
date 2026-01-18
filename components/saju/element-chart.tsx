@@ -12,41 +12,36 @@ interface ElementChartProps {
 }
 
 // 청기운 디자인 시스템 오행 컬러
-const elementConfig: Record<Element, { color: string; lightColor: string; hanja: string; gradient: string; emoji: string }> = {
+const elementConfig: Record<Element, { color: string; lightColor: string; hanja: string; gradient: string }> = {
   wood: {
     color: "#2D5A27",
     lightColor: "#4A7C43",
     hanja: "木",
     gradient: "from-[#2D5A27] to-[#4A7C43]",
-    emoji: "🐲",
   },
   fire: {
     color: "#B91C1C",
     lightColor: "#DC2626",
     hanja: "火",
     gradient: "from-[#B91C1C] to-[#DC2626]",
-    emoji: "🦅",
   },
   earth: {
     color: "#C4A35A",
     lightColor: "#D4B86A",
     hanja: "土",
     gradient: "from-[#C4A35A] to-[#D4B86A]",
-    emoji: "🐉",
   },
   metal: {
     color: "#6B7280",
     lightColor: "#9CA3AF",
     hanja: "金",
     gradient: "from-[#6B7280] to-[#9CA3AF]",
-    emoji: "🐅",
   },
   water: {
     color: "#1E3A5F",
     lightColor: "#2563EB",
     hanja: "水",
     gradient: "from-[#1E3A5F] to-[#2563EB]",
-    emoji: "🐢",
   },
 };
 
@@ -90,7 +85,7 @@ export function ElementChart({ scores, dominant, lacking }: ElementChartProps) {
                   ["--tw-ring-color" as string]: config.color,
                 }}
               >
-                <span className="text-2xl">{config.emoji}</span>
+                <span className="text-xl font-bold" style={{ color: config.color }}>{config.hanja}</span>
                 {/* Percentage Badge */}
                 <div
                   className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold"
@@ -190,7 +185,7 @@ export function ElementChart({ scores, dominant, lacking }: ElementChartProps) {
                   className="text-sm sm:text-base font-bold"
                   style={{ color: elementConfig[e].color }}
                 >
-                  {elementConfig[e].emoji} {ELEMENT_KOREAN[e]}
+                  {elementConfig[e].hanja} {ELEMENT_KOREAN[e]}
                 </span>
               ))}
             </div>
@@ -211,7 +206,7 @@ export function ElementChart({ scores, dominant, lacking }: ElementChartProps) {
                   className="text-sm sm:text-base font-bold"
                   style={{ color: elementConfig[e].color }}
                 >
-                  {elementConfig[e].emoji} {ELEMENT_KOREAN[e]}
+                  {elementConfig[e].hanja} {ELEMENT_KOREAN[e]}
                 </span>
               ))}
             </div>
