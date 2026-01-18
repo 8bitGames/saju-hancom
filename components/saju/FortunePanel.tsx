@@ -16,7 +16,12 @@ import {
   Timer,
   Crown,
   Lock,
+  Leaf,
+  Heartbeat,
 } from "@phosphor-icons/react";
+import { LifestyleFortune } from "./LifestyleFortune";
+import { BiorhythmChart } from "./BiorhythmChart";
+import { FortuneCalendar } from "./FortuneCalendar";
 import type { Element } from "@/lib/saju/types";
 
 // ============================================================================
@@ -743,7 +748,7 @@ export const MajorFortuneSection = memo(function MajorFortuneSection({
 // Main Component
 // ============================================================================
 
-type FortuneTab = "daily" | "hourly";
+type FortuneTab = "daily" | "hourly" | "lifestyle" | "biorhythm" | "calendar";
 
 export function FortunePanel({
   shareId,
@@ -818,6 +823,9 @@ export function FortunePanel({
   const tabs: { key: FortuneTab; label: string; icon: React.ReactNode; premium?: boolean }[] = [
     { key: "daily", label: "오늘의 운", icon: <Sun className="w-4 h-4" weight="fill" /> },
     { key: "hourly", label: "시운", icon: <Clock className="w-4 h-4" weight="fill" />, premium: true },
+    { key: "lifestyle", label: "라이프스타일", icon: <Leaf className="w-4 h-4" weight="fill" />, premium: true },
+    { key: "biorhythm", label: "바이오리듬", icon: <Heartbeat className="w-4 h-4" weight="fill" />, premium: true },
+    { key: "calendar", label: "캘린더", icon: <CalendarBlank className="w-4 h-4" weight="fill" />, premium: true },
   ];
 
   if (!shareId) {
@@ -888,6 +896,27 @@ export function FortunePanel({
               isPremium={isPremium}
               onUpgradeClick={onUpgradeClick}
             />
+          )}
+          {activeTab === "lifestyle" && (
+            isPremium ? (
+              <LifestyleFortune shareId={shareId} />
+            ) : (
+              <PremiumLock onUpgradeClick={onUpgradeClick} />
+            )
+          )}
+          {activeTab === "biorhythm" && (
+            isPremium ? (
+              <BiorhythmChart shareId={shareId} />
+            ) : (
+              <PremiumLock onUpgradeClick={onUpgradeClick} />
+            )
+          )}
+          {activeTab === "calendar" && (
+            isPremium ? (
+              <FortuneCalendar shareId={shareId} />
+            ) : (
+              <PremiumLock onUpgradeClick={onUpgradeClick} />
+            )
           )}
         </motion.div>
       </AnimatePresence>
