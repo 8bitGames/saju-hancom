@@ -32,27 +32,28 @@ export default async function SajuPage() {
   const t = await getTranslations("saju");
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-2 py-4">
-        <p className="text-[#a855f7] text-sm font-medium tracking-wider">
-          四柱八字
-        </p>
-        <h1 className="text-2xl font-bold text-white">
+    <div className="space-y-4 px-4">
+      {/* Header - 점신 스타일 */}
+      <div className="bg-white rounded-2xl p-5 text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 rounded-full mb-3">
+          <span className="text-lg">✨</span>
+          <span className="text-amber-600 text-xs font-medium">四柱八字</span>
+        </div>
+        <h1 className="text-xl font-bold text-gray-800 mb-2">
           {t("title")}
         </h1>
-        <p className="text-white/60 text-sm">
+        <p className="text-gray-500 text-sm">
           {t("subtitle")}
         </p>
       </div>
 
-      {/* Form Card */}
-      <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+      {/* Form Card - 점신 스타일 */}
+      <div className="bg-white rounded-2xl p-5 shadow-sm">
         <SajuForm />
       </div>
 
       {/* Privacy Notice */}
-      <p className="text-center text-xs text-white/40 px-4">
+      <p className="text-center text-xs text-gray-500 px-4 pb-4">
         {t("privacyNotice")}
       </p>
     </div>

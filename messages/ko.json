@@ -12,6 +12,13 @@
     "confirm": "확인",
     "retry": "다시 시도"
   },
+  "Navigation": {
+    "home": "홈",
+    "fortune": "운세",
+    "compatibility": "궁합",
+    "history": "기록",
+    "profile": "내정보"
+  },
   "nav": {
     "home": "홈",
     "saju": "사주 분석",
@@ -80,6 +87,11 @@
       "earth": "토",
       "metal": "금",
       "water": "수"
+    },
+    "guardians": "오방신 수호신",
+    "premium": {
+      "title": "프리미엄 구독",
+      "description": "무제한 분석 & 상세 운세 리포트"
     }
   },
   "saju": {

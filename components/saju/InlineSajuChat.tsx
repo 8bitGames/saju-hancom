@@ -209,7 +209,7 @@ export function InlineSajuChat({ sajuResult, gender, interpretation }: InlineSaj
   return (
     <div className="space-y-4">
       {/* Messages Area - Scrollable Container */}
-      <div className="min-h-[400px] max-h-[500px] overflow-y-auto rounded-xl bg-white/5 border border-white/10 p-4 space-y-4">
+      <div className="min-h-[400px] max-h-[500px] overflow-y-auto rounded-xl bg-gray-50 border border-gray-200 p-4 space-y-4">
         {/* Welcome Message & Categories - Show when no messages */}
         {messages.length === 0 && (
           <motion.div
@@ -226,17 +226,17 @@ export function InlineSajuChat({ sajuResult, gender, interpretation }: InlineSaj
               >
                 <Sparkle className="w-8 h-8 text-white" weight="fill" />
               </motion.div>
-              <h3 className="text-lg font-bold text-white mb-1">AI 사주 상담</h3>
-              <p className="text-white/60 text-sm">
-                <span className="text-blue-300 font-semibold">{STEM_KOREAN[sajuResult.dayMaster]}</span> 일간을 가진
+              <h3 className="text-lg font-bold text-gray-800 mb-1">AI 사주 상담</h3>
+              <p className="text-gray-500 text-sm">
+                <span className="text-blue-500 font-semibold">{STEM_KOREAN[sajuResult.dayMaster]}</span> 일간을 가진
                 당신을 위한 맞춤 상담
               </p>
             </div>
 
             {/* Question Categories */}
             <div className="space-y-3">
-              <p className="text-xs text-white/50 flex items-center gap-2 px-1">
-                <Lightning className="w-4 h-4 text-yellow-400" weight="fill" />
+              <p className="text-xs text-gray-500 flex items-center gap-2 px-1">
+                <Lightning className="w-4 h-4 text-yellow-500" weight="fill" />
                 궁금한 분야를 선택하세요
               </p>
               <div className="grid grid-cols-3 gap-2">
@@ -247,7 +247,7 @@ export function InlineSajuChat({ sajuResult, gender, interpretation }: InlineSaj
                     className={`p-2.5 rounded-lg transition-all ${
                       selectedCategory === idx
                         ? `bg-gradient-to-br ${cat.color} text-white shadow-md`
-                        : "bg-white/5 border border-white/10 text-white/70 hover:bg-white/10"
+                        : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-100"
                     }`}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -301,7 +301,7 @@ export function InlineSajuChat({ sajuResult, gender, interpretation }: InlineSaj
                   ? message.channel === "voice"
                     ? "bg-gradient-to-r from-violet-500 to-purple-500 text-white"
                     : "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
-                  : "bg-white/10 text-white"
+                  : "bg-white border border-gray-200 text-gray-800"
               }`}
             >
               {message.channel === "voice" && (
@@ -314,7 +314,7 @@ export function InlineSajuChat({ sajuResult, gender, interpretation }: InlineSaj
                 <>
                   <MarkdownRenderer content={message.content} variant="chat" />
                   {"isSearching" in message && message.isSearching && (
-                    <div className="mt-3 flex items-center gap-2 text-xs text-white/50">
+                    <div className="mt-3 flex items-center gap-2 text-xs text-gray-400">
                       <div className="flex gap-1">
                         <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" />
                         <div
@@ -344,14 +344,14 @@ export function InlineSajuChat({ sajuResult, gender, interpretation }: InlineSaj
             animate={{ opacity: 1, y: 0 }}
             className="flex justify-start"
           >
-            <div className="bg-gradient-to-r from-violet-500/20 to-purple-500/20 border border-violet-500/30 rounded-2xl px-4 py-3">
+            <div className="bg-violet-50 border border-violet-200 rounded-2xl px-4 py-3">
               {voiceState === "listening" && (
                 <div className="flex items-center gap-2">
                   <div className="flex gap-1">
                     {[...Array(4)].map((_, i) => (
                       <div
                         key={i}
-                        className="w-1 bg-violet-400 rounded-full animate-pulse"
+                        className="w-1 bg-violet-500 rounded-full animate-pulse"
                         style={{
                           height: `${8 + Math.random() * 8}px`,
                           animationDelay: `${i * 0.1}s`,
@@ -359,33 +359,33 @@ export function InlineSajuChat({ sajuResult, gender, interpretation }: InlineSaj
                       />
                     ))}
                   </div>
-                  <span className="text-sm text-violet-300">
+                  <span className="text-sm text-violet-600">
                     {userTranscript || "듣고 있어요..."}
                   </span>
                 </div>
               )}
               {voiceState === "processing" && (
-                <div className="flex items-center gap-2 text-violet-300">
+                <div className="flex items-center gap-2 text-violet-600">
                   <SpinnerGap className="w-4 h-4 animate-spin" weight="bold" />
                   <span className="text-sm">생각하고 있어요...</span>
                 </div>
               )}
               {voiceState === "speaking" && (
                 <div className="flex items-center gap-2">
-                  <Waveform className="w-4 h-4 text-violet-400 animate-pulse" weight="fill" />
-                  <span className="text-sm text-violet-300">
+                  <Waveform className="w-4 h-4 text-violet-500 animate-pulse" weight="fill" />
+                  <span className="text-sm text-violet-600">
                     {aiTranscript || "말하고 있어요..."}
                   </span>
                 </div>
               )}
               {voiceState === "connecting" && (
-                <div className="flex items-center gap-2 text-violet-300">
+                <div className="flex items-center gap-2 text-violet-600">
                   <SpinnerGap className="w-4 h-4 animate-spin" weight="bold" />
                   <span className="text-sm">연결 중...</span>
                 </div>
               )}
               {voiceState === "ready" && (
-                <div className="flex items-center gap-2 text-violet-300">
+                <div className="flex items-center gap-2 text-violet-600">
                   <Microphone className="w-4 h-4" weight="fill" />
                   <span className="text-sm">말씀하세요</span>
                 </div>
@@ -397,7 +397,7 @@ export function InlineSajuChat({ sajuResult, gender, interpretation }: InlineSaj
         {/* Loading indicator */}
         {isLoading && messages.length > 0 && messages[messages.length - 1]?.content === "" && (
           <div className="flex justify-start">
-            <div className="bg-white/10 rounded-2xl px-4 py-3">
+            <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" />
                 <div
@@ -416,7 +416,7 @@ export function InlineSajuChat({ sajuResult, gender, interpretation }: InlineSaj
         {/* Error */}
         {(error || voiceError) && (
           <div className="flex justify-center">
-            <div className="bg-red-500/20 border border-red-500/30 rounded-xl px-4 py-2 text-sm text-red-300">
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-2 text-sm text-red-600">
               {error || voiceError}
             </div>
           </div>
@@ -433,7 +433,7 @@ export function InlineSajuChat({ sajuResult, gender, interpretation }: InlineSaj
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={isVoiceConnected ? "음성 대화 중..." : "궁금한 것을 물어보세요..."}
-          className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+          className="flex-1 px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
           disabled={isLoading || isVoiceConnected}
         />
 
@@ -446,7 +446,7 @@ export function InlineSajuChat({ sajuResult, gender, interpretation }: InlineSaj
               ? voiceState === "speaking"
                 ? "bg-amber-500 hover:bg-amber-600 text-white animate-pulse"
                 : "bg-gradient-to-r from-violet-500 to-purple-500 text-white animate-pulse"
-              : "bg-white/10 border border-white/20 text-white/70 hover:bg-violet-500/20 hover:border-violet-500/50 hover:text-violet-300"
+              : "bg-gray-100 border border-gray-200 text-gray-600 hover:bg-violet-100 hover:border-violet-300 hover:text-violet-600"
           }`}
           title={
             isVoiceConnected

@@ -36,7 +36,7 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
       {/* Categories */}
       {tenGodCategories.map(({ label, gods }) => (
         <div key={label} className="space-y-2">
-          <h4 className="text-xs text-white/40">{label}</h4>
+          <h4 className="text-xs text-text-muted">{label}</h4>
           <div className="grid grid-cols-2 gap-2">
             {gods.map((god) => {
               const count = counts[god] || 0;
@@ -48,27 +48,27 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
                 <div
                   key={god}
                   className={cn(
-                    "p-3 rounded-xl bg-white/5 border border-white/10 transition-all",
-                    isDominant && "ring-1 ring-[#22c55e]",
+                    "p-3 rounded-xl bg-white border border-border shadow-sm transition-all",
+                    isDominant && "ring-1 ring-element-wood",
                     isLacking && "opacity-50"
                   )}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-medium text-white">
+                    <span className="font-medium text-text-primary">
                       {info.korean}
                     </span>
                     <span
                       className={cn(
                         "text-sm font-bold",
                         count > 0
-                          ? "text-[#a855f7]"
-                          : "text-white/40"
+                          ? "text-brand-accent"
+                          : "text-text-muted"
                       )}
                     >
                       {count}
                     </span>
                   </div>
-                  <p className="text-xs text-white/60">
+                  <p className="text-xs text-text-secondary">
                     {info.description}
                   </p>
                 </div>
@@ -80,11 +80,11 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
 
       {/* Summary */}
       {(summary.dominant.length > 0 || summary.lacking.length > 0) && (
-        <div className="pt-2 border-t border-white/10">
+        <div className="pt-2 border-t border-border">
           <div className="grid grid-cols-2 gap-4">
             {summary.dominant.length > 0 && (
               <div>
-                <p className="text-xs text-white/40 mb-1">
+                <p className="text-xs text-text-muted mb-1">
                   주요 십성
                 </p>
                 <div className="flex flex-wrap gap-1">
@@ -92,7 +92,7 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
                     const buttonEl = (
                       <button
                         type="button"
-                        className="px-2 py-0.5 rounded-full bg-[#22c55e]/20 text-[#22c55e] text-xs hover:bg-[#22c55e]/30 active:bg-[#22c55e]/40 transition-colors"
+                        className="px-2 py-0.5 rounded-full bg-element-wood/20 text-element-wood text-xs hover:bg-element-wood/30 active:bg-element-wood/40 transition-colors"
                       >
                         {TEN_GOD_INFO[god].korean}
                       </button>
@@ -104,14 +104,14 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
                           {buttonEl}
                         </PopoverTrigger>
                         <PopoverContent
-                          className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+                          className="w-auto max-w-[260px] p-3 bg-white backdrop-blur-md border-border text-text-primary shadow-xl"
                           sideOffset={8}
                         >
                           <div className="space-y-1">
                             <p className="font-medium text-sm">
                               {TEN_GOD_INFO[god].korean} ({TEN_GOD_INFO[god].hanja})
                             </p>
-                            <p className="text-xs text-white/70">
+                            <p className="text-xs text-text-secondary">
                               {TEN_GOD_INFO[god].description}
                             </p>
                           </div>
@@ -126,7 +126,7 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
             )}
             {summary.lacking.length > 0 && (
               <div>
-                <p className="text-xs text-white/40 mb-1">
+                <p className="text-xs text-text-muted mb-1">
                   부재 십성
                 </p>
                 <div className="flex flex-wrap gap-1">
@@ -134,7 +134,7 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
                     const buttonEl = (
                       <button
                         type="button"
-                        className="px-2 py-0.5 rounded-full bg-[#f97316]/20 text-[#f97316] text-xs hover:bg-[#f97316]/30 active:bg-[#f97316]/40 transition-colors"
+                        className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 text-xs hover:bg-orange-200 active:bg-orange-300 transition-colors"
                       >
                         {TEN_GOD_INFO[god].korean}
                       </button>
@@ -146,14 +146,14 @@ export function TenGodDisplay({ summary }: TenGodDisplayProps) {
                           {buttonEl}
                         </PopoverTrigger>
                         <PopoverContent
-                          className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+                          className="w-auto max-w-[260px] p-3 bg-white backdrop-blur-md border-border text-text-primary shadow-xl"
                           sideOffset={8}
                         >
                           <div className="space-y-1">
                             <p className="font-medium text-sm">
                               {TEN_GOD_INFO[god].korean} ({TEN_GOD_INFO[god].hanja})
                             </p>
-                            <p className="text-xs text-white/70">
+                            <p className="text-xs text-text-secondary">
                               {TEN_GOD_INFO[god].description}
                             </p>
                           </div>

@@ -84,7 +84,7 @@ function AIAnalyzingAnimation() {
         </div>
         <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#ef4444] to-pink-500 animate-ping opacity-30" />
       </div>
-      <p className="text-sm sm:text-base text-white/70 text-center animate-pulse">
+      <p className="text-sm sm:text-base text-text-secondary text-center animate-pulse">
         {messages[messageIndex]}
       </p>
     </div>
@@ -92,10 +92,10 @@ function AIAnalyzingAnimation() {
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return "text-green-400";
-  if (score >= 60) return "text-blue-400";
-  if (score >= 40) return "text-white";
-  return "text-orange-400";
+  if (score >= 80) return "text-green-500";
+  if (score >= 60) return "text-blue-500";
+  if (score >= 40) return "text-text-primary";
+  return "text-orange-500";
 }
 
 function ScoreBar({ score, label }: { score: number; label: string }) {
@@ -103,11 +103,11 @@ function ScoreBar({ score, label }: { score: number; label: string }) {
     <div className="space-y-1.5">
       {label && (
         <div className="flex justify-between text-sm sm:text-base">
-          <span className="text-white/60">{label}</span>
+          <span className="text-text-secondary">{label}</span>
           <span className={`font-bold ${getScoreColor(score)}`}>{score}점</span>
         </div>
       )}
-      <div className="h-1.5 sm:h-2 bg-white/10 rounded-full overflow-hidden">
+      <div className="h-1.5 sm:h-2 bg-gray-200 rounded-full overflow-hidden">
         <div
           className="h-full bg-[#ef4444] rounded-full transition-all duration-500"
           style={{ width: `${score}%` }}
@@ -279,7 +279,7 @@ export default function FaceReadingResultPage() {
           <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-xl sm:rounded-2xl bg-[#ef4444] flex items-center justify-center">
             <Camera className="w-8 h-8 sm:w-10 sm:h-10 text-white" weight="fill" />
           </div>
-          <p className="text-sm sm:text-base text-white/60">결과를 불러오는 중...</p>
+          <p className="text-sm sm:text-base text-text-secondary">결과를 불러오는 중...</p>
         </div>
       </div>
     );
@@ -320,18 +320,18 @@ export default function FaceReadingResultPage() {
         <p className="text-[#ef4444] text-[10px] sm:text-xs font-medium tracking-wider">
           觀相分析
         </p>
-        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-text-primary">
           관상 분석 결과
         </h1>
         <TextGenerateEffect
           words="당신의 관상을 전문적으로 분석했습니다"
-          className="text-xs sm:text-sm text-white/60"
+          className="text-xs sm:text-sm text-text-secondary"
           duration={0.3}
         />
       </div>
 
       {/* Overall Score Card */}
-      <div className="bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 text-center">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-border shadow-sm text-center">
         <div className="w-24 h-24 sm:w-32 md:w-36 sm:h-32 md:h-36 mx-auto rounded-full bg-[#ef4444] flex items-center justify-center mb-3 sm:mb-4 shadow-lg shadow-[#ef4444]/30">
           <span className="text-3xl sm:text-5xl md:text-6xl font-bold text-white">{result.overallScore}</span>
         </div>
@@ -345,24 +345,24 @@ export default function FaceReadingResultPage() {
       </div>
 
       {/* Face Shape */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-2.5 sm:space-y-3 border border-white/10">
+      <section className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-2.5 sm:space-y-3 border border-border shadow-sm">
         <div className="flex items-center gap-1.5 sm:gap-2">
           <User className="w-4 h-4 sm:w-5 sm:h-5 text-[#ef4444]" weight="fill" />
-          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-white">얼굴형 분석</h2>
+          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-text-primary">얼굴형 분석</h2>
         </div>
 
         <div className="space-y-2 sm:space-y-2.5">
           <div className="inline-flex px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[#ef4444] text-white text-xs sm:text-sm font-medium">
             {result.faceShape.koreanName}
           </div>
-          <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
+          <p className="text-xs sm:text-sm text-text-primary leading-relaxed">
             {result.faceShape.description}
           </p>
           <div className="flex flex-wrap gap-1 sm:gap-1.5">
             {result.faceShape.characteristics.map((char, idx) => (
               <span
                 key={idx}
-                className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-white/10 text-[10px] sm:text-xs text-white/70"
+                className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-gray-100 text-[10px] sm:text-xs text-text-secondary"
               >
                 {char}
               </span>
@@ -372,17 +372,17 @@ export default function FaceReadingResultPage() {
       </section>
 
       {/* Feature Analysis */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4 border border-white/10">
+      <section className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4 border border-border shadow-sm">
         <div className="flex items-center gap-1.5 sm:gap-2">
           <ChartBar className="w-4 h-4 sm:w-5 sm:h-5 text-[#ef4444]" weight="fill" />
-          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-white">부위별 분석</h2>
+          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-text-primary">부위별 분석</h2>
         </div>
 
         <div className="space-y-3 sm:space-y-4">
           {Object.entries(result.features).map(([key, feature]) => (
             <div key={key} className="space-y-1 sm:space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm font-medium text-white">
+                <span className="text-xs sm:text-sm font-medium text-text-primary">
                   {feature.koreanName}
                 </span>
                 <span className={`text-xs sm:text-sm font-bold ${getScoreColor(feature.score)}`}>
@@ -390,10 +390,10 @@ export default function FaceReadingResultPage() {
                 </span>
               </div>
               <ScoreBar score={feature.score} label="" />
-              <p className="text-[10px] sm:text-xs text-white/60 leading-relaxed">{feature.description}</p>
-              <div className="flex items-start gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white/5">
+              <p className="text-[10px] sm:text-xs text-text-secondary leading-relaxed">{feature.description}</p>
+              <div className="flex items-start gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-background-secondary">
                 <Sparkle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#ef4444] flex-shrink-0 mt-0.5" weight="fill" />
-                <p className="text-[10px] sm:text-xs text-white/80 leading-relaxed">{feature.fortune}</p>
+                <p className="text-[10px] sm:text-xs text-text-primary leading-relaxed">{feature.fortune}</p>
               </div>
             </div>
           ))}
@@ -401,10 +401,10 @@ export default function FaceReadingResultPage() {
       </section>
 
       {/* Fortune Areas */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-2.5 sm:space-y-3 border border-white/10">
+      <section className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-2.5 sm:space-y-3 border border-border shadow-sm">
         <div className="flex items-center gap-1.5 sm:gap-2">
           <Star className="w-4 h-4 sm:w-5 sm:h-5 text-[#ef4444]" weight="fill" />
-          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-white">운세 영역</h2>
+          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-text-primary">운세 영역</h2>
         </div>
 
         <div className="grid grid-cols-1 gap-2 sm:gap-3">
@@ -413,21 +413,21 @@ export default function FaceReadingResultPage() {
             const label = fortuneLabels[key as keyof typeof fortuneLabels];
             const color = fortuneColors[key as keyof typeof fortuneColors];
             return (
-              <div key={key} className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-white/5 space-y-1.5 sm:space-y-2">
+              <div key={key} className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-background-secondary space-y-1.5 sm:space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" weight="fill" style={{ color }} />
-                    <span className="text-xs sm:text-sm font-medium text-white">{label}</span>
+                    <span className="text-xs sm:text-sm font-medium text-text-primary">{label}</span>
                   </div>
                   <span className="text-sm sm:text-base font-bold" style={{ color }}>{area.score}점</span>
                 </div>
-                <div className="h-1 sm:h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div className="h-1 sm:h-1.5 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-500"
                     style={{ width: `${area.score}%`, backgroundColor: color }}
                   />
                 </div>
-                <p className="text-[10px] sm:text-xs text-white/60 leading-relaxed">{area.description}</p>
+                <p className="text-[10px] sm:text-xs text-text-secondary leading-relaxed">{area.description}</p>
               </div>
             );
           })}
@@ -435,15 +435,15 @@ export default function FaceReadingResultPage() {
       </section>
 
       {/* Strengths */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-2 sm:space-y-2.5 border border-white/10">
+      <section className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-2 sm:space-y-2.5 border border-border shadow-sm">
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <Sparkle className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" weight="fill" />
-          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-green-400">당신의 강점</h2>
+          <Sparkle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" weight="fill" />
+          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-green-600">당신의 강점</h2>
         </div>
         <ul className="space-y-1.5 sm:space-y-2">
           {result.strengths.map((strength, idx) => (
-            <li key={idx} className="flex items-start gap-1.5 sm:gap-2 text-[11px] sm:text-xs md:text-sm text-white/80 leading-relaxed">
-              <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-400 flex-shrink-0 mt-0.5" weight="bold" />
+            <li key={idx} className="flex items-start gap-1.5 sm:gap-2 text-[11px] sm:text-xs md:text-sm text-text-primary leading-relaxed">
+              <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 flex-shrink-0 mt-0.5" weight="bold" />
               <span className="break-words">{strength}</span>
             </li>
           ))}
@@ -451,15 +451,15 @@ export default function FaceReadingResultPage() {
       </section>
 
       {/* Advice */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-2 sm:space-y-2.5 border border-white/10">
+      <section className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-2 sm:space-y-2.5 border border-border shadow-sm">
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" weight="fill" />
-          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-yellow-400">조언</h2>
+          <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" weight="fill" />
+          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-yellow-600">조언</h2>
         </div>
         <ul className="space-y-1.5 sm:space-y-2">
           {result.advice.map((item, idx) => (
-            <li key={idx} className="flex items-start gap-1.5 sm:gap-2 text-[11px] sm:text-xs md:text-sm text-white/80 leading-relaxed">
-              <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-400 flex-shrink-0 mt-0.5" weight="bold" />
+            <li key={idx} className="flex items-start gap-1.5 sm:gap-2 text-[11px] sm:text-xs md:text-sm text-text-primary leading-relaxed">
+              <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 flex-shrink-0 mt-0.5" weight="bold" />
               <span className="break-words">{item}</span>
             </li>
           ))}
@@ -467,10 +467,10 @@ export default function FaceReadingResultPage() {
       </section>
 
       {/* Lucky Elements */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-2 sm:space-y-2.5 border border-white/10">
+      <section className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-2 sm:space-y-2.5 border border-border shadow-sm">
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <Clover className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" weight="fill" />
-          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-white">행운의 요소</h2>
+          <Clover className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" weight="fill" />
+          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-text-primary">행운의 요소</h2>
         </div>
         <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {result.luckyElements.map((element, idx) => (
@@ -485,21 +485,21 @@ export default function FaceReadingResultPage() {
       </section>
 
       {/* AI 종합 요약 섹션 */}
-      <section className="bg-gradient-to-br from-[#ef4444]/10 to-pink-500/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4 border border-[#ef4444]/30">
+      <section className="bg-gradient-to-br from-[#ef4444]/10 to-pink-500/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4 border border-[#ef4444]/30">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-[#ef4444] to-pink-500 flex items-center justify-center">
             <MagicWand className="w-4 h-4 sm:w-5 sm:h-5 text-white" weight="fill" />
           </div>
           <div>
-            <h2 className="text-sm sm:text-base md:text-lg font-bold text-white">
+            <h2 className="text-sm sm:text-base md:text-lg font-bold text-text-primary">
               AI 종합 요약
             </h2>
-            <p className="text-[10px] sm:text-xs text-white/60">
+            <p className="text-[10px] sm:text-xs text-text-secondary">
               관상가의 핵심 해석
             </p>
           </div>
           {isStreamingComplete && (
-            <div className="ml-auto flex items-center gap-1.5 text-green-400 text-xs">
+            <div className="ml-auto flex items-center gap-1.5 text-green-500 text-xs">
               <Check className="w-4 h-4" weight="bold" />
               완료
             </div>
@@ -513,11 +513,11 @@ export default function FaceReadingResultPage() {
 
         {/* 종합 요약 콘텐츠 */}
         {(isStreamingStarted || isStreamingComplete) && (
-          <div className="rounded-xl bg-white/5 p-3 sm:p-4">
+          <div className="rounded-xl bg-white p-3 sm:p-4 border border-border">
             {summaryContent ? (
               <MarkdownRenderer content={summaryContent} />
             ) : (
-              <div className="flex items-center gap-2 text-white/40 text-sm">
+              <div className="flex items-center gap-2 text-text-muted text-sm">
                 <div className="w-4 h-4 border-2 border-[#ef4444]/30 border-t-[#ef4444] rounded-full animate-spin" />
                 해석 생성 중...
               </div>
@@ -528,7 +528,7 @@ export default function FaceReadingResultPage() {
         {/* 상세 분석 유도 */}
         {isStreamingComplete && (
           <div className="pt-2 text-center">
-            <p className="text-[10px] sm:text-xs text-white/50">
+            <p className="text-[10px] sm:text-xs text-text-muted">
               더 깊은 분석이 궁금하시다면 아래 버튼을 눌러주세요
             </p>
           </div>
@@ -552,14 +552,14 @@ export default function FaceReadingResultPage() {
           </Link>
         </div>
         <Link href="/" className="block">
-          <button className="w-full h-10 sm:h-11 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 text-xs sm:text-sm text-white/60 font-medium hover:bg-white/10 hover:text-white transition-colors">
+          <button className="w-full h-10 sm:h-11 rounded-lg sm:rounded-xl bg-background-secondary border border-border text-xs sm:text-sm text-text-secondary font-medium hover:bg-background-tertiary hover:text-text-primary transition-colors">
             홈으로 돌아가기
           </button>
         </Link>
       </div>
 
       {/* Disclaimer */}
-      <p className="text-center text-[10px] sm:text-xs text-white/40 pt-1 pb-4 sm:pb-6">
+      <p className="text-center text-[10px] sm:text-xs text-text-muted pt-1 pb-4 sm:pb-6">
         본 관상 분석은 전통 관상학을 기반으로 한 재미용 콘텐츠입니다.
       </p>
 

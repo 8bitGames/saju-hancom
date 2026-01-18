@@ -12,6 +12,13 @@
     "confirm": "Confirm",
     "retry": "Retry"
   },
+  "Navigation": {
+    "home": "Home",
+    "fortune": "Fortune",
+    "compatibility": "Match",
+    "history": "History",
+    "profile": "Profile"
+  },
   "nav": {
     "home": "Home",
     "saju": "Birth Chart",
@@ -80,6 +87,11 @@
       "earth": "Earth",
       "metal": "Metal",
       "water": "Water"
+    },
+    "guardians": "Five Guardians",
+    "premium": {
+      "title": "Premium Subscription",
+      "description": "Unlimited analysis & detailed fortune reports"
     }
   },
   "saju": {

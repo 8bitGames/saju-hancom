@@ -33,12 +33,12 @@ const CATEGORY_META: Record<StreamingCategory, {
   label: string;
   bgColor: string;
 }> = {
-  summary: { icon: Brain, color: "text-blue-400", label: "종합 궁합", bgColor: "bg-blue-500/10" },
-  communication: { icon: ChatCircle, color: "text-green-400", label: "소통과 협업", bgColor: "bg-green-500/10" },
-  synergy: { icon: Lightning, color: "text-purple-400", label: "시너지 분석", bgColor: "bg-purple-500/10" },
-  challenges: { icon: Warning, color: "text-orange-400", label: "주의할 점", bgColor: "bg-orange-500/10" },
-  advice: { icon: Lightbulb, color: "text-pink-400", label: "관계 발전 조언", bgColor: "bg-pink-500/10" },
-  timing: { icon: Clock, color: "text-cyan-400", label: "좋은 시기", bgColor: "bg-cyan-500/10" },
+  summary: { icon: Brain, color: "text-blue-600", label: "종합 궁합", bgColor: "bg-blue-50" },
+  communication: { icon: ChatCircle, color: "text-green-600", label: "소통과 협업", bgColor: "bg-green-50" },
+  synergy: { icon: Lightning, color: "text-purple-600", label: "시너지 분석", bgColor: "bg-purple-50" },
+  challenges: { icon: Warning, color: "text-orange-600", label: "주의할 점", bgColor: "bg-orange-50" },
+  advice: { icon: Lightbulb, color: "text-pink-600", label: "관계 발전 조언", bgColor: "bg-pink-50" },
+  timing: { icon: Clock, color: "text-cyan-600", label: "좋은 시기", bgColor: "bg-cyan-50" },
 };
 
 // AI Loading Animation Component
@@ -50,10 +50,10 @@ function AIAnalyzingAnimation({ message = "궁합을 분석하고 있어요..." 
         animate={{ rotate: 360 }}
         transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
       >
-        <CircleNotch className="w-12 h-12 text-blue-400" weight="bold" />
+        <CircleNotch className="w-12 h-12 text-blue-500" weight="bold" />
       </motion.div>
       <motion.div
-        className="flex items-center gap-2 text-blue-300"
+        className="flex items-center gap-2 text-blue-600"
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
@@ -83,7 +83,7 @@ function StreamingSection({
 
   return (
     <motion.div
-      className={`p-4 rounded-xl ${meta.bgColor} border border-white/10`}
+      className={`p-4 rounded-xl ${meta.bgColor} border border-border`}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -93,21 +93,21 @@ function StreamingSection({
         <span className={`text-sm font-medium ${meta.color}`}>{meta.label}</span>
         {isStreaming && (
           <motion.div
-            className="w-2 h-2 rounded-full bg-blue-400"
+            className="w-2 h-2 rounded-full bg-blue-500"
             animate={{ opacity: [0.3, 1, 0.3] }}
             transition={{ duration: 1, repeat: Infinity }}
           />
         )}
         {isComplete && (
-          <Check className="w-4 h-4 text-green-400" weight="bold" />
+          <Check className="w-4 h-4 text-green-500" weight="bold" />
         )}
       </div>
       {content ? (
-        <div className="text-white/80 text-sm leading-relaxed">
+        <div className="text-text-primary text-sm leading-relaxed">
           <MarkdownRenderer content={content} />
         </div>
       ) : isStreaming ? (
-        <div className="flex items-center gap-2 text-white/40 text-sm">
+        <div className="flex items-center gap-2 text-text-muted text-sm">
           <motion.span
             animate={{ opacity: [0.4, 1, 0.4] }}
             transition={{ duration: 1.2, repeat: Infinity }}
@@ -205,7 +205,7 @@ function GlowingCard({
         style={{ background: glowColor }}
       />
       {/* Content */}
-      <div className="relative bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
+      <div className="relative bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
         {children}
       </div>
     </motion.div>
@@ -214,10 +214,10 @@ function GlowingCard({
 
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return "text-green-400";
-  if (score >= 60) return "text-blue-400";
-  if (score >= 40) return "text-white";
-  return "text-orange-400";
+  if (score >= 80) return "text-green-600";
+  if (score >= 60) return "text-blue-600";
+  if (score >= 40) return "text-text-primary";
+  return "text-orange-600";
 }
 
 function getRelationTypeKorean(type?: string): string {
@@ -272,7 +272,7 @@ function AnimatedScoreBar({ score, label, delay = 0 }: { score: number; label: s
   return (
     <div className="space-y-2" ref={ref}>
       <div className="flex justify-between text-base">
-        <span className="text-white/60">{label}</span>
+        <span className="text-text-secondary">{label}</span>
         <motion.span
           className={`font-bold ${getScoreColor(score)}`}
           initial={{ opacity: 0 }}
@@ -282,7 +282,7 @@ function AnimatedScoreBar({ score, label, delay = 0 }: { score: number; label: s
           <AnimatedCounter value={score} duration={1.5} />점
         </motion.span>
       </div>
-      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
         <motion.div
           className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full"
           initial={{ width: 0 }}
@@ -318,7 +318,7 @@ function PersonPillarsDisplay({
     >
       <div className="flex items-center gap-2">
         <User className="w-4 h-4 text-[#3b82f6]" weight="fill" />
-        <span className="text-base font-medium text-white">{label}: {name}</span>
+        <span className="text-base font-medium text-text-primary">{label}: {name}</span>
       </div>
       <div className="grid grid-cols-4 gap-2">
         {(["year", "month", "day", "time"] as const).map((pillar, index) => {
@@ -337,12 +337,12 @@ function PersonPillarsDisplay({
               }}
             >
               {/* Pillar glow */}
-              <div className="absolute -inset-0.5 rounded-xl bg-blue-500/20 blur-sm group-hover:bg-blue-500/40 transition-all duration-300" />
-              <div className="relative p-3 rounded-xl bg-white/5 border border-white/10 group-hover:border-blue-500/50 transition-colors">
-                <p className="text-xs text-white/40 mb-1">
+              <div className="absolute -inset-0.5 rounded-xl bg-blue-500/10 blur-sm group-hover:bg-blue-500/20 transition-all duration-300" />
+              <div className="relative p-3 rounded-xl bg-background-secondary border border-border group-hover:border-blue-500/50 transition-colors">
+                <p className="text-xs text-text-muted mb-1">
                   {pillar === "year" ? "년" : pillar === "month" ? "월" : pillar === "day" ? "일" : "시"}
                 </p>
-                <p className="text-lg font-bold text-white">{p.gan}{p.zhi}</p>
+                <p className="text-lg font-bold text-text-primary">{p.gan}{p.zhi}</p>
               </div>
             </motion.div>
           );
@@ -717,7 +717,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
           宮合分析
         </motion.p>
         <motion.h1
-          className="text-2xl font-bold text-white"
+          className="text-2xl font-bold text-text-primary"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, type: "spring" }}
@@ -726,7 +726,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
         </motion.h1>
         <TextGenerateEffect
           words={`${person1.name}님과 ${person2.name}님의 ${getRelationTypeKorean(relationType)} 궁합`}
-          className="text-base text-white/60"
+          className="text-base text-text-secondary"
           duration={0.3}
         />
       </motion.div>
@@ -771,7 +771,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
         <div className="p-5 space-y-5">
           <div className="flex items-center gap-2">
             <UsersThree className="w-5 h-5 text-[#3b82f6]" weight="fill" />
-            <h2 className="text-lg font-semibold text-white">두 사람의 사주</h2>
+            <h2 className="text-lg font-semibold text-text-primary">두 사람의 사주</h2>
           </div>
 
           <PersonPillarsDisplay
@@ -782,7 +782,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
           />
 
           <motion.div
-            className="border-t border-white/10 my-4"
+            className="border-t border-border my-4"
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ delay: 0.5, duration: 0.5 }}
@@ -802,15 +802,15 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
         <div className="p-5 space-y-5">
           <div className="flex items-center gap-2">
             <ChartBar className="w-5 h-5 text-[#3b82f6]" weight="fill" />
-            <h2 className="text-lg font-semibold text-white">관계 분석</h2>
+            <h2 className="text-lg font-semibold text-text-primary">관계 분석</h2>
           </div>
 
           <div className="space-y-4">
             {[
-              { icon: ChatCircle, color: "text-green-400", label: "소통", data: result.analysis.communication, delay: 0 },
-              { icon: Handshake, color: "text-orange-400", label: "협업", data: result.analysis.collaboration, delay: 0.15 },
-              { icon: Heart, color: "text-pink-400", label: "신뢰", data: result.analysis.trust, delay: 0.3 },
-              { icon: Sparkle, color: "text-purple-400", label: "성장", data: result.analysis.growth, delay: 0.45 },
+              { icon: ChatCircle, color: "text-green-500", label: "소통", data: result.analysis.communication, delay: 0 },
+              { icon: Handshake, color: "text-orange-600", label: "협업", data: result.analysis.collaboration, delay: 0.15 },
+              { icon: Heart, color: "text-pink-500", label: "신뢰", data: result.analysis.trust, delay: 0.3 },
+              { icon: Sparkle, color: "text-purple-500", label: "성장", data: result.analysis.growth, delay: 0.45 },
             ].map(({ icon: Icon, color, label, data, delay }) => (
               <motion.div
                 key={label}
@@ -822,11 +822,11 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
               >
                 <div className="flex items-center gap-2">
                   <Icon className={`w-5 h-5 ${color}`} weight="fill" />
-                  <span className="text-base font-medium text-white">{label}</span>
+                  <span className="text-base font-medium text-text-primary">{label}</span>
                 </div>
                 <AnimatedScoreBar score={data.score} label="" delay={delay} />
                 <motion.p
-                  className="text-sm text-white/60"
+                  className="text-sm text-text-secondary"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
@@ -845,8 +845,8 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
         <div className="p-5 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-blue-400" weight="fill" />
-              <h2 className="text-lg font-semibold text-white">맞춤 궁합 해석</h2>
+              <Brain className="w-5 h-5 text-blue-500" weight="fill" />
+              <h2 className="text-lg font-semibold text-text-primary">맞춤 궁합 해석</h2>
             </div>
             {!isAllComplete && streamingCategory && (
               <motion.div
@@ -918,7 +918,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
                   // 재시도
                   streamAllCategories();
                 }}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
               >
                 <ArrowCounterClockwise className="w-4 h-4" weight="bold" />
                 <span className="text-sm font-medium">다시 시도</span>
@@ -931,7 +931,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
       {/* Element Balance */}
       <GlowingCard glowColor="rgba(168, 85, 247, 0.3)" variants={itemVariants}>
         <div className="p-5 space-y-4">
-          <h2 className="text-lg font-semibold text-white">오행 균형</h2>
+          <h2 className="text-lg font-semibold text-text-primary">오행 균형</h2>
           <div className="grid grid-cols-5 gap-2">
             {(["wood", "fire", "earth", "metal", "water"] as const).map((element, index) => {
               const person1Score = result.elementBalance.person1[element];
@@ -961,8 +961,8 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
                     className="absolute -inset-0.5 rounded-xl blur-sm opacity-50 group-hover:opacity-100 transition-opacity"
                     style={{ background: elementColors[element] }}
                   />
-                  <div className="relative p-3 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-sm font-medium text-white">
+                  <div className="relative p-3 rounded-xl bg-background-secondary border border-border">
+                    <p className="text-sm font-medium text-text-primary">
                       {ELEMENT_KOREAN[element]}
                     </p>
                     <motion.p
@@ -975,7 +975,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
                     >
                       {person1Score}
                     </motion.p>
-                    <p className="text-xs text-white/40">
+                    <p className="text-xs text-text-muted">
                       vs {person2Score}
                     </p>
                   </div>
@@ -990,7 +990,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
       {result.relationshipAdvice.length > 0 && (
         <GlowingCard glowColor="rgba(34, 197, 94, 0.3)" variants={itemVariants}>
           <div className="p-5 space-y-3">
-            <h2 className="text-lg font-semibold text-green-400">관계 조언</h2>
+            <h2 className="text-lg font-semibold text-green-600">관계 조언</h2>
             <motion.ul
               className="space-y-2"
               variants={containerVariants}
@@ -1001,7 +1001,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
               {result.relationshipAdvice.map((advice, i) => (
                 <motion.li
                   key={i}
-                  className="flex items-start gap-2 text-base text-white/80"
+                  className="flex items-start gap-2 text-base text-text-primary"
                   variants={listItemVariants}
                 >
                   <motion.div
@@ -1010,7 +1010,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1, type: "spring" }}
                   >
-                    <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" weight="bold" />
+                    <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" weight="bold" />
                   </motion.div>
                   {advice}
                 </motion.li>
@@ -1024,7 +1024,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
       {result.cautions.length > 0 && (
         <GlowingCard glowColor="rgba(249, 115, 22, 0.3)" variants={itemVariants}>
           <div className="p-5 space-y-3">
-            <h2 className="text-lg font-semibold text-orange-400">주의 사항</h2>
+            <h2 className="text-lg font-semibold text-orange-600">주의 사항</h2>
             <motion.ul
               className="space-y-2"
               variants={containerVariants}
@@ -1035,7 +1035,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
               {result.cautions.map((caution, i) => (
                 <motion.li
                   key={i}
-                  className="flex items-start gap-2 text-base text-white/80"
+                  className="flex items-start gap-2 text-base text-text-primary"
                   variants={listItemVariants}
                 >
                   <motion.div
@@ -1044,7 +1044,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1, type: "spring" }}
                   >
-                    <Warning className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" weight="bold" />
+                    <Warning className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" weight="bold" />
                   </motion.div>
                   {caution}
                 </motion.li>
@@ -1073,7 +1073,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
         <div className="flex gap-3">
           <Link href="/compatibility" className="flex-1">
             <motion.button
-              className="w-full h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2 text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+              className="w-full h-14 rounded-xl bg-background-secondary border border-border flex items-center justify-center gap-2 text-text-secondary hover:text-text-primary hover:bg-gray-200 transition-colors"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -1086,7 +1086,7 @@ export function CompatibilityResultContent({ searchParams }: { searchParams: Sea
 
       {/* Disclaimer */}
       <motion.p
-        className="text-center text-sm text-white/40 pt-2 pb-8"
+        className="text-center text-sm text-text-muted pt-2 pb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}

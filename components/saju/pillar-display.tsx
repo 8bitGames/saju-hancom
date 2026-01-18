@@ -30,20 +30,21 @@ interface PillarDisplayProps {
   isDayMaster?: boolean;
 }
 
+// 청기운 디자인 시스템 오행 컬러
 const elementColorMap: Record<Element, string> = {
-  wood: "bg-[#22c55e]",
-  fire: "bg-[#ef4444]",
-  earth: "bg-[#eab308]",
-  metal: "bg-[#94a3b8]",
-  water: "bg-[#3b82f6]",
+  wood: "bg-element-wood",
+  fire: "bg-element-fire",
+  earth: "bg-element-earth",
+  metal: "bg-element-metal",
+  water: "bg-element-water",
 };
 
 const elementTextColorMap: Record<Element, string> = {
-  wood: "text-[#22c55e]",
-  fire: "text-[#ef4444]",
-  earth: "text-[#eab308]",
-  metal: "text-[#94a3b8]",
-  water: "text-[#3b82f6]",
+  wood: "text-element-wood",
+  fire: "text-element-fire",
+  earth: "text-element-earth",
+  metal: "text-element-metal",
+  water: "text-element-water",
 };
 
 export function PillarDisplay({
@@ -66,13 +67,13 @@ export function PillarDisplay({
           "w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold",
           elementColorMap[stemElement],
           stemElement === "metal" || stemElement === "earth"
-            ? "text-[#0f172a]"
+            ? "text-text-primary"
             : "text-white"
         )}
       >
         {pillar.gan}
       </div>
-      <span className="text-xs text-white/60 mt-1">
+      <span className="text-xs text-text-secondary mt-1">
         {stemKorean}
       </span>
       <span
@@ -93,8 +94,8 @@ export function PillarDisplay({
         className={cn(
           "text-xs",
           isDayMaster
-            ? "text-[#a855f7] font-semibold"
-            : "text-white/40"
+            ? "text-brand-accent font-semibold"
+            : "text-text-muted"
         )}
       >
         {label}
@@ -103,8 +104,8 @@ export function PillarDisplay({
       {/* Pillar Card */}
       <div
         className={cn(
-          "flex flex-col items-center gap-1 p-3 rounded-xl transition-all bg-white/5 border border-white/10",
-          isDayMaster && "ring-2 ring-[#a855f7]"
+          "flex flex-col items-center gap-1 p-3 rounded-xl transition-all bg-white border border-border shadow-sm",
+          isDayMaster && "ring-2 ring-brand-accent"
         )}
       >
 
@@ -115,7 +116,7 @@ export function PillarDisplay({
               {stemButton}
             </PopoverTrigger>
             <PopoverContent
-              className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+              className="w-auto max-w-[260px] p-3 bg-white backdrop-blur-md border-border text-text-primary shadow-xl"
               sideOffset={8}
             >
               <div className="flex items-start gap-2">
@@ -124,7 +125,7 @@ export function PillarDisplay({
                     "w-6 h-6 rounded flex-shrink-0 flex items-center justify-center text-sm font-bold",
                     elementColorMap[stemElement],
                     stemElement === "metal" || stemElement === "earth"
-                      ? "text-[#0f172a]"
+                      ? "text-text-primary"
                       : "text-white"
                   )}
                 >
@@ -139,7 +140,7 @@ export function PillarDisplay({
         )}
 
         {/* Divider */}
-        <div className="w-full h-px bg-white/10 my-1" />
+        <div className="w-full h-px bg-border my-1" />
 
         {/* Branch (Earthly) - 탭하면 설명 표시 */}
         {(() => {
@@ -150,13 +151,13 @@ export function PillarDisplay({
                   "w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold",
                   elementColorMap[branchElement],
                   branchElement === "metal" || branchElement === "earth"
-                    ? "text-[#0f172a]"
+                    ? "text-text-primary"
                     : "text-white"
                 )}
               >
                 {pillar.zhi}
               </div>
-              <span className="text-xs text-white/60 mt-1">
+              <span className="text-xs text-text-secondary mt-1">
                 {branchKorean}
               </span>
               <span
@@ -176,7 +177,7 @@ export function PillarDisplay({
                 {branchButton}
               </PopoverTrigger>
               <PopoverContent
-                className="w-auto max-w-[260px] p-3 bg-[#1a1033]/95 backdrop-blur-md border-purple-500/30 text-white shadow-xl"
+                className="w-auto max-w-[260px] p-3 bg-white backdrop-blur-md border-border text-text-primary shadow-xl"
                 sideOffset={8}
               >
                 <div className="flex items-start gap-2">
@@ -185,7 +186,7 @@ export function PillarDisplay({
                       "w-6 h-6 rounded flex-shrink-0 flex items-center justify-center text-sm font-bold",
                       elementColorMap[branchElement],
                       branchElement === "metal" || branchElement === "earth"
-                        ? "text-[#0f172a]"
+                        ? "text-text-primary"
                         : "text-white"
                     )}
                   >

@@ -32,27 +32,28 @@ export default async function CompatibilityPage() {
   const t = await getTranslations("compatibility");
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-2 py-4">
-        <p className="text-[#3b82f6] text-sm font-medium tracking-wider">
-          宮合分析
-        </p>
-        <h1 className="text-2xl font-bold text-white break-keep">
+    <div className="space-y-4 px-4">
+      {/* Header - 점신 스타일 */}
+      <div className="bg-white rounded-2xl p-5 text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-full mb-3">
+          <span className="text-lg">👥</span>
+          <span className="text-blue-600 text-xs font-medium">宮合分析</span>
+        </div>
+        <h1 className="text-xl font-bold text-gray-800 mb-2 break-keep">
           {t("title")}
         </h1>
-        <p className="text-white/60 text-sm">
+        <p className="text-gray-500 text-sm">
           {t("subtitle")}
         </p>
       </div>
 
-      {/* Form Card */}
-      <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+      {/* Form Card - 점신 스타일 */}
+      <div className="bg-white rounded-2xl p-5 shadow-sm">
         <CompatibilityFormWrapper />
       </div>
 
       {/* Privacy Notice */}
-      <p className="text-center text-xs text-white/40 px-4">
+      <p className="text-center text-xs text-gray-500 px-4 pb-4">
         입력하신 정보는 궁합 분석에만 사용됩니다
       </p>
     </div>

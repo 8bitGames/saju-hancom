@@ -34,7 +34,7 @@ export default function PipelineProgress({ state }: PipelineProgressProps) {
   return (
     <div className="relative w-full max-w-2xl mx-auto">
       {/* Main container with glass effect */}
-      <div className="relative p-4 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
+      <div className="relative p-4 sm:p-6 rounded-2xl bg-white border border-border shadow-sm">
         {/* Mystical Loader - Only show when running */}
         {status === "running" && (
           <motion.div
@@ -70,10 +70,10 @@ export default function PipelineProgress({ state }: PipelineProgressProps) {
             >
               <Sparkle className="w-8 h-8 text-white" weight="fill" />
             </motion.div>
-            <h3 className="text-lg sm:text-xl font-bold text-white">
+            <h3 className="text-lg sm:text-xl font-bold text-text-primary">
               분석이 완료되었습니다!
             </h3>
-            <p className="text-sm sm:text-base text-white/60 mt-1">
+            <p className="text-sm sm:text-base text-text-secondary mt-1">
               모든 단계가 성공적으로 완료되었습니다
             </p>
           </motion.div>
@@ -106,10 +106,10 @@ export default function PipelineProgress({ state }: PipelineProgressProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="mt-4 sm:mt-6 pt-4 border-t border-white/10"
+          className="mt-4 sm:mt-6 pt-4 border-t border-border"
         >
           {status === "running" ? (
-            <div className="flex items-center justify-center gap-2 text-sm sm:text-base text-white/60">
+            <div className="flex items-center justify-center gap-2 text-sm sm:text-base text-text-secondary">
               <motion.span
                 animate={{ opacity: [1, 0.5, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}

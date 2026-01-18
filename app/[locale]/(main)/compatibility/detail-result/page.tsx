@@ -158,15 +158,15 @@ interface DetailedCompatibilityResult {
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return "text-green-400";
-  if (score >= 60) return "text-blue-400";
-  if (score >= 40) return "text-white";
-  return "text-orange-400";
+  if (score >= 80) return "text-green-600";
+  if (score >= 60) return "text-blue-600";
+  if (score >= 40) return "text-text-primary";
+  return "text-orange-500";
 }
 
 function ScoreBar({ score, color = "bg-[#3b82f6]" }: { score: number; color?: string }) {
   return (
-    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
       <div
         className={`h-full ${color} rounded-full transition-all duration-500`}
         style={{ width: `${score}%` }}
@@ -189,16 +189,16 @@ function ScoreCard({
   color: string;
 }) {
   return (
-    <div className="p-4 rounded-xl bg-white/5 space-y-3">
+    <div className="p-4 rounded-xl bg-background-secondary space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Icon className="w-5 h-5" weight="fill" style={{ color }} />
-          <span className="text-base font-medium text-white">{label}</span>
+          <span className="text-base font-medium text-text-primary">{label}</span>
         </div>
         <span className="text-lg font-bold" style={{ color }}>{score}점</span>
       </div>
       <ScoreBar score={score} color={`bg-[${color}]`} />
-      <p className="text-sm text-white/60">{description}</p>
+      <p className="text-sm text-text-secondary">{description}</p>
     </div>
   );
 }
@@ -697,7 +697,7 @@ function DetailedCompatibilityResultContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <p className="text-xl font-bold text-white">전통 명리학 상세 분석</p>
+            <p className="text-xl font-bold text-text-primary">전통 명리학 상세 분석</p>
           </motion.div>
 
           {/* Flip Words for loading steps */}
@@ -721,7 +721,7 @@ function DetailedCompatibilityResultContent() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7 }}
           >
-            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
               <motion.div
                 className="h-full bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-full"
                 initial={{ width: "0%" }}
@@ -736,7 +736,7 @@ function DetailedCompatibilityResultContent() {
 
           {/* Sub text */}
           <motion.p
-            className="text-sm text-white/50"
+            className="text-sm text-text-muted"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9 }}
@@ -753,9 +753,9 @@ function DetailedCompatibilityResultContent() {
       <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="text-center space-y-4">
           <div className="w-20 h-20 mx-auto rounded-2xl bg-red-500/20 flex items-center justify-center">
-            <Warning className="w-10 h-10 text-red-400" weight="bold" />
+            <Warning className="w-10 h-10 text-red-500" weight="bold" />
           </div>
-          <p className="text-lg text-red-400">{error}</p>
+          <p className="text-lg text-red-500">{error}</p>
           <Link href="/compatibility">
             <button className="px-6 py-3 rounded-xl bg-[#3b82f6] text-white text-base font-medium hover:bg-[#2563eb] transition-colors">
               다시 시도하기
@@ -777,18 +777,18 @@ function DetailedCompatibilityResultContent() {
         <p className="text-[#3b82f6] text-sm font-medium tracking-wider">
           傳統宮合詳細分析
         </p>
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-2xl font-bold text-text-primary">
           전통 궁합 상세 분석
         </h1>
         <TextGenerateEffect
           words={`${person1Name}님과 ${person2Name}님의 명리학 기반 심층 궁합`}
-          className="text-base text-white/60"
+          className="text-base text-text-secondary"
           duration={0.3}
         />
       </div>
 
       {/* Overall Score Card */}
-      <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 text-center">
+      <div className="bg-white rounded-2xl p-6 border border-border shadow-sm text-center">
         <div className="w-24 h-24 mx-auto rounded-2xl bg-[#3b82f6] flex items-center justify-center mb-4">
           <span className="text-4xl font-bold text-white">{result.overallScore}</span>
         </div>
@@ -796,184 +796,184 @@ function DetailedCompatibilityResultContent() {
           <Star className="w-5 h-5" weight="fill" />
           {result.gradeText}
         </div>
-        <p className="text-base text-white/80 max-w-md mx-auto">
+        <p className="text-base text-text-primary max-w-md mx-auto">
           {result.summary}
         </p>
       </div>
 
       {/* 천간합 분석 */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+      <section className="bg-white rounded-2xl p-5 space-y-4 border border-border shadow-sm">
         <div className="flex items-center gap-2">
-          <Handshake className="w-5 h-5 text-purple-400" weight="fill" />
-          <h2 className="text-lg font-semibold text-white">천간합(天干合) 분석</h2>
+          <Handshake className="w-5 h-5 text-purple-500" weight="fill" />
+          <h2 className="text-lg font-semibold text-text-primary">천간합(天干合) 분석</h2>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-3">
-          <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-            <p className="text-sm text-white/40">{person1Name}님 일간</p>
-            <p className="text-2xl font-bold text-purple-400">{result.cheonganHap.person1Gan}</p>
+          <div className="p-3 rounded-xl bg-background-secondary border border-border text-center">
+            <p className="text-sm text-text-muted">{person1Name}님 일간</p>
+            <p className="text-2xl font-bold text-purple-500">{result.cheonganHap.person1Gan}</p>
           </div>
-          <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-            <p className="text-sm text-white/40">{person2Name}님 일간</p>
-            <p className="text-2xl font-bold text-purple-400">{result.cheonganHap.person2Gan}</p>
+          <div className="p-3 rounded-xl bg-background-secondary border border-border text-center">
+            <p className="text-sm text-text-muted">{person2Name}님 일간</p>
+            <p className="text-2xl font-bold text-purple-500">{result.cheonganHap.person2Gan}</p>
           </div>
         </div>
 
         {result.cheonganHap.hasHap && (
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-purple-500/20 border border-purple-500/30">
-            <Sparkle className="w-5 h-5 text-purple-400" weight="fill" />
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-purple-100 border border-purple-200">
+            <Sparkle className="w-5 h-5 text-purple-500" weight="fill" />
             <div>
-              <p className="text-base font-medium text-purple-400">{result.cheonganHap.hapType}</p>
+              <p className="text-base font-medium text-purple-500">{result.cheonganHap.hapType}</p>
               {result.cheonganHap.hapElement && (
-                <p className="text-sm text-white/60">합화 오행: {result.cheonganHap.hapElement}</p>
+                <p className="text-sm text-text-secondary">합화 오행: {result.cheonganHap.hapElement}</p>
               )}
             </div>
           </div>
         )}
 
-        <p className="text-base text-white/80">{result.cheonganHap.description}</p>
+        <p className="text-base text-text-primary">{result.cheonganHap.description}</p>
       </section>
 
       {/* 지지 관계 분석 */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+      <section className="bg-white rounded-2xl p-5 space-y-4 border border-border shadow-sm">
         <div className="flex items-center gap-2">
-          <Scales className="w-5 h-5 text-cyan-400" weight="fill" />
-          <h2 className="text-lg font-semibold text-white">지지(地支) 관계 분석</h2>
+          <Scales className="w-5 h-5 text-cyan-500" weight="fill" />
+          <h2 className="text-lg font-semibold text-text-primary">지지(地支) 관계 분석</h2>
         </div>
 
         <div className="space-y-4">
           {/* 육합 */}
-          <div className="p-4 rounded-xl bg-white/5">
-            <h3 className="text-base font-medium text-green-400 mb-2">육합(六合)</h3>
+          <div className="p-4 rounded-xl bg-background-secondary">
+            <h3 className="text-base font-medium text-green-500 mb-2">육합(六合)</h3>
             {result.jijiRelation.yukHap.pairs.length > 0 ? (
               <div className="flex flex-wrap gap-2 mb-2">
                 {result.jijiRelation.yukHap.pairs.map((pair, idx) => (
-                  <span key={idx} className="px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-sm">
+                  <span key={idx} className="px-3 py-1.5 rounded-full bg-green-100 text-green-600 text-sm">
                     {pair.zhi1} + {pair.zhi2} → {pair.resultElement}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-white/40 mb-2">육합 관계 없음</p>
+              <p className="text-sm text-text-muted mb-2">육합 관계 없음</p>
             )}
-            <p className="text-sm text-white/60">{result.jijiRelation.yukHap.description}</p>
+            <p className="text-sm text-text-secondary">{result.jijiRelation.yukHap.description}</p>
           </div>
 
           {/* 삼합 */}
-          <div className="p-4 rounded-xl bg-white/5">
-            <h3 className="text-base font-medium text-blue-400 mb-2">삼합(三合)</h3>
+          <div className="p-4 rounded-xl bg-background-secondary">
+            <h3 className="text-base font-medium text-blue-500 mb-2">삼합(三合)</h3>
             {result.jijiRelation.samHap.groups.length > 0 ? (
               <div className="flex flex-wrap gap-2 mb-2">
                 {result.jijiRelation.samHap.groups.map((group, idx) => (
-                  <span key={idx} className="px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-400 text-sm">
+                  <span key={idx} className="px-3 py-1.5 rounded-full bg-blue-100 text-blue-600 text-sm">
                     {group.zhis.join(" + ")} → {group.resultElement}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-white/40 mb-2">삼합 관계 없음</p>
+              <p className="text-sm text-text-muted mb-2">삼합 관계 없음</p>
             )}
-            <p className="text-sm text-white/60">{result.jijiRelation.samHap.description}</p>
+            <p className="text-sm text-text-secondary">{result.jijiRelation.samHap.description}</p>
           </div>
 
           {/* 충 */}
-          <div className="p-4 rounded-xl bg-white/5">
-            <h3 className="text-base font-medium text-orange-400 mb-2">충(沖)</h3>
+          <div className="p-4 rounded-xl bg-background-secondary">
+            <h3 className="text-base font-medium text-orange-500 mb-2">충(沖)</h3>
             {result.jijiRelation.chung.pairs.length > 0 ? (
               <div className="flex flex-wrap gap-2 mb-2">
                 {result.jijiRelation.chung.pairs.map((pair, idx) => (
-                  <span key={idx} className="px-3 py-1.5 rounded-full bg-orange-500/20 text-orange-400 text-sm">
+                  <span key={idx} className="px-3 py-1.5 rounded-full bg-orange-100 text-orange-600 text-sm">
                     {pair.zhi1} ↔ {pair.zhi2}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-white/40 mb-2">충 관계 없음</p>
+              <p className="text-sm text-text-muted mb-2">충 관계 없음</p>
             )}
-            <p className="text-sm text-white/60">{result.jijiRelation.chung.description}</p>
+            <p className="text-sm text-text-secondary">{result.jijiRelation.chung.description}</p>
           </div>
 
           {/* 형 */}
-          <div className="p-4 rounded-xl bg-white/5">
-            <h3 className="text-base font-medium text-red-400 mb-2">형(刑)</h3>
+          <div className="p-4 rounded-xl bg-background-secondary">
+            <h3 className="text-base font-medium text-red-500 mb-2">형(刑)</h3>
             {result.jijiRelation.hyung.pairs.length > 0 ? (
               <div className="flex flex-wrap gap-2 mb-2">
                 {result.jijiRelation.hyung.pairs.map((pair, idx) => (
-                  <span key={idx} className="px-3 py-1.5 rounded-full bg-red-500/20 text-red-400 text-sm">
+                  <span key={idx} className="px-3 py-1.5 rounded-full bg-red-100 text-red-600 text-sm">
                     {pair.zhi1} → {pair.zhi2}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-white/40 mb-2">형 관계 없음</p>
+              <p className="text-sm text-text-muted mb-2">형 관계 없음</p>
             )}
-            <p className="text-sm text-white/60">{result.jijiRelation.hyung.description}</p>
+            <p className="text-sm text-text-secondary">{result.jijiRelation.hyung.description}</p>
           </div>
         </div>
       </section>
 
       {/* 일주 궁합 */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+      <section className="bg-white rounded-2xl p-5 space-y-4 border border-border shadow-sm">
         <div className="flex items-center gap-2">
-          <Heart className="w-5 h-5 text-pink-400" weight="fill" />
-          <h2 className="text-lg font-semibold text-white">일주(日柱) 궁합</h2>
+          <Heart className="w-5 h-5 text-pink-500" weight="fill" />
+          <h2 className="text-lg font-semibold text-text-primary">일주(日柱) 궁합</h2>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-            <p className="text-sm text-white/40">{person1Name}님 일주</p>
-            <p className="text-2xl font-bold text-pink-400">{result.iljuCompatibility.person1Ilju}</p>
+          <div className="p-3 rounded-xl bg-background-secondary border border-border text-center">
+            <p className="text-sm text-text-muted">{person1Name}님 일주</p>
+            <p className="text-2xl font-bold text-pink-500">{result.iljuCompatibility.person1Ilju}</p>
           </div>
-          <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-            <p className="text-sm text-white/40">{person2Name}님 일주</p>
-            <p className="text-2xl font-bold text-pink-400">{result.iljuCompatibility.person2Ilju}</p>
+          <div className="p-3 rounded-xl bg-background-secondary border border-border text-center">
+            <p className="text-sm text-text-muted">{person2Name}님 일주</p>
+            <p className="text-2xl font-bold text-pink-500">{result.iljuCompatibility.person2Ilju}</p>
           </div>
         </div>
 
         <div className="flex gap-3">
-          <div className="flex-1 p-3 rounded-xl bg-white/5 text-center">
-            <p className="text-xs text-white/40">일간 관계</p>
-            <p className="text-lg font-medium text-white">{result.iljuCompatibility.ganRelation}</p>
+          <div className="flex-1 p-3 rounded-xl bg-background-secondary text-center">
+            <p className="text-xs text-text-muted">일간 관계</p>
+            <p className="text-lg font-medium text-text-primary">{result.iljuCompatibility.ganRelation}</p>
           </div>
-          <div className="flex-1 p-3 rounded-xl bg-white/5 text-center">
-            <p className="text-xs text-white/40">일지 관계</p>
-            <p className="text-lg font-medium text-white">{result.iljuCompatibility.zhiRelation}</p>
+          <div className="flex-1 p-3 rounded-xl bg-background-secondary text-center">
+            <p className="text-xs text-text-muted">일지 관계</p>
+            <p className="text-lg font-medium text-text-primary">{result.iljuCompatibility.zhiRelation}</p>
           </div>
           <div className="flex-1 p-3 rounded-xl bg-pink-500/20 text-center">
-            <p className="text-xs text-white/40">일주 점수</p>
-            <p className="text-lg font-bold text-pink-400">{result.iljuCompatibility.overallIljuScore}점</p>
+            <p className="text-xs text-text-muted">일주 점수</p>
+            <p className="text-lg font-bold text-pink-500">{result.iljuCompatibility.overallIljuScore}점</p>
           </div>
         </div>
 
-        <p className="text-base text-white/80">{result.iljuCompatibility.description}</p>
+        <p className="text-base text-text-primary">{result.iljuCompatibility.description}</p>
       </section>
 
       {/* 오행 균형 분석 */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+      <section className="bg-white rounded-2xl p-5 space-y-4 border border-border shadow-sm">
         <div className="flex items-center gap-2">
-          <Lightning className="w-5 h-5 text-yellow-400" weight="fill" />
-          <h2 className="text-lg font-semibold text-white">오행(五行) 균형 분석</h2>
+          <Lightning className="w-5 h-5 text-amber-600" weight="fill" />
+          <h2 className="text-lg font-semibold text-text-primary">오행(五行) 균형 분석</h2>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
-            <p className="text-sm text-white/40">{person1Name}님</p>
+            <p className="text-sm text-text-muted">{person1Name}님</p>
             <div className="flex gap-2">
-              <span className="px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-sm">
+              <span className="px-3 py-1.5 rounded-full bg-green-100 text-green-600 text-sm">
                 강: {result.elementBalanceAnalysis.person1Dominant}
               </span>
-              <span className="px-3 py-1.5 rounded-full bg-orange-500/20 text-orange-400 text-sm">
+              <span className="px-3 py-1.5 rounded-full bg-orange-100 text-orange-600 text-sm">
                 약: {result.elementBalanceAnalysis.person1Weak}
               </span>
             </div>
           </div>
           <div className="space-y-2">
-            <p className="text-sm text-white/40">{person2Name}님</p>
+            <p className="text-sm text-text-muted">{person2Name}님</p>
             <div className="flex gap-2">
-              <span className="px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-sm">
+              <span className="px-3 py-1.5 rounded-full bg-green-100 text-green-600 text-sm">
                 강: {result.elementBalanceAnalysis.person2Dominant}
               </span>
-              <span className="px-3 py-1.5 rounded-full bg-orange-500/20 text-orange-400 text-sm">
+              <span className="px-3 py-1.5 rounded-full bg-orange-100 text-orange-600 text-sm">
                 약: {result.elementBalanceAnalysis.person2Weak}
               </span>
             </div>
@@ -981,20 +981,20 @@ function DetailedCompatibilityResultContent() {
         </div>
 
         {result.elementBalanceAnalysis.complementary && (
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-green-500/20 border border-green-500/30">
-            <Check className="w-5 h-5 text-green-400" weight="bold" />
-            <p className="text-base text-green-400">서로 보완하는 관계입니다</p>
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-green-100 border border-green-200">
+            <Check className="w-5 h-5 text-green-500" weight="bold" />
+            <p className="text-base text-green-500">서로 보완하는 관계입니다</p>
           </div>
         )}
 
-        <p className="text-base text-white/80">{result.elementBalanceAnalysis.description}</p>
+        <p className="text-base text-text-primary">{result.elementBalanceAnalysis.description}</p>
       </section>
 
       {/* 관계 영역별 분석 */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+      <section className="bg-white rounded-2xl p-5 space-y-4 border border-border shadow-sm">
         <div className="flex items-center gap-2">
           <ChartBar className="w-5 h-5 text-[#3b82f6]" weight="fill" />
-          <h2 className="text-lg font-semibold text-white">관계 영역별 상세 분석</h2>
+          <h2 className="text-lg font-semibold text-text-primary">관계 영역별 상세 분석</h2>
         </div>
 
         <div className="space-y-4">
@@ -1037,54 +1037,54 @@ function DetailedCompatibilityResultContent() {
       </section>
 
       {/* 시간에 따른 궁합 변화 */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+      <section className="bg-white rounded-2xl p-5 space-y-4 border border-border shadow-sm">
         <div className="flex items-center gap-2">
           <Clock className="w-5 h-5 text-[#3b82f6]" weight="fill" />
-          <h2 className="text-lg font-semibold text-white">시간에 따른 궁합 변화</h2>
+          <h2 className="text-lg font-semibold text-text-primary">시간에 따른 궁합 변화</h2>
         </div>
 
         <div className="space-y-4">
-          <div className="p-4 rounded-xl bg-white/5">
+          <div className="p-4 rounded-xl bg-background-secondary">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-base font-medium text-white">단기 (1-2년)</span>
+              <span className="text-base font-medium text-text-primary">단기 (1-2년)</span>
               <span className={`text-lg font-bold ${getScoreColor(result.timingAnalysis.shortTerm.score)}`}>
                 {result.timingAnalysis.shortTerm.score}점
               </span>
             </div>
             <ScoreBar score={result.timingAnalysis.shortTerm.score} />
-            <p className="text-sm text-white/60 mt-2">{result.timingAnalysis.shortTerm.description}</p>
+            <p className="text-sm text-text-secondary mt-2">{result.timingAnalysis.shortTerm.description}</p>
           </div>
 
-          <div className="p-4 rounded-xl bg-white/5">
+          <div className="p-4 rounded-xl bg-background-secondary">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-base font-medium text-white">중기 (3-5년)</span>
+              <span className="text-base font-medium text-text-primary">중기 (3-5년)</span>
               <span className={`text-lg font-bold ${getScoreColor(result.timingAnalysis.midTerm.score)}`}>
                 {result.timingAnalysis.midTerm.score}점
               </span>
             </div>
             <ScoreBar score={result.timingAnalysis.midTerm.score} />
-            <p className="text-sm text-white/60 mt-2">{result.timingAnalysis.midTerm.description}</p>
+            <p className="text-sm text-text-secondary mt-2">{result.timingAnalysis.midTerm.description}</p>
           </div>
 
-          <div className="p-4 rounded-xl bg-white/5">
+          <div className="p-4 rounded-xl bg-background-secondary">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-base font-medium text-white">장기 (5년+)</span>
+              <span className="text-base font-medium text-text-primary">장기 (5년+)</span>
               <span className={`text-lg font-bold ${getScoreColor(result.timingAnalysis.longTerm.score)}`}>
                 {result.timingAnalysis.longTerm.score}점
               </span>
             </div>
             <ScoreBar score={result.timingAnalysis.longTerm.score} />
-            <p className="text-sm text-white/60 mt-2">{result.timingAnalysis.longTerm.description}</p>
+            <p className="text-sm text-text-secondary mt-2">{result.timingAnalysis.longTerm.description}</p>
           </div>
         </div>
       </section>
 
       {/* 연애/결혼 분석 (연인/부부만) */}
       {result.romanticAnalysis && (
-        <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+        <section className="bg-white rounded-2xl p-5 space-y-4 border border-border shadow-sm">
           <div className="flex items-center gap-2">
-            <Heart className="w-5 h-5 text-pink-400" weight="fill" />
-            <h2 className="text-lg font-semibold text-pink-400">연애/결혼 특별 분석</h2>
+            <Heart className="w-5 h-5 text-pink-500" weight="fill" />
+            <h2 className="text-lg font-semibold text-pink-500">연애/결혼 특별 분석</h2>
           </div>
 
           <div className="space-y-4">
@@ -1122,29 +1122,29 @@ function DetailedCompatibilityResultContent() {
 
       {/* 직장/업무 관계 특별 분석 */}
       {result.workplaceAnalysis && (
-        <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+        <section className="bg-white rounded-2xl p-5 space-y-4 border border-border shadow-sm">
           <div className="flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-cyan-400" weight="fill" />
-            <h2 className="text-lg font-semibold text-cyan-400">직장/업무 관계 특별 분석</h2>
+            <Briefcase className="w-5 h-5 text-cyan-500" weight="fill" />
+            <h2 className="text-lg font-semibold text-cyan-500">직장/업무 관계 특별 분석</h2>
           </div>
 
           {/* 십성 관계 분석 */}
-          <div className="p-4 rounded-xl bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 space-y-3">
+          <div className="p-4 rounded-xl bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 space-y-3">
             <div className="flex items-center gap-2">
-              <Scales className="w-5 h-5 text-cyan-400" weight="fill" />
-              <span className="text-base font-medium text-cyan-400">십성(十星) 기반 업무 역학</span>
+              <Scales className="w-5 h-5 text-cyan-500" weight="fill" />
+              <span className="text-base font-medium text-cyan-500">십성(十星) 기반 업무 역학</span>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="p-3 rounded-lg bg-white/5">
-                <p className="text-white/60 mb-1">{person1Name}의 역할</p>
-                <p className="text-white font-medium">{result.workplaceAnalysis.tenGodRelation.person1Role}</p>
+              <div className="p-3 rounded-lg bg-background-secondary">
+                <p className="text-text-secondary mb-1">{person1Name}의 역할</p>
+                <p className="text-text-primary font-medium">{result.workplaceAnalysis.tenGodRelation.person1Role}</p>
               </div>
-              <div className="p-3 rounded-lg bg-white/5">
-                <p className="text-white/60 mb-1">{person2Name}의 역할</p>
-                <p className="text-white font-medium">{result.workplaceAnalysis.tenGodRelation.person2Role}</p>
+              <div className="p-3 rounded-lg bg-background-secondary">
+                <p className="text-text-secondary mb-1">{person2Name}의 역할</p>
+                <p className="text-text-primary font-medium">{result.workplaceAnalysis.tenGodRelation.person2Role}</p>
               </div>
             </div>
-            <p className="text-sm text-white/80">{result.workplaceAnalysis.tenGodRelation.relationDynamic}</p>
+            <p className="text-sm text-text-primary">{result.workplaceAnalysis.tenGodRelation.relationDynamic}</p>
           </div>
 
           <div className="space-y-4">
@@ -1188,24 +1188,24 @@ function DetailedCompatibilityResultContent() {
       )}
 
       {/* 갈등 포인트와 해결책 */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+      <section className="bg-white rounded-2xl p-5 space-y-4 border border-border shadow-sm">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="w-5 h-5 text-orange-400" weight="fill" />
-          <h2 className="text-lg font-semibold text-white">갈등 포인트와 해결책</h2>
+          <ShieldCheck className="w-5 h-5 text-orange-500" weight="fill" />
+          <h2 className="text-lg font-semibold text-text-primary">갈등 포인트와 해결책</h2>
         </div>
 
         <div className="space-y-4">
           {result.conflictPoints.map((conflict, idx) => (
-            <div key={idx} className="p-4 rounded-xl bg-white/5 space-y-3">
+            <div key={idx} className="p-4 rounded-xl bg-background-secondary space-y-3">
               <div className="flex items-center gap-2">
-                <Warning className="w-5 h-5 text-orange-400" weight="bold" />
-                <span className="text-base font-medium text-orange-400">{conflict.area}</span>
+                <Warning className="w-5 h-5 text-orange-500" weight="bold" />
+                <span className="text-base font-medium text-orange-500">{conflict.area}</span>
               </div>
-              <p className="text-sm text-white/60">{conflict.description}</p>
+              <p className="text-sm text-text-secondary">{conflict.description}</p>
               {conflict.solution && (
-                <div className="flex items-start gap-2 p-3 rounded-xl bg-green-500/10">
-                  <Lightbulb className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" weight="fill" />
-                  <p className="text-sm text-green-400">{conflict.solution}</p>
+                <div className="flex items-start gap-2 p-3 rounded-xl bg-green-50">
+                  <Lightbulb className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" weight="fill" />
+                  <p className="text-sm text-green-500">{conflict.solution}</p>
                 </div>
               )}
             </div>
@@ -1214,10 +1214,10 @@ function DetailedCompatibilityResultContent() {
       </section>
 
       {/* 기본 궁합 */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+      <section className="bg-white rounded-2xl p-5 space-y-4 border border-border shadow-sm">
         <div className="flex items-center gap-2">
           <ChartBar className="w-5 h-5 text-[#3b82f6]" weight="fill" />
-          <h2 className="text-lg font-semibold text-white">기본 궁합 분석</h2>
+          <h2 className="text-lg font-semibold text-text-primary">기본 궁합 분석</h2>
         </div>
 
         <div className="space-y-4">
@@ -1254,24 +1254,24 @@ function DetailedCompatibilityResultContent() {
 
       {/* 강점과 도전 */}
       <div className="grid grid-cols-1 gap-4">
-        <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-3 border border-white/10">
-          <h2 className="text-lg font-semibold text-green-400">관계의 강점</h2>
+        <section className="bg-white rounded-2xl p-5 space-y-3 border border-border shadow-sm">
+          <h2 className="text-lg font-semibold text-green-500">관계의 강점</h2>
           <ul className="space-y-2">
             {result.strengths.map((strength, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-base text-white/80">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" weight="bold" />
+              <li key={idx} className="flex items-start gap-2 text-base text-text-primary">
+                <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" weight="bold" />
                 {strength}
               </li>
             ))}
           </ul>
         </section>
 
-        <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-3 border border-white/10">
-          <h2 className="text-lg font-semibold text-orange-400">도전 과제</h2>
+        <section className="bg-white rounded-2xl p-5 space-y-3 border border-border shadow-sm">
+          <h2 className="text-lg font-semibold text-orange-500">도전 과제</h2>
           <ul className="space-y-2">
             {result.challenges.map((challenge, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-base text-white/80">
-                <Warning className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" weight="bold" />
+              <li key={idx} className="flex items-start gap-2 text-base text-text-primary">
+                <Warning className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" weight="bold" />
                 {challenge}
               </li>
             ))}
@@ -1281,11 +1281,11 @@ function DetailedCompatibilityResultContent() {
 
       {/* 개인별 조언 */}
       <div className="grid grid-cols-1 gap-4">
-        <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-3 border border-white/10">
+        <section className="bg-white rounded-2xl p-5 space-y-3 border border-border shadow-sm">
           <h2 className="text-lg font-semibold text-[#3b82f6]">{person1Name}님께 드리는 조언</h2>
           <ul className="space-y-2">
             {result.adviceForPerson1.map((advice, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-base text-white/80">
+              <li key={idx} className="flex items-start gap-2 text-base text-text-primary">
                 <Lightbulb className="w-5 h-5 text-[#3b82f6] flex-shrink-0 mt-0.5" weight="fill" />
                 {advice}
               </li>
@@ -1293,12 +1293,12 @@ function DetailedCompatibilityResultContent() {
           </ul>
         </section>
 
-        <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-3 border border-white/10">
-          <h2 className="text-lg font-semibold text-purple-400">{person2Name}님께 드리는 조언</h2>
+        <section className="bg-white rounded-2xl p-5 space-y-3 border border-border shadow-sm">
+          <h2 className="text-lg font-semibold text-purple-500">{person2Name}님께 드리는 조언</h2>
           <ul className="space-y-2">
             {result.adviceForPerson2.map((advice, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-base text-white/80">
-                <Lightbulb className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" weight="fill" />
+              <li key={idx} className="flex items-start gap-2 text-base text-text-primary">
+                <Lightbulb className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" weight="fill" />
                 {advice}
               </li>
             ))}
@@ -1307,10 +1307,10 @@ function DetailedCompatibilityResultContent() {
       </div>
 
       {/* 추천 활동 */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-3 border border-white/10">
+      <section className="bg-white rounded-2xl p-5 space-y-3 border border-border shadow-sm">
         <div className="flex items-center gap-2">
           <Sparkle className="w-5 h-5 text-[#3b82f6]" weight="fill" />
-          <h2 className="text-lg font-semibold text-white">함께하면 좋은 활동</h2>
+          <h2 className="text-lg font-semibold text-text-primary">함께하면 좋은 활동</h2>
         </div>
         <div className="flex flex-wrap gap-2">
           {result.recommendedActivities.map((activity, idx) => (
@@ -1322,15 +1322,15 @@ function DetailedCompatibilityResultContent() {
       </section>
 
       {/* 좋은 날짜 */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-3 border border-white/10">
+      <section className="bg-white rounded-2xl p-5 space-y-3 border border-border shadow-sm">
         <div className="flex items-center gap-2">
-          <CalendarBlank className="w-5 h-5 text-green-400" weight="fill" />
-          <h2 className="text-lg font-semibold text-white">함께하기 좋은 날짜/시기</h2>
+          <CalendarBlank className="w-5 h-5 text-green-500" weight="fill" />
+          <h2 className="text-lg font-semibold text-text-primary">함께하기 좋은 날짜/시기</h2>
         </div>
         <ul className="space-y-2">
           {result.luckyDates.map((date, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-base text-white/80">
-              <Star className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" weight="fill" />
+            <li key={idx} className="flex items-start gap-2 text-base text-text-primary">
+              <Star className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" weight="fill" />
               {date}
             </li>
           ))}
@@ -1338,15 +1338,15 @@ function DetailedCompatibilityResultContent() {
       </section>
 
       {/* 행운의 요소 */}
-      <section className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 space-y-4 border border-white/10">
+      <section className="bg-white rounded-2xl p-5 space-y-4 border border-border shadow-sm">
         <div className="flex items-center gap-2">
-          <Clover className="w-5 h-5 text-green-400" weight="fill" />
-          <h2 className="text-lg font-semibold text-white">함께할 때 행운의 요소</h2>
+          <Clover className="w-5 h-5 text-green-500" weight="fill" />
+          <h2 className="text-lg font-semibold text-text-primary">함께할 때 행운의 요소</h2>
         </div>
 
         <div className="space-y-4">
           <div>
-            <p className="text-sm text-white/40 mb-2">색상</p>
+            <p className="text-sm text-text-muted mb-2">색상</p>
             <div className="flex flex-wrap gap-2">
               {result.luckyElements.colors.map((color, idx) => (
                 <span key={idx} className="px-3 py-1.5 rounded-full bg-[#3b82f6]/20 text-[#3b82f6] text-sm font-medium">
@@ -1357,13 +1357,13 @@ function DetailedCompatibilityResultContent() {
           </div>
 
           <div>
-            <p className="text-sm text-white/40 mb-2 flex items-center gap-1">
+            <p className="text-sm text-text-muted mb-2 flex items-center gap-1">
               <Compass className="w-4 h-4" />
               방향
             </p>
             <div className="flex flex-wrap gap-2">
               {result.luckyElements.directions.map((direction, idx) => (
-                <span key={idx} className="px-3 py-1.5 rounded-full bg-purple-500/20 text-purple-400 text-sm font-medium">
+                <span key={idx} className="px-3 py-1.5 rounded-full bg-purple-100 text-purple-600 text-sm font-medium">
                   {direction}
                 </span>
               ))}
@@ -1371,13 +1371,13 @@ function DetailedCompatibilityResultContent() {
           </div>
 
           <div>
-            <p className="text-sm text-white/40 mb-2 flex items-center gap-1">
+            <p className="text-sm text-text-muted mb-2 flex items-center gap-1">
               <Hash className="w-4 h-4" />
               숫자
             </p>
             <div className="flex flex-wrap gap-2">
               {result.luckyElements.numbers.map((number, idx) => (
-                <span key={idx} className="px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-sm font-medium">
+                <span key={idx} className="px-3 py-1.5 rounded-full bg-green-100 text-green-600 text-sm font-medium">
                   {number}
                 </span>
               ))}
@@ -1405,7 +1405,7 @@ function DetailedCompatibilityResultContent() {
         </Link>
 
         <Link href="/compatibility" className="block">
-          <button className="w-full h-14 rounded-xl bg-white/5 border border-white/10 text-base text-white/60 font-medium hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-2">
+          <button className="w-full h-14 rounded-xl bg-background-secondary border border-border text-base text-text-secondary font-medium hover:bg-gray-200 hover:text-text-primary transition-colors flex items-center justify-center gap-2">
             <ArrowCounterClockwise className="w-5 h-5" />
             다시 분석하기
           </button>
@@ -1413,7 +1413,7 @@ function DetailedCompatibilityResultContent() {
       </div>
 
       {/* Disclaimer */}
-      <p className="text-center text-sm text-white/40 pt-2 pb-8">
+      <p className="text-center text-sm text-text-muted pt-2 pb-8">
         이 분석은 전통 명리학(천간합, 지지합, 일주 궁합)을 기반으로 한 참고용 정보입니다.
       </p>
     </div>
@@ -1429,8 +1429,8 @@ export default function DetailedCompatibilityResultPage() {
             <div className="w-20 h-20 mx-auto rounded-2xl bg-[#3b82f6] flex items-center justify-center animate-pulse">
               <UsersThree className="w-10 h-10 text-white" weight="fill" />
             </div>
-            <p className="text-lg text-white">전통 명리학 기반 상세 궁합 분석 중...</p>
-            <p className="text-base text-white/60">잠시만 기다려주세요</p>
+            <p className="text-lg text-text-primary">전통 명리학 기반 상세 궁합 분석 중...</p>
+            <p className="text-base text-text-secondary">잠시만 기다려주세요</p>
           </div>
         </div>
       }

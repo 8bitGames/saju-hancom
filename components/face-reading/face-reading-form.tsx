@@ -190,11 +190,11 @@ export function FaceReadingForm() {
     return (
       <div className="space-y-8">
         <div className="text-center space-y-2">
-          <div className="w-16 h-16 mx-auto rounded-full bg-[#ef4444]/20 flex items-center justify-center mb-4">
-            <User className="w-8 h-8 text-[#ef4444]" weight="fill" />
+          <div className="w-16 h-16 mx-auto rounded-full bg-red-100 flex items-center justify-center mb-4">
+            <User className="w-8 h-8 text-red-500" weight="fill" />
           </div>
-          <h2 className="text-xl font-bold text-white">성별을 선택해주세요</h2>
-          <p className="text-sm text-white/60">
+          <h2 className="text-xl font-bold text-gray-800">성별을 선택해주세요</h2>
+          <p className="text-sm text-gray-500">
             정확한 관상 분석을 위해 필요합니다
           </p>
         </div>
@@ -203,31 +203,31 @@ export function FaceReadingForm() {
           <button
             type="button"
             onClick={() => handleGenderSelect("male")}
-            className="py-8 rounded-2xl bg-gradient-to-b from-blue-500/20 to-blue-600/10 border-2 border-blue-500/30 hover:border-blue-400 hover:from-blue-500/30 hover:to-blue-600/20 transition-all group"
+            className="py-8 rounded-2xl bg-gradient-to-b from-blue-100 to-blue-50 border-2 border-blue-200 hover:border-blue-400 hover:from-blue-200 hover:to-blue-100 transition-all group"
           >
             <div className="text-center space-y-3">
-              <div className="w-14 h-14 mx-auto rounded-full bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <GenderMale className="w-8 h-8 text-blue-400" weight="bold" />
+              <div className="w-14 h-14 mx-auto rounded-full bg-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <GenderMale className="w-8 h-8 text-blue-500" weight="bold" />
               </div>
-              <span className="text-lg font-bold text-white">남성</span>
+              <span className="text-lg font-bold text-gray-800">남성</span>
             </div>
           </button>
 
           <button
             type="button"
             onClick={() => handleGenderSelect("female")}
-            className="py-8 rounded-2xl bg-gradient-to-b from-pink-500/20 to-pink-600/10 border-2 border-pink-500/30 hover:border-pink-400 hover:from-pink-500/30 hover:to-pink-600/20 transition-all group"
+            className="py-8 rounded-2xl bg-gradient-to-b from-pink-100 to-pink-50 border-2 border-pink-200 hover:border-pink-400 hover:from-pink-200 hover:to-pink-100 transition-all group"
           >
             <div className="text-center space-y-3">
-              <div className="w-14 h-14 mx-auto rounded-full bg-pink-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <GenderFemale className="w-8 h-8 text-pink-400" weight="bold" />
+              <div className="w-14 h-14 mx-auto rounded-full bg-pink-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <GenderFemale className="w-8 h-8 text-pink-500" weight="bold" />
               </div>
-              <span className="text-lg font-bold text-white">여성</span>
+              <span className="text-lg font-bold text-gray-800">여성</span>
             </div>
           </button>
         </div>
 
-        <p className="text-center text-xs text-white/40">
+        <p className="text-center text-xs text-gray-400">
           촬영된 사진은 분석 후 즉시 삭제됩니다
         </p>
       </div>

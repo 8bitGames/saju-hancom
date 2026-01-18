@@ -88,15 +88,15 @@ function PersonInputSection({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 pb-2 border-b border-white/10">
+      <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
         <Heart className="w-5 h-5" style={{ color: accentColor }} weight="fill" />
-        <h2 className="text-base font-bold text-white">{title}</h2>
+        <h2 className="text-base font-bold text-gray-800">{title}</h2>
       </div>
 
       {/* Name Input */}
       <div className="space-y-2">
-        <label className="flex items-center gap-2 text-sm font-medium text-white">
-          <User className="w-4 h-4 text-white/60" />
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <User className="w-4 h-4 text-gray-500" />
           이름 (닉네임)
         </label>
         <input
@@ -104,17 +104,17 @@ function PersonInputSection({
           value={person.name}
           onChange={(e) => onChange("name", e.target.value)}
           placeholder="예: 홍길동"
-          className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 placeholder:text-white/30 focus:outline-none focus:ring-2"
+          className="w-full h-12 px-3 rounded-xl bg-gray-50 text-gray-800 text-base border border-gray-200 placeholder:text-gray-400 focus:outline-none focus:ring-2"
           style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
         />
         {errors.name && (
-          <p className="text-xs text-red-400">{errors.name}</p>
+          <p className="text-xs text-red-500">{errors.name}</p>
         )}
       </div>
 
       {/* Gender Selection */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-white">성별</label>
+        <label className="text-sm font-medium text-gray-700">성별</label>
         <div className="grid grid-cols-2 gap-2">
           {(["male", "female"] as const).map((g) => (
             <button
@@ -125,7 +125,7 @@ function PersonInputSection({
                 "h-12 rounded-xl font-medium text-sm transition-all duration-200",
                 person.gender === g
                   ? "text-white"
-                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
+                  : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-800 border border-gray-200"
               )}
               style={person.gender === g ? { backgroundColor: accentColor } : undefined}
             >
@@ -137,8 +137,8 @@ function PersonInputSection({
 
       {/* Calendar Type */}
       <div className="space-y-2">
-        <label className="flex items-center gap-2 text-sm font-medium text-white">
-          <Calendar className="w-4 h-4 text-white/60" />
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <Calendar className="w-4 h-4 text-gray-500" />
           달력 종류
         </label>
         <div className="grid grid-cols-2 gap-2">
@@ -151,7 +151,7 @@ function PersonInputSection({
                 "h-12 rounded-xl font-medium text-sm transition-all duration-200",
                 (type === "lunar") === person.isLunar
                   ? "text-white"
-                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
+                  : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-800 border border-gray-200"
               )}
               style={(type === "lunar") === person.isLunar ? { backgroundColor: accentColor } : undefined}
             >
@@ -163,33 +163,33 @@ function PersonInputSection({
 
       {/* Birth Date */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-white">생년월일</label>
+        <label className="text-sm font-medium text-gray-700">생년월일</label>
         <div className="grid grid-cols-3 gap-2">
           <div className="space-y-1">
             <select
               value={person.year}
               onChange={(e) => onChange("year", parseInt(e.target.value))}
-              className="w-full h-12 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
+              className="w-full h-12 px-2 rounded-xl bg-gray-50 text-gray-800 text-sm border border-gray-200 appearance-none cursor-pointer focus:outline-none focus:ring-2"
               style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
             >
               {years.map((y) => (
-                <option key={y} value={y} className="bg-[#1a0a1a] text-white">
+                <option key={y} value={y} className="bg-white text-gray-800">
                   {y}년
                 </option>
               ))}
             </select>
             {errors.year && (
-              <p className="text-xs text-red-400">{errors.year}</p>
+              <p className="text-xs text-red-500">{errors.year}</p>
             )}
           </div>
           <select
             value={person.month}
             onChange={(e) => onChange("month", parseInt(e.target.value))}
-            className="h-12 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
+            className="h-12 px-2 rounded-xl bg-gray-50 text-gray-800 text-sm border border-gray-200 appearance-none cursor-pointer focus:outline-none focus:ring-2"
             style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
           >
             {months.map((m) => (
-              <option key={m} value={m} className="bg-[#1a0a1a] text-white">
+              <option key={m} value={m} className="bg-white text-gray-800">
                 {m}월
               </option>
             ))}
@@ -198,17 +198,17 @@ function PersonInputSection({
             <select
               value={person.day}
               onChange={(e) => onChange("day", parseInt(e.target.value))}
-              className="w-full h-12 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
+              className="w-full h-12 px-2 rounded-xl bg-gray-50 text-gray-800 text-sm border border-gray-200 appearance-none cursor-pointer focus:outline-none focus:ring-2"
               style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
             >
               {days.map((d) => (
-                <option key={d} value={d} className="bg-[#1a0a1a] text-white">
+                <option key={d} value={d} className="bg-white text-gray-800">
                   {d}일
                 </option>
               ))}
             </select>
             {errors.day && (
-              <p className="text-xs text-red-400">{errors.day}</p>
+              <p className="text-xs text-red-500">{errors.day}</p>
             )}
           </div>
         </div>
@@ -216,19 +216,19 @@ function PersonInputSection({
 
       {/* Birth Time */}
       <div className="space-y-2">
-        <label className="flex items-center gap-2 text-sm font-medium text-white">
-          <Clock className="w-4 h-4 text-white/60" />
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <Clock className="w-4 h-4 text-gray-500" />
           태어난 시간
         </label>
         <div className="grid grid-cols-2 gap-2">
           <select
             value={person.hour}
             onChange={(e) => onChange("hour", parseInt(e.target.value))}
-            className="h-12 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
+            className="h-12 px-2 rounded-xl bg-gray-50 text-gray-800 text-sm border border-gray-200 appearance-none cursor-pointer focus:outline-none focus:ring-2"
             style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
           >
             {HOURS.map((h) => (
-              <option key={h.value} value={h.value} className="bg-[#1a0a1a] text-white">
+              <option key={h.value} value={h.value} className="bg-white text-gray-800">
                 {h.label}
               </option>
             ))}
@@ -236,11 +236,11 @@ function PersonInputSection({
           <select
             value={person.minute}
             onChange={(e) => onChange("minute", parseInt(e.target.value))}
-            className="h-12 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
+            className="h-12 px-2 rounded-xl bg-gray-50 text-gray-800 text-sm border border-gray-200 appearance-none cursor-pointer focus:outline-none focus:ring-2"
             style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
           >
             {MINUTES.map((m) => (
-              <option key={m.value} value={m.value} className="bg-[#1a0a1a] text-white">
+              <option key={m.value} value={m.value} className="bg-white text-gray-800">
                 {m.label}
               </option>
             ))}
@@ -250,18 +250,18 @@ function PersonInputSection({
 
       {/* Birth Location */}
       <div className="space-y-2">
-        <label className="flex items-center gap-2 text-sm font-medium text-white">
-          <MapPin className="w-4 h-4 text-white/60" />
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <MapPin className="w-4 h-4 text-gray-500" />
           태어난 지역
         </label>
         <select
           value={person.city}
           onChange={(e) => onChange("city", e.target.value)}
-          className="w-full h-12 px-2 rounded-xl bg-white/5 text-white text-sm border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2"
+          className="w-full h-12 px-2 rounded-xl bg-gray-50 text-gray-800 text-sm border border-gray-200 appearance-none cursor-pointer focus:outline-none focus:ring-2"
           style={{ "--tw-ring-color": accentColor } as React.CSSProperties}
         >
           {CITIES.map((city) => (
-            <option key={city.name} value={city.name} className="bg-[#1a0a1a] text-white">
+            <option key={city.name} value={city.name} className="bg-white text-gray-800">
               {city.name}
             </option>
           ))}
@@ -391,7 +391,7 @@ export function CoupleForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Person 1 Section */}
-      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+      <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
         <PersonInputSection
           title="나의 정보"
           person={formData.person1}
@@ -405,8 +405,8 @@ export function CoupleForm() {
       {/* Relation Type */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 pb-2">
-          <Heart className="w-5 h-5 text-[#f472b6]" weight="fill" />
-          <h2 className="text-base font-bold text-white">관계</h2>
+          <Heart className="w-5 h-5 text-pink-500" weight="fill" />
+          <h2 className="text-base font-bold text-gray-800">관계</h2>
         </div>
         <div className="grid grid-cols-2 gap-2">
           {RELATION_TYPES.map((type) => (
@@ -417,8 +417,8 @@ export function CoupleForm() {
               className={cn(
                 "h-12 rounded-xl font-medium text-sm transition-all duration-200",
                 formData.relationType === type.value
-                  ? "bg-[#ec4899] text-white"
-                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
+                  ? "bg-pink-500 text-white"
+                  : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-800 border border-gray-200"
               )}
             >
               {type.label}
@@ -428,7 +428,7 @@ export function CoupleForm() {
       </div>
 
       {/* Person 2 Section */}
-      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+      <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
         <PersonInputSection
           title="상대방 정보"
           person={formData.person2}
@@ -442,7 +442,7 @@ export function CoupleForm() {
       {/* Submit Button */}
       <button
         type="submit"
-        className="w-full h-14 flex items-center justify-center gap-2 bg-[#ec4899] text-white font-bold text-lg rounded-xl hover:bg-[#db2777] transition-colors"
+        className="w-full h-14 flex items-center justify-center gap-2 bg-pink-500 text-white font-bold text-lg rounded-xl hover:bg-pink-600 transition-colors"
       >
         궁합 분석하기
         <ArrowRight className="w-5 h-5" weight="bold" />

@@ -205,12 +205,12 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
         <div
           role="alert"
           aria-live="polite"
-          className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20"
+          className="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-200"
         >
-          <Warning className="w-5 h-5 text-red-400 shrink-0 mt-0.5" weight="fill" />
+          <Warning className="w-5 h-5 text-red-500 shrink-0 mt-0.5" weight="fill" />
           <div className="space-y-1">
-            <p className="text-sm font-medium text-red-400">입력 정보를 확인해주세요</p>
-            <ul className="text-sm text-red-300/80 space-y-0.5">
+            <p className="text-sm font-medium text-red-600">입력 정보를 확인해주세요</p>
+            <ul className="text-sm text-red-500 space-y-0.5">
               {Object.entries(errors).map(([field, message]) => (
                 <li key={field}>• {message}</li>
               ))}
@@ -221,8 +221,8 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
 
       {/* Gender Selection */}
       <div className="space-y-3">
-        <label className="flex items-center gap-2 text-sm font-medium text-white">
-          <User className="w-4 h-4 text-white/60" />
+        <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+          <User className="w-4 h-4 text-text-muted" />
           {t("gender.label")}
         </label>
         <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label={t("gender.label")}>
@@ -237,8 +237,8 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
               className={cn(
                 "h-12 rounded-xl font-medium text-base transition-all duration-200",
                 formData.gender === g
-                  ? "bg-accent-primary text-white"
-                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
+                  ? "bg-brand-primary text-white"
+                  : "bg-background-secondary text-text-secondary hover:bg-background-tertiary hover:text-text-primary border border-border"
               )}
               role="radio"
               aria-checked={formData.gender === g}
@@ -251,8 +251,8 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
 
       {/* Calendar Type */}
       <div className="space-y-3">
-        <label className="flex items-center gap-2 text-sm font-medium text-white">
-          <Calendar className="w-4 h-4 text-white/60" />
+        <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+          <Calendar className="w-4 h-4 text-text-muted" />
           {t("calendar.label")}
         </label>
         <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label={t("calendar.label")}>
@@ -267,8 +267,8 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
               className={cn(
                 "h-12 rounded-xl font-medium text-base transition-all duration-200",
                 (type === "lunar") === formData.isLunar
-                  ? "bg-accent-primary text-white"
-                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
+                  ? "bg-brand-primary text-white"
+                  : "bg-background-secondary text-text-secondary hover:bg-background-tertiary hover:text-text-primary border border-border"
               )}
               role="radio"
               aria-checked={(type === "lunar") === formData.isLunar}
@@ -281,8 +281,8 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
 
       {/* Birth Date */}
       <div className="space-y-3">
-        <label className="flex items-center gap-2 text-sm font-medium text-white">
-          <Calendar className="w-4 h-4 text-white/60" />
+        <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+          <Calendar className="w-4 h-4 text-text-muted" />
           {t("birthDate.label")}
         </label>
         <div className="grid grid-cols-3 gap-2">
@@ -290,27 +290,27 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
             <select
               value={formData.year}
               onChange={(e) => handleChange("year", parseInt(e.target.value))}
-              className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-primary"
+              className="w-full h-12 px-3 rounded-xl bg-background-secondary text-text-primary text-base border border-border appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-primary"
               aria-label={t("birthDate.year")}
             >
               {years.map((y) => (
-                <option key={y} value={y} className="bg-background-dark text-white">
+                <option key={y} value={y} className="bg-white text-text-primary">
                   {y}{t("birthDate.year")}
                 </option>
               ))}
             </select>
             {errors.year && (
-              <p className="text-xs text-red-400">{errors.year}</p>
+              <p className="text-xs text-red-500">{errors.year}</p>
             )}
           </div>
           <select
             value={formData.month}
             onChange={(e) => handleChange("month", parseInt(e.target.value))}
-            className="h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-primary"
+            className="h-12 px-3 rounded-xl bg-background-secondary text-text-primary text-base border border-border appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-primary"
             aria-label={t("birthDate.month")}
           >
             {months.map((m) => (
-              <option key={m} value={m} className="bg-background-dark text-white">
+              <option key={m} value={m} className="bg-white text-text-primary">
                 {m}{t("birthDate.month")}
               </option>
             ))}
@@ -319,17 +319,17 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
             <select
               value={formData.day}
               onChange={(e) => handleChange("day", parseInt(e.target.value))}
-              className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-primary"
+              className="w-full h-12 px-3 rounded-xl bg-background-secondary text-text-primary text-base border border-border appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-primary"
               aria-label={t("birthDate.day")}
             >
               {days.map((d) => (
-                <option key={d} value={d} className="bg-background-dark text-white">
+                <option key={d} value={d} className="bg-white text-text-primary">
                   {d}{t("birthDate.day")}
                 </option>
               ))}
             </select>
             {errors.day && (
-              <p className="text-xs text-red-400">{errors.day}</p>
+              <p className="text-xs text-red-500">{errors.day}</p>
             )}
           </div>
         </div>
@@ -337,19 +337,19 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
 
       {/* Birth Time */}
       <div className="space-y-3">
-        <label className="flex items-center gap-2 text-sm font-medium text-white">
-          <Clock className="w-4 h-4 text-white/60" />
+        <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+          <Clock className="w-4 h-4 text-text-muted" />
           {t("birthTime.label")}
         </label>
         <div className="grid grid-cols-2 gap-3">
           <select
             value={formData.hour}
             onChange={(e) => handleChange("hour", parseInt(e.target.value))}
-            className="h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-primary"
+            className="h-12 px-3 rounded-xl bg-background-secondary text-text-primary text-base border border-border appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-primary"
             aria-label={t("birthTime.hour")}
           >
             {HOURS.map((h) => (
-              <option key={h.value} value={h.value} className="bg-background-dark text-white">
+              <option key={h.value} value={h.value} className="bg-white text-text-primary">
                 {h.label}
               </option>
             ))}
@@ -357,40 +357,40 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
           <select
             value={formData.minute}
             onChange={(e) => handleChange("minute", parseInt(e.target.value))}
-            className="h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-primary"
+            className="h-12 px-3 rounded-xl bg-background-secondary text-text-primary text-base border border-border appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-primary"
             aria-label={t("birthTime.minute")}
           >
             {MINUTES.map((m) => (
-              <option key={m.value} value={m.value} className="bg-background-dark text-white">
+              <option key={m.value} value={m.value} className="bg-white text-text-primary">
                 {m.label}
               </option>
             ))}
           </select>
         </div>
-        <p className="text-xs text-white/40">
+        <p className="text-xs text-text-muted">
           {t("birthTime.hint")}
         </p>
       </div>
 
       {/* Birth Location */}
       <div className="space-y-3">
-        <label className="flex items-center gap-2 text-sm font-medium text-white">
-          <MapPin className="w-4 h-4 text-white/60" />
+        <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+          <MapPin className="w-4 h-4 text-text-muted" />
           {t("birthPlace.label")}
         </label>
         <select
           value={formData.city}
           onChange={(e) => handleChange("city", e.target.value)}
-          className="w-full h-12 px-3 rounded-xl bg-white/5 text-white text-base border border-white/10 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-primary"
+          className="w-full h-12 px-3 rounded-xl bg-background-secondary text-text-primary text-base border border-border appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-primary"
           aria-label={t("birthPlace.label")}
         >
           {CITIES.map((city) => (
-            <option key={city.key} value={city.key} className="bg-background-dark text-white">
+            <option key={city.key} value={city.key} className="bg-white text-text-primary">
               {tCities(city.key)}
             </option>
           ))}
         </select>
-        <p className="text-xs text-white/40">
+        <p className="text-xs text-text-muted">
           {t("birthPlace.hint")}
         </p>
       </div>
@@ -399,7 +399,7 @@ export function BirthInputForm({ onSubmit }: BirthInputFormProps) {
       <button
         type="submit"
         onClick={() => triggerHaptic("medium")}
-        className="w-full h-14 flex items-center justify-center gap-2 bg-accent-primary text-white font-bold text-lg rounded-xl hover:bg-accent-primary-hover active:scale-[0.98] transition-all"
+        className="w-full h-14 flex items-center justify-center gap-2 bg-brand-primary text-white font-bold text-lg rounded-xl hover:bg-brand-secondary active:scale-[0.98] transition-all shadow-md"
       >
         {t("submit")}
         <ArrowRight className="w-5 h-5" weight="bold" />

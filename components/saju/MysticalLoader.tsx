@@ -178,7 +178,7 @@ export function MysticalLoader({
             {stepName}
           </motion.p>
         </AnimatePresence>
-        <p className="text-sm sm:text-base text-white/60 mt-1">
+        <p className="text-sm sm:text-base text-text-secondary mt-1">
           {currentStep} / {totalSteps} 단계
         </p>
       </motion.div>
@@ -250,7 +250,7 @@ export function MysticalStepCard({
           ? "bg-success/10 border-success/30"
           : isCurrent
           ? "bg-accent-primary/10 border-accent-primary/50"
-          : "bg-white/5 border-white/10 opacity-50"
+          : "bg-background-secondary border-border opacity-50"
       )}
     >
       {/* Glow effect for current step */}
@@ -277,7 +277,7 @@ export function MysticalStepCard({
               ? "bg-success/20"
               : isCurrent
               ? "bg-accent-primary/20"
-              : "bg-white/10"
+              : "bg-background-tertiary"
           )}
           animate={isCurrent ? { scale: [1, 1.1, 1] } : {}}
           transition={{ duration: 1.5, repeat: Infinity }}
@@ -286,7 +286,7 @@ export function MysticalStepCard({
             <Check className="w-5 h-5 text-success" weight="bold" />
           ) : (
             <span className={cn(
-              isCurrent ? "text-accent-primary" : "text-white/40"
+              isCurrent ? "text-accent-primary" : "text-text-muted"
             )}>
               {stepIcons[step]}
             </span>
@@ -303,7 +303,7 @@ export function MysticalStepCard({
                   ? "text-success"
                   : isCurrent
                   ? "text-accent-primary"
-                  : "text-white/40"
+                  : "text-text-muted"
               )}
             >
               {name}

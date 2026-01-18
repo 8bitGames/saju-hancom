@@ -1,59 +1,96 @@
 @import "tailwindcss";
 
 /* ============================================
-   AI 운세 마스터 - Global Styles
+   점신 (Jeomsin) Style Design System
+   AI 운세 서비스 - Global Styles
    ============================================ */
 
 :root {
-  /* Background & Foreground */
-  --background: #0f172a;
-  --foreground: #f8fafc;
-  --background-secondary: #1e293b;
-  --background-card: #334155;
+  /* 점신 스타일 브랜드 컬러 */
+  --brand-primary: #333333;
+  --brand-secondary: #666666;
+  --brand-accent: #FFD700;
+  --brand-light: #FFFFFF;
+  --brand-dark: #222222;
+  --brand-pink: #F8BBD9;
+  --brand-yellow: #FFE066;
 
-  /* 오행 (Five Elements) Colors */
-  --element-wood: #22c55e;
-  --element-fire: #ef4444;
-  --element-earth: #eab308;
-  --element-metal: #f8fafc;
-  --element-water: #3b82f6;
+  /* Background & Foreground - Jeomsin Style */
+  --background: #FFFFFF;
+  --foreground: #222222;
+  --background-secondary: #F5F5F5;
+  --background-card: #FFFFFF;
+  --background-section: #F8F8F8;
+
+  /* 오행 (Five Elements) Colors - Traditional Korean Palette */
+  --element-wood: #2D5A27;
+  --element-wood-light: #4A7C43;
+  --element-fire: #B91C1C;
+  --element-fire-light: #DC2626;
+  --element-earth: #C4A35A;
+  --element-earth-light: #D4B86A;
+  --element-metal: #6B7280;
+  --element-metal-light: #9CA3AF;
+  --element-water: #1E3A5F;
+  --element-water-light: #2563EB;
 
   /* 음양 (Yin-Yang) Colors */
-  --yin: #6366f1;
-  --yang: #f97316;
+  --yin: #4F46E5;
+  --yang: #EA580C;
 
-  /* Text Colors - High contrast for readability */
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-tertiary: #94a3b8;
-  --text-muted: #64748b;
+  /* Text Colors - Jeomsin Style */
+  --text-primary: #222222;
+  --text-secondary: #555555;
+  --text-tertiary: #6B7280;
+  --text-muted: #777777;
 
   /* Elevated Background */
-  --background-elevated: #4b5563;
+  --background-elevated: #FFFFFF;
 
   /* Border & Accent */
-  --border: #6b7280;
-  --accent: #8b5cf6;
-  --accent-foreground: #ffffff;
+  --border: #EEEEEE;
+  --accent: #FFD700;
+  --accent-foreground: #222222;
 
   /* Brand Accent Colors */
-  --accent-primary: #a855f7;
-  --accent-primary-hover: #9333ea;
-  --accent-gold: #fbbf24;
-  --background-dark: #1a1033;
-  --background-darkest: #0f0a1a;
+  --accent-primary: #FFD700;
+  --accent-primary-hover: #FFC700;
+  --accent-gold: #FFD700;
+  --accent-pink: #F8BBD9;
+  --background-dark: #222222;
+  --background-darkest: #111111;
 
   /* Status Colors */
-  --success: #22c55e;
-  --warning: #f97316;
-  --caution: #eab308;
-  --error: #ef4444;
-  --info: #3b82f6;
+  --success: #16A34A;
+  --warning: #EA580C;
+  --caution: #CA8A04;
+  --error: #DC2626;
+  --info: #2563EB;
+
+  /* shadcn/ui compatible colors */
+  --card: #FFFFFF;
+  --card-foreground: #222222;
+  --popover: #FFFFFF;
+  --popover-foreground: #222222;
+  --primary: #FFD700;
+  --primary-foreground: #222222;
+  --secondary: #F5F5F5;
+  --secondary-foreground: #222222;
+  --muted: #F5F5F5;
+  --muted-foreground: #777777;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --ring: #FFD700;
+  --input: #EEEEEE;
 
   /* Spacing */
   --header-height: 56px;
-  --nav-height: 64px;
+  --nav-height: 72px;
+  --bottom-nav-height: 64px;
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Border Radius */
+  --radius: 0.75rem;
 }
 
 @theme inline {
@@ -61,13 +98,29 @@
   --color-foreground: var(--foreground);
   --color-background-secondary: var(--background-secondary);
   --color-background-card: var(--background-card);
+  --color-background-section: var(--background-section);
+
+  /* 점신 스타일 브랜드 */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-light: var(--brand-light);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-pink: var(--brand-pink);
+  --color-brand-yellow: var(--brand-yellow);
+  --color-accent-pink: var(--accent-pink);
 
   /* 오행 Colors */
   --color-element-wood: var(--element-wood);
+  --color-element-wood-light: var(--element-wood-light);
   --color-element-fire: var(--element-fire);
+  --color-element-fire-light: var(--element-fire-light);
   --color-element-earth: var(--element-earth);
+  --color-element-earth-light: var(--element-earth-light);
   --color-element-metal: var(--element-metal);
+  --color-element-metal-light: var(--element-metal-light);
   --color-element-water: var(--element-water);
+  --color-element-water-light: var(--element-water-light);
 
   /* Yin-Yang */
   --color-yin: var(--yin);
@@ -127,8 +180,8 @@ html {
   -webkit-tap-highlight-color: transparent;
   /* Larger base font size for better readability */
   font-size: 18px;
-  /* Fill entire viewport with background color - matches stars bg */
-  background-color: #0f0a1a;
+  /* Light theme background */
+  background-color: var(--background);
   min-height: 100%;
   height: 100%;
 }
@@ -141,8 +194,8 @@ html {
 }
 
 body {
-  /* Match stars background color exactly */
-  background: #0f0a1a;
+  /* Light theme background */
+  background: var(--background);
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
@@ -153,6 +206,8 @@ body {
   line-height: 1.7;
   /* Better letter spacing for Korean text */
   letter-spacing: -0.01em;
+  /* Bottom navigation padding */
+  padding-bottom: var(--bottom-nav-height);
 }
 
 /* iOS Safari specific - solid background behind URL bar */
@@ -164,13 +219,13 @@ body {
     left: 0;
     right: 0;
     height: 400px;
-    background: #0f0a1a;
+    background: var(--background);
     z-index: -1;
     pointer-events: none;
   }
 }
 
-/* Scrollbar Styling */
+/* Scrollbar Styling - Light Theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -189,15 +244,15 @@ body {
   background: var(--text-muted);
 }
 
-/* Selection */
+/* Selection - Light Theme */
 ::selection {
-  background: var(--accent);
-  color: var(--accent-foreground);
+  background: var(--brand-primary);
+  color: white;
 }
 
 /* Focus Styles - Enhanced for visibility */
 :focus-visible {
-  outline: 3px solid var(--accent);
+  outline: 3px solid var(--brand-primary);
   outline-offset: 3px;
 }
 
@@ -233,18 +288,21 @@ h1 {
   font-size: 1.75rem;
   font-weight: 700;
   line-height: 1.3;
+  color: var(--brand-dark);
 }
 
 h2 {
   font-size: 1.35rem;
   font-weight: 600;
   line-height: 1.4;
+  color: var(--brand-dark);
 }
 
 h3 {
   font-size: 1.15rem;
   font-weight: 600;
   line-height: 1.4;
+  color: var(--brand-dark);
 }
 
 p, span, label {
@@ -322,20 +380,6 @@ p, span, label {
   }
 }
 
-@keyframes meteor-effect {
-  0% {
-    transform: rotate(215deg) translateX(0);
-    opacity: 1;
-  }
-  70% {
-    opacity: 1;
-  }
-  100% {
-    transform: rotate(215deg) translateX(-500px);
-    opacity: 0;
-  }
-}
-
 @keyframes spotlight {
   0% {
     opacity: 0;
@@ -347,20 +391,16 @@ p, span, label {
   }
 }
 
-.animate-meteor-effect {
-  animation: meteor-effect 5s linear infinite;
-}
-
 .animate-spotlight {
   animation: spotlight 2s ease 0.75s 1 forwards;
 }
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 5px var(--accent);
+    box-shadow: 0 0 5px var(--brand-primary);
   }
   50% {
-    box-shadow: 0 0 20px var(--accent);
+    box-shadow: 0 0 20px var(--brand-primary);
   }
 }
 
@@ -457,7 +497,78 @@ p, span, label {
   animation: bounce-subtle 1s ease-in-out infinite;
 }
 
-/* 오행 Element Utility Classes */
+/* Guardian Reveal Animation - 수호신 공개 */
+@keyframes guardian-reveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-10deg);
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) rotate(5deg);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+.animate-guardian-reveal {
+  animation: guardian-reveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Guardian Breathing Glow - 수호신 호흡 효과 */
+@keyframes guardian-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(14, 65, 104, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(14, 65, 104, 0.5);
+    transform: scale(1.02);
+  }
+}
+
+.animate-guardian-glow {
+  animation: guardian-glow 3s ease-in-out infinite;
+}
+
+/* Element Glow animations for each 오행 */
+@keyframes wood-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(45, 90, 39, 0.4); }
+  50% { box-shadow: 0 0 30px rgba(45, 90, 39, 0.6); }
+}
+
+@keyframes fire-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(185, 28, 28, 0.4); }
+  50% { box-shadow: 0 0 30px rgba(185, 28, 28, 0.6); }
+}
+
+@keyframes earth-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(196, 163, 90, 0.4); }
+  50% { box-shadow: 0 0 30px rgba(196, 163, 90, 0.6); }
+}
+
+@keyframes metal-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(107, 114, 128, 0.4); }
+  50% { box-shadow: 0 0 30px rgba(107, 114, 128, 0.6); }
+}
+
+@keyframes water-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(30, 58, 95, 0.4); }
+  50% { box-shadow: 0 0 30px rgba(30, 58, 95, 0.6); }
+}
+
+.animate-wood-glow { animation: wood-glow 3s ease-in-out infinite; }
+.animate-fire-glow { animation: fire-glow 3s ease-in-out infinite; }
+.animate-earth-glow { animation: earth-glow 3s ease-in-out infinite; }
+.animate-metal-glow { animation: metal-glow 3s ease-in-out infinite; }
+.animate-water-glow { animation: water-glow 3s ease-in-out infinite; }
+
+/* 오행 Element Utility Classes - Light Theme */
 .bg-element-wood {
   background-color: var(--element-wood);
 }
@@ -472,7 +583,6 @@ p, span, label {
 
 .bg-element-metal {
   background-color: var(--element-metal);
-  color: #0f172a;
 }
 
 .bg-element-water {
@@ -499,16 +609,43 @@ p, span, label {
   color: var(--element-water);
 }
 
-/* Card Glass Effect */
+/* Card Styles - Light Theme */
 .glass-card {
-  background: rgba(51, 65, 85, 0.6);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(107, 114, 128, 0.6);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Gradient Text */
+/* Service Card Style */
+.service-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.service-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.service-card:active {
+  transform: translateY(0);
+}
+
+/* Gradient Text - Brand Colors */
 .gradient-text {
-  background: linear-gradient(135deg, var(--accent), var(--element-fire));
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-gold {
+  background: linear-gradient(135deg, var(--brand-accent), #D4B86A);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -516,22 +653,22 @@ p, span, label {
 
 /* Safe Area Padding for Mobile */
 .safe-area-bottom {
-  padding-bottom: calc(var(--nav-height) + var(--safe-area-bottom));
+  padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
 }
 
 .safe-area-top {
   padding-top: var(--header-height);
 }
 
-/* Element Badge Styles */
+/* Element Badge Styles - Light Theme */
 .element-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  font-size: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -547,12 +684,12 @@ p, span, label {
 
 .element-badge-earth {
   background-color: var(--element-earth);
-  color: #0f172a;
+  color: white;
 }
 
 .element-badge-metal {
   background-color: var(--element-metal);
-  color: #0f172a;
+  color: white;
 }
 
 .element-badge-water {
@@ -574,7 +711,7 @@ p, span, label {
   animation: float 3s ease-in-out infinite;
 }
 
-/* Gradient Shift Animation for Glowing Cards */
+/* Gradient Shift Animation for Cards */
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
@@ -607,18 +744,6 @@ p, span, label {
   animation: glowPulse 3s ease-in-out infinite;
 }
 
-/* Mobile: constant glow without animation */
-.glow-constant {
-  opacity: 0.5;
-  filter: blur(12px);
-}
-
-@media (min-width: 768px) {
-  .glow-constant {
-    animation: glowPulse 3s ease-in-out infinite;
-  }
-}
-
 /* ============================================
    40-60대 (Senior-friendly) Accessibility
    ============================================ */
@@ -632,20 +757,57 @@ p, span, label {
   border-radius: 0.875rem;
 }
 
+/* Primary Button Style - 청기운 */
+.btn-primary {
+  background: var(--brand-primary);
+  color: white;
+  min-height: 56px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--accent-primary-hover);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* Secondary Button Style */
+.btn-secondary {
+  background: var(--background-secondary);
+  color: var(--brand-primary);
+  border: 1px solid var(--border);
+  min-height: 56px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--border);
+}
+
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   :root {
-    --text-primary: #ffffff;
-    --text-secondary: #f1f5f9;
-    --text-tertiary: #e2e8f0;
-    --text-muted: #cbd5e1;
-    --border: #a1a1aa;
-    --accent: #a78bfa;
+    --text-primary: #000000;
+    --text-secondary: #1E293B;
+    --text-tertiary: #334155;
+    --text-muted: #475569;
+    --border: #94A3B8;
+    --brand-primary: #0A3350;
   }
 
   .glass-card {
-    background: rgba(51, 65, 85, 0.9);
-    border: 2px solid rgba(161, 161, 170, 0.8);
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid var(--border);
   }
 }
 
@@ -666,7 +828,9 @@ p, span, label {
   .animate-spin,
   .animate-pulse,
   .animate-bounce,
-  .animate-ping {
+  .animate-ping,
+  .animate-guardian-glow,
+  .animate-guardian-reveal {
     animation: none !important;
   }
 }
@@ -694,7 +858,7 @@ a:active {
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--accent);
+    background: var(--brand-primary);
     border-radius: 5px;
   }
 }
@@ -706,7 +870,7 @@ a:active {
   left: 50%;
   transform: translateX(-50%);
   padding: 1rem 2rem;
-  background: var(--accent);
+  background: var(--brand-primary);
   color: white;
   border-radius: 0.5rem;
   z-index: 9999;
@@ -923,4 +1087,47 @@ a {
 /* Size containment for cards */
 .card-container {
   contain: layout size style;
+}
+
+/* ============================================
+   Bottom Navigation Styles
+   ============================================ */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-nav-height);
+  background: white;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 16px;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.bottom-nav-item.active {
+  color: var(--brand-primary);
+}
+
+.bottom-nav-item:hover {
+  color: var(--brand-secondary);
+}
+
+.bottom-nav-label {
+  font-size: 0.75rem;
+  font-weight: 500;
 }

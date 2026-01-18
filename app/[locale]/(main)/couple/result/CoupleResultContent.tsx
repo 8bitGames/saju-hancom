@@ -46,10 +46,10 @@ function AIAnalyzingAnimation() {
         animate={{ rotate: 360 }}
         transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
       >
-        <CircleNotch className="w-16 h-16 text-pink-400" weight="bold" />
+        <CircleNotch className="w-16 h-16 text-pink-500" weight="bold" />
       </motion.div>
       <motion.div
-        className="flex items-center gap-2 text-pink-300"
+        className="flex items-center gap-2 text-pink-600"
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
@@ -145,7 +145,7 @@ function GlowingCard({
         style={{ background: glowColor }}
       />
       {/* Content */}
-      <div className="relative bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
+      <div className="relative bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
         {children}
       </div>
     </motion.div>
@@ -153,10 +153,10 @@ function GlowingCard({
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return "text-pink-400";
-  if (score >= 60) return "text-rose-400";
-  if (score >= 40) return "text-white";
-  return "text-orange-400";
+  if (score >= 80) return "text-pink-600";
+  if (score >= 60) return "text-rose-600";
+  if (score >= 40) return "text-text-primary";
+  return "text-orange-600";
 }
 
 function getRelationTypeKorean(type?: string): string {
@@ -207,7 +207,7 @@ function AnimatedScoreBar({ score, label, delay = 0 }: { score: number; label: s
   return (
     <div className="space-y-2" ref={ref}>
       <div className="flex justify-between text-base">
-        <span className="text-white/60">{label}</span>
+        <span className="text-text-secondary">{label}</span>
         <motion.span
           className={`font-bold ${getScoreColor(score)}`}
           initial={{ opacity: 0 }}
@@ -217,7 +217,7 @@ function AnimatedScoreBar({ score, label, delay = 0 }: { score: number; label: s
           <AnimatedCounter value={score} duration={1.5} />점
         </motion.span>
       </div>
-      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
         <motion.div
           className="h-full bg-gradient-to-r from-pink-500 to-rose-500 rounded-full"
           initial={{ width: 0 }}
@@ -258,7 +258,7 @@ function PersonPillarsDisplay({
     >
       <div className="flex items-center gap-2">
         <Heart className="w-4 h-4 text-[#ec4899]" weight="fill" />
-        <span className="text-base font-medium text-white">
+        <span className="text-base font-medium text-text-primary">
           {label}: {name}
         </span>
       </div>
@@ -280,11 +280,11 @@ function PersonPillarsDisplay({
             >
               {/* Pillar glow */}
               <div className="absolute -inset-0.5 rounded-xl bg-pink-500/20 blur-sm group-hover:bg-pink-500/40 transition-all duration-300" />
-              <div className="relative p-3 rounded-xl bg-white/5 border border-white/10 group-hover:border-pink-500/50 transition-colors">
-                <p className="text-xs text-white/40 mb-1">
+              <div className="relative p-3 rounded-xl bg-background-secondary border border-border group-hover:border-pink-500/50 transition-colors">
+                <p className="text-xs text-text-muted mb-1">
                   {pillar === "year" ? "년" : pillar === "month" ? "월" : pillar === "day" ? "일" : "시"}
                 </p>
-                <p className="text-lg font-bold text-white">{p.gan}{p.zhi}</p>
+                <p className="text-lg font-bold text-text-primary">{p.gan}{p.zhi}</p>
               </div>
             </motion.div>
           );
@@ -527,7 +527,7 @@ export function CoupleResultContent({
           緣分分析
         </motion.p>
         <motion.h1
-          className="text-2xl font-bold text-white"
+          className="text-2xl font-bold text-text-primary"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, type: "spring" }}
@@ -536,7 +536,7 @@ export function CoupleResultContent({
         </motion.h1>
         <TextGenerateEffect
           words={`${person1.name}님과 ${person2.name}님의 ${getRelationTypeKorean(relationType)} 궁합`}
-          className="text-base text-white/60"
+          className="text-base text-text-secondary"
           duration={0.3}
         />
       </motion.div>
@@ -581,7 +581,7 @@ export function CoupleResultContent({
         <div className="p-5 space-y-5">
           <div className="flex items-center gap-2">
             <UsersThree className="w-5 h-5 text-[#ec4899]" weight="fill" />
-            <h2 className="text-lg font-semibold text-white">{t("result.pillars")}</h2>
+            <h2 className="text-lg font-semibold text-text-primary">{t("result.pillars")}</h2>
           </div>
 
           <PersonPillarsDisplay
@@ -622,14 +622,14 @@ export function CoupleResultContent({
         <div className="p-5 space-y-5">
           <div className="flex items-center gap-2">
             <Star className="w-5 h-5 text-[#ec4899]" weight="fill" />
-            <h2 className="text-lg font-semibold text-white">{t("result.analysis")}</h2>
+            <h2 className="text-lg font-semibold text-text-primary">{t("result.analysis")}</h2>
           </div>
 
           <div className="space-y-4">
             {[
               { icon: Heart, color: "text-pink-400", label: t("result.romance"), data: result.analysis.romance, delay: 0 },
               { icon: ChatCircle, color: "text-blue-400", label: t("result.communication"), data: result.analysis.communication, delay: 0.15 },
-              { icon: Fire, color: "text-orange-400", label: t("result.passion"), data: result.analysis.passion, delay: 0.3 },
+              { icon: Fire, color: "text-orange-600", label: t("result.passion"), data: result.analysis.passion, delay: 0.3 },
               { icon: House, color: "text-green-400", label: t("result.stability"), data: result.analysis.stability, delay: 0.45 },
               { icon: Sparkle, color: "text-purple-400", label: t("result.future"), data: result.analysis.future, delay: 0.6 },
             ].map(({ icon: Icon, color, label, data, delay }) => (
@@ -643,11 +643,11 @@ export function CoupleResultContent({
               >
                 <div className="flex items-center gap-2">
                   <Icon className={`w-5 h-5 ${color}`} weight="fill" />
-                  <span className="text-base font-medium text-white">{label}</span>
+                  <span className="text-base font-medium text-text-primary">{label}</span>
                 </div>
                 <AnimatedScoreBar score={data.score} label="" delay={delay} />
                 <motion.p
-                  className="text-sm text-white/60"
+                  className="text-sm text-text-secondary"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
@@ -665,8 +665,8 @@ export function CoupleResultContent({
       <GlowingCard glowColor="rgba(236, 72, 153, 0.4)" variants={itemVariants}>
         <div className="p-5 space-y-4">
           <div className="flex items-center gap-2">
-            <Brain className="w-5 h-5 text-pink-400" weight="fill" />
-            <h2 className="text-lg font-semibold text-white">맞춤 궁합 해석</h2>
+            <Brain className="w-5 h-5 text-pink-500" weight="fill" />
+            <h2 className="text-lg font-semibold text-text-primary">맞춤 궁합 해석</h2>
           </div>
 
           {isAiLoading ? (
@@ -679,8 +679,8 @@ export function CoupleResultContent({
               transition={{ duration: 0.5 }}
             >
               {/* Summary */}
-              <div className="p-4 rounded-xl bg-pink-500/10 border border-pink-500/20">
-                <p className="text-white/90 text-base leading-relaxed">{aiInterpretation.summary}</p>
+              <div className="p-4 rounded-xl bg-pink-50 border border-pink-200">
+                <p className="text-text-primary text-base leading-relaxed">{aiInterpretation.summary}</p>
               </div>
 
               {/* Details */}
@@ -688,46 +688,46 @@ export function CoupleResultContent({
                 {aiInterpretation.communication && (
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <ChatCircle className="w-4 h-4 text-blue-400" weight="fill" />
-                      <span className="text-sm font-medium text-blue-400">소통과 감정 교류</span>
+                      <ChatCircle className="w-4 h-4 text-blue-500" weight="fill" />
+                      <span className="text-sm font-medium text-blue-600">소통과 감정 교류</span>
                     </div>
-                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.communication}</p>
+                    <p className="text-text-secondary text-sm pl-6">{aiInterpretation.communication}</p>
                   </div>
                 )}
 
                 {aiInterpretation.chemistry && (
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <Heart className="w-4 h-4 text-pink-400" weight="fill" />
-                      <span className="text-sm font-medium text-pink-400">애정과 케미스트리</span>
+                      <Heart className="w-4 h-4 text-pink-500" weight="fill" />
+                      <span className="text-sm font-medium text-pink-600">애정과 케미스트리</span>
                     </div>
-                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.chemistry}</p>
+                    <p className="text-text-secondary text-sm pl-6">{aiInterpretation.chemistry}</p>
                   </div>
                 )}
 
                 {aiInterpretation.challenges && (
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <Warning className="w-4 h-4 text-orange-400" weight="fill" />
-                      <span className="text-sm font-medium text-orange-400">주의할 점</span>
+                      <Warning className="w-4 h-4 text-orange-500" weight="fill" />
+                      <span className="text-sm font-medium text-orange-600">주의할 점</span>
                     </div>
-                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.challenges}</p>
+                    <p className="text-text-secondary text-sm pl-6">{aiInterpretation.challenges}</p>
                   </div>
                 )}
 
                 {aiInterpretation.advice && (
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <Sparkle className="w-4 h-4 text-purple-400" weight="fill" />
-                      <span className="text-sm font-medium text-purple-400">조언</span>
+                      <Sparkle className="w-4 h-4 text-purple-500" weight="fill" />
+                      <span className="text-sm font-medium text-purple-600">조언</span>
                     </div>
-                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.advice}</p>
+                    <p className="text-text-secondary text-sm pl-6">{aiInterpretation.advice}</p>
                   </div>
                 )}
               </div>
             </motion.div>
           ) : (
-            <p className="text-white/50 text-sm text-center py-4">해석을 불러올 수 없습니다.</p>
+            <p className="text-text-muted text-sm text-center py-4">해석을 불러올 수 없습니다.</p>
           )}
         </div>
       </GlowingCard>
@@ -735,7 +735,7 @@ export function CoupleResultContent({
       {/* Element Balance */}
       <GlowingCard glowColor="rgba(168, 85, 247, 0.3)" variants={itemVariants}>
         <div className="p-5 space-y-4">
-          <h2 className="text-lg font-semibold text-white">{t("result.elementBalance")}</h2>
+          <h2 className="text-lg font-semibold text-text-primary">{t("result.elementBalance")}</h2>
           <div className="grid grid-cols-5 gap-2">
             {(["wood", "fire", "earth", "metal", "water"] as const).map(
               (element, index) => {
@@ -766,8 +766,8 @@ export function CoupleResultContent({
                       className="absolute -inset-0.5 rounded-xl blur-sm opacity-50 group-hover:opacity-100 transition-opacity"
                       style={{ background: elementColors[element] }}
                     />
-                    <div className="relative p-3 rounded-xl bg-white/5 border border-white/10">
-                      <p className="text-sm font-medium text-white">
+                    <div className="relative p-3 rounded-xl bg-background-secondary border border-border">
+                      <p className="text-sm font-medium text-text-primary">
                         {ELEMENT_KOREAN[element]}
                       </p>
                       <motion.p
@@ -780,7 +780,7 @@ export function CoupleResultContent({
                       >
                         {person1Score}
                       </motion.p>
-                      <p className="text-xs text-white/40">vs {person2Score}</p>
+                      <p className="text-xs text-text-muted">vs {person2Score}</p>
                     </div>
                   </motion.div>
                 );
@@ -794,12 +794,12 @@ export function CoupleResultContent({
       {result.luckyElements.length > 0 && (
         <GlowingCard glowColor="rgba(236, 72, 153, 0.4)" variants={itemVariants}>
           <div className="p-5 space-y-3">
-            <h2 className="text-lg font-semibold text-pink-300">{t("result.luckyElements")}</h2>
+            <h2 className="text-lg font-semibold text-pink-600">{t("result.luckyElements")}</h2>
             <div className="flex gap-2 flex-wrap">
               {result.luckyElements.map((element, index) => (
                 <motion.span
                   key={element}
-                  className="px-4 py-2 rounded-full bg-pink-500/20 text-pink-200 font-medium"
+                  className="px-4 py-2 rounded-full bg-pink-100 text-pink-700 font-medium"
                   initial={{ opacity: 0, scale: 0 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -822,7 +822,7 @@ export function CoupleResultContent({
       {result.relationshipAdvice.length > 0 && (
         <GlowingCard glowColor="rgba(34, 197, 94, 0.3)" variants={itemVariants}>
           <div className="p-5 space-y-3">
-            <h2 className="text-lg font-semibold text-green-400">{t("result.advice")}</h2>
+            <h2 className="text-lg font-semibold text-green-600">{t("result.advice")}</h2>
             <motion.ul
               className="space-y-2"
               variants={containerVariants}
@@ -833,7 +833,7 @@ export function CoupleResultContent({
               {result.relationshipAdvice.map((advice, i) => (
                 <motion.li
                   key={i}
-                  className="flex items-start gap-2 text-base text-white/80"
+                  className="flex items-start gap-2 text-base text-text-primary"
                   variants={listItemVariants}
                 >
                   <motion.div
@@ -843,7 +843,7 @@ export function CoupleResultContent({
                     transition={{ delay: i * 0.1, type: "spring" }}
                   >
                     <Check
-                      className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"
+                      className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"
                       weight="bold"
                     />
                   </motion.div>
@@ -859,7 +859,7 @@ export function CoupleResultContent({
       {result.cautions.length > 0 && (
         <GlowingCard glowColor="rgba(249, 115, 22, 0.3)" variants={itemVariants}>
           <div className="p-5 space-y-3">
-            <h2 className="text-lg font-semibold text-orange-400">{t("result.cautions")}</h2>
+            <h2 className="text-lg font-semibold text-orange-600">{t("result.cautions")}</h2>
             <motion.ul
               className="space-y-2"
               variants={containerVariants}
@@ -870,7 +870,7 @@ export function CoupleResultContent({
               {result.cautions.map((caution, i) => (
                 <motion.li
                   key={i}
-                  className="flex items-start gap-2 text-base text-white/80"
+                  className="flex items-start gap-2 text-base text-text-primary"
                   variants={listItemVariants}
                 >
                   <motion.div
@@ -880,7 +880,7 @@ export function CoupleResultContent({
                     transition={{ delay: i * 0.1, type: "spring" }}
                   >
                     <Warning
-                      className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5"
+                      className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5"
                       weight="bold"
                     />
                   </motion.div>
@@ -913,7 +913,7 @@ export function CoupleResultContent({
         {/* 다시 분석하기 버튼 */}
         <Link href="/couple" className="block">
           <motion.button
-            className="w-full h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2 text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+            className="w-full h-14 rounded-xl bg-background-secondary border border-border flex items-center justify-center gap-2 text-text-secondary hover:text-text-primary hover:bg-gray-200 transition-colors"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -925,7 +925,7 @@ export function CoupleResultContent({
 
       {/* Disclaimer */}
       <motion.p
-        className="text-center text-sm text-white/40 pt-2 pb-8"
+        className="text-center text-sm text-text-muted pt-2 pb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}

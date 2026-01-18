@@ -38,21 +38,21 @@ export default async function FaceReadingPage() {
         <p className="text-[#ef4444] text-sm font-medium tracking-wider">
           觀相分析
         </p>
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-2xl font-bold text-text-primary">
           {t("title")}
         </h1>
-        <p className="text-white/60 text-sm">
+        <p className="text-text-secondary text-sm">
           {t("subtitle")}
         </p>
       </div>
 
       {/* Form Card */}
-      <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+      <div className="bg-white rounded-2xl p-5 border border-border shadow-sm">
         <FaceReadingFormWrapper />
       </div>
 
       {/* Privacy Notice */}
-      <p className="text-center text-xs text-white/40 px-4">
+      <p className="text-center text-xs text-text-muted px-4">
         관상 분석은 재미를 위한 참고용 정보입니다
       </p>
     </div>

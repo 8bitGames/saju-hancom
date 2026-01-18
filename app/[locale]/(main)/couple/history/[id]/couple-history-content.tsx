@@ -213,7 +213,7 @@ function GlowingCard({
         className="absolute inset-0 rounded-2xl blur-xl opacity-30"
         style={{ background: glowColor }}
       />
-      <div className="relative bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
+      <div className="relative bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
         {children}
       </div>
     </motion.div>
@@ -221,10 +221,10 @@ function GlowingCard({
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return "text-pink-400";
-  if (score >= 60) return "text-rose-400";
-  if (score >= 40) return "text-white";
-  return "text-orange-400";
+  if (score >= 80) return "text-pink-600";
+  if (score >= 60) return "text-rose-500";
+  if (score >= 40) return "text-text-primary";
+  return "text-orange-500";
 }
 
 function getRelationTypeKorean(type?: string): string {
@@ -275,7 +275,7 @@ function AnimatedScoreBar({ score, label, delay = 0 }: { score: number; label: s
   return (
     <div className="space-y-2" ref={ref}>
       <div className="flex justify-between text-base">
-        <span className="text-white/60">{label}</span>
+        <span className="text-text-secondary">{label}</span>
         <motion.span
           className={`font-bold ${getScoreColor(score)}`}
           initial={{ opacity: 0 }}
@@ -285,7 +285,7 @@ function AnimatedScoreBar({ score, label, delay = 0 }: { score: number; label: s
           <AnimatedCounter value={score} duration={1.5} />점
         </motion.span>
       </div>
-      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
         <motion.div
           className="h-full bg-gradient-to-r from-pink-500 to-rose-500 rounded-full"
           initial={{ width: 0 }}
@@ -326,7 +326,7 @@ function PersonPillarsDisplay({
     >
       <div className="flex items-center gap-2">
         <Heart className="w-4 h-4 text-[#ec4899]" weight="fill" />
-        <span className="text-base font-medium text-white">
+        <span className="text-base font-medium text-text-primary">
           {label}: {name}
         </span>
       </div>
@@ -346,12 +346,12 @@ function PersonPillarsDisplay({
                 damping: 15
               }}
             >
-              <div className="absolute -inset-0.5 rounded-xl bg-pink-500/20 blur-sm group-hover:bg-pink-500/40 transition-all duration-300" />
-              <div className="relative p-3 rounded-xl bg-white/5 border border-white/10 group-hover:border-pink-500/50 transition-colors">
-                <p className="text-xs text-white/40 mb-1">
+              <div className="absolute -inset-0.5 rounded-xl bg-pink-100 blur-sm group-hover:bg-pink-200 transition-all duration-300" />
+              <div className="relative p-3 rounded-xl bg-background-secondary border border-border group-hover:border-pink-300 transition-colors">
+                <p className="text-xs text-text-muted mb-1">
                   {pillar === "year" ? "년" : pillar === "month" ? "월" : pillar === "day" ? "일" : "시"}
                 </p>
-                <p className="text-lg font-bold text-white">{p.gan}{p.zhi}</p>
+                <p className="text-lg font-bold text-text-primary">{p.gan}{p.zhi}</p>
               </div>
             </motion.div>
           );
@@ -410,7 +410,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
     >
       {/* Back Button */}
       <motion.div variants={itemVariants}>
-        <Link href="/history" className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors">
+        <Link href="/history" className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors">
           <ArrowLeft className="w-5 h-5" />
           <span className="text-base">기록으로 돌아가기</span>
         </Link>
@@ -430,17 +430,17 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
           緣分分析
         </motion.p>
         <motion.h1
-          className="text-2xl font-bold text-white"
+          className="text-2xl font-bold text-text-primary"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, type: "spring" }}
         >
           {t("result.title")}
         </motion.h1>
-        <p className="text-base text-white/60">
+        <p className="text-base text-text-secondary">
           {result.p1_name}님과 {result.p2_name}님의 {getRelationTypeKorean(result.relation_type)} 궁합
         </p>
-        <div className="flex items-center justify-center gap-2 text-sm text-white/40">
+        <div className="flex items-center justify-center gap-2 text-sm text-text-muted">
           <Calendar className="w-4 h-4" />
           <span>{formattedDate}</span>
         </div>
@@ -460,12 +460,12 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
               delay: 0.4
             }}
           >
-            <span className="text-6xl font-bold text-white">
+            <span className="text-6xl font-bold text-text-primary">
               <AnimatedCounter value={data.score} duration={2} />
             </span>
           </motion.div>
           <motion.div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/20 text-pink-300 font-bold text-lg"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-100 text-pink-600 font-bold text-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
@@ -486,7 +486,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
         <div className="p-5 space-y-5">
           <div className="flex items-center gap-2">
             <UsersThree className="w-5 h-5 text-[#ec4899]" weight="fill" />
-            <h2 className="text-lg font-semibold text-white">{t("result.pillars")}</h2>
+            <h2 className="text-lg font-semibold text-text-primary">{t("result.pillars")}</h2>
           </div>
 
           <PersonPillarsDisplay
@@ -509,7 +509,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
               }}
               transition={{ repeat: Infinity, duration: 2 }}
             >
-              <Heart className="w-6 h-6 text-pink-400" weight="fill" />
+              <Heart className="w-6 h-6 text-pink-500" weight="fill" />
             </motion.div>
           </motion.div>
 
@@ -527,15 +527,15 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
         <div className="p-5 space-y-5">
           <div className="flex items-center gap-2">
             <Star className="w-5 h-5 text-[#ec4899]" weight="fill" />
-            <h2 className="text-lg font-semibold text-white">{t("result.analysis")}</h2>
+            <h2 className="text-lg font-semibold text-text-primary">{t("result.analysis")}</h2>
           </div>
 
           <div className="space-y-4">
             {[
-              { icon: Heart, color: "text-pink-400", label: t("result.romance"), data: data.analysis.romance, delay: 0 },
+              { icon: Heart, color: "text-pink-500", label: t("result.romance"), data: data.analysis.romance, delay: 0 },
               { icon: ChatCircle, color: "text-blue-400", label: t("result.communication"), data: data.analysis.communication, delay: 0.15 },
-              { icon: Fire, color: "text-orange-400", label: t("result.passion"), data: data.analysis.passion, delay: 0.3 },
-              { icon: House, color: "text-green-400", label: t("result.stability"), data: data.analysis.stability, delay: 0.45 },
+              { icon: Fire, color: "text-orange-500", label: t("result.passion"), data: data.analysis.passion, delay: 0.3 },
+              { icon: House, color: "text-green-500", label: t("result.stability"), data: data.analysis.stability, delay: 0.45 },
               { icon: Sparkle, color: "text-purple-400", label: t("result.future"), data: data.analysis.future, delay: 0.6 },
             ].map(({ icon: Icon, color, label, data: analysisData, delay }) => (
               <motion.div
@@ -548,11 +548,11 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
               >
                 <div className="flex items-center gap-2">
                   <Icon className={`w-5 h-5 ${color}`} weight="fill" />
-                  <span className="text-base font-medium text-white">{label}</span>
+                  <span className="text-base font-medium text-text-primary">{label}</span>
                 </div>
                 <AnimatedScoreBar score={analysisData.score} label="" delay={delay} />
                 <motion.p
-                  className="text-sm text-white/60"
+                  className="text-sm text-text-secondary"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
@@ -571,8 +571,8 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
         <GlowingCard glowColor="rgba(236, 72, 153, 0.4)" variants={itemVariants}>
           <div className="p-5 space-y-4">
             <div className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-pink-400" weight="fill" />
-              <h2 className="text-lg font-semibold text-white">맞춤 궁합 해석</h2>
+              <Brain className="w-5 h-5 text-pink-500" weight="fill" />
+              <h2 className="text-lg font-semibold text-text-primary">맞춤 궁합 해석</h2>
             </div>
 
             <motion.div
@@ -582,8 +582,8 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
               transition={{ duration: 0.5 }}
             >
               {/* Summary */}
-              <div className="p-4 rounded-xl bg-pink-500/10 border border-pink-500/20">
-                <p className="text-white/90 text-base leading-relaxed">{aiInterpretation.summary}</p>
+              <div className="p-4 rounded-xl bg-pink-50 border border-pink-200">
+                <p className="text-text-primary text-base leading-relaxed">{aiInterpretation.summary}</p>
               </div>
 
               {/* Details */}
@@ -594,27 +594,27 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
                       <ChatCircle className="w-4 h-4 text-blue-400" weight="fill" />
                       <span className="text-sm font-medium text-blue-400">소통과 감정 교류</span>
                     </div>
-                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.communication}</p>
+                    <p className="text-text-secondary text-sm pl-6">{aiInterpretation.communication}</p>
                   </div>
                 )}
 
                 {aiInterpretation.chemistry && (
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <Heart className="w-4 h-4 text-pink-400" weight="fill" />
-                      <span className="text-sm font-medium text-pink-400">애정과 케미스트리</span>
+                      <Heart className="w-4 h-4 text-pink-500" weight="fill" />
+                      <span className="text-sm font-medium text-pink-500">애정과 케미스트리</span>
                     </div>
-                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.chemistry}</p>
+                    <p className="text-text-secondary text-sm pl-6">{aiInterpretation.chemistry}</p>
                   </div>
                 )}
 
                 {aiInterpretation.challenges && (
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <Warning className="w-4 h-4 text-orange-400" weight="fill" />
-                      <span className="text-sm font-medium text-orange-400">주의할 점</span>
+                      <Warning className="w-4 h-4 text-orange-500" weight="fill" />
+                      <span className="text-sm font-medium text-orange-500">주의할 점</span>
                     </div>
-                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.challenges}</p>
+                    <p className="text-text-secondary text-sm pl-6">{aiInterpretation.challenges}</p>
                   </div>
                 )}
 
@@ -624,7 +624,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
                       <Sparkle className="w-4 h-4 text-purple-400" weight="fill" />
                       <span className="text-sm font-medium text-purple-400">조언</span>
                     </div>
-                    <p className="text-white/70 text-sm pl-6">{aiInterpretation.advice}</p>
+                    <p className="text-text-secondary text-sm pl-6">{aiInterpretation.advice}</p>
                   </div>
                 )}
               </div>
@@ -640,15 +640,15 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <Handshake className="w-5 h-5 text-purple-400" weight="fill" />
-                <h2 className="text-lg font-semibold text-white">천간합(天干合) 분석</h2>
+                <h2 className="text-lg font-semibold text-text-primary">천간합(天干合) 분석</h2>
               </div>
               <div className="grid grid-cols-2 gap-3 mb-3">
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-                  <p className="text-sm text-white/40">{result.p1_name}님 일간</p>
+                <div className="p-3 rounded-xl bg-background-secondary border border-border text-center">
+                  <p className="text-sm text-text-muted">{result.p1_name}님 일간</p>
                   <p className="text-2xl font-bold text-purple-400">{detailedResult.cheonganHap.person1Gan}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-                  <p className="text-sm text-white/40">{result.p2_name}님 일간</p>
+                <div className="p-3 rounded-xl bg-background-secondary border border-border text-center">
+                  <p className="text-sm text-text-muted">{result.p2_name}님 일간</p>
                   <p className="text-2xl font-bold text-purple-400">{detailedResult.cheonganHap.person2Gan}</p>
                 </div>
               </div>
@@ -658,12 +658,12 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
                   <div>
                     <p className="text-base font-medium text-purple-400">{detailedResult.cheonganHap.hapType}</p>
                     {detailedResult.cheonganHap.hapElement && (
-                      <p className="text-sm text-white/60">합화 오행: {detailedResult.cheonganHap.hapElement}</p>
+                      <p className="text-sm text-text-secondary">합화 오행: {detailedResult.cheonganHap.hapElement}</p>
                     )}
                   </div>
                 </div>
               )}
-              <p className="text-base text-white/80">{detailedResult.cheonganHap.description}</p>
+              <p className="text-base text-text-primary">{detailedResult.cheonganHap.description}</p>
             </div>
           </GlowingCard>
 
@@ -671,35 +671,35 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <Scales className="w-5 h-5 text-cyan-400" weight="fill" />
-                <h2 className="text-lg font-semibold text-white">지지(地支) 관계 분석</h2>
+                <h2 className="text-lg font-semibold text-text-primary">지지(地支) 관계 분석</h2>
               </div>
               <div className="space-y-3">
-                <div className="p-3 rounded-xl bg-white/5">
-                  <h3 className="text-sm font-medium text-green-400 mb-2">육합(六合)</h3>
+                <div className="p-3 rounded-xl bg-background-secondary">
+                  <h3 className="text-sm font-medium text-green-500 mb-2">육합(六合)</h3>
                   {detailedResult.jijiRelation.yukHap.pairs.length > 0 ? (
                     <div className="flex flex-wrap gap-2 mb-2">
                       {detailedResult.jijiRelation.yukHap.pairs.map((pair, idx) => (
-                        <span key={idx} className="px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-sm">
+                        <span key={idx} className="px-3 py-1.5 rounded-full bg-green-100 text-green-500 text-sm">
                           {pair.zhi1} + {pair.zhi2} → {pair.resultElement}
                         </span>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-white/40">육합 관계 없음</p>
+                    <p className="text-sm text-text-muted">육합 관계 없음</p>
                   )}
                 </div>
-                <div className="p-3 rounded-xl bg-white/5">
-                  <h3 className="text-sm font-medium text-orange-400 mb-2">충(沖)</h3>
+                <div className="p-3 rounded-xl bg-background-secondary">
+                  <h3 className="text-sm font-medium text-orange-500 mb-2">충(沖)</h3>
                   {detailedResult.jijiRelation.chung.pairs.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {detailedResult.jijiRelation.chung.pairs.map((pair, idx) => (
-                        <span key={idx} className="px-3 py-1.5 rounded-full bg-orange-500/20 text-orange-400 text-sm">
+                        <span key={idx} className="px-3 py-1.5 rounded-full bg-orange-100 text-orange-500 text-sm">
                           {pair.zhi1} ↔ {pair.zhi2}
                         </span>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-white/40">충 관계 없음</p>
+                    <p className="text-sm text-text-muted">충 관계 없음</p>
                   )}
                 </div>
               </div>
@@ -709,70 +709,70 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
           <GlowingCard glowColor="rgba(236, 72, 153, 0.3)" variants={itemVariants}>
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-2">
-                <Heart className="w-5 h-5 text-pink-400" weight="fill" />
-                <h2 className="text-lg font-semibold text-white">일주(日柱) 궁합</h2>
+                <Heart className="w-5 h-5 text-pink-500" weight="fill" />
+                <h2 className="text-lg font-semibold text-text-primary">일주(日柱) 궁합</h2>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-                  <p className="text-sm text-white/40">{result.p1_name}님 일주</p>
-                  <p className="text-2xl font-bold text-pink-400">{detailedResult.iljuCompatibility.person1Ilju}</p>
+                <div className="p-3 rounded-xl bg-background-secondary border border-border text-center">
+                  <p className="text-sm text-text-muted">{result.p1_name}님 일주</p>
+                  <p className="text-2xl font-bold text-pink-500">{detailedResult.iljuCompatibility.person1Ilju}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-                  <p className="text-sm text-white/40">{result.p2_name}님 일주</p>
-                  <p className="text-2xl font-bold text-pink-400">{detailedResult.iljuCompatibility.person2Ilju}</p>
+                <div className="p-3 rounded-xl bg-background-secondary border border-border text-center">
+                  <p className="text-sm text-text-muted">{result.p2_name}님 일주</p>
+                  <p className="text-2xl font-bold text-pink-500">{detailedResult.iljuCompatibility.person2Ilju}</p>
                 </div>
               </div>
               <div className="flex gap-3">
-                <div className="flex-1 p-3 rounded-xl bg-white/5 text-center">
-                  <p className="text-xs text-white/40">일간 관계</p>
-                  <p className="text-base font-medium text-white">{detailedResult.iljuCompatibility.ganRelation}</p>
+                <div className="flex-1 p-3 rounded-xl bg-background-secondary text-center">
+                  <p className="text-xs text-text-muted">일간 관계</p>
+                  <p className="text-base font-medium text-text-primary">{detailedResult.iljuCompatibility.ganRelation}</p>
                 </div>
-                <div className="flex-1 p-3 rounded-xl bg-pink-500/20 text-center">
-                  <p className="text-xs text-white/40">일주 점수</p>
-                  <p className="text-lg font-bold text-pink-400">{detailedResult.iljuCompatibility.overallIljuScore}점</p>
+                <div className="flex-1 p-3 rounded-xl bg-pink-100 text-center">
+                  <p className="text-xs text-text-muted">일주 점수</p>
+                  <p className="text-lg font-bold text-pink-500">{detailedResult.iljuCompatibility.overallIljuScore}점</p>
                 </div>
               </div>
-              <p className="text-base text-white/80">{detailedResult.iljuCompatibility.description}</p>
+              <p className="text-base text-text-primary">{detailedResult.iljuCompatibility.description}</p>
             </div>
           </GlowingCard>
 
           <GlowingCard glowColor="rgba(234, 179, 8, 0.3)" variants={itemVariants}>
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-2">
-                <Lightning className="w-5 h-5 text-yellow-400" weight="fill" />
-                <h2 className="text-lg font-semibold text-white">오행(五行) 균형 분석</h2>
+                <Lightning className="w-5 h-5 text-amber-600" weight="fill" />
+                <h2 className="text-lg font-semibold text-text-primary">오행(五行) 균형 분석</h2>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <p className="text-sm text-white/40">{result.p1_name}님</p>
+                  <p className="text-sm text-text-muted">{result.p1_name}님</p>
                   <div className="flex gap-2">
-                    <span className="px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-sm">
+                    <span className="px-3 py-1.5 rounded-full bg-green-100 text-green-500 text-sm">
                       강: {detailedResult.elementBalanceAnalysis.person1Dominant}
                     </span>
-                    <span className="px-3 py-1.5 rounded-full bg-orange-500/20 text-orange-400 text-sm">
+                    <span className="px-3 py-1.5 rounded-full bg-orange-100 text-orange-500 text-sm">
                       약: {detailedResult.elementBalanceAnalysis.person1Weak}
                     </span>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-sm text-white/40">{result.p2_name}님</p>
+                  <p className="text-sm text-text-muted">{result.p2_name}님</p>
                   <div className="flex gap-2">
-                    <span className="px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-sm">
+                    <span className="px-3 py-1.5 rounded-full bg-green-100 text-green-500 text-sm">
                       강: {detailedResult.elementBalanceAnalysis.person2Dominant}
                     </span>
-                    <span className="px-3 py-1.5 rounded-full bg-orange-500/20 text-orange-400 text-sm">
+                    <span className="px-3 py-1.5 rounded-full bg-orange-100 text-orange-500 text-sm">
                       약: {detailedResult.elementBalanceAnalysis.person2Weak}
                     </span>
                   </div>
                 </div>
               </div>
               {detailedResult.elementBalanceAnalysis.complementary && (
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-green-500/20 border border-green-500/30">
-                  <Check className="w-5 h-5 text-green-400" weight="bold" />
-                  <p className="text-base text-green-400">서로 보완하는 관계입니다</p>
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-green-100 border border-green-500/30">
+                  <Check className="w-5 h-5 text-green-500" weight="bold" />
+                  <p className="text-base text-green-500">서로 보완하는 관계입니다</p>
                 </div>
               )}
-              <p className="text-base text-white/80">{detailedResult.elementBalanceAnalysis.description}</p>
+              <p className="text-base text-text-primary">{detailedResult.elementBalanceAnalysis.description}</p>
             </div>
           </GlowingCard>
 
@@ -780,7 +780,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-blue-400" weight="fill" />
-                <h2 className="text-lg font-semibold text-white">시간에 따른 궁합 변화</h2>
+                <h2 className="text-lg font-semibold text-text-primary">시간에 따른 궁합 변화</h2>
               </div>
               <div className="space-y-3">
                 {[
@@ -788,14 +788,14 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
                   { label: "중기 (3-5년)", data: detailedResult.timingAnalysis.midTerm },
                   { label: "장기 (5년+)", data: detailedResult.timingAnalysis.longTerm },
                 ].map(({ label, data: timing }, idx) => (
-                  <div key={idx} className="p-3 rounded-xl bg-white/5">
+                  <div key={idx} className="p-3 rounded-xl bg-background-secondary">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-white">{label}</span>
-                      <span className={`text-base font-bold ${timing.score >= 80 ? "text-green-400" : timing.score >= 60 ? "text-blue-400" : "text-white"}`}>
+                      <span className="text-sm font-medium text-text-primary">{label}</span>
+                      <span className={`text-base font-bold ${timing.score >= 80 ? "text-green-500" : timing.score >= 60 ? "text-blue-500" : "text-text-primary"}`}>
                         {timing.score}점
                       </span>
                     </div>
-                    <p className="text-sm text-white/60">{timing.description}</p>
+                    <p className="text-sm text-text-secondary">{timing.description}</p>
                   </div>
                 ))}
               </div>
@@ -806,11 +806,11 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
           <div className="grid grid-cols-1 gap-4">
             <GlowingCard glowColor="rgba(34, 197, 94, 0.3)" variants={itemVariants}>
               <div className="p-5 space-y-3">
-                <h2 className="text-lg font-semibold text-green-400">관계의 강점</h2>
+                <h2 className="text-lg font-semibold text-green-500">관계의 강점</h2>
                 <ul className="space-y-2">
                   {detailedResult.strengths.map((strength, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-base text-white/80">
-                      <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" weight="bold" />
+                    <li key={idx} className="flex items-start gap-2 text-base text-text-primary">
+                      <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" weight="bold" />
                       {strength}
                     </li>
                   ))}
@@ -820,11 +820,11 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
 
             <GlowingCard glowColor="rgba(249, 115, 22, 0.3)" variants={itemVariants}>
               <div className="p-5 space-y-3">
-                <h2 className="text-lg font-semibold text-orange-400">도전 과제</h2>
+                <h2 className="text-lg font-semibold text-orange-500">도전 과제</h2>
                 <ul className="space-y-2">
                   {detailedResult.challenges.map((challenge, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-base text-white/80">
-                      <Warning className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" weight="bold" />
+                    <li key={idx} className="flex items-start gap-2 text-base text-text-primary">
+                      <Warning className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" weight="bold" />
                       {challenge}
                     </li>
                   ))}
@@ -840,7 +840,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
                 <h2 className="text-lg font-semibold text-blue-400">{result.p1_name}님께 드리는 조언</h2>
                 <ul className="space-y-2">
                   {detailedResult.adviceForPerson1.map((advice, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-base text-white/80">
+                    <li key={idx} className="flex items-start gap-2 text-base text-text-primary">
                       <Lightbulb className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" weight="fill" />
                       {advice}
                     </li>
@@ -854,7 +854,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
                 <h2 className="text-lg font-semibold text-purple-400">{result.p2_name}님께 드리는 조언</h2>
                 <ul className="space-y-2">
                   {detailedResult.adviceForPerson2.map((advice, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-base text-white/80">
+                    <li key={idx} className="flex items-start gap-2 text-base text-text-primary">
                       <Lightbulb className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" weight="fill" />
                       {advice}
                     </li>
@@ -868,12 +868,12 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
           <GlowingCard glowColor="rgba(34, 197, 94, 0.4)" variants={itemVariants}>
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-2">
-                <Clover className="w-5 h-5 text-green-400" weight="fill" />
-                <h2 className="text-lg font-semibold text-white">함께할 때 행운의 요소</h2>
+                <Clover className="w-5 h-5 text-green-500" weight="fill" />
+                <h2 className="text-lg font-semibold text-text-primary">함께할 때 행운의 요소</h2>
               </div>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm text-white/40 mb-2">색상</p>
+                  <p className="text-sm text-text-muted mb-2">색상</p>
                   <div className="flex flex-wrap gap-2">
                     {detailedResult.luckyElements.colors.map((color, idx) => (
                       <span key={idx} className="px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-400 text-sm">
@@ -883,7 +883,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-white/40 mb-2">방향</p>
+                  <p className="text-sm text-text-muted mb-2">방향</p>
                   <div className="flex flex-wrap gap-2">
                     {detailedResult.luckyElements.directions.map((direction, idx) => (
                       <span key={idx} className="px-3 py-1.5 rounded-full bg-purple-500/20 text-purple-400 text-sm">
@@ -893,10 +893,10 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-white/40 mb-2">숫자</p>
+                  <p className="text-sm text-text-muted mb-2">숫자</p>
                   <div className="flex flex-wrap gap-2">
                     {detailedResult.luckyElements.numbers.map((number, idx) => (
-                      <span key={idx} className="px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-sm">
+                      <span key={idx} className="px-3 py-1.5 rounded-full bg-green-100 text-green-500 text-sm">
                         {number}
                       </span>
                     ))}
@@ -911,7 +911,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
       {/* Element Balance */}
       <GlowingCard glowColor="rgba(168, 85, 247, 0.3)" variants={itemVariants}>
         <div className="p-5 space-y-4">
-          <h2 className="text-lg font-semibold text-white">{t("result.elementBalance")}</h2>
+          <h2 className="text-lg font-semibold text-text-primary">{t("result.elementBalance")}</h2>
           <div className="grid grid-cols-5 gap-2">
             {(["wood", "fire", "earth", "metal", "water"] as const).map(
               (element, index) => {
@@ -941,8 +941,8 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
                       className="absolute -inset-0.5 rounded-xl blur-sm opacity-50 group-hover:opacity-100 transition-opacity"
                       style={{ background: elementColors[element] }}
                     />
-                    <div className="relative p-3 rounded-xl bg-white/5 border border-white/10">
-                      <p className="text-sm font-medium text-white">
+                    <div className="relative p-3 rounded-xl bg-background-secondary border border-border">
+                      <p className="text-sm font-medium text-text-primary">
                         {ELEMENT_KOREAN[element]}
                       </p>
                       <motion.p
@@ -955,7 +955,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
                       >
                         {person1Score}
                       </motion.p>
-                      <p className="text-xs text-white/40">vs {person2Score}</p>
+                      <p className="text-xs text-text-muted">vs {person2Score}</p>
                     </div>
                   </motion.div>
                 );
@@ -974,7 +974,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
               {data.luckyElements.map((element, index) => (
                 <motion.span
                   key={element}
-                  className="px-4 py-2 rounded-full bg-pink-500/20 text-pink-200 font-medium"
+                  className="px-4 py-2 rounded-full bg-pink-100 text-pink-200 font-medium"
                   initial={{ opacity: 0, scale: 0 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -997,7 +997,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
       {data.relationshipAdvice && data.relationshipAdvice.length > 0 && (
         <GlowingCard glowColor="rgba(34, 197, 94, 0.3)" variants={itemVariants}>
           <div className="p-5 space-y-3">
-            <h2 className="text-lg font-semibold text-green-400">{t("result.advice")}</h2>
+            <h2 className="text-lg font-semibold text-green-500">{t("result.advice")}</h2>
             <motion.ul
               className="space-y-2"
               variants={containerVariants}
@@ -1008,7 +1008,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
               {data.relationshipAdvice.map((advice, i) => (
                 <motion.li
                   key={i}
-                  className="flex items-start gap-2 text-base text-white/80"
+                  className="flex items-start gap-2 text-base text-text-primary"
                   variants={listItemVariants}
                 >
                   <motion.div
@@ -1018,7 +1018,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
                     transition={{ delay: i * 0.1, type: "spring" }}
                   >
                     <Check
-                      className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"
+                      className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"
                       weight="bold"
                     />
                   </motion.div>
@@ -1034,7 +1034,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
       {data.cautions && data.cautions.length > 0 && (
         <GlowingCard glowColor="rgba(249, 115, 22, 0.3)" variants={itemVariants}>
           <div className="p-5 space-y-3">
-            <h2 className="text-lg font-semibold text-orange-400">{t("result.cautions")}</h2>
+            <h2 className="text-lg font-semibold text-orange-500">{t("result.cautions")}</h2>
             <motion.ul
               className="space-y-2"
               variants={containerVariants}
@@ -1045,7 +1045,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
               {data.cautions.map((caution, i) => (
                 <motion.li
                   key={i}
-                  className="flex items-start gap-2 text-base text-white/80"
+                  className="flex items-start gap-2 text-base text-text-primary"
                   variants={listItemVariants}
                 >
                   <motion.div
@@ -1055,7 +1055,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
                     transition={{ delay: i * 0.1, type: "spring" }}
                   >
                     <Warning
-                      className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5"
+                      className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5"
                       weight="bold"
                     />
                   </motion.div>
@@ -1088,7 +1088,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
         {/* 다시 분석하기 버튼 */}
         <Link href="/couple" className="block">
           <motion.button
-            className="w-full h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2 text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+            className="w-full h-14 rounded-xl bg-background-secondary border border-border flex items-center justify-center gap-2 text-text-secondary hover:text-text-primary hover:bg-gray-200 transition-colors"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -1100,7 +1100,7 @@ export function CoupleHistoryContent({ result }: { result: CoupleResult }) {
 
       {/* Disclaimer */}
       <motion.p
-        className="text-center text-sm text-white/40 pt-2 pb-8"
+        className="text-center text-sm text-text-muted pt-2 pb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}

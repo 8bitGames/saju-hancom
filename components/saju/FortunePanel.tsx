@@ -137,7 +137,7 @@ function GradeIcon({ grade }: { grade: string }) {
     case "caution":
       return <Warning className="w-5 h-5 text-orange-400" weight="fill" />;
     default:
-      return <CheckCircle className="w-5 h-5 text-white/40" />;
+      return <CheckCircle className="w-5 h-5 text-gray-400" />;
   }
 }
 
@@ -148,7 +148,7 @@ function GradeBadge({ grade, score }: { grade: string; score: number }) {
     <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${config.bg}`}>
       <GradeIcon grade={grade} />
       <span className={`text-sm font-bold ${config.text}`}>{config.label}</span>
-      <span className="text-xs text-white/50">{score}점</span>
+      <span className="text-xs text-gray-500">{score}점</span>
     </div>
   );
 }
