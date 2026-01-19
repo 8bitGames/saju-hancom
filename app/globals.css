@@ -1097,47 +1097,31 @@ a {
   bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
-  z-index: 100 !important;
-  background: white;
+  width: 100% !important;
+  max-width: 100% !important;
+  z-index: 9999 !important;
+  background: white !important;
   border-top: 1px solid var(--border);
   padding-bottom: env(safe-area-inset-bottom, 0);
-  /* GPU acceleration to prevent scroll hiding */
-  transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  /* Force element to stay in place */
-  will-change: transform;
-  /* Contain the element */
-  contain: layout style;
-  /* Prevent any transitions that might hide it */
-  transition: bottom 0.05s ease-out !important;
+  /* NO transform on mobile - can break fixed positioning */
+  transform: none !important;
+  -webkit-transform: none !important;
   /* Ensure it's visible */
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;
-  /* iOS Safari specific fixes */
-  -webkit-overflow-scrolling: touch;
+  display: block !important;
 }
 
-/* iOS Safari specific handling */
-@supports (-webkit-touch-callout: none) {
-  .bottom-nav-fixed {
-    /* Use a higher z-index on iOS */
-    z-index: 9998 !important;
-    /* Ensure hardware acceleration */
-    transform: translate3d(0, 0, 0) !important;
-    -webkit-transform: translate3d(0, 0, 0) !important;
-  }
-}
-
+/* Desktop: center the nav */
 @media (min-width: 768px) {
   .bottom-nav-fixed {
     max-width: 430px !important;
+    width: 430px !important;
     left: 50% !important;
     right: auto !important;
-    transform: translateX(-50%) translate3d(0, 0, 0) !important;
-    -webkit-transform: translateX(-50%) translate3d(0, 0, 0) !important;
+    transform: translateX(-50%) !important;
+    -webkit-transform: translateX(-50%) !important;
   }
 }
 
