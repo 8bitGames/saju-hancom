@@ -1,242 +1,120 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
+import { Link } from '@/lib/i18n/navigation';
+import { useLocale } from 'next-intl';
+import {
+  House,
+  Sparkle,
+  Heart,
+  Leaf,
+  User,
+} from '@phosphor-icons/react';
+import type { Locale } from '@/lib/i18n/config';
 import { cn } from '@/lib/utils';
-import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { createPortal } from 'react-dom';
 
 interface NavItem {
+  id: string;
   href: string;
-  labelKey: string;
-  icon: React.ReactNode;
-  activeIcon: React.ReactNode;
-  matchPaths?: string[];
+  label: { ko: string; en: string };
+  icon: React.ComponentType<{ className?: string; weight?: 'fill' | 'regular' }>;
+  matchPaths: string[];
 }
 
-// 홈 아이콘 (로고 이미지)
-function HomeIcon({ active }: { active?: boolean }) {
-  return (
-    <div className={cn(
-      "w-6 h-6 flex items-center justify-center",
-      active ? "scale-110" : "opacity-70"
-    )}>
-      <Image
-        src="/icons/categories/saju.png"
-        alt="Home"
-        width={24}
-        height={24}
-        className="object-contain"
-      />
-    </div>
-  );
-}
+const NAV_ITEMS: NavItem[] = [
+  {
+    id: 'home',
+    href: '/',
+    label: { ko: '홈', en: 'Home' },
+    icon: House,
+    matchPaths: ['/'],
+  },
+  {
+    id: 'saju',
+    href: '/saju',
+    label: { ko: '운세', en: 'Fortune' },
+    icon: Sparkle,
+    matchPaths: ['/saju', '/face-reading'],
+  },
+  {
+    id: 'compatibility',
+    href: '/compatibility',
+    label: { ko: '궁합', en: 'Match' },
+    icon: Heart,
+    matchPaths: ['/compatibility', '/couple'],
+  },
+  {
+    id: 'cheongrium',
+    href: '/cheongrium',
+    label: { ko: '청리움', en: 'Wellness' },
+    icon: Leaf,
+    matchPaths: ['/cheongrium', '/guardian'],
+  },
+  {
+    id: 'profile',
+    href: '/profile',
+    label: { ko: '내정보', en: 'Profile' },
+    icon: User,
+    matchPaths: ['/profile', '/premium', '/history'],
+  },
+];
 
-// 운세 아이콘 (사주/운세)
-function FortuneIcon({ active }: { active?: boolean }) {
-  return (
-    <svg
-      className="w-6 h-6"
-      fill={active ? "currentColor" : "none"}
-      strokeWidth={active ? "0" : "1.5"}
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-    </svg>
-  );
-}
-
-// 궁합 아이콘 (하트/커플)
-function CompatibilityIcon({ active }: { active?: boolean }) {
-  return (
-    <svg
-      className="w-6 h-6"
-      fill={active ? "currentColor" : "none"}
-      strokeWidth={active ? "0" : "1.5"}
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-    </svg>
-  );
-}
-
-// 기록 아이콘
-function HistoryIcon({ active }: { active?: boolean }) {
-  return (
-    <svg
-      className="w-6 h-6"
-      fill={active ? "currentColor" : "none"}
-      strokeWidth={active ? "0" : "1.5"}
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  );
-}
-
-// 청리움 아이콘 (오방신/힐링 테마)
-function CheongriumIcon({ active }: { active?: boolean }) {
-  return (
-    <svg
-      className="w-6 h-6"
-      fill={active ? "currentColor" : "none"}
-      strokeWidth={active ? "0" : "1.5"}
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-    </svg>
-  );
-}
-
-// 프로필 아이콘
-function ProfileIcon({ active }: { active?: boolean }) {
-  return (
-    <svg
-      className="w-6 h-6"
-      fill={active ? "currentColor" : "none"}
-      strokeWidth={active ? "0" : "1.5"}
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-    </svg>
-  );
-}
+// Pages where nav should be hidden
+const HIDDEN_PATHS = ['/chat', '/result', '/deck'];
 
 export function BottomNav() {
   const pathname = usePathname();
-  const locale = useLocale();
-  const t = useTranslations('Navigation');
-  const [mounted, setMounted] = useState(false);
-  const [bottomOffset, setBottomOffset] = useState(0);
-  const navRef = useRef<HTMLElement>(null);
+  const locale = useLocale() as Locale;
 
-  // Handle visual viewport changes (iOS Safari address bar)
-  const handleViewportChange = useCallback(() => {
-    if (typeof window !== 'undefined' && window.visualViewport) {
-      const viewport = window.visualViewport;
-      const layoutViewportHeight = document.documentElement.clientHeight;
-      const visualViewportHeight = viewport.height;
-      const offset = layoutViewportHeight - visualViewportHeight - viewport.offsetTop;
+  // Remove locale prefix for matching
+  const cleanPath = pathname.replace(/^\/(ko|en)/, '') || '/';
 
-      // Only apply offset if there's a significant difference (address bar visible)
-      if (offset > 0) {
-        setBottomOffset(offset);
-      } else {
-        setBottomOffset(0);
-      }
-    }
-  }, []);
-
-  // Use portal to render outside any container restrictions
-  useEffect(() => {
-    setMounted(true);
-
-    // Listen to visual viewport changes for iOS Safari
-    if (typeof window !== 'undefined' && window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleViewportChange);
-      window.visualViewport.addEventListener('scroll', handleViewportChange);
-      handleViewportChange(); // Initial check
-    }
-
-    return () => {
-      if (typeof window !== 'undefined' && window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', handleViewportChange);
-        window.visualViewport.removeEventListener('scroll', handleViewportChange);
-      }
-    };
-  }, [handleViewportChange]);
-
-  const navItems: NavItem[] = [
-    {
-      href: `/${locale}`,
-      labelKey: 'home',
-      icon: <HomeIcon />,
-      activeIcon: <HomeIcon active />,
-      matchPaths: [`/${locale}`, `/${locale}/`],
-    },
-    {
-      href: `/${locale}/saju`,
-      labelKey: 'fortune',
-      icon: <FortuneIcon />,
-      activeIcon: <FortuneIcon active />,
-      matchPaths: [`/${locale}/saju`, `/${locale}/face-reading`],
-    },
-    {
-      href: `/${locale}/compatibility`,
-      labelKey: 'compatibility',
-      icon: <CompatibilityIcon />,
-      activeIcon: <CompatibilityIcon active />,
-      matchPaths: [`/${locale}/compatibility`, `/${locale}/couple`],
-    },
-    {
-      href: `/${locale}/cheongrium`,
-      labelKey: 'cheongrium',
-      icon: <CheongriumIcon />,
-      activeIcon: <CheongriumIcon active />,
-      matchPaths: [`/${locale}/cheongrium`, `/${locale}/guardian`],
-    },
-    {
-      href: `/${locale}/profile`,
-      labelKey: 'profile',
-      icon: <ProfileIcon />,
-      activeIcon: <ProfileIcon active />,
-      matchPaths: [`/${locale}/profile`, `/${locale}/premium`],
-    },
-  ];
+  // Check if nav should be hidden
+  const shouldHide = HIDDEN_PATHS.some((path) => cleanPath.includes(path));
+  if (shouldHide) return null;
 
   const isActive = (item: NavItem) => {
-    if (item.matchPaths) {
-      return item.matchPaths.some((path) => pathname === path || pathname.startsWith(path + '/'));
+    if (item.id === 'home') {
+      return cleanPath === '/';
     }
-    return pathname === item.href;
+    return item.matchPaths.some((path) => cleanPath.startsWith(path));
   };
 
-  // 특정 페이지에서 네비게이션 숨기기 (채팅 페이지 등)
-  const hiddenPaths = ['/chat', '/result'];
-  const shouldHide = hiddenPaths.some((path) => pathname.includes(path));
-
-  if (shouldHide || !mounted) {
-    return null;
-  }
-
-  const navContent = (
+  return (
     <nav
-      ref={navRef}
-      className="bottom-nav-fixed"
+      id="bottom-nav"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200"
       style={{
-        bottom: bottomOffset > 0 ? `${bottomOffset}px` : '0',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
       aria-label="Main navigation"
     >
-      <div className="flex justify-around items-center h-16">
-        {navItems.map((item) => {
+      <div className="flex justify-around items-center h-16 max-w-[430px] mx-auto">
+        {NAV_ITEMS.map((item) => {
           const active = isActive(item);
+          const Icon = item.icon;
 
           return (
             <Link
-              key={item.href}
+              key={item.id}
               href={item.href}
               className={cn(
-                'flex flex-col items-center justify-center gap-1 py-2 px-3 min-w-[56px] transition-colors',
+                'flex flex-col items-center justify-center gap-1 py-2 px-3 min-w-[56px]',
                 active
                   ? 'text-[#0E4168]'
-                  : 'text-gray-500 hover:text-gray-700'
+                  : 'text-gray-400'
               )}
               aria-current={active ? 'page' : undefined}
             >
-              {active ? item.activeIcon : item.icon}
+              <Icon
+                className="w-6 h-6"
+                weight={active ? 'fill' : 'regular'}
+              />
               <span className={cn(
-                "text-[10px] font-medium",
-                active && "text-[#0E4168]"
+                'text-[10px] font-medium',
+                active && 'font-semibold'
               )}>
-                {t(item.labelKey)}
+                {item.label[locale]}
               </span>
             </Link>
           );
@@ -244,15 +122,11 @@ export function BottomNav() {
       </div>
     </nav>
   );
-
-  // Use portal to render directly to body, bypassing any container restrictions
-  return createPortal(navContent, document.body);
 }
 
 /**
- * BottomNav를 위한 스페이서 컴포넌트
- * 페이지 컨텐츠가 네비게이션에 가려지지 않도록 하단에 여백 추가
+ * Spacer to prevent content from being hidden behind bottom nav
  */
 export function BottomNavSpacer() {
-  return <div className="h-16" aria-hidden="true" />;
+  return <div className="h-16" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }} aria-hidden="true" />;
 }

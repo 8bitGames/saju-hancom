@@ -3,7 +3,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Toaster } from 'sonner';
 import { locales, type Locale } from '@/lib/i18n/config';
-import BottomNavigation from '@/components/layout/BottomNavigation';
+import { BottomNav } from '@/components/navigation';
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -28,7 +28,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider messages={messages}>
       {children}
-      <BottomNavigation />
+      <BottomNav />
       <Toaster
         position="top-center"
         toastOptions={{

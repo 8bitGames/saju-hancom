@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { CaretLeft, Sun, Cloud, CloudRain, CloudSnow, Wind, MapPin, Sparkle } from "@phosphor-icons/react";
-import { BottomNav } from "@/components/navigation";
 import { usePathname, useRouter } from "@/lib/i18n/navigation";
 import Image from "next/image";
 import { SplashScreen } from "@/components/ui/SplashScreen";
@@ -84,7 +83,7 @@ export default function MainLayout({
       {/* Main Page Container - Cheong-Giun Style */}
       <div className="relative z-10 min-h-screen min-h-dvh bg-[#F5F9FC]">
         {/* Header */}
-        <header className="fixed top-0 z-50 bg-white border-b border-gray-100 w-full max-w-[430px] left-1/2 -translate-x-1/2">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 w-full md:max-w-[430px] md:left-1/2 md:-translate-x-1/2 md:right-auto">
           {/* Weather & Feng Shui Status Bar */}
           <div className="px-4 h-7 flex items-center justify-between bg-gradient-to-r from-slate-50 to-blue-50 border-b border-gray-50 text-[10px]">
             {/* Left: Location & Weather */}
@@ -153,10 +152,9 @@ export default function MainLayout({
         <main className="pt-[76px] pb-20">
           {children}
         </main>
-
-        {/* Bottom Navigation */}
-        <BottomNav />
       </div>
+
+      {/* Bottom Navigation is rendered in locale layout for consistency */}
     </>
   );
 }
