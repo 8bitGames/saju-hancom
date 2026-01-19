@@ -5,6 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useLocale, useTranslations } from 'next-intl';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 interface NavItem {
   href: string;
@@ -111,6 +113,45 @@ export function BottomNav() {
   const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations('Navigation');
+  const [mounted, setMounted] = useState(false);
+  const [bottomOffset, setBottomOffset] = useState(0);
+  const navRef = useRef<HTMLElement>(null);
+
+  // Handle visual viewport changes (iOS Safari address bar)
+  const handleViewportChange = useCallback(() => {
+    if (typeof window !== 'undefined' && window.visualViewport) {
+      const viewport = window.visualViewport;
+      const layoutViewportHeight = document.documentElement.clientHeight;
+      const visualViewportHeight = viewport.height;
+      const offset = layoutViewportHeight - visualViewportHeight - viewport.offsetTop;
+
+      // Only apply offset if there's a significant difference (address bar visible)
+      if (offset > 0) {
+        setBottomOffset(offset);
+      } else {
+        setBottomOffset(0);
+      }
+    }
+  }, []);
+
+  // Use portal to render outside any container restrictions
+  useEffect(() => {
+    setMounted(true);
+
+    // Listen to visual viewport changes for iOS Safari
+    if (typeof window !== 'undefined' && window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportChange);
+      window.visualViewport.addEventListener('scroll', handleViewportChange);
+      handleViewportChange(); // Initial check
+    }
+
+    return () => {
+      if (typeof window !== 'undefined' && window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleViewportChange);
+        window.visualViewport.removeEventListener('scroll', handleViewportChange);
+      }
+    };
+  }, [handleViewportChange]);
 
   const navItems: NavItem[] = [
     {
@@ -161,14 +202,17 @@ export function BottomNav() {
   const hiddenPaths = ['/chat', '/result'];
   const shouldHide = hiddenPaths.some((path) => pathname.includes(path));
 
-  if (shouldHide) {
+  if (shouldHide || !mounted) {
     return null;
   }
 
-  return (
+  const navContent = (
     <nav
-      className="fixed bottom-0 z-50 bg-white border-t border-gray-100 w-full max-w-[430px] left-1/2 -translate-x-1/2"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      ref={navRef}
+      className="bottom-nav-fixed"
+      style={{
+        bottom: bottomOffset > 0 ? `${bottomOffset}px` : '0',
+      }}
       aria-label="Main navigation"
     >
       <div className="flex justify-around items-center h-16">
@@ -200,6 +244,9 @@ export function BottomNav() {
       </div>
     </nav>
   );
+
+  // Use portal to render directly to body, bypassing any container restrictions
+  return createPortal(navContent, document.body);
 }
 
 /**
