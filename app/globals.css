@@ -1087,15 +1087,37 @@ a {
    Bottom Navigation Styles
    ============================================ */
 
-/* Simple fixed bottom nav - NO transforms on mobile */
+/* Fixed bottom nav - robust mobile positioning */
 #bottom-nav {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0;
+  right: 0;
+  z-index: 9999 !important; /* Very high z-index to ensure it's always on top */
+  background: white;
+  border-top: 1px solid var(--border);
+  /* Prevent any transform from breaking fixed positioning */
+  transform: none !important;
+  /* Force hardware acceleration without using translateZ which can break fixed */
+  backface-visibility: hidden;
+  /* Prevent layout recalculation issues */
+  contain: layout style;
+  /* Ensure it's always in the viewport */
+  -webkit-transform: none !important;
+}
+
+/* Ensure portal container doesn't interfere */
+#bottom-nav-portal {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 50; /* Below splash screen (z-200) */
-  background: white;
-  border-top: 1px solid var(--border);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+#bottom-nav-portal > * {
+  pointer-events: auto;
 }
 
 /* Desktop: center nav within 430px container */
@@ -1105,6 +1127,13 @@ a {
     right: auto;
     width: 430px;
     margin-left: -215px; /* half of 430px - no transform needed */
+  }
+
+  #bottom-nav-portal {
+    left: 50%;
+    right: auto;
+    width: 430px;
+    margin-left: -215px;
   }
 }
 
@@ -1156,6 +1185,24 @@ a {
   .mobile-container {
     max-width: 100%;
     box-shadow: none;
+  }
+}
+
+/* Ensure fixed positioning works correctly on mobile */
+@media (max-width: 767px) {
+  /* Remove any properties that could break fixed positioning */
+  .pc-wrapper,
+  .mobile-container {
+    transform: none !important;
+    -webkit-transform: none !important;
+    perspective: none !important;
+    filter: none;
+    will-change: auto;
+  }
+
+  /* Ensure body allows fixed positioning */
+  body {
+    -webkit-overflow-scrolling: touch;
   }
 }
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
 import { Link } from '@/lib/i18n/navigation';
 import { useLocale } from 'next-intl';
@@ -60,11 +62,10 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 // Pages where nav should be hidden
-const HIDDEN_PATHS = ['/chat', '/result', '/deck'];
+const HIDDEN_PATHS = ['/chat', '/deck'];
 
-export function BottomNav() {
+function BottomNavContent({ locale }: { locale: Locale }) {
   const pathname = usePathname();
-  const locale = useLocale() as Locale;
 
   // Remove locale prefix for matching
   const cleanPath = pathname.replace(/^\/(ko|en)/, '') || '/';
@@ -121,6 +122,33 @@ export function BottomNav() {
         })}
       </div>
     </nav>
+  );
+}
+
+export function BottomNav() {
+  const locale = useLocale() as Locale;
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    // Find the portal target outside of mobile-container
+    const target = document.getElementById('bottom-nav-portal');
+    if (target) {
+      setPortalTarget(target);
+    } else {
+      // Fallback: create portal target if it doesn't exist
+      const fallback = document.createElement('div');
+      fallback.id = 'bottom-nav-portal';
+      document.body.appendChild(fallback);
+      setPortalTarget(fallback);
+    }
+  }, []);
+
+  // Don't render until we have the portal target (prevents hydration mismatch)
+  if (!portalTarget) return null;
+
+  return createPortal(
+    <BottomNavContent locale={locale} />,
+    portalTarget
   );
 }
 
